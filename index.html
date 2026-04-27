@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#B32533">
+<link rel="manifest" href="manifest.json">
+<title>PedroEX</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   THEME VARIABLES
+═══════════════════════════════════════ */
+:root {
+  --red:      #B32533;
+  --red-d:    #8f1e29;
+
+  /* DARK theme (default) */
+  --bg:       #141416;
+  --bg2:      #1c1c1f;
+  --bg3:      #242428;
+  --border:   #26262a;
+  --border2:  #2e2e33;
+  --text:     #f0f0f0;
+  --text2:    #888;
+  --text3:    #444;
+  --card-bg:  #1c1c1f;
+}
+
+body.light {
+  --bg:       #f0f0f2;
+  --bg2:      #ffffff;
+  --bg3:      #e8e8ec;
+  --border:   #dddde3;
+  --border2:  #d0d0d8;
+  --text:     #111114;
+  --text2:    #666;
+  --text3:    #aaa;
+  --card-bg:  #ffffff;
+}
+
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background 0.3s,color 0.3s}
+
+.screen{display:none;flex-direction:column;height:100dvh;width:100%;position:absolute;top:0;left:0}
+.screen.active{display:flex}
+
+/* ═══════════════════════════════════════
+   WELCOME / LOGIN
+═══════════════════════════════════════ */
+#s-login{
+  background:#B32533;
+  overflow:hidden;
+  justify-content:flex-end;
+}
+
+/* Subtle diagonal texture */
+#s-login::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-55deg,transparent 0,transparent 38px,rgba(0,0,0,0.05) 38px,rgba(0,0,0,0.05) 40px);
+  z-index:0;pointer-events:none;
+}
+
+/* Truck stage */
+.truck-stage{
+  position:absolute;top:0;left:0;right:0;
+  height:56%;overflow:hidden;z-index:1;
+}
+
+/* Road */
+.road-base{position:absolute;bottom:0;left:0;right:0;height:6px;background:rgba(0,0,0,0.2)}
+.road-marks{
+  position:absolute;bottom:6px;left:0;right:0;height:3px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,0.3) 0,rgba(255,255,255,0.3) 30px,transparent 30px,transparent 60px);
+  animation:roadScroll 0.35s linear infinite;
+}
+@keyframes roadScroll{to{background-position:-60px 0}}
+
+/* Truck image — drives in from left */
+.truck-img-wrap{
+  position:absolute;
+  bottom:9px;
+  left:-700px;
+  animation:truckIn 2.2s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation-delay:0.3s;
+}
+@keyframes truckIn{
+  0%  {left:-700px}
+  70% {left:calc(50% - 220px)}
+  80% {left:calc(50% - 208px)}
+  90% {left:calc(50% - 216px)}
+  100%{left:calc(50% - 212px)}
+}
+
+.truck-img{
+  width:420px;height:auto;
+  display:block;
+  /* Remove black background from truck.png */
+  mix-blend-mode:screen;
+  filter:brightness(1.05) contrast(1.05);
+}
+
+/* Logo overlay on truck body */
+.truck-logo-overlay{
+  position:absolute;
+  bottom:68px;
+  left:calc(50% - 212px);
+  width:210px;
+  opacity:0;
+  animation:logoOnTruck 0.4s ease forwards;
+  animation-delay:2.4s;
+  pointer-events:none;
+  z-index:2;
+}
+.truck-logo-overlay img{
+  width:100%;height:auto;
+  /* Make logo visible on white truck */
+  filter:brightness(0.85) contrast(1.1);
+}
+
+@keyframes logoOnTruck{
+  from{opacity:0;transform:translateY(4px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+/* Welcome logo — fades in above truck */
+.welcome-logo{
+  position:absolute;
+  top:12%;left:50%;
+  transform:translateX(-50%);
+  z-index:2;
+  width:68%;max-width:250px;
+  opacity:0;
+  animation:wLogoIn 0.6s ease forwards;
+  animation-delay:2.6s;
+  pointer-events:none;
+}
+.welcome-logo img{width:100%;height:auto}
+@keyframes wLogoIn{
+  from{opacity:0;transform:translateX(-50%) scale(0.88) translateY(6px)}
+  to  {opacity:1;transform:translateX(-50%) scale(1) translateY(0)}
+}
+
+/* Login card */
+.login-card{
+  position:relative;z-index:3;width:100%;
+  background:#ffffff;
+  border-radius:28px 28px 0 0;
+  padding:32px 28px calc(40px + env(safe-area-inset-bottom,0px));
+  opacity:0;transform:translateY(50px);
+  animation:cardUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation-delay:3s;
+}
+@keyframes cardUp{to{opacity:1;transform:translateY(0)}}
+
+.login-card h2{
+  font-size:24px;font-weight:700;
+  color:#111;letter-spacing:-0.5px;margin-bottom:6px;
+}
+.login-card p{
+  font-size:14px;font-weight:400;
+  color:#888;line-height:1.65;margin-bottom:26px;
+}
+.google-btn{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;padding:15px 20px;
+  background:#111;color:#fff;
+  border:none;border-radius:14px;
+  font-size:15px;font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;letter-spacing:-0.2px;
+}
+.google-btn:active{opacity:0.85}
+.google-btn svg{width:20px;height:20px;flex-shrink:0}
+
+/* ═══════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════ */
+#s-app{background:var(--bg)}
+
+/* TOPBAR */
+.topbar{
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;
+  padding-top:calc(env(safe-area-inset-top,0px) + 12px);
+  flex-shrink:0;
+}
+.tb-logo{height:22px;width:auto;object-fit:contain;display:block}
+body.light .tb-logo{filter:none}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-title{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+.tb-avatar{width:30px;height:30px;border-radius:50%;border:2px solid var(--red);object-fit:cover}
+
+/* PAGE WRAP */
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px;padding-bottom:80px}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+.dash-header{margin-bottom:22px}
+.dash-eyebrow{
+  font-size:10px;font-weight:600;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--text3);margin-bottom:5px;
+}
+.dash-name{
+  font-size:26px;font-weight:700;
+  color:var(--text);letter-spacing:-0.5px;line-height:1.2;
+}
+.dash-date{font-size:13px;color:var(--text2);margin-top:4px;font-weight:400}
+
+/* MODULE GRID */
+.mod-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.mod-card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px 16px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.2s,transform 0.1s;
+}
+.mod-card:active{transform:scale(0.97);border-color:var(--red)}
+
+/* Red corner accent */
+.mod-card::after{
+  content:'';position:absolute;bottom:0;right:0;
+  width:28px;height:28px;
+  background:var(--red);
+  clip-path:polygon(100% 0,100% 100%,0 100%);
+  opacity:0.08;
+}
+.mod-card.wide{grid-column:span 2}
+
+.mod-icon{font-size:20px;margin-bottom:10px;display:block;line-height:1}
+.mod-label{
+  font-size:10px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);margin-bottom:6px;
+}
+.mod-value{
+  font-size:32px;font-weight:700;
+  color:var(--red);line-height:1;
+  letter-spacing:-1px;
+}
+.mod-sub{font-size:11px;color:var(--text3);margin-top:3px;font-weight:400}
+
+/* ═══════════════════════════════════════
+   PAGE HEADERS
+═══════════════════════════════════════ */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.page-header-left{display:flex;align-items:center;gap:10px}
+.back-btn{
+  background:none;border:none;
+  color:var(--text2);font-size:22px;
+  cursor:pointer;padding:0;line-height:1;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+}
+.page-title{
+  font-size:20px;font-weight:700;
+  color:var(--text);letter-spacing:-0.3px;
+}
+.icon-btn{
+  background:none;border:1px solid var(--border);
+  color:var(--text2);
+  padding:7px 14px;border-radius:10px;
+  font-size:12px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;
+}
+
+/* ═══════════════════════════════════════
+   TRUCK CARDS
+═══════════════════════════════════════ */
+.truck-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:14px;margin-bottom:10px;overflow:hidden;
+}
+.tc-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 12px;border-bottom:1px solid var(--border);
+}
+.tc-plate{
+  font-size:18px;font-weight:700;letter-spacing:2px;
+  background:var(--red);padding:5px 14px;border-radius:8px;color:#fff;
+}
+.tc-id{font-size:11px;color:var(--text3);letter-spacing:1px;font-weight:500}
+.tc-chips{padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text2);font-weight:500;
+}
+.chip b{color:var(--text);font-weight:600}
+.tc-note{padding:0 16px 12px;font-size:12px;color:var(--text2);line-height:1.6}
+.tc-foot{border-top:1px solid var(--border)}
+.tc-edit-btn{
+  width:100%;padding:11px;background:none;border:none;
+  color:var(--red);font-size:13px;font-weight:600;
+  font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.2px;
+}
+.tc-edit-btn:active{background:var(--bg3)}
+
+/* ═══════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════ */
+.search-bar{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:12px;padding:0 14px;margin-bottom:16px;
+}
+.search-bar input{
+  flex:1;background:none;border:none;outline:none;
+  color:var(--text);font-size:14px;
+  font-family:'Inter',sans-serif;padding:13px 0;
+}
+.search-bar input::placeholder{color:var(--text3)}
+
+/* ═══════════════════════════════════════
+   FAB
+═══════════════════════════════════════ */
+.fab{
+  position:fixed;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px));
+  right:16px;
+  width:52px;height:52px;
+  background:var(--red);color:#fff;
+  border:none;border-radius:50%;
+  font-size:28px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(179,37,51,0.4);
+  z-index:50;
+}
+.fab:active{transform:scale(0.93)}
+
+/* Bottom nav bar */
+.bottom-bar{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;justify-content:space-between;
+  z-index:40;
+}
+.bb-btn{
+  background:none;border:none;
+  color:var(--text3);font-size:22px;
+  cursor:pointer;padding:6px;
+  border-radius:10px;
+  transition:color 0.15s,background 0.15s;
+}
+.bb-btn:active,.bb-btn.active{color:var(--red);background:var(--bg3)}
+
+/* ═══════════════════════════════════════
+   DRAWER
+═══════════════════════════════════════ */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);z-index:100;align-items:flex-end;
+}
+.overlay.open{display:flex}
+.drawer{
+  background:var(--bg2);
+  border-radius:24px 24px 0 0;
+  border-top:1px solid var(--border);
+  padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));
+  width:100%;max-height:92dvh;overflow-y:auto;
+  animation:slideUp 0.28s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.drawer-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
+.drawer-title{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px;margin-bottom:4px}
+.drawer-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+
+/* ═══════════════════════════════════════
+   FORMS
+═══════════════════════════════════════ */
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.fi{
+  width:100%;background:var(--bg);
+  border:1px solid var(--border2);border-radius:10px;
+  padding:13px 14px;color:var(--text);font-size:15px;
+  font-family:'Inter',sans-serif;outline:none;
+  -webkit-appearance:none;transition:border-color 0.2s;
+}
+.fi:focus{border-color:var(--red)}
+textarea.fi{resize:none;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.btn{
+  padding:14px;border-radius:12px;
+  font-size:15px;font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;border:none;letter-spacing:-0.2px;
+}
+.btn:active{opacity:0.85}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+
+/* ═══════════════════════════════════════
+   STATES
+═══════════════════════════════════════ */
+.loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:56px;color:var(--text3);font-size:13px}
+.spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:64px 24px}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:0.35}
+.empty-state p{font-size:14px;line-height:1.8;color:var(--text2)}
+.coming-soon{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:16px;padding:64px 24px;text-align:center;
+}
+.cs-icon{font-size:40px;margin-bottom:14px;opacity:0.3}
+.cs-title{font-size:17px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.cs-sub{font-size:13px;color:var(--text3);line-height:1.7}
+
+.toast{
+  position:fixed;
+  bottom:calc(72px + env(safe-area-inset-bottom,0px));
+  left:50%;transform:translateX(-50%);
+  background:var(--bg2);border:1px solid var(--border2);
+  border-left:3px solid var(--red);
+  border-radius:12px;padding:13px 22px;
+  font-size:13px;font-weight:500;color:var(--text);
+  z-index:300;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.toast.show{opacity:1}
+
+/* ═══════════════════════════════════════
+   SETTINGS & MENU LISTS
+═══════════════════════════════════════ */
+.section-label{
+  font-size:10px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;color:var(--text3);
+  margin:18px 0 8px 4px;
+}
+.list-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;margin-bottom:4px;
+}
+.list-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:15px 18px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 0.1s;
+}
+.list-item:last-child{border-bottom:none}
+.list-item:active{background:var(--bg3)}
+.list-item.danger{color:var(--red)}
+.li-left{display:flex;align-items:center;gap:14px;font-size:14px;font-weight:500;color:var(--text)}
+.li-icon{font-size:17px;width:26px;text-align:center}
+.li-chev{color:var(--border2);font-size:16px}
+
+/* Profile card */
+.profile-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:16px;padding:20px;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:4px;
+}
+.profile-card img{width:52px;height:52px;border-radius:50%;border:2px solid var(--red);object-fit:cover;flex-shrink:0}
+.profile-name{font-size:16px;font-weight:600;color:var(--text);margin-bottom:2px;letter-spacing:-0.2px}
+.profile-email{font-size:12px;color:var(--text2)}
+.role-pill{
+  display:inline-block;
+  background:var(--red);color:#fff;
+  font-size:9px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;
+  margin-top:6px;
+}
+
+/* Theme toggle */
+.theme-toggle{
+  display:flex;align-items:center;gap:12px;
+  padding:15px 18px;
+}
+.toggle-track{
+  width:44px;height:24px;
+  background:var(--border2);
+  border-radius:12px;
+  position:relative;cursor:pointer;
+  transition:background 0.25s;
+  flex-shrink:0;
+}
+.toggle-track.on{background:var(--red)}
+.toggle-thumb{
+  width:18px;height:18px;
+  background:#fff;border-radius:50%;
+  position:absolute;top:3px;left:3px;
+  transition:transform 0.25s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.3);
+}
+.toggle-track.on .toggle-thumb{transform:translateX(20px)}
+.toggle-label{font-size:14px;font-weight:500;color:var(--text);flex:1}
+.toggle-value{font-size:12px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     WELCOME SCREEN
+═══════════════════════════════════════ -->
+<div class="screen active" id="s-login">
+
+  <div class="truck-stage">
+    <div class="road-base"></div>
+    <div class="road-marks"></div>
+
+    <!-- Real truck image drives in -->
+    <div class="truck-img-wrap" id="truck-wrap">
+      <img class="truck-img" src="truck.png" alt="PedroEX Truck">
+    </div>
+
+    <!-- Logo overlaid on truck body -->
+    <div class="truck-logo-overlay" id="truck-logo">
+      <img src="logo2.png" alt="PedroEX Logo">
+    </div>
+
+    <!-- PedroEX logo appears above -->
+    <div class="welcome-logo">
+      <img src="logo.jpg" alt="PedroEX">
+    </div>
+  </div>
+
+  <!-- Login card -->
+  <div class="login-card">
+    <h2>Fleet Management</h2>
+    <p>Sign in with your Google account to access the PedroEX operations dashboard.</p>
+    <button class="google-btn" onclick="signIn()">
+      <svg viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Continue with Google
+    </button>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     APP SCREEN
+═══════════════════════════════════════ -->
+<div class="screen" id="s-app">
+
+  <div class="topbar">
+    <img class="tb-logo" src="logo2.png" alt="PedroEX" id="topbar-logo">
+    <div class="tb-right">
+      <span class="tb-title" id="tb-title">Dashboard</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
+    </div>
+  </div>
+
+  <div class="page-wrap" id="page-wrap">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="dash-header">
+        <div class="dash-eyebrow">PedroEX Operations</div>
+        <div class="dash-name" id="dash-name">Good day!</div>
+        <div class="dash-date" id="dash-date"></div>
+      </div>
+      <div class="mod-grid" id="mod-grid">
+        <!-- Built by JS based on role -->
+      </div>
+    </div>
+
+    <!-- ── TRUCKS ── -->
+    <div class="page" id="page-trucks">
+      <div class="page-header">
+        <div class="page-header-left">
+          <button class="back-btn" onclick="showPage('dashboard')">‹</button>
+          <div class="page-title">Truck Roster</div>
+        </div>
+        <button class="icon-btn" onclick="loadTrucks()">↻</button>
+      </div>
+      <div class="search-bar">
+        <span style="color:var(--text3)">⌕</span>
+        <input type="text" placeholder="Search plate, type..." oninput="filterTrucks(this.value)" id="truck-search">
+      </div>
+      <div id="trucks-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading fleet...</div>
+      <div id="trucks-list"></div>
+      <div id="trucks-empty" class="empty-state" style="display:none">
+        <div class="empty-icon">🚛</div>
+        <p>No trucks in roster yet.<br>Tap <strong style="color:var(--red)">+</strong> to add the first one.</p>
+      </div>
+    </div>
+
+    <!-- ── ATTENDANCE ── -->
+    <div class="page" id="page-attendance">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Attendance</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📋</div><div class="cs-title">Attendance</div><div class="cs-sub">Daily attendance tracking<br>coming soon</div></div>
+    </div>
+
+    <!-- ── ACTIVE TRIPS ── -->
+    <div class="page" id="page-trips">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Active Trips</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📍</div><div class="cs-title">Active Trips</div><div class="cs-sub">Real-time trip tracking<br>coming soon</div></div>
+    </div>
+
+    <!-- ── EMPLOYEES ── -->
+    <div class="page" id="page-employees">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Employees</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">👥</div><div class="cs-title">Employees</div><div class="cs-sub">Employee management<br>coming soon</div></div>
+    </div>
+
+    <!-- ── EXPENSES ── -->
+    <div class="page" id="page-expenses">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Expenses</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">💸</div><div class="cs-title">Expenses</div><div class="cs-sub">Expense tracking<br>coming soon</div></div>
+    </div>
+
+    <!-- ── BILLING ── -->
+    <div class="page" id="page-billing">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Billing</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">🧾</div><div class="cs-title">Billing</div><div class="cs-sub">Invoicing & billing<br>coming soon</div></div>
+    </div>
+
+    <!-- ── MATRIX ── -->
+    <div class="page" id="page-matrix">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Matrix</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📊</div><div class="cs-title">Matrix</div><div class="cs-sub">Business performance matrix<br>coming soon</div></div>
+    </div>
+
+    <!-- ── SCHEDULER ── -->
+    <div class="page" id="page-scheduler">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Scheduler</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📅</div><div class="cs-title">Scheduler</div><div class="cs-sub">Trip scheduling<br>coming soon</div></div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="page" id="page-settings">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Settings</div></div></div>
+
+      <!-- Profile -->
+      <div class="profile-card">
+        <img id="more-avatar" src="" alt="">
+        <div>
+          <div class="profile-name" id="more-name"></div>
+          <div class="profile-email" id="more-email"></div>
+          <div class="role-pill" id="more-role">Employee</div>
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div class="section-label">Appearance</div>
+      <div class="list-card">
+        <div class="theme-toggle">
+          <span class="li-icon">🌙</span>
+          <span class="toggle-label" id="theme-label">Dark Mode</span>
+          <span class="toggle-value" id="theme-value">On</span>
+          <div class="toggle-track on" id="theme-toggle" onclick="toggleTheme()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin section -->
+      <div id="admin-section" style="display:none">
+        <div class="section-label">Admin</div>
+        <div class="list-card">
+          <div class="list-item" onclick="showPage('employees')"><div class="li-left"><span class="li-icon">👥</span>Employees</div><span class="li-chev">›</span></div>
+          <div class="list-item" onclick="showPage('matrix')"><div class="li-left"><span class="li-icon">📊</span>Matrix</div><span class="li-chev">›</span></div>
+          <div class="list-item" onclick="showPage('scheduler')"><div class="li-left"><span class="li-icon">📅</span>Scheduler</div><span class="li-chev">›</span></div>
+        </div>
+      </div>
+
+      <!-- Account -->
+      <div class="section-label">Account</div>
+      <div class="list-card">
+        <div class="list-item danger" onclick="signOut()"><div class="li-left"><span class="li-icon">🚪</span>Sign Out</div></div>
+      </div>
+    </div>
+
+  </div><!-- end page-wrap -->
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar">
+    <button class="bb-btn active" id="bb-home" onclick="showPage('dashboard')" title="Home">⌂</button>
+    <button class="bb-btn" id="bb-trucks" onclick="showPage('trucks')" title="Trucks">🚛</button>
+    <button class="bb-btn" id="bb-trips" onclick="showPage('trips')" title="Trips">📍</button>
+    <button class="bb-btn" id="bb-billing" onclick="showPage('billing')" title="Billing">🧾</button>
+    <button class="bb-btn" id="bb-settings" onclick="showPage('settings')" title="Settings">⚙️</button>
+  </div>
+
+</div><!-- end s-app -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="onFabClick()" style="display:none">+</button>
+
+<!-- TRUCK DRAWER -->
+<div class="overlay" id="truck-drawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title" id="drawer-title">Add Truck</div>
+    <div class="drawer-sub" id="drawer-sub">Fill in the truck details</div>
+    <div class="fg">
+      <label class="fl">Plate Number *</label>
+      <input class="fi" id="f-plate" placeholder="e.g. ABC 1234" autocomplete="off" style="font-size:20px;font-weight:700;letter-spacing:3px">
+    </div>
+    <div class="row2">
+      <div class="fg"><label class="fl">LTO Registration</label><input class="fi" id="f-lto" placeholder="e.g. Jan 2026"></div>
+      <div class="fg"><label class="fl">NMIS Expiry</label><input class="fi" id="f-nmis" placeholder="e.g. Mar 2026"></div>
+    </div>
+    <div class="fg"><label class="fl">Dimensions / Type</label><input class="fi" id="f-dim" placeholder="e.g. 10-wheeler Reefer 40ft"></div>
+    <div class="fg"><label class="fl">Additional Notes</label><textarea class="fi" id="f-notes" placeholder="Other details..."></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
+      <button class="btn btn-red" onclick="saveTruck()">Save Truck</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────
+const CLIENT_ID    = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SHEET_ID     = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const SHEET_NAME   = 'Truck Roster';
+const SCOPES       = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
+
+let token      = null;
+let userRole   = 'employee';
+let allTrucks  = [];
+let editingRow = null;
+let curPage    = 'dashboard';
+let prevPage   = 'dashboard';
+let isDark     = true;
+
+// ── MODULE DEFINITIONS ───────────────────────────────
+const ADMIN_MODULES = [
+  { id:'trucks',     icon:'🚛', label:'Trucks',       stat:'sv-trucks',  sub:'Fleet roster' },
+  { id:'attendance', icon:'📋', label:'Attendance',   stat:'sv-attend',  sub:'Today\'s log' },
+  { id:'trips',      icon:'📍', label:'Active Trips', stat:'sv-trips',   sub:'On the road' },
+  { id:'employees',  icon:'👥', label:'Employees',    stat:'sv-emp',     sub:'Total staff' },
+  { id:'expenses',   icon:'💸', label:'Expenses',     stat:'sv-exp',     sub:'This month' },
+  { id:'billing',    icon:'🧾', label:'Billing',      stat:'sv-billing', sub:'Invoices' },
+  { id:'matrix',     icon:'📊', label:'Matrix',       stat:'sv-matrix',  sub:'Performance' },
+  { id:'scheduler',  icon:'📅', label:'Scheduler',    stat:'sv-sched',   sub:'Upcoming trips', wide:true },
+  { id:'settings',   icon:'⚙️', label:'Settings',     stat:'sv-settings',sub:'App settings', wide:true },
+];
+
+const EMPLOYEE_MODULES = [
+  { id:'attendance', icon:'📋', label:'Attendance',   stat:'sv-attend',  sub:'Today\'s log' },
+  { id:'trips',      icon:'📍', label:'Active Trips', stat:'sv-trips',   sub:'On the road' },
+  { id:'expenses',   icon:'💸', label:'Expenses',     stat:'sv-exp',     sub:'This month' },
+  { id:'settings',   icon:'⚙️', label:'Settings',     stat:'sv-settings',sub:'App settings', wide:true },
+];
+
+const pageTitles = {
+  dashboard:'Dashboard', trucks:'Truck Roster', attendance:'Attendance',
+  trips:'Active Trips', employees:'Employees', expenses:'Expenses',
+  billing:'Billing', matrix:'Matrix', scheduler:'Scheduler', settings:'Settings'
+};
+
+// ── THEME ────────────────────────────────────────────
+function applyTheme(dark) {
+  isDark = dark;
+  document.body.classList.toggle('light', !dark);
+  const toggle = document.getElementById('theme-toggle');
+  const label  = document.getElementById('theme-label');
+  const val    = document.getElementById('theme-value');
+  if (toggle) toggle.classList.toggle('on', dark);
+  if (label)  label.textContent  = dark ? 'Dark Mode' : 'Light Mode';
+  if (val)    val.textContent    = dark ? 'On' : 'Off';
+  localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+
+function toggleTheme() { applyTheme(!isDark); }
+
+// Load saved theme
+const savedTheme = localStorage.getItem('theme');
+applyTheme(savedTheme !== 'light');
+
+// ── PWA ──────────────────────────────────────────────
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+// ── AUTH ─────────────────────────────────────────────
+function signIn() {
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID, scope: SCOPES,
+    callback: (res) => {
+      if (res.error) { alert('Login failed: ' + res.error); return; }
+      token = res.access_token;
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: 'Bearer ' + token }
+      }).then(r => r.json()).then(u => {
+
+        // ── ROLE CHECK ──
+        userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(u.email.toLowerCase())
+          ? 'admin' : 'employee';
+
+        // Set avatars
+        ['user-avatar','more-avatar'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.src = u.picture || '';
+        });
+
+        document.getElementById('more-name').textContent  = u.name  || '';
+        document.getElementById('more-email').textContent = u.email || '';
+        document.getElementById('more-role').textContent  = userRole === 'admin' ? 'Admin' : 'Employee';
+
+        // Show admin section in settings if admin
+        const adminSec = document.getElementById('admin-section');
+        if (adminSec) adminSec.style.display = userRole === 'admin' ? 'block' : 'none';
+
+        // Launch
+        document.getElementById('s-login').classList.remove('active');
+        document.getElementById('s-app').classList.add('active');
+
+        const now  = new Date();
+        const hour = now.getHours();
+        const gr   = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+        document.getElementById('dash-name').textContent = gr + ', ' + (u.given_name || 'team') + '!';
+        document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+          weekday:'long', year:'numeric', month:'long', day:'numeric'
+        });
+
+        buildDashboard();
+        showPage('dashboard');
+        loadTrucks();
+      });
+    }
+  }).requestAccessToken({ prompt: 'consent' });
+}
+
+function signOut() {
+  google.accounts.oauth2.revoke(token, () => {
+    token = null; allTrucks = [];
+    document.getElementById('s-app').classList.remove('active');
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('fab').style.display = 'none';
+  });
+}
+
+// ── DASHBOARD ────────────────────────────────────────
+function buildDashboard() {
+  const mods = userRole === 'admin' ? ADMIN_MODULES : EMPLOYEE_MODULES;
+  document.getElementById('mod-grid').innerHTML = mods.map(m => `
+    <div class="mod-card${m.wide ? ' wide' : ''}" onclick="showPage('${m.id}')">
+      <span class="mod-icon">${m.icon}</span>
+      <div class="mod-label">${m.label}</div>
+      <div class="mod-value" id="${m.stat}">—</div>
+      <div class="mod-sub">${m.sub}</div>
+    </div>
+  `).join('');
+}
+
+// ── NAVIGATION ───────────────────────────────────────
+function showPage(name) {
+  prevPage = curPage;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
+
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+
+  const bbMap = { dashboard:'bb-home', trucks:'bb-trucks', trips:'bb-trips', billing:'bb-billing', settings:'bb-settings' };
+  const bb = document.getElementById(bbMap[name]);
+  if (bb) bb.classList.add('active');
+
+  document.getElementById('tb-title').textContent = pageTitles[name] || '';
+  document.getElementById('page-wrap').scrollTop = 0;
+  curPage = name;
+
+  document.getElementById('fab').style.display =
+    (name === 'trucks' && userRole === 'admin') ? 'flex' : 'none';
+
+  if (name === 'trucks') loadTrucks();
+}
+
+function goBack() { showPage(prevPage || 'dashboard'); }
+function onFabClick() { if (curPage === 'trucks') openDrawer(); }
+
+// ── SHEETS API ───────────────────────────────────────
+function apiGet(range) {
+  return fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,
+    { headers: { Authorization: 'Bearer ' + token } }
+  ).then(r => r.json());
+}
+function apiAppend(range, values) {
+  return fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    { method:'POST', headers:{ Authorization:'Bearer '+token,'Content-Type':'application/json' },
+      body: JSON.stringify({ values }) }
+  ).then(r => r.json());
+}
+function apiUpdate(range, values) {
+  return fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
+    { method:'PUT', headers:{ Authorization:'Bearer '+token,'Content-Type':'application/json' },
+      body: JSON.stringify({ values }) }
+  ).then(r => r.json());
+}
+
+// ── TRUCKS ───────────────────────────────────────────
+function loadTrucks() {
+  document.getElementById('trucks-loading').style.display = 'flex';
+  document.getElementById('trucks-list').innerHTML = '';
+  document.getElementById('trucks-empty').style.display = 'none';
+  const s = document.getElementById('truck-search');
+  if (s) s.value = '';
+
+  apiGet(SHEET_NAME + '!A2:F').then(res => {
+    allTrucks = (res.values || []).map((r, i) => ({
+      rowIndex: i + 2,
+      id:    r[0] || '',
+      plate: r[1] || '',
+      lto:   r[2] || '',
+      nmis:  r[3] || '',
+      dim:   r[4] || '',
+      notes: r[5] || ''
+    })).filter(t => t.plate);
+
+    // Update dashboard stat
+    const sv = document.getElementById('sv-trucks');
+    if (sv) sv.textContent = allTrucks.length;
+
+    renderTrucks(allTrucks);
+    document.getElementById('trucks-loading').style.display = 'none';
+  }).catch(() => {
+    document.getElementById('trucks-loading').style.display = 'none';
+    showToast('Cannot load data. Check connection.');
+  });
+}
+
+function renderTrucks(list) {
+  const c = document.getElementById('trucks-list');
+  const e = document.getElementById('trucks-empty');
+  if (!list.length) { c.innerHTML = ''; e.style.display = 'block'; return; }
+  e.style.display = 'none';
+  const canEdit = userRole === 'admin';
+  c.innerHTML = list.map(t => `
+    <div class="truck-card">
+      <div class="tc-head">
+        <span class="tc-plate">${t.plate}</span>
+        <span class="tc-id">${t.id}</span>
+      </div>
+      <div class="tc-chips">
+        ${t.lto  ? `<span class="chip">LTO <b>${t.lto}</b></span>`  : ''}
+        ${t.nmis ? `<span class="chip">NMIS <b>${t.nmis}</b></span>` : ''}
+        ${t.dim  ? `<span class="chip">📐 <b>${t.dim}</b></span>`   : ''}
+      </div>
+      ${t.notes ? `<div class="tc-note">${t.notes}</div>` : ''}
+      ${canEdit ? `<div class="tc-foot"><button class="tc-edit-btn" onclick="editTruck(${t.rowIndex})">Edit</button></div>` : ''}
+    </div>`).join('');
+}
+
+function filterTrucks(q) {
+  const f = q.toLowerCase();
+  renderTrucks(allTrucks.filter(t =>
+    t.plate.toLowerCase().includes(f) ||
+    t.lto.toLowerCase().includes(f)   ||
+    t.dim.toLowerCase().includes(f)   ||
+    t.notes.toLowerCase().includes(f)
+  ));
+}
+
+// ── TRUCK DRAWER ─────────────────────────────────────
+function openDrawer() {
+  editingRow = null;
+  document.getElementById('drawer-title').textContent = 'Add Truck';
+  document.getElementById('drawer-sub').textContent   = 'Fill in the truck details';
+  ['plate','lto','nmis','dim','notes'].forEach(f => document.getElementById('f-'+f).value = '');
+  document.getElementById('truck-drawer').classList.add('open');
+}
+
+function editTruck(rowIndex) {
+  const t = allTrucks.find(x => x.rowIndex === rowIndex);
+  if (!t) return;
+  editingRow = rowIndex;
+  document.getElementById('drawer-title').textContent = 'Edit Truck';
+  document.getElementById('drawer-sub').textContent   = t.plate;
+  document.getElementById('f-plate').value = t.plate;
+  document.getElementById('f-lto').value   = t.lto;
+  document.getElementById('f-nmis').value  = t.nmis;
+  document.getElementById('f-dim').value   = t.dim;
+  document.getElementById('f-notes').value = t.notes;
+  document.getElementById('truck-drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('truck-drawer').classList.remove('open');
+}
+
+async function saveTruck() {
+  const plate = document.getElementById('f-plate').value.trim().toUpperCase();
+  if (!plate) { showToast('Plate Number is required!'); return; }
+  const lto   = document.getElementById('f-lto').value.trim();
+  const nmis  = document.getElementById('f-nmis').value.trim();
+  const dim   = document.getElementById('f-dim').value.trim();
+  const notes = document.getElementById('f-notes').value.trim();
+  try {
+    if (editingRow) {
+      const t = allTrucks.find(x => x.rowIndex === editingRow);
+      await apiUpdate(`${SHEET_NAME}!A${editingRow}:F${editingRow}`, [[t.id, plate, lto, nmis, dim, notes]]);
+      showToast('✅ Truck updated!');
+    } else {
+      const id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
+      await apiAppend(SHEET_NAME + '!A:F', [[id, plate, lto, nmis, dim, notes]]);
+      showToast('✅ Truck added!');
+    }
+    closeDrawer();
+    loadTrucks();
+  } catch {
+    showToast('❌ Save failed. Try again.');
+  }
+}
+
+document.getElementById('truck-drawer').addEventListener('click', function(e) {
+  if (e.target === this) closeDrawer();
+});
+
+// ── TOAST ────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
