@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#C0272D">
+<link rel="manifest" href="manifest.json">
+<title>PedroEX</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #C0272D;
+  font-family: sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* SCREENS */
+.screen { display: none; flex-direction: column; height: 100dvh; width: 100%; }
+.screen.active { display: flex; }
+
+/* ── LOGIN SCREEN ── */
+#s-login {
+  background: #C0272D;
+  align-items: center;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+
+.login-top {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 40px 24px 20px;
+}
+
+.logo-img {
+  width: 85%;
+  max-width: 340px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.login-bottom {
+  width: 100%;
+  background: #111113;
+  border-radius: 28px 28px 0 0;
+  padding: 32px 28px calc(32px + env(safe-area-inset-bottom, 0px));
+}
+
+.login-bottom h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.login-bottom p {
+  font-size: 14px;
+  color: #888896;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 15px;
+  background: #ffffff;
+  color: #1c1c1e;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: opacity 0.15s;
+}
+.google-btn:active { opacity: 0.85; }
+.google-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+/* ── APP SCREEN (placeholder) ── */
+#s-app {
+  background: #111113;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18px;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="screen active" id="s-login">
+  <div class="login-top">
+    <img class="logo-img" src="logo.jpg" alt="PedroEX Logo">
+  </div>
+
+  <div class="login-bottom">
+    <h2>Fleet Management</h2>
+    <p>Sign in with your Google account to access the PedroEX operations dashboard.</p>
+    <button class="google-btn" onclick="signIn()">
+      <svg viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Continue with Google
+    </button>
+  </div>
+</div>
+
+<!-- APP (next phase) -->
+<div class="screen" id="s-app">
+  <p>Loading dashboard...</p>
+</div>
+
+<script>
+const CLIENT_ID = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SCOPES    = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+function signIn() {
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: (res) => {
+      if (res.error) { alert('Login failed: ' + res.error); return; }
+      document.getElementById('s-login').classList.remove('active');
+      document.getElementById('s-app').classList.add('active');
+    }
+  }).requestAccessToken({ prompt: 'consent' });
+}
+</script>
+</body>
+</html>
