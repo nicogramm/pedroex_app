@@ -53,10 +53,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .screen.active{display:flex}
 
 /* ═══════════════════════════════════════
-   WELCOME / LOGIN
+   WELCOME / LOGIN - RED BACKGROUND
 ═══════════════════════════════════════ */
 #s-login{
-  background:#B32533;
+  background:#B32533; /* PURE RED - walang blend mode */
   overflow:hidden;
   justify-content:flex-end;
 }
@@ -72,6 +72,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .truck-stage{
   position:absolute;top:0;left:0;right:0;
   height:56%;overflow:hidden;z-index:1;
+  display:flex;align-items:flex-end;justify-content:center;
 }
 
 /* Road */
@@ -101,30 +102,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   100%{left:calc(50% - 102px)}
 }
 
-/* Truck image - JPG with logo already embedded */
+/* Truck image - NO BLEND MODE, PURE JPG */
 .truck-img{
   width:100%;
   height:auto;
   display:block;
   filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
-}
-
-/* Welcome logo — fades in above truck */
-.welcome-logo{
-  position:absolute;
-  top:12%;left:50%;
-  transform:translateX(-50%);
-  z-index:2;
-  width:68%;max-width:250px;
-  opacity:0;
-  animation:wLogoIn 0.6s ease forwards;
-  animation-delay:2.6s;
-  pointer-events:none;
-}
-.welcome-logo img{width:100%;height:auto}
-@keyframes wLogoIn{
-  from{opacity:0;transform:translateX(-50%) scale(0.88) translateY(6px)}
-  to  {opacity:1;transform:translateX(-50%) scale(1) translateY(0)}
+  /* NO mix-blend-mode - para makita ang kulay ng background */
 }
 
 /* Login card */
@@ -135,7 +119,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   padding:32px 28px calc(40px + env(safe-area-inset-bottom,0px));
   opacity:0;transform:translateY(50px);
   animation:cardUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
-  animation-delay:3s;
+  animation-delay:2.5s;
 }
 @keyframes cardUp{to{opacity:1;transform:translateY(0)}}
 
@@ -499,7 +483,7 @@ textarea.fi{resize:none;min-height:80px}
 <body>
 
 <!-- ═══════════════════════════════════════
-     WELCOME SCREEN
+     WELCOME SCREEN - RED BACKGROUND, WALANG LOGO.JPG
 ═══════════════════════════════════════ -->
 <div class="screen active" id="s-login">
 
@@ -510,11 +494,6 @@ textarea.fi{resize:none;min-height:80px}
     <!-- Truck with embedded logo from Photoshop -->
     <div class="truck-container">
       <img class="truck-img" src="truck.jpg" alt="PedroEX Truck">
-    </div>
-
-    <!-- PedroEX logo appears above -->
-    <div class="welcome-logo">
-      <img src="logo.jpg" alt="PedroEX">
     </div>
   </div>
 
@@ -813,15 +792,17 @@ function signIn() {
 // ── HANDLE AUTH RESPONSE ─────────────────────────────
 async function handleAuthResponse(response) {
   console.log('📥 Auth response received');
+  console.log('Response object:', response);
   
   if (response.error) {
     console.error('❌ Auth error:', response.error);
+    console.error('Error details:', response.error_description);
     showToast('Login failed: ' + response.error);
     return;
   }
   
   token = response.access_token;
-  console.log('✅ Token acquired');
+  console.log('✅ Token acquired:', token ? 'YES' : 'NO');
   
   try {
     console.log('👤 Fetching user info...');
@@ -830,7 +811,11 @@ async function handleAuthResponse(response) {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     
+    console.log('User response status:', userRes.status);
+    
     if (!userRes.ok) {
+      const errorText = await userRes.text();
+      console.error('User info error response:', errorText);
       throw new Error(`HTTP ${userRes.status}: ${userRes.statusText}`);
     }
     
@@ -888,6 +873,7 @@ async function handleAuthResponse(response) {
     
   } catch (error) {
     console.error('❌ User info error:', error);
+    console.error('Error stack:', error.stack);
     showToast('Failed to load user info: ' + error.message);
   }
 }
