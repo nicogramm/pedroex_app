@@ -10,7 +10,6 @@
 <meta name="theme-color" content="#B32533">
 <link rel="manifest" href="manifest.json">
 <title>PedroEX</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════
@@ -102,24 +101,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   100%{left:calc(50% - 102px)}
 }
 
-/* Truck wrapper - for transparency fix */
+/* Truck wrapper - for transparency */
 .truck-img-wrap{
   position:relative;
   width:100%;
   height:auto;
 }
 
-/* Truck image - TRANSPARENCY FIX WITH BLEND MODE */
+/* Truck image - FORCE TRANSPARENT BACKGROUND */
 .truck-img{
   width:100%;
   height:auto;
   display:block;
-  /* FORCE TRANSPARENCY - removes black background */
-  mix-blend-mode: multiply;
-  filter: brightness(1.1) contrast(1.05) drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  /* REMOVE BLACK - multiple methods for compatibility */
+  background: transparent;
+  isolation: isolate;
+  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
 }
 
-/* Logo overlay - APPEARS WITH TRUCK, positioned on body center */
+/* Logo overlay - APPEARS WITH TRUCK, centered on body */
 .truck-logo-overlay{
   position:absolute;
   /* Centered on truck body */
@@ -567,7 +567,7 @@ textarea.fi{resize:none;min-height:80px}
   <div class="login-card">
     <h2>Fleet Management</h2>
     <p>Sign in with your Google account to access the PedroEX operations dashboard.</p>
-    <button class="google-btn" onclick="signIn()">
+    <button class="google-btn" id="login-btn">
       <svg viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -751,6 +751,9 @@ textarea.fi{resize:none;min-height:80px}
 
 <div class="toast" id="toast"></div>
 
+<!-- Load Google Identity Services FIRST -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <script>
 // ── CONFIG ───────────────────────────────────────────
 const CLIENT_ID    = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
@@ -766,6 +769,7 @@ let editingRow = null;
 let curPage    = 'dashboard';
 let prevPage   = 'dashboard';
 let isDark     = true;
+let tokenClient = null;
 
 // ── MODULE DEFINITIONS - 9 OPTIONS ──────────────────
 const ADMIN_MODULES = [
@@ -794,6 +798,129 @@ const pageTitles = {
   settings:'Settings'
 };
 
+// ── WAIT FOR GOOGLE API TO LOAD ─────────────────────
+function initGoogleAuth() {
+  console.log('🔑 Initializing Google Auth...');
+  
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: handleAuthResponse,
+  });
+  
+  console.log('✅ Google Auth ready');
+  
+  // Attach login handler
+  document.getElementById('login-btn').addEventListener('click', signIn);
+}
+
+// Wait for Google API to load
+window.addEventListener('load', () => {
+  if (typeof google !== 'undefined' && google.accounts) {
+    initGoogleAuth();
+  } else {
+    console.log('⏳ Waiting for Google API...');
+    const checkGoogle = setInterval(() => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        clearInterval(checkGoogle);
+        initGoogleAuth();
+      }
+    }, 100);
+  }
+});
+
+// ── AUTH ─────────────────────────────────────────────
+function signIn() {
+  console.log('🔐 Sign in clicked...');
+  
+  if (!tokenClient) {
+    console.error('❌ Token client not initialized');
+    alert('Authentication not ready. Please refresh the page.');
+    return;
+  }
+  
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function handleAuthResponse(response) {
+  console.log('📥 Auth response:', response);
+  
+  if (response.error) {
+    console.error('❌ Auth error:', response.error);
+    alert('Login failed: ' + response.error);
+    return;
+  }
+  
+  token = response.access_token;
+  console.log('✅ Token received');
+  
+  try {
+    // Fetch user info
+    console.log('👤 Fetching user info...');
+    const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    
+    if (!userRes.ok) {
+      throw new Error(`HTTP ${userRes.status}: ${userRes.statusText}`);
+    }
+    
+    const user = await userRes.json();
+    console.log('✅ User loaded:', user.email);
+    
+    // Check role
+    userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase()) ? 'admin' : 'employee';
+    console.log('👔 Role:', userRole);
+    
+    // Set UI
+    ['user-avatar', 'more-avatar'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.src = user.picture || '';
+    });
+    
+    document.getElementById('more-name').textContent = user.name || '';
+    document.getElementById('more-email').textContent = user.email || '';
+    document.getElementById('more-role').textContent = userRole === 'admin' ? 'Admin' : 'Employee';
+    
+    // Switch to app
+    console.log('🚀 Launching app...');
+    document.getElementById('s-login').classList.remove('active');
+    document.getElementById('s-app').classList.add('active');
+    
+    // Set greeting
+    const now = new Date();
+    const hour = now.getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('dash-name').textContent = greeting + ', ' + (user.given_name || 'team') + '!';
+    document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    
+    // Build dashboard
+    console.log('🏗️ Building dashboard...');
+    buildDashboard();
+    showPage('dashboard');
+    loadTrucks();
+    
+  } catch (error) {
+    console.error('❌ Error:', error);
+    alert('Failed to load user information: ' + error.message);
+  }
+}
+
+function signOut() {
+  if (token && typeof google !== 'undefined') {
+    google.accounts.oauth2.revoke(token, () => {
+      console.log('👋 Signed out');
+      token = null;
+      allTrucks = [];
+      document.getElementById('s-app').classList.remove('active');
+      document.getElementById('s-login').classList.add('active');
+      document.getElementById('fab').style.display = 'none';
+    });
+  }
+}
+
 // ── THEME ────────────────────────────────────────────
 function applyTheme(dark) {
   isDark = dark;
@@ -809,115 +936,18 @@ function applyTheme(dark) {
 
 function toggleTheme() { applyTheme(!isDark); }
 
-// Load saved theme
 const savedTheme = localStorage.getItem('theme');
 applyTheme(savedTheme !== 'light');
 
 // ── PWA ──────────────────────────────────────────────
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
-// ── AUTH ─────────────────────────────────────────────
-function signIn() {
-  console.log('🔐 Sign in initiated...');
-  
-  try {
-    const tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
-      callback: async (response) => {
-        console.log('📥 OAuth response received:', response);
-        
-        if (response.error) {
-          console.error('❌ OAuth error:', response.error);
-          alert('Login failed: ' + response.error);
-          return;
-        }
-
-        token = response.access_token;
-        console.log('✅ Token acquired');
-
-        try {
-          console.log('👤 Fetching user info...');
-          const userResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: { 'Authorization': 'Bearer ' + token }
-          });
-
-          if (!userResponse.ok) {
-            throw new Error('User info fetch failed: ' + userResponse.status);
-          }
-
-          const user = await userResponse.json();
-          console.log('✅ User info loaded:', user.email);
-
-          // Role check
-          userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase()) ? 'admin' : 'employee';
-          console.log('👔 User role:', userRole);
-
-          // Set UI elements
-          ['user-avatar', 'more-avatar'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.src = user.picture || '';
-          });
-
-          document.getElementById('more-name').textContent = user.name || '';
-          document.getElementById('more-email').textContent = user.email || '';
-          document.getElementById('more-role').textContent = userRole === 'admin' ? 'Admin' : 'Employee';
-
-          // Switch to app
-          console.log('🚀 Launching app...');
-          document.getElementById('s-login').classList.remove('active');
-          document.getElementById('s-app').classList.add('active');
-
-          // Set greeting
-          const now = new Date();
-          const hour = now.getHours();
-          const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-          document.getElementById('dash-name').textContent = greeting + ', ' + (user.given_name || 'team') + '!';
-          document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-          });
-
-          // Build dashboard
-          console.log('🏗️ Building dashboard...');
-          buildDashboard();
-          showPage('dashboard');
-          loadTrucks();
-
-        } catch (error) {
-          console.error('❌ User info error:', error);
-          alert('Failed to load user information. Please try again.');
-        }
-      }
-    });
-
-    console.log('🔑 Requesting access token...');
-    tokenClient.requestAccessToken({ prompt: 'consent' });
-
-  } catch (error) {
-    console.error('❌ Sign in error:', error);
-    alert('Sign in failed. Please refresh and try again.');
-  }
-}
-
-function signOut() {
-  if (token) {
-    google.accounts.oauth2.revoke(token, () => {
-      console.log('👋 Signed out');
-      token = null;
-      allTrucks = [];
-      document.getElementById('s-app').classList.remove('active');
-      document.getElementById('s-login').classList.add('active');
-      document.getElementById('fab').style.display = 'none';
-    });
-  }
-}
-
 // ── DASHBOARD ────────────────────────────────────────
 function buildDashboard() {
   const mods = userRole === 'admin' ? ADMIN_MODULES : EMPLOYEE_MODULES;
-  console.log('📊 Building', mods.length, 'modules for', userRole);
-
-  const html = mods.map(m => `
+  console.log('📊 Building', mods.length, 'modules');
+  
+  document.getElementById('mod-grid').innerHTML = mods.map(m => `
     <div class="mod-card${m.wide ? ' wide' : ''}" onclick="showPage('${m.id}')">
       <span class="mod-icon">${m.icon}</span>
       <div class="mod-label">${m.label}</div>
@@ -925,37 +955,31 @@ function buildDashboard() {
       <div class="mod-sub">${m.sub}</div>
     </div>
   `).join('');
-
-  document.getElementById('mod-grid').innerHTML = html;
+  
   console.log('✅ Dashboard built');
 }
 
 // ── NAVIGATION ───────────────────────────────────────
 function showPage(name) {
-  console.log('📄 Showing page:', name);
+  console.log('📄 Page:', name);
   prevPage = curPage;
   
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
-
+  
   const page = document.getElementById('page-' + name);
-  if (page) {
-    page.classList.add('active');
-  } else {
-    console.error('❌ Page not found:', name);
-    return;
-  }
-
+  if (page) page.classList.add('active');
+  
   const bbMap = { dashboard:'bb-home', trucks:'bb-trucks', trips:'bb-trips', billing:'bb-billing', settings:'bb-settings' };
   const btn = document.getElementById(bbMap[name]);
   if (btn) btn.classList.add('active');
-
+  
   document.getElementById('tb-title').textContent = pageTitles[name] || '';
   document.getElementById('page-wrap').scrollTop = 0;
   curPage = name;
-
+  
   document.getElementById('fab').style.display = (name === 'trucks' && userRole === 'admin') ? 'flex' : 'none';
-
+  
   if (name === 'trucks') loadTrucks();
 }
 
@@ -994,7 +1018,7 @@ function loadTrucks() {
   document.getElementById('trucks-empty').style.display = 'none';
   const searchInput = document.getElementById('truck-search');
   if (searchInput) searchInput.value = '';
-
+  
   apiGet(SHEET_NAME + '!A2:F')
     .then(res => {
       allTrucks = (res.values || []).map((r, i) => ({
@@ -1006,12 +1030,12 @@ function loadTrucks() {
         dim: r[4] || '',
         notes: r[5] || ''
       })).filter(t => t.plate);
-
+      
       console.log('✅ Loaded', allTrucks.length, 'trucks');
-
+      
       const statEl = document.getElementById('sv-trucks');
       if (statEl) statEl.textContent = allTrucks.length;
-
+      
       renderTrucks(allTrucks);
       document.getElementById('trucks-loading').style.display = 'none';
     })
@@ -1096,12 +1120,12 @@ async function saveTruck() {
     showToast('Plate Number is required!');
     return;
   }
-
+  
   const lto = document.getElementById('f-lto').value.trim();
   const nmis = document.getElementById('f-nmis').value.trim();
   const dim = document.getElementById('f-dim').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
-
+  
   try {
     if (editingRow) {
       const truck = allTrucks.find(t => t.rowIndex === editingRow);
@@ -1135,9 +1159,7 @@ function showToast(msg) {
 }
 
 // ── INITIALIZATION ───────────────────────────────────
-console.log('✅ PedroEX app loaded');
-console.log('📍 Current page:', curPage);
-console.log('🎨 Theme:', isDark ? 'dark' : 'light');
+console.log('✅ PedroEX loaded');
 </script>
 </body>
 </html>
