@@ -56,7 +56,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
    WELCOME / LOGIN - RED BACKGROUND
 ═══════════════════════════════════════ */
 #s-login{
-  background:#B32533; /* PURE RED - walang blend mode */
+  background:#B32533;
   overflow:hidden;
   justify-content:flex-end;
 }
@@ -102,13 +102,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   100%{left:calc(50% - 102px)}
 }
 
-/* Truck image - NO BLEND MODE, PURE JPG */
+/* Truck image - WALANG SHADOW, WALANG FILTER */
 .truck-img{
   width:100%;
   height:auto;
   display:block;
-  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
-  /* NO mix-blend-mode - para makita ang kulay ng background */
+  /* WALANG shadow, walang filter - para hindi halata ang box */
 }
 
 /* Login card */
@@ -483,7 +482,7 @@ textarea.fi{resize:none;min-height:80px}
 <body>
 
 <!-- ═══════════════════════════════════════
-     WELCOME SCREEN - RED BACKGROUND, WALANG LOGO.JPG
+     WELCOME SCREEN
 ═══════════════════════════════════════ -->
 <div class="screen active" id="s-login">
 
@@ -491,7 +490,7 @@ textarea.fi{resize:none;min-height:80px}
     <div class="road-base"></div>
     <div class="road-marks"></div>
 
-    <!-- Truck with embedded logo from Photoshop -->
+    <!-- Truck with embedded logo - WALANG SHADOW -->
     <div class="truck-container">
       <img class="truck-img" src="truck.jpg" alt="PedroEX Truck">
     </div>
@@ -537,7 +536,7 @@ textarea.fi{resize:none;min-height:80px}
         <div class="dash-date" id="dash-date"></div>
       </div>
       <div class="mod-grid" id="mod-grid">
-        <!-- Built by JS based on role -->
+        <!-- Built by JS -->
       </div>
     </div>
 
@@ -620,7 +619,7 @@ textarea.fi{resize:none;min-height:80px}
         <div>
           <div class="profile-name" id="more-name"></div>
           <div class="profile-email" id="more-email"></div>
-          <div class="role-pill" id="more-role">Employee</div>
+          <div class="role-pill" id="more-role">User</div>
         </div>
       </div>
 
@@ -657,7 +656,7 @@ textarea.fi{resize:none;min-height:80px}
 
 </div><!-- end s-app -->
 
-<!-- FAB -->
+<!-- FAB - LAHAT MAKAKAKITA -->
 <button class="fab" id="fab" onclick="onFabClick()" style="display:none">+</button>
 
 <!-- TRUCK DRAWER -->
@@ -694,10 +693,8 @@ const CLIENT_ID    = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.google
 const SHEET_ID     = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SHEET_NAME   = 'Truck Roster';
 const SCOPES       = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
-const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
 
 let token      = null;
-let userRole   = 'employee';
 let allTrucks  = [];
 let editingRow = null;
 let curPage    = 'dashboard';
@@ -706,8 +703,8 @@ let isDark     = true;
 let tokenClient = null;
 let googleLibraryLoaded = false;
 
-// ── MODULE DEFINITIONS - 9 OPTIONS ──────────────────
-const ADMIN_MODULES = [
+// ── ALL 9 MODULES - LAHAT MAKAKA-ACCESS ─────────────
+const ALL_MODULES = [
   { id:'trucks',     icon:'🚛', label:'Trucks',           stat:'sv-trucks',  sub:'Fleet roster' },
   { id:'trips',      icon:'📍', label:'Trips',            stat:'sv-trips',   sub:'Trip management' },
   { id:'expenses',   icon:'💸', label:'Expenses',         stat:'sv-exp',     sub:'Cost tracking' },
@@ -717,13 +714,6 @@ const ADMIN_MODULES = [
   { id:'billing',    icon:'🧾', label:'Billing',          stat:'sv-billing', sub:'Invoices' },
   { id:'manpower',   icon:'👷', label:'Manpower',         stat:'sv-manpower',sub:'Staff' },
   { id:'sections',   icon:'🗂️', label:'Sections',         stat:'sv-sections',sub:'Departments' },
-];
-
-const EMPLOYEE_MODULES = [
-  { id:'attendance', icon:'📋', label:'Attendance',   stat:'sv-attend',  sub:'Today\'s log' },
-  { id:'trips',      icon:'📍', label:'Trips',        stat:'sv-trips',   sub:'My trips' },
-  { id:'expenses',   icon:'💸', label:'Expenses',     stat:'sv-exp',     sub:'This month' },
-  { id:'settings',   icon:'⚙️', label:'Settings',     stat:'sv-settings',sub:'App settings', wide:true },
 ];
 
 const pageTitles = {
@@ -759,7 +749,6 @@ function initGoogleAuth() {
     
     console.log('✅ Token client initialized');
     
-    // Attach login handler
     const loginBtn = document.getElementById('login-btn');
     if (loginBtn) {
       loginBtn.addEventListener('click', signIn);
@@ -785,24 +774,24 @@ function signIn() {
     console.log('📤 Access token requested');
   } catch (error) {
     console.error('❌ Sign in error:', error);
-    showToast('Sign in failed. Please try again.');
+    showToast('Sign in failed: ' + error.message);
   }
 }
 
 // ── HANDLE AUTH RESPONSE ─────────────────────────────
 async function handleAuthResponse(response) {
   console.log('📥 Auth response received');
-  console.log('Response object:', response);
+  console.log('Full response:', JSON.stringify(response, null, 2));
   
   if (response.error) {
     console.error('❌ Auth error:', response.error);
-    console.error('Error details:', response.error_description);
+    console.error('Error description:', response.error_description);
     showToast('Login failed: ' + response.error);
     return;
   }
   
   token = response.access_token;
-  console.log('✅ Token acquired:', token ? 'YES' : 'NO');
+  console.log('✅ Token acquired');
   
   try {
     console.log('👤 Fetching user info...');
@@ -812,23 +801,19 @@ async function handleAuthResponse(response) {
     });
     
     console.log('User response status:', userRes.status);
+    console.log('User response headers:', [...userRes.headers.entries()]);
     
     if (!userRes.ok) {
       const errorText = await userRes.text();
-      console.error('User info error response:', errorText);
-      throw new Error(`HTTP ${userRes.status}: ${userRes.statusText}`);
+      console.error('User info error:', errorText);
+      throw new Error(`HTTP ${userRes.status}: ${errorText}`);
     }
     
     const user = await userRes.json();
-    console.log('✅ User info loaded:', user.email);
+    console.log('✅ User info loaded:', user);
     
-    // Determine role
-    userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase()) ? 'admin' : 'employee';
-    console.log('👔 User role:', userRole);
-    
-    // Update UI elements
-    const avatarIds = ['user-avatar', 'more-avatar'];
-    avatarIds.forEach(id => {
+    // Update UI
+    ['user-avatar', 'more-avatar'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.src = user.picture || '';
     });
@@ -839,7 +824,7 @@ async function handleAuthResponse(response) {
     
     if (nameEl) nameEl.textContent = user.name || '';
     if (emailEl) emailEl.textContent = user.email || '';
-    if (roleEl) roleEl.textContent = userRole === 'admin' ? 'Admin' : 'Employee';
+    if (roleEl) roleEl.textContent = 'User';
     
     // Switch screens
     console.log('🚀 Switching to app screen...');
@@ -869,7 +854,8 @@ async function handleAuthResponse(response) {
     console.log('🚛 Loading trucks...');
     loadTrucks();
     
-    console.log('✅ App launched successfully');
+    console.log('✅ App launched successfully!');
+    showToast('✅ Welcome to PedroEX!');
     
   } catch (error) {
     console.error('❌ User info error:', error);
@@ -917,10 +903,9 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// ── DASHBOARD ────────────────────────────────────────
+// ── DASHBOARD - LAHAT 9 MODULES ─────────────────────
 function buildDashboard() {
-  const mods = userRole === 'admin' ? ADMIN_MODULES : EMPLOYEE_MODULES;
-  console.log('📊 Building', mods.length, 'modules for', userRole);
+  console.log('📊 Building dashboard with ALL 9 modules');
   
   const gridEl = document.getElementById('mod-grid');
   if (!gridEl) {
@@ -928,7 +913,7 @@ function buildDashboard() {
     return;
   }
   
-  gridEl.innerHTML = mods.map(m => `
+  gridEl.innerHTML = ALL_MODULES.map(m => `
     <div class="mod-card${m.wide ? ' wide' : ''}" onclick="showPage('${m.id}')">
       <span class="mod-icon">${m.icon}</span>
       <div class="mod-label">${m.label}</div>
@@ -937,7 +922,7 @@ function buildDashboard() {
     </div>
   `).join('');
   
-  console.log('✅ Dashboard built with', mods.length, 'modules');
+  console.log('✅ Dashboard built with 9 modules');
 }
 
 // ── NAVIGATION ───────────────────────────────────────
@@ -968,8 +953,9 @@ function showPage(name) {
   
   curPage = name;
   
+  // LAHAT MAKAKAKITA NG FAB SA TRUCKS PAGE
   const fabEl = document.getElementById('fab');
-  if (fabEl) fabEl.style.display = (name === 'trucks' && userRole === 'admin') ? 'flex' : 'none';
+  if (fabEl) fabEl.style.display = (name === 'trucks') ? 'flex' : 'none';
   
   if (name === 'trucks') loadTrucks();
 }
@@ -1054,7 +1040,6 @@ function renderTrucks(list) {
   }
   
   empty.style.display = 'none';
-  const canEdit = userRole === 'admin';
   
   container.innerHTML = list.map(t => `
     <div class="truck-card">
@@ -1068,7 +1053,7 @@ function renderTrucks(list) {
         ${t.dim ? `<span class="chip">📐 <b>${t.dim}</b></span>` : ''}
       </div>
       ${t.notes ? `<div class="tc-note">${t.notes}</div>` : ''}
-      ${canEdit ? `<div class="tc-foot"><button class="tc-edit-btn" onclick="editTruck(${t.rowIndex})">Edit</button></div>` : ''}
+      <div class="tc-foot"><button class="tc-edit-btn" onclick="editTruck(${t.rowIndex})">Edit</button></div>
     </div>
   `).join('');
 }
@@ -1162,6 +1147,7 @@ function showToast(msg) {
 // ── INITIALIZATION ───────────────────────────────────
 console.log('✅ PedroEX app script loaded');
 console.log('📍 Waiting for Google library...');
+console.log('🔓 NO ROLE RESTRICTIONS - Everyone can access all features');
 </script>
 </body>
 </html>
