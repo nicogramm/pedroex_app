@@ -6,8 +6,8 @@
   "scope": "/pedroex_app/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#C0272D",
-  "theme_color": "#C0272D",
+  "background_color": "#B32533",
+  "theme_color": "#B32533",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
