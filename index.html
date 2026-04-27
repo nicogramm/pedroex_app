@@ -109,40 +109,42 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   height:auto;
 }
 
-/* Truck image - TRANSPARENCY FIX */
+/* Truck image - TRANSPARENCY FIX WITH BLEND MODE */
 .truck-img{
   width:100%;
   height:auto;
   display:block;
-  /* REMOVE BLACK BACKGROUND */
-  filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-  -webkit-mask-image: -webkit-linear-gradient(white, white);
-  mask-image: linear-gradient(white, white);
+  /* FORCE TRANSPARENCY - removes black background */
+  mix-blend-mode: multiply;
+  filter: brightness(1.1) contrast(1.05) drop-shadow(0 2px 8px rgba(0,0,0,0.3));
 }
 
-/* Logo overlay - SCALED WITH TRUCK, positioned on body */
+/* Logo overlay - APPEARS WITH TRUCK, positioned on body center */
 .truck-logo-overlay{
   position:absolute;
-  /* Adjust these values based on your truck.png body position */
-  top:35%;
-  left:50%;
-  transform:translateX(-50%);
-  width:40%;
+  /* Centered on truck body */
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35%;
+  /* SAME ANIMATION AS TRUCK - appears together */
   opacity:0;
-  animation:logoOnTruck 0.4s ease forwards;
-  animation-delay:2.4s;
+  animation:logoWithTruck 2.2s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation-delay:0.3s;
   pointer-events:none;
   z-index:2;
 }
 .truck-logo-overlay img{
   width:100%;
   height:auto;
-  filter:brightness(0.9) contrast(1.1) drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+  filter:brightness(0.95) contrast(1.1) drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
-@keyframes logoOnTruck{
-  from{opacity:0;transform:translateX(-50%) scale(0.9)}
-  to  {opacity:1;transform:translateX(-50%) scale(1)}
+/* Logo fades in WITH truck movement */
+@keyframes logoWithTruck{
+  0%  {opacity:0}
+  70% {opacity:1}
+  100%{opacity:1}
 }
 
 /* Welcome logo — fades in above truck */
@@ -548,7 +550,7 @@ textarea.fi{resize:none;min-height:80px}
       <div class="truck-img-wrap">
         <img class="truck-img" src="truck.png" alt="PedroEX Truck">
         
-        <!-- Logo overlaid on truck body - scales with truck -->
+        <!-- Logo overlaid on truck body - appears WITH truck -->
         <div class="truck-logo-overlay">
           <img src="logo2.png" alt="PedroEX Logo">
         </div>
@@ -816,81 +818,105 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').ca
 
 // ── AUTH ─────────────────────────────────────────────
 function signIn() {
-  google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID, scope: SCOPES,
-    callback: (res) => {
-      if (res.error) { 
-        console.error('Login error:', res.error);
-        alert('Login failed: ' + res.error); 
-        return; 
-      }
-      
-      token = res.access_token;
-      console.log('Token received, fetching user info...');
-      
-      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: 'Bearer ' + token }
-      })
-      .then(r => r.json())
-      .then(u => {
-        console.log('User info received:', u.email);
-
-        // ── ROLE CHECK ──
-        userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(u.email.toLowerCase())
-          ? 'admin' : 'employee';
+  console.log('🔐 Sign in initiated...');
+  
+  try {
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: async (response) => {
+        console.log('📥 OAuth response received:', response);
         
-        console.log('User role:', userRole);
+        if (response.error) {
+          console.error('❌ OAuth error:', response.error);
+          alert('Login failed: ' + response.error);
+          return;
+        }
 
-        // Set avatars
-        ['user-avatar','more-avatar'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.src = u.picture || '';
-        });
+        token = response.access_token;
+        console.log('✅ Token acquired');
 
-        document.getElementById('more-name').textContent  = u.name  || '';
-        document.getElementById('more-email').textContent = u.email || '';
-        document.getElementById('more-role').textContent  = userRole === 'admin' ? 'Admin' : 'Employee';
+        try {
+          console.log('👤 Fetching user info...');
+          const userResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          });
 
-        // Launch app
-        console.log('Switching to app screen...');
-        document.getElementById('s-login').classList.remove('active');
-        document.getElementById('s-app').classList.add('active');
+          if (!userResponse.ok) {
+            throw new Error('User info fetch failed: ' + userResponse.status);
+          }
 
-        const now  = new Date();
-        const hour = now.getHours();
-        const gr   = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-        document.getElementById('dash-name').textContent = gr + ', ' + (u.given_name || 'team') + '!';
-        document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
-          weekday:'long', year:'numeric', month:'long', day:'numeric'
-        });
+          const user = await userResponse.json();
+          console.log('✅ User info loaded:', user.email);
 
-        console.log('Building dashboard...');
-        buildDashboard();
-        showPage('dashboard');
-        loadTrucks();
-      })
-      .catch(err => {
-        console.error('User info fetch error:', err);
-        alert('Failed to load user info');
-      });
-    }
-  }).requestAccessToken({ prompt: 'consent' });
+          // Role check
+          userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase()) ? 'admin' : 'employee';
+          console.log('👔 User role:', userRole);
+
+          // Set UI elements
+          ['user-avatar', 'more-avatar'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.src = user.picture || '';
+          });
+
+          document.getElementById('more-name').textContent = user.name || '';
+          document.getElementById('more-email').textContent = user.email || '';
+          document.getElementById('more-role').textContent = userRole === 'admin' ? 'Admin' : 'Employee';
+
+          // Switch to app
+          console.log('🚀 Launching app...');
+          document.getElementById('s-login').classList.remove('active');
+          document.getElementById('s-app').classList.add('active');
+
+          // Set greeting
+          const now = new Date();
+          const hour = now.getHours();
+          const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+          document.getElementById('dash-name').textContent = greeting + ', ' + (user.given_name || 'team') + '!';
+          document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+          });
+
+          // Build dashboard
+          console.log('🏗️ Building dashboard...');
+          buildDashboard();
+          showPage('dashboard');
+          loadTrucks();
+
+        } catch (error) {
+          console.error('❌ User info error:', error);
+          alert('Failed to load user information. Please try again.');
+        }
+      }
+    });
+
+    console.log('🔑 Requesting access token...');
+    tokenClient.requestAccessToken({ prompt: 'consent' });
+
+  } catch (error) {
+    console.error('❌ Sign in error:', error);
+    alert('Sign in failed. Please refresh and try again.');
+  }
 }
 
 function signOut() {
-  google.accounts.oauth2.revoke(token, () => {
-    token = null; allTrucks = [];
-    document.getElementById('s-app').classList.remove('active');
-    document.getElementById('s-login').classList.add('active');
-    document.getElementById('fab').style.display = 'none';
-  });
+  if (token) {
+    google.accounts.oauth2.revoke(token, () => {
+      console.log('👋 Signed out');
+      token = null;
+      allTrucks = [];
+      document.getElementById('s-app').classList.remove('active');
+      document.getElementById('s-login').classList.add('active');
+      document.getElementById('fab').style.display = 'none';
+    });
+  }
 }
 
 // ── DASHBOARD ────────────────────────────────────────
 function buildDashboard() {
   const mods = userRole === 'admin' ? ADMIN_MODULES : EMPLOYEE_MODULES;
-  console.log('Building dashboard with', mods.length, 'modules for', userRole);
-  
+  console.log('📊 Building', mods.length, 'modules for', userRole);
+
   const html = mods.map(m => `
     <div class="mod-card${m.wide ? ' wide' : ''}" onclick="showPage('${m.id}')">
       <span class="mod-icon">${m.icon}</span>
@@ -899,36 +925,36 @@ function buildDashboard() {
       <div class="mod-sub">${m.sub}</div>
     </div>
   `).join('');
-  
+
   document.getElementById('mod-grid').innerHTML = html;
-  console.log('Dashboard built successfully');
+  console.log('✅ Dashboard built');
 }
 
 // ── NAVIGATION ───────────────────────────────────────
 function showPage(name) {
-  console.log('Showing page:', name);
+  console.log('📄 Showing page:', name);
   prevPage = curPage;
+  
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
 
-  const pg = document.getElementById('page-' + name);
-  if (pg) {
-    pg.classList.add('active');
-    console.log('Page activated:', name);
+  const page = document.getElementById('page-' + name);
+  if (page) {
+    page.classList.add('active');
   } else {
-    console.error('Page not found:', name);
+    console.error('❌ Page not found:', name);
+    return;
   }
 
   const bbMap = { dashboard:'bb-home', trucks:'bb-trucks', trips:'bb-trips', billing:'bb-billing', settings:'bb-settings' };
-  const bb = document.getElementById(bbMap[name]);
-  if (bb) bb.classList.add('active');
+  const btn = document.getElementById(bbMap[name]);
+  if (btn) btn.classList.add('active');
 
   document.getElementById('tb-title').textContent = pageTitles[name] || '';
   document.getElementById('page-wrap').scrollTop = 0;
   curPage = name;
 
-  document.getElementById('fab').style.display =
-    (name === 'trucks' && userRole === 'admin') ? 'flex' : 'none';
+  document.getElementById('fab').style.display = (name === 'trucks' && userRole === 'admin') ? 'flex' : 'none';
 
   if (name === 'trucks') loadTrucks();
 }
@@ -943,85 +969,96 @@ function apiGet(range) {
     { headers: { Authorization: 'Bearer ' + token } }
   ).then(r => r.json());
 }
+
 function apiAppend(range, values) {
   return fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
-    { method:'POST', headers:{ Authorization:'Bearer '+token,'Content-Type':'application/json' },
+    { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ values }) }
   ).then(r => r.json());
 }
+
 function apiUpdate(range, values) {
   return fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
-    { method:'PUT', headers:{ Authorization:'Bearer '+token,'Content-Type':'application/json' },
+    { method: 'PUT', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ values }) }
   ).then(r => r.json());
 }
 
 // ── TRUCKS ───────────────────────────────────────────
 function loadTrucks() {
-  console.log('Loading trucks...');
+  console.log('🚛 Loading trucks...');
   document.getElementById('trucks-loading').style.display = 'flex';
   document.getElementById('trucks-list').innerHTML = '';
   document.getElementById('trucks-empty').style.display = 'none';
-  const s = document.getElementById('truck-search');
-  if (s) s.value = '';
+  const searchInput = document.getElementById('truck-search');
+  if (searchInput) searchInput.value = '';
 
-  apiGet(SHEET_NAME + '!A2:F').then(res => {
-    allTrucks = (res.values || []).map((r, i) => ({
-      rowIndex: i + 2,
-      id:    r[0] || '',
-      plate: r[1] || '',
-      lto:   r[2] || '',
-      nmis:  r[3] || '',
-      dim:   r[4] || '',
-      notes: r[5] || ''
-    })).filter(t => t.plate);
+  apiGet(SHEET_NAME + '!A2:F')
+    .then(res => {
+      allTrucks = (res.values || []).map((r, i) => ({
+        rowIndex: i + 2,
+        id: r[0] || '',
+        plate: r[1] || '',
+        lto: r[2] || '',
+        nmis: r[3] || '',
+        dim: r[4] || '',
+        notes: r[5] || ''
+      })).filter(t => t.plate);
 
-    console.log('Trucks loaded:', allTrucks.length);
+      console.log('✅ Loaded', allTrucks.length, 'trucks');
 
-    // Update dashboard stat
-    const sv = document.getElementById('sv-trucks');
-    if (sv) sv.textContent = allTrucks.length;
+      const statEl = document.getElementById('sv-trucks');
+      if (statEl) statEl.textContent = allTrucks.length;
 
-    renderTrucks(allTrucks);
-    document.getElementById('trucks-loading').style.display = 'none';
-  }).catch(err => {
-    console.error('Truck load error:', err);
-    document.getElementById('trucks-loading').style.display = 'none';
-    showToast('Cannot load data. Check connection.');
-  });
+      renderTrucks(allTrucks);
+      document.getElementById('trucks-loading').style.display = 'none';
+    })
+    .catch(err => {
+      console.error('❌ Truck load error:', err);
+      document.getElementById('trucks-loading').style.display = 'none';
+      showToast('Cannot load data. Check connection.');
+    });
 }
 
 function renderTrucks(list) {
-  const c = document.getElementById('trucks-list');
-  const e = document.getElementById('trucks-empty');
-  if (!list.length) { c.innerHTML = ''; e.style.display = 'block'; return; }
-  e.style.display = 'none';
+  const container = document.getElementById('trucks-list');
+  const empty = document.getElementById('trucks-empty');
+  
+  if (!list.length) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  
+  empty.style.display = 'none';
   const canEdit = userRole === 'admin';
-  c.innerHTML = list.map(t => `
+  
+  container.innerHTML = list.map(t => `
     <div class="truck-card">
       <div class="tc-head">
         <span class="tc-plate">${t.plate}</span>
         <span class="tc-id">${t.id}</span>
       </div>
       <div class="tc-chips">
-        ${t.lto  ? `<span class="chip">LTO <b>${t.lto}</b></span>`  : ''}
+        ${t.lto ? `<span class="chip">LTO <b>${t.lto}</b></span>` : ''}
         ${t.nmis ? `<span class="chip">NMIS <b>${t.nmis}</b></span>` : ''}
-        ${t.dim  ? `<span class="chip">📐 <b>${t.dim}</b></span>`   : ''}
+        ${t.dim ? `<span class="chip">📐 <b>${t.dim}</b></span>` : ''}
       </div>
       ${t.notes ? `<div class="tc-note">${t.notes}</div>` : ''}
       ${canEdit ? `<div class="tc-foot"><button class="tc-edit-btn" onclick="editTruck(${t.rowIndex})">Edit</button></div>` : ''}
-    </div>`).join('');
+    </div>
+  `).join('');
 }
 
-function filterTrucks(q) {
-  const f = q.toLowerCase();
+function filterTrucks(query) {
+  const q = query.toLowerCase();
   renderTrucks(allTrucks.filter(t =>
-    t.plate.toLowerCase().includes(f) ||
-    t.lto.toLowerCase().includes(f)   ||
-    t.dim.toLowerCase().includes(f)   ||
-    t.notes.toLowerCase().includes(f)
+    t.plate.toLowerCase().includes(q) ||
+    t.lto.toLowerCase().includes(q) ||
+    t.dim.toLowerCase().includes(q) ||
+    t.notes.toLowerCase().includes(q)
   ));
 }
 
@@ -1029,22 +1066,23 @@ function filterTrucks(q) {
 function openDrawer() {
   editingRow = null;
   document.getElementById('drawer-title').textContent = 'Add Truck';
-  document.getElementById('drawer-sub').textContent   = 'Fill in the truck details';
-  ['plate','lto','nmis','dim','notes'].forEach(f => document.getElementById('f-'+f).value = '');
+  document.getElementById('drawer-sub').textContent = 'Fill in the truck details';
+  ['plate', 'lto', 'nmis', 'dim', 'notes'].forEach(f => document.getElementById('f-' + f).value = '');
   document.getElementById('truck-drawer').classList.add('open');
 }
 
 function editTruck(rowIndex) {
-  const t = allTrucks.find(x => x.rowIndex === rowIndex);
-  if (!t) return;
+  const truck = allTrucks.find(t => t.rowIndex === rowIndex);
+  if (!truck) return;
+  
   editingRow = rowIndex;
   document.getElementById('drawer-title').textContent = 'Edit Truck';
-  document.getElementById('drawer-sub').textContent   = t.plate;
-  document.getElementById('f-plate').value = t.plate;
-  document.getElementById('f-lto').value   = t.lto;
-  document.getElementById('f-nmis').value  = t.nmis;
-  document.getElementById('f-dim').value   = t.dim;
-  document.getElementById('f-notes').value = t.notes;
+  document.getElementById('drawer-sub').textContent = truck.plate;
+  document.getElementById('f-plate').value = truck.plate;
+  document.getElementById('f-lto').value = truck.lto;
+  document.getElementById('f-nmis').value = truck.nmis;
+  document.getElementById('f-dim').value = truck.dim;
+  document.getElementById('f-notes').value = truck.notes;
   document.getElementById('truck-drawer').classList.add('open');
 }
 
@@ -1054,15 +1092,20 @@ function closeDrawer() {
 
 async function saveTruck() {
   const plate = document.getElementById('f-plate').value.trim().toUpperCase();
-  if (!plate) { showToast('Plate Number is required!'); return; }
-  const lto   = document.getElementById('f-lto').value.trim();
-  const nmis  = document.getElementById('f-nmis').value.trim();
-  const dim   = document.getElementById('f-dim').value.trim();
+  if (!plate) {
+    showToast('Plate Number is required!');
+    return;
+  }
+
+  const lto = document.getElementById('f-lto').value.trim();
+  const nmis = document.getElementById('f-nmis').value.trim();
+  const dim = document.getElementById('f-dim').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
+
   try {
     if (editingRow) {
-      const t = allTrucks.find(x => x.rowIndex === editingRow);
-      await apiUpdate(`${SHEET_NAME}!A${editingRow}:F${editingRow}`, [[t.id, plate, lto, nmis, dim, notes]]);
+      const truck = allTrucks.find(t => t.rowIndex === editingRow);
+      await apiUpdate(`${SHEET_NAME}!A${editingRow}:F${editingRow}`, [[truck.id, plate, lto, nmis, dim, notes]]);
       showToast('✅ Truck updated!');
     } else {
       const id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
@@ -1071,8 +1114,8 @@ async function saveTruck() {
     }
     closeDrawer();
     loadTrucks();
-  } catch(err) {
-    console.error('Save error:', err);
+  } catch (error) {
+    console.error('❌ Save error:', error);
     showToast('❌ Save failed. Try again.');
   }
 }
@@ -1084,15 +1127,17 @@ document.getElementById('truck-drawer').addEventListener('click', function(e) {
 // ── TOAST ────────────────────────────────────────────
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// DEBUG: Check if script loaded
-console.log('PedroEX app script loaded successfully');
+// ── INITIALIZATION ───────────────────────────────────
+console.log('✅ PedroEX app loaded');
+console.log('📍 Current page:', curPage);
+console.log('🎨 Theme:', isDark ? 'dark' : 'light');
 </script>
 </body>
 </html>
