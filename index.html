@@ -84,36 +84,50 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 }
 @keyframes roadScroll{to{background-position:-60px 0}}
 
-/* Truck image — drives in from left, 50% smaller */
-.truck-img-wrap{
+/* Truck container - 50% smaller, drives in from left */
+.truck-container{
   position:absolute;
   bottom:9px;
   left:-350px;
   animation:truckIn 2.2s cubic-bezier(0.16,1,0.3,1) forwards;
   animation-delay:0.3s;
+  width:210px;
+  height:auto;
 }
 @keyframes truckIn{
   0%  {left:-350px}
-  70% {left:calc(50% - 110px)}
-  80% {left:calc(50% - 104px)}
-  90% {left:calc(50% - 108px)}
-  100%{left:calc(50% - 106px)}
+  70% {left:calc(50% - 105px)}
+  80% {left:calc(50% - 100px)}
+  90% {left:calc(50% - 103px)}
+  100%{left:calc(50% - 102px)}
 }
 
+/* Truck wrapper - for transparency fix */
+.truck-img-wrap{
+  position:relative;
+  width:100%;
+  height:auto;
+}
+
+/* Truck image - TRANSPARENCY FIX */
 .truck-img{
-  width:210px;height:auto;
+  width:100%;
+  height:auto;
   display:block;
-  /* TRANSPARENT PNG FIX */
-  background:transparent;
-  image-rendering:crisp-edges;
+  /* REMOVE BLACK BACKGROUND */
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  -webkit-mask-image: -webkit-linear-gradient(white, white);
+  mask-image: linear-gradient(white, white);
 }
 
-/* Logo overlay on truck body - ADJUSTED POSITION */
+/* Logo overlay - SCALED WITH TRUCK, positioned on body */
 .truck-logo-overlay{
   position:absolute;
-  bottom:34px;
-  left:calc(50% - 106px + 30px);
-  width:105px;
+  /* Adjust these values based on your truck.png body position */
+  top:35%;
+  left:50%;
+  transform:translateX(-50%);
+  width:40%;
   opacity:0;
   animation:logoOnTruck 0.4s ease forwards;
   animation-delay:2.4s;
@@ -121,13 +135,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   z-index:2;
 }
 .truck-logo-overlay img{
-  width:100%;height:auto;
-  filter:brightness(0.85) contrast(1.1) drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  width:100%;
+  height:auto;
+  filter:brightness(0.9) contrast(1.1) drop-shadow(0 1px 3px rgba(0,0,0,0.4));
 }
 
 @keyframes logoOnTruck{
-  from{opacity:0;transform:translateY(4px)}
-  to  {opacity:1;transform:translateY(0)}
+  from{opacity:0;transform:translateX(-50%) scale(0.9)}
+  to  {opacity:1;transform:translateX(-50%) scale(1)}
 }
 
 /* Welcome logo — fades in above truck */
@@ -528,14 +543,16 @@ textarea.fi{resize:none;min-height:80px}
     <div class="road-base"></div>
     <div class="road-marks"></div>
 
-    <!-- Real truck image drives in -->
-    <div class="truck-img-wrap" id="truck-wrap">
-      <img class="truck-img" src="truck.png" alt="PedroEX Truck">
-    </div>
-
-    <!-- Logo overlaid on truck body -->
-    <div class="truck-logo-overlay" id="truck-logo">
-      <img src="logo2.png" alt="PedroEX Logo">
+    <!-- Truck container - everything scales together -->
+    <div class="truck-container">
+      <div class="truck-img-wrap">
+        <img class="truck-img" src="truck.png" alt="PedroEX Truck">
+        
+        <!-- Logo overlaid on truck body - scales with truck -->
+        <div class="truck-logo-overlay">
+          <img src="logo2.png" alt="PedroEX Logo">
+        </div>
+      </div>
     </div>
 
     <!-- PedroEX logo appears above -->
@@ -758,7 +775,7 @@ const ADMIN_MODULES = [
   { id:'scheduler',  icon:'📅', label:'Scheduler',        stat:'sv-sched',   sub:'Trip planning' },
   { id:'billing',    icon:'🧾', label:'Billing',          stat:'sv-billing', sub:'Invoices' },
   { id:'manpower',   icon:'👷', label:'Manpower',         stat:'sv-manpower',sub:'Staff' },
-  { id:'sections',   icon:'🗂️', label:'Sections',         stat:'sv-sections',sub:'Departments', wide:true },
+  { id:'sections',   icon:'🗂️', label:'Sections',         stat:'sv-sections',sub:'Departments' },
 ];
 
 const EMPLOYEE_MODULES = [
@@ -802,15 +819,27 @@ function signIn() {
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID, scope: SCOPES,
     callback: (res) => {
-      if (res.error) { alert('Login failed: ' + res.error); return; }
+      if (res.error) { 
+        console.error('Login error:', res.error);
+        alert('Login failed: ' + res.error); 
+        return; 
+      }
+      
       token = res.access_token;
+      console.log('Token received, fetching user info...');
+      
       fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: 'Bearer ' + token }
-      }).then(r => r.json()).then(u => {
+      })
+      .then(r => r.json())
+      .then(u => {
+        console.log('User info received:', u.email);
 
         // ── ROLE CHECK ──
         userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(u.email.toLowerCase())
           ? 'admin' : 'employee';
+        
+        console.log('User role:', userRole);
 
         // Set avatars
         ['user-avatar','more-avatar'].forEach(id => {
@@ -822,7 +851,8 @@ function signIn() {
         document.getElementById('more-email').textContent = u.email || '';
         document.getElementById('more-role').textContent  = userRole === 'admin' ? 'Admin' : 'Employee';
 
-        // Launch
+        // Launch app
+        console.log('Switching to app screen...');
         document.getElementById('s-login').classList.remove('active');
         document.getElementById('s-app').classList.add('active');
 
@@ -834,9 +864,14 @@ function signIn() {
           weekday:'long', year:'numeric', month:'long', day:'numeric'
         });
 
+        console.log('Building dashboard...');
         buildDashboard();
         showPage('dashboard');
         loadTrucks();
+      })
+      .catch(err => {
+        console.error('User info fetch error:', err);
+        alert('Failed to load user info');
       });
     }
   }).requestAccessToken({ prompt: 'consent' });
@@ -854,7 +889,9 @@ function signOut() {
 // ── DASHBOARD ────────────────────────────────────────
 function buildDashboard() {
   const mods = userRole === 'admin' ? ADMIN_MODULES : EMPLOYEE_MODULES;
-  document.getElementById('mod-grid').innerHTML = mods.map(m => `
+  console.log('Building dashboard with', mods.length, 'modules for', userRole);
+  
+  const html = mods.map(m => `
     <div class="mod-card${m.wide ? ' wide' : ''}" onclick="showPage('${m.id}')">
       <span class="mod-icon">${m.icon}</span>
       <div class="mod-label">${m.label}</div>
@@ -862,16 +899,25 @@ function buildDashboard() {
       <div class="mod-sub">${m.sub}</div>
     </div>
   `).join('');
+  
+  document.getElementById('mod-grid').innerHTML = html;
+  console.log('Dashboard built successfully');
 }
 
 // ── NAVIGATION ───────────────────────────────────────
 function showPage(name) {
+  console.log('Showing page:', name);
   prevPage = curPage;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
 
   const pg = document.getElementById('page-' + name);
-  if (pg) pg.classList.add('active');
+  if (pg) {
+    pg.classList.add('active');
+    console.log('Page activated:', name);
+  } else {
+    console.error('Page not found:', name);
+  }
 
   const bbMap = { dashboard:'bb-home', trucks:'bb-trucks', trips:'bb-trips', billing:'bb-billing', settings:'bb-settings' };
   const bb = document.getElementById(bbMap[name]);
@@ -914,6 +960,7 @@ function apiUpdate(range, values) {
 
 // ── TRUCKS ───────────────────────────────────────────
 function loadTrucks() {
+  console.log('Loading trucks...');
   document.getElementById('trucks-loading').style.display = 'flex';
   document.getElementById('trucks-list').innerHTML = '';
   document.getElementById('trucks-empty').style.display = 'none';
@@ -931,13 +978,16 @@ function loadTrucks() {
       notes: r[5] || ''
     })).filter(t => t.plate);
 
+    console.log('Trucks loaded:', allTrucks.length);
+
     // Update dashboard stat
     const sv = document.getElementById('sv-trucks');
     if (sv) sv.textContent = allTrucks.length;
 
     renderTrucks(allTrucks);
     document.getElementById('trucks-loading').style.display = 'none';
-  }).catch(() => {
+  }).catch(err => {
+    console.error('Truck load error:', err);
     document.getElementById('trucks-loading').style.display = 'none';
     showToast('Cannot load data. Check connection.');
   });
@@ -1021,7 +1071,8 @@ async function saveTruck() {
     }
     closeDrawer();
     loadTrucks();
-  } catch {
+  } catch(err) {
+    console.error('Save error:', err);
     showToast('❌ Save failed. Try again.');
   }
 }
@@ -1039,6 +1090,9 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// DEBUG: Check if script loaded
+console.log('PedroEX app script loaded successfully');
 </script>
 </body>
 </html>
