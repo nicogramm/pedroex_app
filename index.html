@@ -20,16 +20,16 @@
   --red:      #B32533;
   --red-d:    #8f1e29;
 
-  /* DARK theme (default) */
-  --bg:       #141416;
-  --bg2:      #1c1c1f;
-  --bg3:      #242428;
-  --border:   #26262a;
-  --border2:  #2e2e33;
+  /* DARK theme (default) - PREMIUM GRAY */
+  --bg:       #2a2a2e;
+  --bg2:      #35353a;
+  --bg3:      #404045;
+  --border:   #4a4a50;
+  --border2:  #55555c;
   --text:     #f0f0f0;
-  --text2:    #888;
-  --text3:    #444;
-  --card-bg:  #1c1c1f;
+  --text2:    #a8a8b0;
+  --text3:    #6a6a72;
+  --card-bg:  #35353a;
 }
 
 body.light {
@@ -84,36 +84,36 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 }
 @keyframes roadScroll{to{background-position:-60px 0}}
 
-/* Truck image — drives in from left */
+/* Truck image — drives in from left, 50% smaller */
 .truck-img-wrap{
   position:absolute;
   bottom:9px;
-  left:-700px;
+  left:-350px;
   animation:truckIn 2.2s cubic-bezier(0.16,1,0.3,1) forwards;
   animation-delay:0.3s;
 }
 @keyframes truckIn{
-  0%  {left:-700px}
-  70% {left:calc(50% - 220px)}
-  80% {left:calc(50% - 208px)}
-  90% {left:calc(50% - 216px)}
-  100%{left:calc(50% - 212px)}
+  0%  {left:-350px}
+  70% {left:calc(50% - 110px)}
+  80% {left:calc(50% - 104px)}
+  90% {left:calc(50% - 108px)}
+  100%{left:calc(50% - 106px)}
 }
 
 .truck-img{
-  width:420px;height:auto;
+  width:210px;height:auto;
   display:block;
-  /* Remove black background from truck.png */
-  mix-blend-mode:screen;
-  filter:brightness(1.05) contrast(1.05);
+  /* TRANSPARENT PNG FIX */
+  background:transparent;
+  image-rendering:crisp-edges;
 }
 
-/* Logo overlay on truck body */
+/* Logo overlay on truck body - ADJUSTED POSITION */
 .truck-logo-overlay{
   position:absolute;
-  bottom:68px;
-  left:calc(50% - 212px);
-  width:210px;
+  bottom:34px;
+  left:calc(50% - 106px + 30px);
+  width:105px;
   opacity:0;
   animation:logoOnTruck 0.4s ease forwards;
   animation-delay:2.4s;
@@ -122,8 +122,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 }
 .truck-logo-overlay img{
   width:100%;height:auto;
-  /* Make logo visible on white truck */
-  filter:brightness(0.85) contrast(1.1);
+  filter:brightness(0.85) contrast(1.1) drop-shadow(0 1px 2px rgba(0,0,0,0.3));
 }
 
 @keyframes logoOnTruck{
@@ -610,22 +609,10 @@ textarea.fi{resize:none;min-height:80px}
       </div>
     </div>
 
-    <!-- ── ATTENDANCE ── -->
-    <div class="page" id="page-attendance">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Attendance</div></div></div>
-      <div class="coming-soon"><div class="cs-icon">📋</div><div class="cs-title">Attendance</div><div class="cs-sub">Daily attendance tracking<br>coming soon</div></div>
-    </div>
-
-    <!-- ── ACTIVE TRIPS ── -->
+    <!-- ── TRIPS ── -->
     <div class="page" id="page-trips">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Active Trips</div></div></div>
-      <div class="coming-soon"><div class="cs-icon">📍</div><div class="cs-title">Active Trips</div><div class="cs-sub">Real-time trip tracking<br>coming soon</div></div>
-    </div>
-
-    <!-- ── EMPLOYEES ── -->
-    <div class="page" id="page-employees">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Employees</div></div></div>
-      <div class="coming-soon"><div class="cs-icon">👥</div><div class="cs-title">Employees</div><div class="cs-sub">Employee management<br>coming soon</div></div>
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Trips</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📍</div><div class="cs-title">Trips</div><div class="cs-sub">Trip management<br>coming soon</div></div>
     </div>
 
     <!-- ── EXPENSES ── -->
@@ -634,22 +621,40 @@ textarea.fi{resize:none;min-height:80px}
       <div class="coming-soon"><div class="cs-icon">💸</div><div class="cs-title">Expenses</div><div class="cs-sub">Expense tracking<br>coming soon</div></div>
     </div>
 
-    <!-- ── BILLING ── -->
-    <div class="page" id="page-billing">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Billing</div></div></div>
-      <div class="coming-soon"><div class="cs-icon">🧾</div><div class="cs-title">Billing</div><div class="cs-sub">Invoicing & billing<br>coming soon</div></div>
+    <!-- ── BUSINESS METRICS ── -->
+    <div class="page" id="page-metrics">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Business Metrics</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📊</div><div class="cs-title">Business Metrics</div><div class="cs-sub">Performance dashboard<br>coming soon</div></div>
     </div>
 
-    <!-- ── MATRIX ── -->
-    <div class="page" id="page-matrix">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Matrix</div></div></div>
-      <div class="coming-soon"><div class="cs-icon">📊</div><div class="cs-title">Matrix</div><div class="cs-sub">Business performance matrix<br>coming soon</div></div>
+    <!-- ── ATTENDANCE ── -->
+    <div class="page" id="page-attendance">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Attendance</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📋</div><div class="cs-title">Attendance</div><div class="cs-sub">Daily attendance tracking<br>coming soon</div></div>
     </div>
 
     <!-- ── SCHEDULER ── -->
     <div class="page" id="page-scheduler">
       <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Scheduler</div></div></div>
       <div class="coming-soon"><div class="cs-icon">📅</div><div class="cs-title">Scheduler</div><div class="cs-sub">Trip scheduling<br>coming soon</div></div>
+    </div>
+
+    <!-- ── BILLING ── -->
+    <div class="page" id="page-billing">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Billing</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">🧾</div><div class="cs-title">Billing</div><div class="cs-sub">Invoicing & billing<br>coming soon</div></div>
+    </div>
+
+    <!-- ── MANPOWER ── -->
+    <div class="page" id="page-manpower">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Manpower</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">👷</div><div class="cs-title">Manpower</div><div class="cs-sub">Staff management<br>coming soon</div></div>
+    </div>
+
+    <!-- ── SECTIONS ── -->
+    <div class="page" id="page-sections">
+      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Sections</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">🗂️</div><div class="cs-title">Sections</div><div class="cs-sub">Department organization<br>coming soon</div></div>
     </div>
 
     <!-- ── SETTINGS ── -->
@@ -676,16 +681,6 @@ textarea.fi{resize:none;min-height:80px}
           <div class="toggle-track on" id="theme-toggle" onclick="toggleTheme()">
             <div class="toggle-thumb"></div>
           </div>
-        </div>
-      </div>
-
-      <!-- Admin section -->
-      <div id="admin-section" style="display:none">
-        <div class="section-label">Admin</div>
-        <div class="list-card">
-          <div class="list-item" onclick="showPage('employees')"><div class="li-left"><span class="li-icon">👥</span>Employees</div><span class="li-chev">›</span></div>
-          <div class="list-item" onclick="showPage('matrix')"><div class="li-left"><span class="li-icon">📊</span>Matrix</div><span class="li-chev">›</span></div>
-          <div class="list-item" onclick="showPage('scheduler')"><div class="li-left"><span class="li-icon">📅</span>Scheduler</div><span class="li-chev">›</span></div>
         </div>
       </div>
 
@@ -753,30 +748,31 @@ let curPage    = 'dashboard';
 let prevPage   = 'dashboard';
 let isDark     = true;
 
-// ── MODULE DEFINITIONS ───────────────────────────────
+// ── MODULE DEFINITIONS - 9 OPTIONS ──────────────────
 const ADMIN_MODULES = [
-  { id:'trucks',     icon:'🚛', label:'Trucks',       stat:'sv-trucks',  sub:'Fleet roster' },
-  { id:'attendance', icon:'📋', label:'Attendance',   stat:'sv-attend',  sub:'Today\'s log' },
-  { id:'trips',      icon:'📍', label:'Active Trips', stat:'sv-trips',   sub:'On the road' },
-  { id:'employees',  icon:'👥', label:'Employees',    stat:'sv-emp',     sub:'Total staff' },
-  { id:'expenses',   icon:'💸', label:'Expenses',     stat:'sv-exp',     sub:'This month' },
-  { id:'billing',    icon:'🧾', label:'Billing',      stat:'sv-billing', sub:'Invoices' },
-  { id:'matrix',     icon:'📊', label:'Matrix',       stat:'sv-matrix',  sub:'Performance' },
-  { id:'scheduler',  icon:'📅', label:'Scheduler',    stat:'sv-sched',   sub:'Upcoming trips', wide:true },
-  { id:'settings',   icon:'⚙️', label:'Settings',     stat:'sv-settings',sub:'App settings', wide:true },
+  { id:'trucks',     icon:'🚛', label:'Trucks',           stat:'sv-trucks',  sub:'Fleet roster' },
+  { id:'trips',      icon:'📍', label:'Trips',            stat:'sv-trips',   sub:'Trip management' },
+  { id:'expenses',   icon:'💸', label:'Expenses',         stat:'sv-exp',     sub:'Cost tracking' },
+  { id:'metrics',    icon:'📊', label:'Business Metrics', stat:'sv-metrics', sub:'Performance' },
+  { id:'attendance', icon:'📋', label:'Attendance',       stat:'sv-attend',  sub:'Daily logs' },
+  { id:'scheduler',  icon:'📅', label:'Scheduler',        stat:'sv-sched',   sub:'Trip planning' },
+  { id:'billing',    icon:'🧾', label:'Billing',          stat:'sv-billing', sub:'Invoices' },
+  { id:'manpower',   icon:'👷', label:'Manpower',         stat:'sv-manpower',sub:'Staff' },
+  { id:'sections',   icon:'🗂️', label:'Sections',         stat:'sv-sections',sub:'Departments', wide:true },
 ];
 
 const EMPLOYEE_MODULES = [
   { id:'attendance', icon:'📋', label:'Attendance',   stat:'sv-attend',  sub:'Today\'s log' },
-  { id:'trips',      icon:'📍', label:'Active Trips', stat:'sv-trips',   sub:'On the road' },
+  { id:'trips',      icon:'📍', label:'Trips',        stat:'sv-trips',   sub:'My trips' },
   { id:'expenses',   icon:'💸', label:'Expenses',     stat:'sv-exp',     sub:'This month' },
   { id:'settings',   icon:'⚙️', label:'Settings',     stat:'sv-settings',sub:'App settings', wide:true },
 ];
 
 const pageTitles = {
-  dashboard:'Dashboard', trucks:'Truck Roster', attendance:'Attendance',
-  trips:'Active Trips', employees:'Employees', expenses:'Expenses',
-  billing:'Billing', matrix:'Matrix', scheduler:'Scheduler', settings:'Settings'
+  dashboard:'Dashboard', trucks:'Truck Roster', trips:'Trips',
+  expenses:'Expenses', metrics:'Business Metrics', attendance:'Attendance',
+  scheduler:'Scheduler', billing:'Billing', manpower:'Manpower', sections:'Sections',
+  settings:'Settings'
 };
 
 // ── THEME ────────────────────────────────────────────
@@ -825,10 +821,6 @@ function signIn() {
         document.getElementById('more-name').textContent  = u.name  || '';
         document.getElementById('more-email').textContent = u.email || '';
         document.getElementById('more-role').textContent  = userRole === 'admin' ? 'Admin' : 'Employee';
-
-        // Show admin section in settings if admin
-        const adminSec = document.getElementById('admin-section');
-        if (adminSec) adminSec.style.display = userRole === 'admin' ? 'block' : 'none';
 
         // Launch
         document.getElementById('s-login').classList.remove('active');
