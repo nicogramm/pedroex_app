@@ -1,515 +1,190 @@
 <!DOCTYPE html>
-<html lang="fil">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pedroex">
-<meta name="theme-color" content="#f5a623">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#C0272D">
 <link rel="manifest" href="manifest.json">
-<title>Pedroex</title>
+<title>PedroEX</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap');
-
 :root {
-  --bg:      #0f1117;
-  --bg2:     #1a1d27;
-  --bg3:     #22263a;
-  --accent:  #f5a623;
-  --accent2: #e8891a;
-  --text:    #f0f0f0;
-  --text2:   #9aa0b8;
-  --border:  #2e3350;
-  --danger:  #e05252;
-  --success: #4caf7d;
-  --r:       12px;
-  --safe-bottom: env(safe-area-inset-bottom, 16px);
+  --red:    #C0272D;
+  --red-d:  #9e1f24;
+  --dark:   #111113;
+  --panel:  #1e1e21;
+  --panel2: #28282c;
+  --line:   #333338;
+  --white:  #ffffff;
+  --off:    #f0f0f0;
+  --muted:  #888896;
+  --r:      10px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 16px);
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--dark); color: var(--white); font-family: 'Barlow', sans-serif; -webkit-font-smoothing: antialiased; }
 
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Barlow', sans-serif;
-  font-size: 15px;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ── SCREENS ── */
 .screen { display: none; flex-direction: column; height: 100dvh; }
 .screen.active { display: flex; }
 
-/* ── LOGIN ── */
-#s-login {
-  align-items: center;
-  justify-content: center;
-  padding: 32px 24px;
-  background: var(--bg);
-}
+/* LOGIN */
+#s-login { background: var(--dark); align-items: center; justify-content: flex-end; padding-bottom: calc(48px + var(--safe-b)); position: relative; overflow: hidden; }
+#s-login::before { content: ''; position: absolute; top: -60px; right: -60px; width: 75vw; height: 75vw; max-width: 360px; max-height: 360px; background: var(--red); clip-path: polygon(100% 0, 100% 100%, 0 0); opacity: 0.15; }
+#s-login::after  { content: ''; position: absolute; top: 0; right: 0; width: 50vw; height: 50vw; max-width: 240px; max-height: 240px; background: var(--red); clip-path: polygon(100% 0, 100% 100%, 0 0); opacity: 0.5; }
 
-.login-logo {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 56px;
-  font-weight: 800;
-  color: var(--accent);
-  letter-spacing: 3px;
-  line-height: 1;
-}
+.login-hero { position: absolute; top: 0; left: 0; right: 0; height: 55%; display: flex; flex-direction: column; justify-content: center; padding: calc(var(--safe-t) + 40px) 32px 0; }
+.login-wordmark { display: flex; align-items: flex-end; line-height: 1; }
+.login-pedro { font-family: 'Barlow Condensed', sans-serif; font-size: 72px; font-weight: 900; color: var(--white); letter-spacing: -1px; line-height: 0.9; }
+.login-tri { width: 0; height: 0; border-style: solid; border-width: 0 0 44px 44px; border-color: transparent transparent var(--red) transparent; margin-bottom: 4px; margin-left: 4px; margin-right: 2px; }
+.login-ex { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 900; color: var(--red); line-height: 1; align-self: flex-end; }
+.login-rule { width: 180px; height: 3px; background: var(--red); margin: 10px 0; }
+.login-tagline { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
 
-.login-tagline {
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--text2);
-  margin-top: 6px;
-  margin-bottom: 56px;
-}
+.login-card { width: calc(100% - 32px); max-width: 380px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 28px 24px; position: relative; z-index: 2; }
+.login-card h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.login-card p  { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+.google-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 14px; background: var(--white); color: #1c1c1e; border: none; border-radius: var(--r); font-size: 15px; font-weight: 600; font-family: 'Barlow', sans-serif; cursor: pointer; }
+.google-btn:active { opacity: 0.88; }
+.google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 
-.login-card {
-  width: 100%;
-  max-width: 340px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 32px 24px;
-  text-align: center;
-}
+/* APP */
+#s-app { background: var(--dark); }
 
-.login-card h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-.login-card p  { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 28px; }
+.topbar { background: #1a1a1c; border-bottom: 1px solid var(--line); display: flex; align-items: flex-end; justify-content: space-between; padding: 0 16px 10px; padding-top: calc(var(--safe-t) + 10px); flex-shrink: 0; z-index: 10; }
+.topbar-brand { display: flex; align-items: center; gap: 5px; }
+.tb-pedro { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 900; color: var(--white); line-height: 1; }
+.tb-tri { width: 0; height: 0; border-style: solid; border-width: 0 0 13px 13px; border-color: transparent transparent var(--red) transparent; margin-bottom: 1px; }
+.tb-ex { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 900; color: var(--red); line-height: 1; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.tb-page { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--red); object-fit: cover; }
 
-.google-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  padding: 14px;
-  background: #fff;
-  color: #333;
-  border: none;
-  border-radius: var(--r);
-  font-size: 15px;
-  font-weight: 600;
-  font-family: 'Barlow', sans-serif;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.google-btn:active { opacity: 0.85; }
-.google-btn svg { width: 20px; height: 20px; }
+.page-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; }
 
-/* ── APP SHELL ── */
-#s-app {
-  background: var(--bg);
-}
+.bottom-nav { background: #1a1a1c; border-top: 1px solid var(--line); padding-bottom: var(--safe-b); flex-shrink: 0; }
+.bottom-nav-inner { display: grid; grid-template-columns: repeat(5, 1fr); height: 54px; }
+.bnav { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Barlow', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; padding: 0; transition: color 0.15s; }
+.bnav.active { color: var(--red); }
+.bnav-icon { font-size: 20px; line-height: 1; }
 
-/* TOP BAR */
-.topbar {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  padding: 0 16px;
-  padding-top: env(safe-area-inset-top, 0);
-  height: calc(56px + env(safe-area-inset-top, 0px));
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding-bottom: 10px;
-  flex-shrink: 0;
-  z-index: 10;
-}
-
-.topbar-left { display: flex; align-items: center; gap: 10px; }
-
-.topbar-logo {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--accent);
-  letter-spacing: 1px;
-}
-
-.topbar-page {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.topbar-right { display: flex; align-items: center; gap: 8px; }
-
-.avatar {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-  object-fit: cover;
-}
-
-/* SCROLLABLE CONTENT */
-.page-content {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 16px;
-}
-
-/* BOTTOM NAV */
-.bottom-nav {
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
-  padding-bottom: var(--safe-bottom);
-  flex-shrink: 0;
-}
-
-.bottom-nav-inner {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  height: 56px;
-}
-
-.bnav {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  cursor: pointer;
-  color: var(--text2);
-  transition: color 0.15s;
-  font-size: 10px;
-  font-weight: 500;
-  border: none;
-  background: none;
-  font-family: 'Barlow', sans-serif;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.bnav.active { color: var(--accent); }
-.bnav-icon { font-size: 22px; line-height: 1; }
-
-/* PAGES */
 .page { display: none; }
 .page.active { display: block; }
 
-/* SECTION HEADER */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
+/* Section title with red bar */
+.sec-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+.sec-title::before { content: ''; display: inline-block; width: 4px; height: 20px; background: var(--red); border-radius: 2px; flex-shrink: 0; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 
-.section-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
+/* Dashboard */
+.welcome-banner { background: var(--red); border-radius: var(--r); padding: 16px; margin-bottom: 14px; position: relative; overflow: hidden; }
+.welcome-banner::after { content: '▶'; position: absolute; right: -8px; bottom: -16px; font-size: 80px; color: rgba(255,255,255,0.1); font-family: 'Barlow Condensed', sans-serif; }
+.welcome-date { font-size: 11px; letter-spacing: 1px; opacity: 0.75; margin-bottom: 4px; text-transform: uppercase; }
+.welcome-text { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; }
 
-/* STATS GRID */
-.stat-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 16px;
-}
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.stat-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; position: relative; overflow: hidden; }
+.stat-card::after { content: ''; position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; background: var(--red); clip-path: polygon(100% 0, 100% 100%, 0 100%); opacity: 0.12; }
+.stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.stat-value { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 900; color: var(--red); line-height: 1; }
 
-.stat-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 16px 14px;
-}
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quick-item { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; cursor: pointer; text-align: center; transition: border-color 0.15s; }
+.quick-item:active { border-color: var(--red); background: var(--panel2); }
+.quick-item .qi-icon { font-size: 26px; margin-bottom: 6px; }
+.quick-item .qi-label { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; }
 
-.stat-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-.stat-value { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; color: var(--accent); line-height: 1; }
+/* Truck cards */
+.truck-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 10px; overflow: hidden; }
+.truck-card-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+.plate { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: 2px; background: var(--red); padding: 4px 14px; border-radius: 6px; }
+.truck-id { font-size: 11px; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; }
+.truck-chips { padding: 10px 16px 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--panel2); border: 1px solid var(--line); border-radius: 4px; padding: 4px 10px; font-size: 11px; color: var(--muted); font-weight: 500; }
+.chip b { color: var(--off); font-weight: 600; }
+.truck-note { padding: 0 16px 10px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.truck-foot { border-top: 1px solid var(--line); display: flex; }
+.card-btn { flex: 1; padding: 10px; background: none; border: none; color: var(--muted); font-size: 12px; font-weight: 700; font-family: 'Barlow', sans-serif; cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; }
+.card-btn:active { background: var(--panel2); }
+.card-btn.red { color: var(--red); }
 
-/* CARDS */
-.card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-
-.card-body { padding: 14px 16px; }
-
-.card-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.plate-badge {
-  background: var(--accent);
-  color: #000;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  letter-spacing: 1px;
-}
-
-.card-detail {
-  font-size: 12px;
-  color: var(--text2);
-  margin-top: 6px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.detail-chip {
-  background: var(--bg3);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 12px;
-  color: var(--text2);
-}
-
-.card-actions {
-  border-top: 1px solid var(--border);
-  display: flex;
-}
-
-.card-action-btn {
-  flex: 1;
-  padding: 10px;
-  background: none;
-  border: none;
-  color: var(--text2);
-  font-size: 13px;
-  font-family: 'Barlow', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.card-action-btn:active { background: var(--bg3); }
-.card-action-btn.primary { color: var(--accent); }
-.card-action-btn + .card-action-btn { border-left: 1px solid var(--border); }
-
-/* SEARCH */
-.search-bar {
-  display: flex;
-  align-items: center;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 0 14px;
-  margin-bottom: 14px;
-  gap: 8px;
-}
-
-.search-bar input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-size: 14px;
-  font-family: 'Barlow', sans-serif;
-  padding: 12px 0;
-}
-
-.search-bar input::placeholder { color: var(--text2); }
+/* Search */
+.search-wrap { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 0 14px; margin-bottom: 14px; }
+.search-wrap input { flex: 1; background: none; border: none; outline: none; color: var(--white); font-size: 14px; font-family: 'Barlow', sans-serif; padding: 12px 0; }
+.search-wrap input::placeholder { color: var(--muted); }
 
 /* FAB */
-.fab {
-  position: fixed;
-  bottom: calc(70px + var(--safe-bottom));
-  right: 20px;
-  width: 52px;
-  height: 52px;
-  background: var(--accent);
-  color: #000;
-  border: none;
-  border-radius: 50%;
-  font-size: 26px;
-  font-weight: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(245,166,35,0.4);
-  z-index: 50;
-  transition: transform 0.15s;
-}
-.fab:active { transform: scale(0.93); }
+.fab { position: fixed; bottom: calc(66px + var(--safe-b) + 14px); right: 18px; width: 52px; height: 52px; background: var(--red); color: var(--white); border: none; border-radius: 50%; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 20px rgba(192,39,45,0.5); z-index: 50; }
+.fab:active { transform: scale(0.92); }
 
-/* BUTTONS */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px 20px;
-  border-radius: var(--r);
-  font-size: 15px;
-  font-weight: 600;
-  font-family: 'Barlow', sans-serif;
-  cursor: pointer;
-  border: none;
-  transition: opacity 0.15s;
-  width: 100%;
-}
-.btn:active { opacity: 0.85; }
-.btn-primary { background: var(--accent); color: #000; }
-.btn-ghost   { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
-.btn-danger  { background: var(--danger); color: #fff; }
-
-/* DRAWER (bottom sheet modal) */
-.drawer-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 100;
-  align-items: flex-end;
-}
+/* Drawer */
+.drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: flex-end; }
 .drawer-overlay.open { display: flex; }
+.drawer { background: var(--panel); border-radius: 20px 20px 0 0; border-top: 2px solid var(--red); padding: 8px 20px calc(24px + var(--safe-b)); width: 100%; max-height: 92dvh; overflow-y: auto; animation: slideup 0.26s ease; }
+@keyframes slideup { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.drawer-handle { width: 36px; height: 4px; background: var(--line); border-radius: 2px; margin: 0 auto 18px; }
+.drawer-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800; text-transform: uppercase; color: var(--white); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.drawer-title::before { content: ''; display: inline-block; width: 4px; height: 20px; background: var(--red); border-radius: 2px; flex-shrink: 0; }
+.drawer-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; padding-left: 12px; }
 
-.drawer {
-  background: var(--bg2);
-  border-radius: 20px 20px 0 0;
-  border-top: 1px solid var(--border);
-  padding: 8px 20px 24px;
-  padding-bottom: calc(24px + var(--safe-bottom));
-  width: 100%;
-  max-height: 92dvh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  animation: slideup 0.28s ease;
-}
-
-@keyframes slideup {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
-}
-
-.drawer-handle {
-  width: 36px; height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  margin: 0 auto 16px;
-}
-
-.drawer-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 20px;
-}
-
-/* FORM */
 .form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.form-input { width: 100%; background: var(--dark); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; color: var(--white); font-size: 15px; font-family: 'Barlow', sans-serif; outline: none; -webkit-appearance: none; transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--red); }
+textarea.form-input { resize: none; min-height: 75px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.btn { padding: 13px; border-radius: var(--r); font-size: 14px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border: none; }
+.btn:active { opacity: 0.85; }
+.btn-primary { background: var(--red); color: var(--white); }
+.btn-ghost   { background: var(--panel2); color: var(--muted); border: 1px solid var(--line); }
 
-.form-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
-}
-
-.form-input {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  color: var(--text);
-  font-size: 15px;
-  font-family: 'Barlow', sans-serif;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.form-input:focus { border-color: var(--accent); }
-textarea.form-input { resize: none; min-height: 80px; }
-
-/* LOADING */
-.loading-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 40px;
-  color: var(--text2);
-  font-size: 14px;
-}
-
-.spinner {
-  width: 18px; height: 18px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
+/* Loading, empty, toast, coming soon */
+.loading-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 48px; color: var(--muted); font-size: 13px; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+.empty-state { text-align: center; padding: 56px 24px; color: var(--muted); }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; line-height: 1.7; }
 
-/* EMPTY STATE */
-.empty-state {
-  text-align: center;
-  padding: 48px 24px;
-  color: var(--text2);
-}
-.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-.empty-state p { font-size: 14px; line-height: 1.6; }
-
-/* TOAST */
-.toast {
-  position: fixed;
-  bottom: calc(72px + var(--safe-bottom) + 12px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-size: 14px;
-  z-index: 200;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s;
-}
+.toast { position: fixed; bottom: calc(66px + var(--safe-b) + 14px); left: 50%; transform: translateX(-50%); background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--red); border-radius: var(--r); padding: 12px 20px; font-size: 13px; font-weight: 500; z-index: 300; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .toast.show { opacity: 1; }
 
-/* COMING SOON */
-.coming-soon {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 48px 24px;
-  text-align: center;
-  color: var(--text2);
-  margin-top: 8px;
-}
-.coming-soon .icon { font-size: 44px; margin-bottom: 12px; }
-.coming-soon p { font-size: 14px; }
+.coming-soon { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 56px 24px; text-align: center; color: var(--muted); }
+.coming-soon .cs-icon { font-size: 44px; margin-bottom: 12px; }
+.coming-soon p { font-size: 14px; line-height: 1.7; }
+
+.menu-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin-bottom: 12px; }
+.menu-item { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.menu-item:last-child { border-bottom: none; }
+.menu-item:active { background: var(--panel2); }
+.menu-item-left { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; }
+.menu-chevron { color: var(--muted); }
+
+.refresh-btn { background: none; border: 1px solid var(--line); color: var(--muted); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'Barlow', sans-serif; font-weight: 600; cursor: pointer; }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════
-     LOGIN SCREEN
-══════════════════════════════ -->
+<!-- LOGIN -->
 <div class="screen active" id="s-login">
-  <div class="login-logo">PEDROEX</div>
-  <div class="login-tagline">Trucking Management</div>
-
+  <div class="login-hero">
+    <div class="login-wordmark">
+      <span class="login-pedro">PEDRO</span>
+      <div class="login-tri"></div>
+      <span class="login-ex">EX</span>
+    </div>
+    <div class="login-rule"></div>
+    <div class="login-tagline">Pioduran Expedite Deliveries &amp; Resupply Operations Exchange</div>
+  </div>
   <div class="login-card">
-    <h2>Mag-login</h2>
-    <p>Gamitin ang iyong Google account para ma-access ang Pedroex dashboard.</p>
+    <h2>Fleet Management</h2>
+    <p>Sign in with your Google account to access the PedroEX operations dashboard.</p>
     <button class="google-btn" onclick="signIn()">
       <svg viewBox="0 0 24 24">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -517,232 +192,193 @@ textarea.form-input { resize: none; min-height: 80px; }
         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
       </svg>
-      Mag-login gamit ang Google
+      Continue with Google
     </button>
   </div>
 </div>
 
-<!-- ══════════════════════════════
-     APP SCREEN
-══════════════════════════════ -->
+<!-- APP -->
 <div class="screen" id="s-app">
-
-  <!-- Top Bar -->
   <div class="topbar">
-    <div class="topbar-left">
-      <span class="topbar-logo">PEDROEX</span>
-      <span class="topbar-page" id="topbar-page-title">Dashboard</span>
+    <div class="topbar-brand">
+      <span class="tb-pedro">PEDRO</span>
+      <div class="tb-tri"></div>
+      <span class="tb-ex">EX</span>
     </div>
     <div class="topbar-right">
+      <span class="tb-page" id="tb-title">Dashboard</span>
       <img id="user-avatar" class="avatar" src="" alt="">
     </div>
   </div>
 
-  <!-- Scrollable Content -->
   <div class="page-content" id="page-content">
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-label">Trucks</div>
-          <div class="stat-value" id="stat-trucks">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Drivers</div>
-          <div class="stat-value" id="stat-drivers">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Trips</div>
-          <div class="stat-value" id="stat-trips">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Invoices</div>
-          <div class="stat-value" id="stat-invoices">—</div>
-        </div>
+      <div class="welcome-banner">
+        <div class="welcome-date" id="dash-date"></div>
+        <div class="welcome-text">PedroEX Operations Dashboard 🚛</div>
       </div>
-
-      <div class="card">
-        <div class="card-body">
-          <div style="font-size:13px;color:var(--text2);margin-bottom:4px" id="dash-date"></div>
-          <div style="font-size:16px;font-weight:600;margin-bottom:6px">Maligayang pagdating!</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.6">
-            I-manage ang iyong fleet, drivers, trips, at billing — lahat naka-save sa Google Sheets.
-          </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Trucks</div><div class="stat-value" id="stat-trucks">—</div></div>
+        <div class="stat-card"><div class="stat-label">Drivers</div><div class="stat-value" id="stat-drivers">—</div></div>
+        <div class="stat-card"><div class="stat-label">Active Trips</div><div class="stat-value" id="stat-trips">—</div></div>
+        <div class="stat-card"><div class="stat-label">Invoices</div><div class="stat-value" id="stat-invoices">—</div></div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Quick Access</div>
+        <div class="quick-grid">
+          <div class="quick-item" onclick="showPage('trucks')"><div class="qi-icon">🚛</div><div class="qi-label">Truck Roster</div></div>
+          <div class="quick-item" onclick="showPage('trips')"><div class="qi-icon">📍</div><div class="qi-label">Trips</div></div>
+          <div class="quick-item" onclick="showPage('drivers')"><div class="qi-icon">👤</div><div class="qi-label">Drivers</div></div>
+          <div class="quick-item" onclick="showPage('billing')"><div class="qi-icon">🧾</div><div class="qi-label">Billing</div></div>
         </div>
       </div>
     </div>
 
     <!-- TRUCKS -->
     <div class="page" id="page-trucks">
-      <div class="section-header">
-        <div class="section-title">Truck Roster</div>
-        <button class="btn btn-ghost" style="width:auto;padding:8px 14px;font-size:13px" onclick="loadTrucks()">↻</button>
+      <div class="sec-head">
+        <div class="sec-title">Truck Roster</div>
+        <button class="refresh-btn" onclick="loadTrucks()">↻ Refresh</button>
       </div>
-
-      <div class="search-bar">
-        <span style="color:var(--text2);font-size:16px">🔍</span>
-        <input type="text" placeholder="Hanapin ang truck..." oninput="filterTrucks(this.value)" id="truck-search">
+      <div class="search-wrap">
+        <span style="color:var(--muted);font-size:15px">🔍</span>
+        <input type="text" placeholder="Search trucks..." oninput="filterTrucks(this.value)" id="truck-search">
       </div>
-
-      <div id="trucks-loading" class="loading-wrap">
-        <div class="spinner"></div> Naglo-load...
-      </div>
-
+      <div id="trucks-loading" class="loading-wrap"><div class="spinner"></div> Loading fleet...</div>
       <div id="trucks-list"></div>
-
       <div id="trucks-empty" class="empty-state" style="display:none">
-        <div class="icon">🚛</div>
-        <p>Wala pang trucks.<br>I-tap ang + para magdagdag.</p>
+        <div class="empty-icon">🚛</div>
+        <p>No trucks in roster yet.<br>Tap <strong style="color:var(--red)">+</strong> to add one.</p>
       </div>
     </div>
 
     <!-- DRIVERS -->
     <div class="page" id="page-drivers">
-      <div class="section-header"><div class="section-title">Drivers</div></div>
-      <div class="coming-soon"><div class="icon">👤</div><p>Drivers module<br>— coming soon —</p></div>
+      <div class="sec-head"><div class="sec-title">Drivers</div></div>
+      <div class="coming-soon"><div class="cs-icon">👤</div><p>Drivers module<br>coming soon</p></div>
     </div>
 
     <!-- TRIPS -->
     <div class="page" id="page-trips">
-      <div class="section-header"><div class="section-title">Trips</div></div>
-      <div class="coming-soon"><div class="icon">📍</div><p>Trips module<br>— coming soon —</p></div>
+      <div class="sec-head"><div class="sec-title">Trips</div></div>
+      <div class="coming-soon"><div class="cs-icon">📍</div><p>Trip tracking<br>coming soon</p></div>
     </div>
 
     <!-- BILLING -->
     <div class="page" id="page-billing">
-      <div class="section-header"><div class="section-title">Billing</div></div>
-      <div class="coming-soon"><div class="icon">🧾</div><p>Billing module<br>— coming soon —</p></div>
+      <div class="sec-head"><div class="sec-title">Billing</div></div>
+      <div class="coming-soon"><div class="cs-icon">🧾</div><p>Billing &amp; invoicing<br>coming soon</p></div>
     </div>
 
     <!-- MORE -->
     <div class="page" id="page-more">
-      <div class="section-header"><div class="section-title">Higit Pa</div></div>
-      <div class="card" style="margin-bottom:10px">
-        <div class="card-body">
-          <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Account</div>
-          <div style="display:flex;align-items:center;gap:12px">
-            <img id="more-avatar" style="width:44px;height:44px;border-radius:50%;border:2px solid var(--accent)" src="" alt="">
-            <div>
-              <div style="font-weight:600" id="more-name"></div>
-              <div style="font-size:12px;color:var(--text2)" id="more-email"></div>
-            </div>
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="card-action-btn" style="color:var(--danger)" onclick="signOut()">Mag-logout</button>
+      <div class="sec-head"><div class="sec-title">More</div></div>
+      <div style="background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:14px">
+        <img id="more-avatar" style="width:48px;height:48px;border-radius:50%;border:2px solid var(--red)" src="" alt="">
+        <div>
+          <div style="font-weight:600;font-size:15px" id="more-name"></div>
+          <div style="font-size:12px;color:var(--muted)" id="more-email"></div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-body">
-          <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Mga Module</div>
-          <div onclick="showPage('expenses')" style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer">
-            <span>💸 Expenses</span><span style="color:var(--text2)">›</span>
-          </div>
-          <div onclick="showPage('metrics')" style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer">
-            <span>📈 Business Metrics</span><span style="color:var(--text2)">›</span>
-          </div>
-          <div onclick="showPage('profile')" style="padding:12px 0;display:flex;justify-content:space-between;align-items:center;cursor:pointer">
-            <span>🏢 Wayhe Profile</span><span style="color:var(--text2)">›</span>
-          </div>
+      <div class="menu-card">
+        <div class="menu-item" onclick="showPage('expenses')">
+          <div class="menu-item-left"><span>💸</span> Expenses</div>
+          <span class="menu-chevron">›</span>
+        </div>
+        <div class="menu-item" onclick="showPage('metrics')">
+          <div class="menu-item-left"><span>📈</span> Business Metrics</div>
+          <span class="menu-chevron">›</span>
+        </div>
+        <div class="menu-item" onclick="showPage('profile')">
+          <div class="menu-item-left"><span>🏢</span> Wayhe Profile</div>
+          <span class="menu-chevron">›</span>
+        </div>
+      </div>
+      <div class="menu-card">
+        <div class="menu-item" onclick="signOut()" style="color:var(--red)">
+          <div class="menu-item-left" style="color:var(--red)"><span>🚪</span> Sign Out</div>
         </div>
       </div>
     </div>
 
-    <!-- EXPENSES -->
     <div class="page" id="page-expenses">
-      <div class="section-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <button onclick="showPage('more')" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer">‹</button>
-          <div class="section-title">Expenses</div>
+      <div class="sec-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <button onclick="showPage('more')" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:0">‹</button>
+          <div class="sec-title">Expenses</div>
         </div>
       </div>
-      <div class="coming-soon"><div class="icon">💸</div><p>Expenses module<br>— coming soon —</p></div>
+      <div class="coming-soon"><div class="cs-icon">💸</div><p>Expenses module<br>coming soon</p></div>
     </div>
 
-    <!-- METRICS -->
     <div class="page" id="page-metrics">
-      <div class="section-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <button onclick="showPage('more')" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer">‹</button>
-          <div class="section-title">Business Metrics</div>
+      <div class="sec-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <button onclick="showPage('more')" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:0">‹</button>
+          <div class="sec-title">Metrics</div>
         </div>
       </div>
-      <div class="coming-soon"><div class="icon">📈</div><p>Metrics module<br>— coming soon —</p></div>
+      <div class="coming-soon"><div class="cs-icon">📈</div><p>Business metrics<br>coming soon</p></div>
     </div>
 
-    <!-- PROFILE -->
     <div class="page" id="page-profile">
-      <div class="section-header">
-        <div style="display:flex;align-items:center;gap:10px">
-          <button onclick="showPage('more')" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer">‹</button>
-          <div class="section-title">Wayhe Profile</div>
+      <div class="sec-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <button onclick="showPage('more')" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;padding:0">‹</button>
+          <div class="sec-title">Wayhe Profile</div>
         </div>
       </div>
-      <div class="coming-soon"><div class="icon">🏢</div><p>Business profile<br>— coming soon —</p></div>
+      <div class="coming-soon"><div class="cs-icon">🏢</div><p>Business profile<br>coming soon</p></div>
     </div>
 
-  </div><!-- end page-content -->
-
-  <!-- Bottom Nav -->
-  <div class="bottom-nav">
-    <div class="bottom-nav-inner">
-      <button class="bnav active" onclick="showPage('dashboard')" id="bnav-dashboard">
-        <span class="bnav-icon">🏠</span>Home
-      </button>
-      <button class="bnav" onclick="showPage('trucks')" id="bnav-trucks">
-        <span class="bnav-icon">🚛</span>Trucks
-      </button>
-      <button class="bnav" onclick="showPage('trips')" id="bnav-trips">
-        <span class="bnav-icon">📍</span>Trips
-      </button>
-      <button class="bnav" onclick="showPage('billing')" id="bnav-billing">
-        <span class="bnav-icon">🧾</span>Billing
-      </button>
-      <button class="bnav" onclick="showPage('more')" id="bnav-more">
-        <span class="bnav-icon">☰</span>Higit Pa
-      </button>
-    </div>
   </div>
 
-</div><!-- end s-app -->
+  <div class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bnav active" id="bnav-dashboard" onclick="showPage('dashboard')"><span class="bnav-icon">🏠</span>Home</button>
+      <button class="bnav" id="bnav-trucks" onclick="showPage('trucks')"><span class="bnav-icon">🚛</span>Trucks</button>
+      <button class="bnav" id="bnav-trips" onclick="showPage('trips')"><span class="bnav-icon">📍</span>Trips</button>
+      <button class="bnav" id="bnav-billing" onclick="showPage('billing')"><span class="bnav-icon">🧾</span>Billing</button>
+      <button class="bnav" id="bnav-more" onclick="showPage('more')"><span class="bnav-icon">☰</span>More</button>
+    </div>
+  </div>
+</div>
 
-<!-- FAB (add button) -->
 <button class="fab" id="fab" onclick="onFabClick()" style="display:none">+</button>
 
-<!-- ══════════════════════════════
-     TRUCK DRAWER
-══════════════════════════════ -->
+<!-- TRUCK DRAWER -->
 <div class="drawer-overlay" id="truck-drawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
-    <div class="drawer-title" id="drawer-title">Magdagdag ng Truck</div>
-
+    <div class="drawer-title" id="drawer-title">Add Truck</div>
+    <div class="drawer-sub" id="drawer-sub">Fill in the truck details below</div>
     <div class="form-group">
       <label class="form-label">Plate Number *</label>
-      <input class="form-input" id="f-plate" placeholder="e.g. ABC 1234" autocomplete="off">
+      <input class="form-input" id="f-plate" placeholder="e.g. ABC 1234" autocomplete="off" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;letter-spacing:3px">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">LTO Registration</label>
+        <input class="form-input" id="f-lto" placeholder="e.g. Jan 2026">
+      </div>
+      <div class="form-group">
+        <label class="form-label">NMIS Expiry</label>
+        <input class="form-input" id="f-nmis" placeholder="e.g. Mar 2026">
+      </div>
     </div>
     <div class="form-group">
-      <label class="form-label">LTO Registration</label>
-      <input class="form-input" id="f-lto" placeholder="e.g. Enero 2026">
-    </div>
-    <div class="form-group">
-      <label class="form-label">NMIS Expiry</label>
-      <input class="form-input" id="f-nmis" placeholder="e.g. Marso 2026">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Dimensions</label>
+      <label class="form-label">Dimensions / Type</label>
       <input class="form-input" id="f-dim" placeholder="e.g. 10-wheeler, 40ft">
     </div>
     <div class="form-group">
       <label class="form-label">Additional Notes</label>
-      <textarea class="form-input" id="f-notes" placeholder="Ibang detalye..."></textarea>
+      <textarea class="form-input" id="f-notes" placeholder="Other details..."></textarea>
     </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
-      <button class="btn btn-ghost" onclick="closeDrawer()">Kanselahin</button>
-      <button class="btn btn-primary" onclick="saveTruck()">I-save</button>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTruck()">Save Truck</button>
     </div>
   </div>
 </div>
@@ -750,57 +386,33 @@ textarea.form-input { resize: none; min-height: 80px; }
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── CONFIG ──────────────────────────────────────
 const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
 const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SHEET_NAME = 'Truck Roster';
 const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
 
-let token      = null;
-let allTrucks  = [];
-let editingRow = null;
-let curPage    = 'dashboard';
+let token = null, allTrucks = [], editingRow = null, curPage = 'dashboard';
 
-const pageTitles = {
-  dashboard: 'Dashboard', trucks: 'Truck Roster',
-  drivers: 'Drivers', trips: 'Trips',
-  billing: 'Billing', more: 'Menu',
-  expenses: 'Expenses', metrics: 'Metrics', profile: 'Wayhe Profile'
-};
+const pageTitles = { dashboard:'Dashboard', trucks:'Truck Roster', drivers:'Drivers', trips:'Trips', billing:'Billing', more:'More', expenses:'Expenses', metrics:'Metrics', profile:'Wayhe Profile' };
+const fabPages   = ['trucks','drivers','trips','billing'];
 
-const fabPages = ['trucks', 'drivers', 'trips', 'billing'];
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
-// ─── PWA ─────────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
-
-// ─── AUTH ─────────────────────────────────────────
 function signIn() {
-  const client = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID, scope: SCOPES,
     callback: (res) => {
-      if (res.error) { showToast('Login failed: ' + res.error); return; }
+      if (res.error) { showToast('Login failed'); return; }
       token = res.access_token;
-      fetchUserInfo();
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } })
+        .then(r => r.json()).then(u => {
+          ['user-avatar','more-avatar'].forEach(id => document.getElementById(id).src = u.picture || '');
+          document.getElementById('more-name').textContent  = u.name  || '';
+          document.getElementById('more-email').textContent = u.email || '';
+          launchApp();
+        });
     }
-  });
-  client.requestAccessToken({ prompt: 'consent' });
-}
-
-function fetchUserInfo() {
-  fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-    headers: { Authorization: 'Bearer ' + token }
-  })
-  .then(r => r.json())
-  .then(u => {
-    document.getElementById('user-avatar').src = u.picture || '';
-    document.getElementById('more-avatar').src  = u.picture || '';
-    document.getElementById('more-name').textContent  = u.name || '';
-    document.getElementById('more-email').textContent = u.email || '';
-    launchApp();
-  });
+  }).requestAccessToken({ prompt: 'consent' });
 }
 
 function signOut() {
@@ -815,132 +427,91 @@ function signOut() {
 function launchApp() {
   document.getElementById('s-login').classList.remove('active');
   document.getElementById('s-app').classList.add('active');
-  document.getElementById('dash-date').textContent =
-    new Date().toLocaleDateString('fil-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   showPage('dashboard');
   loadTrucks();
 }
 
-// ─── NAVIGATION ───────────────────────────────────
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bnav').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-
-  const bnav = document.getElementById('bnav-' + name);
-  if (bnav) bnav.classList.add('active');
-
-  document.getElementById('topbar-page-title').textContent = pageTitles[name] || '';
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+  const bn = document.getElementById('bnav-' + name);
+  if (bn) bn.classList.add('active');
+  document.getElementById('tb-title').textContent = pageTitles[name] || '';
   document.getElementById('page-content').scrollTop = 0;
   curPage = name;
-
-  const fab = document.getElementById('fab');
-  fab.style.display = fabPages.includes(name) ? 'flex' : 'none';
+  document.getElementById('fab').style.display = fabPages.includes(name) ? 'flex' : 'none';
+  if (name === 'trucks') loadTrucks();
 }
 
-function onFabClick() {
-  if (curPage === 'trucks') openDrawer();
+function onFabClick() { if (curPage === 'trucks') openDrawer(); }
+
+function apiGet(range) {
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,
+    { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json());
+}
+function apiAppend(range, values) {
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,
+    { method:'POST', headers:{ Authorization:'Bearer '+token,'Content-Type':'application/json' }, body: JSON.stringify({values}) }).then(r=>r.json());
+}
+function apiUpdate(range, values) {
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
+    { method:'PUT', headers:{ Authorization:'Bearer '+token,'Content-Type':'application/json' }, body: JSON.stringify({values}) }).then(r=>r.json());
 }
 
-// ─── SHEETS API ───────────────────────────────────
-function sheetsGet(range) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`;
-  return fetch(url, { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json());
-}
-
-function sheetsAppend(range, values) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
-  return fetch(url, {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ values })
-  }).then(r => r.json());
-}
-
-function sheetsUpdate(range, values) {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=RAW`;
-  return fetch(url, {
-    method: 'PUT',
-    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ values })
-  }).then(r => r.json());
-}
-
-// ─── TRUCKS ───────────────────────────────────────
 function loadTrucks() {
   document.getElementById('trucks-loading').style.display = 'flex';
   document.getElementById('trucks-list').innerHTML = '';
   document.getElementById('trucks-empty').style.display = 'none';
   document.getElementById('truck-search').value = '';
 
-  sheetsGet(SHEET_NAME + '!A2:F').then(res => {
-    allTrucks = (res.values || []).map((row, i) => ({
-      rowIndex: i + 2,
-      id:    row[0] || '',
-      plate: row[1] || '',
-      lto:   row[2] || '',
-      nmis:  row[3] || '',
-      dim:   row[4] || '',
-      notes: row[5] || ''
+  apiGet(SHEET_NAME + '!A2:F').then(res => {
+    allTrucks = (res.values||[]).map((r,i)=>({
+      rowIndex:i+2, id:r[0]||'', plate:r[1]||'', lto:r[2]||'', nmis:r[3]||'', dim:r[4]||'', notes:r[5]||''
     })).filter(t => t.plate);
-
     document.getElementById('stat-trucks').textContent = allTrucks.length;
     renderTrucks(allTrucks);
     document.getElementById('trucks-loading').style.display = 'none';
-  }).catch(() => {
-    document.getElementById('trucks-loading').style.display = 'none';
-    showToast('Hindi ma-load ang data. Check internet.');
-  });
+  }).catch(() => { document.getElementById('trucks-loading').style.display='none'; showToast('Cannot load data.'); });
 }
 
 function renderTrucks(list) {
-  const container = document.getElementById('trucks-list');
-  const empty     = document.getElementById('trucks-empty');
-
-  if (!list.length) {
-    container.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-
-  empty.style.display = 'none';
-  container.innerHTML = list.map(t => `
-    <div class="card">
-      <div class="card-body">
-        <div class="card-row">
-          <span class="plate-badge">${t.plate}</span>
-          <span style="font-size:11px;color:var(--text2)">${t.id}</span>
-        </div>
-        <div class="card-detail">
-          ${t.lto   ? `<span class="detail-chip">📋 LTO: ${t.lto}</span>` : ''}
-          ${t.nmis  ? `<span class="detail-chip">🏷 NMIS: ${t.nmis}</span>` : ''}
-          ${t.dim   ? `<span class="detail-chip">📐 ${t.dim}</span>` : ''}
-        </div>
-        ${t.notes ? `<div style="font-size:12px;color:var(--text2);margin-top:8px">${t.notes}</div>` : ''}
+  const c = document.getElementById('trucks-list');
+  const e = document.getElementById('trucks-empty');
+  if (!list.length) { c.innerHTML=''; e.style.display='block'; return; }
+  e.style.display = 'none';
+  c.innerHTML = list.map(t => `
+    <div class="truck-card">
+      <div class="truck-card-head">
+        <span class="plate">${t.plate}</span>
+        <span class="truck-id">${t.id}</span>
       </div>
-      <div class="card-actions">
-        <button class="card-action-btn primary" onclick="editTruck(${t.rowIndex})">✏️ I-edit</button>
+      <div class="truck-chips">
+        ${t.lto  ? `<span class="chip">LTO <b>${t.lto}</b></span>` : ''}
+        ${t.nmis ? `<span class="chip">NMIS <b>${t.nmis}</b></span>` : ''}
+        ${t.dim  ? `<span class="chip">📐 <b>${t.dim}</b></span>` : ''}
       </div>
-    </div>
-  `).join('');
+      ${t.notes ? `<div class="truck-note">${t.notes}</div>` : ''}
+      <div class="truck-foot">
+        <button class="card-btn red" onclick="editTruck(${t.rowIndex})">✏ Edit</button>
+      </div>
+    </div>`).join('');
 }
 
 function filterTrucks(q) {
   const f = q.toLowerCase();
   renderTrucks(allTrucks.filter(t =>
-    t.plate.toLowerCase().includes(f) ||
-    t.lto.toLowerCase().includes(f)   ||
-    t.dim.toLowerCase().includes(f)   ||
-    t.notes.toLowerCase().includes(f)
-  ));
+    t.plate.toLowerCase().includes(f)||t.lto.toLowerCase().includes(f)||
+    t.dim.toLowerCase().includes(f)||t.notes.toLowerCase().includes(f)));
 }
 
-// ─── TRUCK DRAWER ─────────────────────────────────
-function openDrawer(data) {
+function openDrawer() {
   editingRow = null;
-  document.getElementById('drawer-title').textContent = 'Magdagdag ng Truck';
-  ['plate','lto','nmis','dim','notes'].forEach(f =>
-    document.getElementById('f-' + f).value = '');
+  document.getElementById('drawer-title').textContent = 'Add Truck';
+  document.getElementById('drawer-sub').textContent = 'Fill in the truck details below';
+  ['plate','lto','nmis','dim','notes'].forEach(f => document.getElementById('f-'+f).value='');
   document.getElementById('truck-drawer').classList.add('open');
 }
 
@@ -948,7 +519,8 @@ function editTruck(rowIndex) {
   const t = allTrucks.find(x => x.rowIndex === rowIndex);
   if (!t) return;
   editingRow = rowIndex;
-  document.getElementById('drawer-title').textContent = 'I-edit ang Truck';
+  document.getElementById('drawer-title').textContent = 'Edit Truck';
+  document.getElementById('drawer-sub').textContent = t.plate;
   document.getElementById('f-plate').value = t.plate;
   document.getElementById('f-lto').value   = t.lto;
   document.getElementById('f-nmis').value  = t.nmis;
@@ -957,50 +529,33 @@ function editTruck(rowIndex) {
   document.getElementById('truck-drawer').classList.add('open');
 }
 
-function closeDrawer() {
-  document.getElementById('truck-drawer').classList.remove('open');
-}
+function closeDrawer() { document.getElementById('truck-drawer').classList.remove('open'); }
 
 async function saveTruck() {
-  const plate = document.getElementById('f-plate').value.trim();
-  if (!plate) { showToast('Kailangan ng Plate Number!'); return; }
-
-  const lto   = document.getElementById('f-lto').value.trim();
-  const nmis  = document.getElementById('f-nmis').value.trim();
-  const dim   = document.getElementById('f-dim').value.trim();
-  const notes = document.getElementById('f-notes').value.trim();
-
+  const plate = document.getElementById('f-plate').value.trim().toUpperCase();
+  if (!plate) { showToast('Plate Number is required!'); return; }
+  const lto=document.getElementById('f-lto').value.trim(), nmis=document.getElementById('f-nmis').value.trim(),
+        dim=document.getElementById('f-dim').value.trim(), notes=document.getElementById('f-notes').value.trim();
   try {
     if (editingRow) {
-      const t = allTrucks.find(x => x.rowIndex === editingRow);
-      await sheetsUpdate(
-        `${SHEET_NAME}!A${editingRow}:F${editingRow}`,
-        [[t.id, plate, lto, nmis, dim, notes]]
-      );
-      showToast('✅ Na-update ang truck!');
+      const t = allTrucks.find(x=>x.rowIndex===editingRow);
+      await apiUpdate(`${SHEET_NAME}!A${editingRow}:F${editingRow}`,[[t.id,plate,lto,nmis,dim,notes]]);
+      showToast('✅ Truck updated!');
     } else {
-      const newId = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
-      await sheetsAppend(SHEET_NAME + '!A:F', [[newId, plate, lto, nmis, dim, notes]]);
-      showToast('✅ Naidagdag ang truck!');
+      const id = 'TRK-' + String(allTrucks.length+1).padStart(3,'0');
+      await apiAppend(SHEET_NAME+'!A:F',[[id,plate,lto,nmis,dim,notes]]);
+      showToast('✅ Truck added!');
     }
-    closeDrawer();
-    loadTrucks();
-  } catch {
-    showToast('❌ Error sa pag-save. Subukan ulit.');
-  }
+    closeDrawer(); loadTrucks();
+  } catch { showToast('❌ Save failed. Try again.'); }
 }
 
-// close drawer on overlay tap
-document.getElementById('truck-drawer').addEventListener('click', function(e) {
-  if (e.target === this) closeDrawer();
-});
+document.getElementById('truck-drawer').addEventListener('click', function(e) { if(e.target===this) closeDrawer(); });
 
-// ─── TOAST ────────────────────────────────────────
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
