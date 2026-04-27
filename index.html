@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#B32533">
+<link rel="manifest" href="manifest.json">
+<title>PedroEX</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════
+   BASE
+═══════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#141416;font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+
+.screen{display:none;flex-direction:column;height:100dvh;width:100%;position:absolute;top:0;left:0}
+.screen.active{display:flex}
+
+/* ═══════════════════════════════
+   LOGIN / WELCOME
+═══════════════════════════════ */
+#s-login{
+  background:#B32533;
+  overflow:hidden;
+  justify-content:flex-end;
+}
+
+/* Subtle diagonal texture */
+#s-login::before{
+  content:'';
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -55deg,
+    transparent 0px,transparent 38px,
+    rgba(0,0,0,0.06) 38px,rgba(0,0,0,0.06) 40px
+  );
+  z-index:0;pointer-events:none;
+}
+
+/* ── Truck scene ── */
+.truck-scene{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:58%;
+  overflow:hidden;
+  z-index:1;
+}
+
+/* Road */
+.road-surface{
+  position:absolute;
+  bottom:0;left:0;right:0;height:5px;
+  background:rgba(0,0,0,0.15);
+}
+.road-line{
+  position:absolute;
+  bottom:5px;left:0;right:0;height:2px;
+  background:repeating-linear-gradient(
+    90deg,
+    rgba(255,255,255,0.25) 0,rgba(255,255,255,0.25) 28px,
+    transparent 28px,transparent 56px
+  );
+  background-size:56px 2px;
+  animation:roadScroll 0.4s linear infinite;
+}
+@keyframes roadScroll{to{background-position:-56px 0}}
+
+/* Truck wrapper — drives in from left */
+.truck-anim{
+  position:absolute;
+  bottom:7px;
+  left:-420px;
+  animation:driveIn 2s cubic-bezier(0.22,0.8,0.4,1) forwards;
+  animation-delay:0.4s;
+}
+@keyframes driveIn{
+  0%  {left:-420px}
+  65% {left:calc(50% - 180px)}
+  75% {left:calc(50% - 172px)}
+  100%{left:calc(50% - 176px)}
+}
+
+/* ── Refrigerated truck SVG ── */
+.ref-truck{
+  width:360px;height:auto;
+  filter:drop-shadow(0 6px 20px rgba(0,0,0,0.35));
+}
+
+/* Exhaust smoke */
+.smoke{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,255,255,0.4);
+  animation:smokeUp 1.2s ease-out forwards infinite;
+  animation-delay:2s;
+}
+.smoke-1{width:10px;height:10px;top:10px;left:284px;animation-delay:2.0s}
+.smoke-2{width:7px; height:7px; top:4px; left:288px;animation-delay:2.3s}
+.smoke-3{width:5px; height:5px; top:1px; left:281px;animation-delay:2.6s}
+@keyframes smokeUp{
+  0%  {opacity:0;transform:translateY(0) scale(1)}
+  40% {opacity:0.5}
+  100%{opacity:0;transform:translateY(-28px) scale(2)}
+}
+
+/* Logo fades in after truck stops */
+.welcome-logo{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-58%);
+  z-index:2;
+  width:72%;max-width:260px;
+  opacity:0;
+  animation:logoFadeIn 0.7s ease forwards;
+  animation-delay:2.5s;
+  pointer-events:none;
+}
+@keyframes logoFadeIn{
+  0%  {opacity:0;transform:translate(-50%,-52%) scale(0.85)}
+  70% {transform:translate(-50%,-60%) scale(1.03)}
+  100%{opacity:1;transform:translate(-50%,-58%) scale(1)}
+}
+.welcome-logo img{width:100%;height:auto;display:block}
+
+/* ── Login card ── */
+.login-card{
+  position:relative;z-index:3;
+  width:100%;
+  background:#fff;
+  border-radius:28px 28px 0 0;
+  padding:32px 28px calc(36px + env(safe-area-inset-bottom,0px));
+  opacity:0;transform:translateY(60px);
+  animation:cardUp 0.55s cubic-bezier(0.22,0.8,0.4,1) forwards;
+  animation-delay:2.9s;
+}
+@keyframes cardUp{to{opacity:1;transform:translateY(0)}}
+
+.login-card h2{
+  font-family:'DM Sans',sans-serif;
+  font-size:26px;font-weight:700;
+  color:#111;letter-spacing:-0.5px;
+  margin-bottom:6px;
+}
+.login-card p{
+  font-size:14px;font-weight:400;
+  color:#888;line-height:1.65;
+  margin-bottom:28px;
+}
+
+.google-btn{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;padding:15px 20px;
+  background:#111;color:#fff;
+  border:none;border-radius:14px;
+  font-size:16px;font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;letter-spacing:-0.2px;
+  transition:opacity 0.15s;
+}
+.google-btn:active{opacity:0.85}
+.google-btn svg{width:22px;height:22px;flex-shrink:0}
+
+/* ═══════════════════════════════
+   APP SCREEN
+═══════════════════════════════ */
+#s-app{background:#141416}
+
+/* TOPBAR */
+.topbar{
+  background:#1c1c1f;
+  border-bottom:1px solid #222226;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;
+  padding-top:calc(env(safe-area-inset-top,0px) + 12px);
+  flex-shrink:0;
+}
+.tb-logo{height:24px;width:auto;object-fit:contain;opacity:0.9}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-title{
+  font-size:11px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  color:#444;
+}
+.tb-avatar{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid #B32533;object-fit:cover;
+}
+
+/* PAGE WRAP */
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px 16px}
+
+/* NO BOTTOM NAV — using page-based nav */
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* ═══════════════════════════════
+   DASHBOARD
+═══════════════════════════════ */
+.dash-top{margin-bottom:24px}
+.dash-eyebrow{
+  font-size:11px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  color:#444;margin-bottom:4px;
+}
+.dash-greeting{
+  font-family:'DM Sans',sans-serif;
+  font-size:28px;font-weight:700;
+  color:#fff;letter-spacing:-0.5px;
+  line-height:1.15;
+}
+.dash-date{font-size:13px;color:#444;margin-top:4px;font-weight:400}
+
+/* Module cards */
+.mod-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.mod-card{
+  background:#1c1c1f;
+  border:1px solid #222226;
+  border-radius:16px;
+  padding:20px 16px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.2s;
+}
+.mod-card:active{border-color:#B32533;background:#202023}
+
+/* Tiny red corner triangle */
+.mod-card::after{
+  content:'';
+  position:absolute;bottom:0;right:0;
+  width:32px;height:32px;
+  background:#B32533;
+  clip-path:polygon(100% 0,100% 100%,0 100%);
+  opacity:0.1;
+}
+
+.mod-card.wide{grid-column:span 2}
+
+.mod-label{
+  font-size:11px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:#555;margin-bottom:8px;
+}
+.mod-value{
+  font-family:'DM Sans',sans-serif;
+  font-size:36px;font-weight:700;
+  color:#fff;line-height:1;
+  letter-spacing:-1px;
+}
+.mod-sub{
+  font-size:12px;color:#444;margin-top:4px;
+  font-weight:400;
+}
+.mod-icon{
+  font-size:22px;margin-bottom:10px;
+  display:block;opacity:0.8;
+}
+
+/* Divider */
+.divider{height:1px;background:#1e1e21;margin:20px 0}
+
+/* ═══════════════════════════════
+   SECTION HEADER
+═══════════════════════════════ */
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.sec-back{
+  display:flex;align-items:center;gap:10px;
+}
+.back-btn{
+  background:none;border:none;
+  color:#555;font-size:24px;cursor:pointer;
+  padding:0;line-height:1;font-family:'DM Sans',sans-serif;
+}
+.sec-title{
+  font-family:'DM Sans',sans-serif;
+  font-size:22px;font-weight:700;
+  color:#fff;letter-spacing:-0.3px;
+}
+.refresh-btn{
+  background:none;border:1px solid #222226;
+  color:#555;padding:6px 12px;border-radius:8px;
+  font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;
+}
+
+/* ═══════════════════════════════
+   TRUCK CARDS
+═══════════════════════════════ */
+.truck-card{
+  background:#1c1c1f;border:1px solid #222226;
+  border-radius:14px;margin-bottom:10px;overflow:hidden;
+}
+.tc-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 12px;border-bottom:1px solid #1e1e21;
+}
+.tc-plate{
+  font-family:'DM Sans',sans-serif;
+  font-size:18px;font-weight:700;letter-spacing:2px;
+  background:#B32533;padding:5px 14px;border-radius:8px;color:#fff;
+}
+.tc-id{font-size:11px;color:#444;letter-spacing:1px;font-weight:500}
+.tc-chips{padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  background:#212124;border:1px solid #222226;
+  border-radius:6px;padding:4px 10px;font-size:11px;color:#555;font-weight:500;
+}
+.chip b{color:#888}
+.tc-note{padding:0 16px 12px;font-size:12px;color:#444;line-height:1.6}
+.tc-foot{border-top:1px solid #1e1e21}
+.tc-edit-btn{
+  width:100%;padding:11px;background:none;border:none;
+  color:#B32533;font-size:13px;font-weight:600;
+  font-family:'DM Sans',sans-serif;cursor:pointer;letter-spacing:0.3px;
+}
+.tc-edit-btn:active{background:#212124}
+
+/* ═══════════════════════════════
+   SEARCH
+═══════════════════════════════ */
+.search-bar{
+  display:flex;align-items:center;gap:10px;
+  background:#1c1c1f;border:1px solid #222226;
+  border-radius:12px;padding:0 14px;margin-bottom:16px;
+}
+.search-bar input{
+  flex:1;background:none;border:none;outline:none;
+  color:#fff;font-size:14px;font-family:'DM Sans',sans-serif;padding:13px 0;
+}
+.search-bar input::placeholder{color:#333}
+
+/* ═══════════════════════════════
+   FAB
+═══════════════════════════════ */
+.fab{
+  position:fixed;
+  bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  right:18px;
+  width:52px;height:52px;
+  background:#B32533;color:#fff;
+  border:none;border-radius:50%;
+  font-size:28px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(179,37,51,0.45);
+  z-index:50;
+}
+.fab:active{transform:scale(0.93)}
+
+/* ═══════════════════════════════
+   DRAWER
+═══════════════════════════════ */
+.drawer-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.8);z-index:100;align-items:flex-end;
+}
+.drawer-overlay.open{display:flex}
+.drawer{
+  background:#1c1c1f;
+  border-radius:24px 24px 0 0;
+  border-top:1px solid #222226;
+  padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));
+  width:100%;max-height:92dvh;overflow-y:auto;
+  animation:slideup 0.28s cubic-bezier(0.22,0.8,0.4,1);
+}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.drawer-handle{
+  width:40px;height:4px;background:#2a2a2e;
+  border-radius:2px;margin:0 auto 20px;
+}
+.drawer-title{
+  font-family:'DM Sans',sans-serif;
+  font-size:22px;font-weight:700;
+  color:#fff;letter-spacing:-0.3px;margin-bottom:4px;
+}
+.drawer-sub{font-size:13px;color:#444;margin-bottom:20px}
+
+/* ═══════════════════════════════
+   FORM
+═══════════════════════════════ */
+.fg{margin-bottom:16px}
+.fl{
+  display:block;font-size:11px;font-weight:600;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:#444;margin-bottom:7px;
+}
+.fi{
+  width:100%;background:#141416;
+  border:1px solid #222226;border-radius:10px;
+  padding:13px 14px;color:#fff;font-size:15px;
+  font-family:'DM Sans',sans-serif;outline:none;
+  -webkit-appearance:none;transition:border-color 0.2s;
+}
+.fi:focus{border-color:#B32533}
+textarea.fi{resize:none;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.btn{
+  padding:14px;border-radius:12px;
+  font-size:15px;font-weight:600;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;border:none;letter-spacing:-0.2px;
+}
+.btn:active{opacity:0.85}
+.btn-primary{background:#B32533;color:#fff}
+.btn-ghost{background:#212124;color:#666;border:1px solid #222226}
+
+/* ═══════════════════════════════
+   LOADING / EMPTY / TOAST
+═══════════════════════════════ */
+.loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:56px;color:#333;font-size:13px}
+.spinner{width:18px;height:18px;border:2px solid #222226;border-top-color:#B32533;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:64px 24px;color:#333}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.5}
+.empty-state p{font-size:14px;line-height:1.8;color:#444}
+.coming-soon{
+  background:#1c1c1f;border:1px solid #222226;
+  border-radius:16px;padding:64px 24px;text-align:center;
+}
+.cs-icon{font-size:44px;margin-bottom:14px;opacity:0.4}
+.coming-soon p{font-size:14px;line-height:1.8;color:#444}
+.coming-soon .cs-label{font-size:18px;font-weight:600;color:#666;margin-bottom:8px}
+
+.toast{
+  position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  left:50%;transform:translateX(-50%);
+  background:#1c1c1f;border:1px solid #2a2a2e;
+  border-left:3px solid #B32533;
+  border-radius:12px;padding:13px 22px;
+  font-size:13px;font-weight:500;color:#ccc;
+  z-index:300;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.toast.show{opacity:1}
+
+/* ═══════════════════════════════
+   MORE / PROFILE
+═══════════════════════════════ */
+.profile-card{
+  background:#1c1c1f;border:1px solid #222226;
+  border-radius:16px;padding:20px;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:16px;
+}
+.profile-card img{width:52px;height:52px;border-radius:50%;border:2px solid #B32533;object-fit:cover}
+.profile-name{font-size:16px;font-weight:600;color:#fff;margin-bottom:2px}
+.profile-email{font-size:12px;color:#444}
+.role-pill{
+  display:inline-block;
+  background:#B32533;color:#fff;
+  font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;
+  margin-top:6px;
+}
+
+.menu-section-label{
+  font-size:11px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;color:#333;
+  margin-bottom:8px;padding-left:4px;
+}
+.menu-card{
+  background:#1c1c1f;border:1px solid #222226;
+  border-radius:14px;overflow:hidden;margin-bottom:12px;
+}
+.menu-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:15px 18px;border-bottom:1px solid #1e1e21;
+  cursor:pointer;color:#bbb;font-size:14px;font-weight:500;
+}
+.menu-item:last-child{border-bottom:none}
+.menu-item:active{background:#212124}
+.menu-item.danger{color:#B32533}
+.mi-left{display:flex;align-items:center;gap:14px}
+.mi-icon{font-size:18px;width:24px;text-align:center}
+.mi-chev{color:#2a2a2e;font-size:18px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════
+     WELCOME SCREEN
+═══════════════════════════════ -->
+<div class="screen active" id="s-login">
+
+  <div class="truck-scene">
+    <div class="road-surface"></div>
+    <div class="road-line"></div>
+
+    <!-- Refrigerated white truck SVG -->
+    <div class="truck-anim">
+      <svg class="ref-truck" viewBox="0 0 400 130" xmlns="http://www.w3.org/2000/svg">
+        <!-- ── TRAILER (refrigerated box) ── -->
+        <!-- Main white body -->
+        <rect x="2" y="18" width="248" height="88" rx="3" fill="#f5f5f5"/>
+        <!-- Top edge highlight -->
+        <rect x="2" y="18" width="248" height="5" rx="2" fill="#e0e0e0"/>
+        <!-- Bottom edge -->
+        <rect x="2" y="101" width="248" height="5" rx="1" fill="#d5d5d5"/>
+        <!-- Rear door lines -->
+        <line x1="235" y1="23" x2="235" y2="106" stroke="#ccc" stroke-width="1.5"/>
+        <line x1="222" y1="23" x2="222" y2="106" stroke="#ccc" stroke-width="1.5"/>
+        <!-- Door handle -->
+        <rect x="225" y="60" width="8" height="10" rx="2" fill="#bbb"/>
+        <!-- Vent slats on top -->
+        <rect x="10" y="20" width="200" height="3" rx="1" fill="#e8e8e8"/>
+
+        <!-- Logo on trailer side -->
+        <image href="logo2.png" x="18" y="34" width="180" height="48" preserveAspectRatio="xMidYMid meet" opacity="0.92"/>
+
+        <!-- Insulation lines (refrigerated detail) -->
+        <rect x="4" y="23" width="2" height="82" fill="#e5e5e5"/>
+        <rect x="246" y="23" width="2" height="82" fill="#e5e5e5"/>
+
+        <!-- ── CAB ── -->
+        <!-- Cab body -->
+        <rect x="250" y="28" width="120" height="78" rx="6" fill="#B32533"/>
+        <!-- Cab roof curve -->
+        <path d="M250 34 Q260 16 290 14 L370 14 Q382 14 386 22 L386 34 Z" fill="#a01e2a"/>
+        <!-- Windshield -->
+        <rect x="298" y="20" width="72" height="44" rx="4" fill="#1a2535" opacity="0.95"/>
+        <!-- Windshield glare -->
+        <path d="M302 24 L330 24 L318 40 Z" fill="rgba(255,255,255,0.08)"/>
+        <!-- Side window -->
+        <rect x="258" y="36" width="36" height="28" rx="3" fill="#1a2535" opacity="0.9"/>
+        <!-- Window trim -->
+        <rect x="256" y="34" width="40" height="32" rx="4" fill="none" stroke="#8a1a22" stroke-width="1.5"/>
+        <rect x="296" y="18" width="76" height="48" rx="5" fill="none" stroke="#8a1a22" stroke-width="1.5"/>
+        <!-- Grille -->
+        <rect x="376" y="58" width="16" height="32" rx="2" fill="#8a1a22"/>
+        <line x1="378" y1="64" x2="390" y2="64" stroke="#6a1218" stroke-width="1"/>
+        <line x1="378" y1="70" x2="390" y2="70" stroke="#6a1218" stroke-width="1"/>
+        <line x1="378" y1="76" x2="390" y2="76" stroke="#6a1218" stroke-width="1"/>
+        <line x1="378" y1="82" x2="390" y2="82" stroke="#6a1218" stroke-width="1"/>
+        <!-- Headlights -->
+        <rect x="384" y="34" width="12" height="8" rx="2" fill="#FFF9C4"/>
+        <rect x="384" y="44" width="12" height="5" rx="1" fill="#FFE082" opacity="0.8"/>
+        <!-- Fog light -->
+        <rect x="378" y="88" width="14" height="6" rx="2" fill="#e8e0c0" opacity="0.6"/>
+        <!-- Cab bumper -->
+        <rect x="370" y="94" width="26" height="10" rx="3" fill="#888"/>
+        <rect x="372" y="96" width="22" height="6" rx="2" fill="#999"/>
+        <!-- Exhaust pipe -->
+        <rect x="258" y="4" width="7" height="28" rx="3" fill="#555"/>
+        <ellipse cx="261" cy="3" rx="5" ry="3" fill="#444"/>
+        <!-- Mirror -->
+        <rect x="244" y="36" width="10" height="7" rx="2" fill="#8a1a22"/>
+        <!-- Side step -->
+        <rect x="290" y="102" width="50" height="5" rx="2" fill="#8a1a22"/>
+
+        <!-- ── CHASSIS ── -->
+        <rect x="10" y="106" width="376" height="6" rx="2" fill="#ccc"/>
+        <!-- Fifth wheel -->
+        <rect x="242" y="100" width="20" height="8" rx="2" fill="#aaa"/>
+
+        <!-- ── WHEELS ── -->
+        <!-- Trailer front axle -->
+        <circle cx="55"  cy="116" r="14" fill="#2a2a2a"/><circle cx="55"  cy="116" r="9" fill="#3a3a3a"/><circle cx="55"  cy="116" r="4" fill="#555"/><circle cx="55"  cy="116" r="1.5" fill="#888"/>
+        <!-- Trailer dual rear axle -->
+        <circle cx="155" cy="116" r="14" fill="#2a2a2a"/><circle cx="155" cy="116" r="9" fill="#3a3a3a"/><circle cx="155" cy="116" r="4" fill="#555"/>
+        <circle cx="175" cy="116" r="14" fill="#2a2a2a"/><circle cx="175" cy="116" r="9" fill="#3a3a3a"/><circle cx="175" cy="116" r="4" fill="#555"/>
+        <!-- Cab front axle -->
+        <circle cx="306" cy="116" r="14" fill="#2a2a2a"/><circle cx="306" cy="116" r="9" fill="#3a3a3a"/><circle cx="306" cy="116" r="4" fill="#555"/>
+        <!-- Cab rear drive axle -->
+        <circle cx="360" cy="116" r="15" fill="#2a2a2a"/><circle cx="360" cy="116" r="10" fill="#3a3a3a"/><circle cx="360" cy="116" r="5" fill="#555"/>
+
+        <!-- Smoke puffs -->
+        <circle class="smoke smoke-1" cx="261" cy="10" r="5" fill="rgba(255,255,255,0.3)"/>
+        <circle class="smoke smoke-2" cx="264" cy="4"  r="4" fill="rgba(255,255,255,0.2)"/>
+        <circle class="smoke smoke-3" cx="258" cy="1"  r="3" fill="rgba(255,255,255,0.15)"/>
+      </svg>
+    </div>
+
+    <!-- Logo fade in -->
+    <div class="welcome-logo">
+      <img src="logo.jpg" alt="PedroEX">
+    </div>
+  </div>
+
+  <!-- Login card -->
+  <div class="login-card">
+    <h2>Fleet Management</h2>
+    <p>Sign in with your Google account to access the PedroEX operations dashboard.</p>
+    <button class="google-btn" onclick="signIn()">
+      <svg viewBox="0 0 24 24" width="22" height="22">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Continue with Google
+    </button>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════
+     APP SCREEN
+═══════════════════════════════ -->
+<div class="screen" id="s-app">
+
+  <div class="topbar">
+    <img class="tb-logo" src="logo.jpg" alt="PedroEX">
+    <div class="tb-right">
+      <span class="tb-title" id="tb-title">Dashboard</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
+    </div>
+  </div>
+
+  <div class="page-wrap" id="page-wrap">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="dash-top">
+        <div class="dash-eyebrow" id="dash-eyebrow">PedroEX Operations</div>
+        <div class="dash-greeting" id="dash-greeting">Good day!</div>
+        <div class="dash-date" id="dash-date"></div>
+      </div>
+      <div class="mod-grid" id="mod-grid"></div>
+    </div>
+
+    <!-- ── TRUCKS ── -->
+    <div class="page" id="page-trucks">
+      <div class="sec-head">
+        <div class="sec-back">
+          <button class="back-btn" onclick="showPage('dashboard')">‹</button>
+          <div class="sec-title">Truck Roster</div>
+        </div>
+        <button class="refresh-btn" onclick="loadTrucks()">↻</button>
+      </div>
+      <div class="search-bar">
+        <span style="color:#333;font-size:15px">⌕</span>
+        <input type="text" placeholder="Search plate, type..." oninput="filterTrucks(this.value)" id="truck-search">
+      </div>
+      <div id="trucks-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading fleet...</div>
+      <div id="trucks-list"></div>
+      <div id="trucks-empty" class="empty-state" style="display:none">
+        <div class="empty-icon">🚛</div>
+        <p>No trucks in roster yet.<br>Tap <strong style="color:#B32533">+</strong> to add the first one.</p>
+      </div>
+    </div>
+
+    <!-- ── ATTENDANCE ── -->
+    <div class="page" id="page-attendance">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Attendance</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📋</div><div class="cs-label">Attendance</div><p>Coming soon</p></div>
+    </div>
+
+    <!-- ── ACTIVE TRIPS ── -->
+    <div class="page" id="page-trips">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Active Trips</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📍</div><div class="cs-label">Active Trips</div><p>Coming soon</p></div>
+    </div>
+
+    <!-- ── EMPLOYEES ── -->
+    <div class="page" id="page-employees">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Employees</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">👥</div><div class="cs-label">Employees</div><p>Coming soon</p></div>
+    </div>
+
+    <!-- ── EXPENSES ── -->
+    <div class="page" id="page-expenses">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Expenses</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">💸</div><div class="cs-label">Expenses</div><p>Coming soon</p></div>
+    </div>
+
+    <!-- ── BILLING ── -->
+    <div class="page" id="page-billing">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Billing</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">🧾</div><div class="cs-label">Billing</div><p>Coming soon</p></div>
+    </div>
+
+    <!-- ── MATRIX ── -->
+    <div class="page" id="page-matrix">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Matrix</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📊</div><div class="cs-label">Matrix</div><p>Coming soon</p></div>
+    </div>
+
+    <!-- ── SCHEDULER ── -->
+    <div class="page" id="page-scheduler">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Scheduler</div></div></div>
+      <div class="coming-soon"><div class="cs-icon">📅</div><div class="cs-label">Scheduler</div><p>Coming soon</p></div>
+    </div>
+
+    <!-- ── MORE / PROFILE ── -->
+    <div class="page" id="page-more">
+      <div class="sec-head"><div class="sec-back"><button class="back-btn" onclick="showPage('dashboard')">‹</button><div class="sec-title">Account</div></div></div>
+
+      <div class="profile-card">
+        <img id="more-avatar" src="" alt="">
+        <div>
+          <div class="profile-name" id="more-name"></div>
+          <div class="profile-email" id="more-email"></div>
+          <div class="role-pill" id="more-role">Admin</div>
+        </div>
+      </div>
+
+      <div id="admin-menu" style="display:none">
+        <div class="menu-section-label">Admin</div>
+        <div class="menu-card">
+          <div class="menu-item" onclick="showPage('employees')"><div class="mi-left"><span class="mi-icon">👥</span>Employees</div><span class="mi-chev">›</span></div>
+          <div class="menu-item" onclick="showPage('matrix')"><div class="mi-left"><span class="mi-icon">📊</span>Matrix</div><span class="mi-chev">›</span></div>
+          <div class="menu-item" onclick="showPage('scheduler')"><div class="mi-left"><span class="mi-icon">📅</span>Scheduler</div><span class="mi-chev">›</span></div>
+        </div>
+      </div>
+
+      <div class="menu-section-label">Operations</div>
+      <div class="menu-card">
+        <div class="menu-item" onclick="showPage('trucks')"><div class="mi-left"><span class="mi-icon">🚛</span>Truck Roster</div><span class="mi-chev">›</span></div>
+        <div class="menu-item" onclick="showPage('attendance')"><div class="mi-left"><span class="mi-icon">📋</span>Attendance</div><span class="mi-chev">›</span></div>
+        <div class="menu-item" onclick="showPage('trips')"><div class="mi-left"><span class="mi-icon">📍</span>Active Trips</div><span class="mi-chev">›</span></div>
+        <div class="menu-item" onclick="showPage('expenses')"><div class="mi-left"><span class="mi-icon">💸</span>Expenses</div><span class="mi-chev">›</span></div>
+        <div class="menu-item" onclick="showPage('billing')"><div class="mi-left"><span class="mi-icon">🧾</span>Billing</div><span class="mi-chev">›</span></div>
+      </div>
+
+      <div class="menu-card">
+        <div class="menu-item danger" onclick="signOut()"><div class="mi-left"><span class="mi-icon">🚪</span>Sign Out</div></div>
+      </div>
+    </div>
+
+  </div><!-- end page-wrap -->
+
+  <!-- Floating action buttons -->
+  <div style="position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:18px;z-index:49">
+    <button onclick="showPage('more')" style="width:44px;height:44px;background:#1c1c1f;border:1px solid #222226;border-radius:50%;color:#555;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;">☰</button>
+  </div>
+
+</div><!-- end s-app -->
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="onFabClick()" style="display:none">+</button>
+
+<!-- ═══════════════════════════════
+     TRUCK DRAWER
+═══════════════════════════════ -->
+<div class="drawer-overlay" id="truck-drawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title" id="drawer-title">Add Truck</div>
+    <div class="drawer-sub" id="drawer-sub">Fill in the truck details</div>
+    <div class="fg">
+      <label class="fl">Plate Number *</label>
+      <input class="fi" id="f-plate" placeholder="e.g. ABC 1234" autocomplete="off" style="font-size:22px;font-weight:700;letter-spacing:3px">
+    </div>
+    <div class="form-row">
+      <div class="fg"><label class="fl">LTO Registration</label><input class="fi" id="f-lto" placeholder="e.g. Jan 2026"></div>
+      <div class="fg"><label class="fl">NMIS Expiry</label><input class="fi" id="f-nmis" placeholder="e.g. Mar 2026"></div>
+    </div>
+    <div class="fg"><label class="fl">Dimensions / Type</label><input class="fi" id="f-dim" placeholder="e.g. 10-wheeler Reefer 40ft"></div>
+    <div class="fg"><label class="fl">Additional Notes</label><textarea class="fi" id="f-notes" placeholder="Other details..."></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTruck()">Save Truck</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────
+const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const SHEET_NAME = 'Truck Roster';
+const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
+
+let token=null, userRole='employee', allTrucks=[], editingRow=null, curPage='dashboard';
+
+const pageTitles = {
+  dashboard:'Dashboard',trucks:'Truck Roster',attendance:'Attendance',
+  trips:'Active Trips',employees:'Employees',expenses:'Expenses',
+  billing:'Billing',matrix:'Matrix',scheduler:'Scheduler',more:'Account'
+};
+
+const ADMIN_MODULES = [
+  {id:'trucks',    icon:'🚛',label:'Trucks',      stat:'s-trucks', sub:'Fleet roster'},
+  {id:'attendance',icon:'📋',label:'Attendance',  stat:'s-attend', sub:'Today\'s log'},
+  {id:'trips',     icon:'📍',label:'Active Trips',stat:'s-trips',  sub:'On the road'},
+  {id:'employees', icon:'👥',label:'Employees',   stat:'s-emp',    sub:'Total staff'},
+  {id:'expenses',  icon:'💸',label:'Expenses',    stat:'s-exp',    sub:'This month'},
+  {id:'billing',   icon:'🧾',label:'Billing',     stat:'s-bill',   sub:'Invoices'},
+  {id:'matrix',    icon:'📊',label:'Matrix',      stat:'s-matrix', sub:'Performance'},
+  {id:'scheduler', icon:'📅',label:'Scheduler',   stat:'s-sched',  sub:'Upcoming',wide:true},
+];
+
+const EMPLOYEE_MODULES = [
+  {id:'attendance',icon:'📋',label:'Attendance',  stat:'s-attend', sub:'Today\'s log'},
+  {id:'trips',     icon:'📍',label:'Active Trips',stat:'s-trips',  sub:'On the road'},
+  {id:'expenses',  icon:'💸',label:'Expenses',    stat:'s-exp',    sub:'This month'},
+];
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+function signIn(){
+  google.accounts.oauth2.initTokenClient({
+    client_id:CLIENT_ID, scope:SCOPES,
+    callback:(res)=>{
+      if(res.error){alert('Login failed');return;}
+      token=res.access_token;
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+token}})
+        .then(r=>r.json()).then(u=>{
+          userRole = ADMIN_EMAILS.includes(u.email) ? 'admin' : 'employee';
+          ['user-avatar','more-avatar'].forEach(id=>{const e=document.getElementById(id);if(e)e.src=u.picture||'';});
+          document.getElementById('more-name').textContent  = u.name||'';
+          document.getElementById('more-email').textContent = u.email||'';
+          document.querySelectorAll('.role-pill,[data-role]').forEach(b=>b.textContent=userRole==='admin'?'Admin':'Employee');
+          if(userRole==='admin') document.getElementById('admin-menu').style.display='block';
+          document.getElementById('s-login').classList.remove('active');
+          document.getElementById('s-app').classList.add('active');
+          const now=new Date(), h=now.getHours();
+          const gr=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+          document.getElementById('dash-greeting').textContent=gr+', '+(u.given_name||'team')+'!';
+          document.getElementById('dash-date').textContent=now.toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+          buildDashboard();
+          showPage('dashboard');
+          loadTrucks();
+        });
+    }
+  }).requestAccessToken({prompt:'consent'});
+}
+
+function signOut(){
+  google.accounts.oauth2.revoke(token,()=>{
+    token=null;allTrucks=[];
+    document.getElementById('s-app').classList.remove('active');
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('fab').style.display='none';
+  });
+}
+
+function buildDashboard(){
+  const mods=userRole==='admin'?ADMIN_MODULES:EMPLOYEE_MODULES;
+  document.getElementById('mod-grid').innerHTML=mods.map(m=>`
+    <div class="mod-card${m.wide?' wide':''}" onclick="showPage('${m.id}')">
+      <span class="mod-icon">${m.icon}</span>
+      <div class="mod-label">${m.label}</div>
+      <div class="mod-value" id="${m.stat}">—</div>
+      <div class="mod-sub">${m.sub}</div>
+    </div>`).join('');
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+name);
+  if(pg) pg.classList.add('active');
+  document.getElementById('tb-title').textContent=pageTitles[name]||'';
+  document.getElementById('page-wrap').scrollTop=0;
+  curPage=name;
+  const fabPages=['trucks'];
+  document.getElementById('fab').style.display=fabPages.includes(name)&&userRole==='admin'?'flex':'none';
+  if(name==='trucks') loadTrucks();
+}
+
+function onFabClick(){ if(curPage==='trucks') openDrawer(); }
+
+function apiGet(r){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(r)}`,{headers:{Authorization:'Bearer '+token}}).then(r=>r.json());}
+function apiAppend(r,v){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(r)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:v})}).then(r=>r.json());}
+function apiUpdate(r,v){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(r)}?valueInputOption=RAW`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:v})}).then(r=>r.json());}
+
+function loadTrucks(){
+  document.getElementById('trucks-loading').style.display='flex';
+  document.getElementById('trucks-list').innerHTML='';
+  document.getElementById('trucks-empty').style.display='none';
+  const s=document.getElementById('truck-search');if(s)s.value='';
+  apiGet(SHEET_NAME+'!A2:F').then(res=>{
+    allTrucks=(res.values||[]).map((r,i)=>({rowIndex:i+2,id:r[0]||'',plate:r[1]||'',lto:r[2]||'',nmis:r[3]||'',dim:r[4]||'',notes:r[5]||''})).filter(t=>t.plate);
+    const se=document.getElementById('s-trucks');if(se)se.textContent=allTrucks.length;
+    renderTrucks(allTrucks);
+    document.getElementById('trucks-loading').style.display='none';
+  }).catch(()=>{document.getElementById('trucks-loading').style.display='none';showToast('Cannot load data.');});
+}
+
+function renderTrucks(list){
+  const c=document.getElementById('trucks-list'),e=document.getElementById('trucks-empty');
+  if(!list.length){c.innerHTML='';e.style.display='block';return;}
+  e.style.display='none';
+  const canEdit=userRole==='admin';
+  c.innerHTML=list.map(t=>`
+    <div class="truck-card">
+      <div class="tc-head"><span class="tc-plate">${t.plate}</span><span class="tc-id">${t.id}</span></div>
+      <div class="tc-chips">
+        ${t.lto?`<span class="chip">LTO <b>${t.lto}</b></span>`:''}
+        ${t.nmis?`<span class="chip">NMIS <b>${t.nmis}</b></span>`:''}
+        ${t.dim?`<span class="chip">📐 <b>${t.dim}</b></span>`:''}
+      </div>
+      ${t.notes?`<div class="tc-note">${t.notes}</div>`:''}
+      ${canEdit?`<div class="tc-foot"><button class="tc-edit-btn" onclick="editTruck(${t.rowIndex})">Edit</button></div>`:''}
+    </div>`).join('');
+}
+
+function filterTrucks(q){const f=q.toLowerCase();renderTrucks(allTrucks.filter(t=>t.plate.toLowerCase().includes(f)||t.lto.toLowerCase().includes(f)||t.dim.toLowerCase().includes(f)||t.notes.toLowerCase().includes(f)));}
+
+function openDrawer(){editingRow=null;document.getElementById('drawer-title').textContent='Add Truck';document.getElementById('drawer-sub').textContent='Fill in the truck details';['plate','lto','nmis','dim','notes'].forEach(f=>document.getElementById('f-'+f).value='');document.getElementById('truck-drawer').classList.add('open');}
+function editTruck(rowIndex){const t=allTrucks.find(x=>x.rowIndex===rowIndex);if(!t)return;editingRow=rowIndex;document.getElementById('drawer-title').textContent='Edit Truck';document.getElementById('drawer-sub').textContent=t.plate;document.getElementById('f-plate').value=t.plate;document.getElementById('f-lto').value=t.lto;document.getElementById('f-nmis').value=t.nmis;document.getElementById('f-dim').value=t.dim;document.getElementById('f-notes').value=t.notes;document.getElementById('truck-drawer').classList.add('open');}
+function closeDrawer(){document.getElementById('truck-drawer').classList.remove('open');}
+
+async function saveTruck(){
+  const plate=document.getElementById('f-plate').value.trim().toUpperCase();
+  if(!plate){showToast('Plate Number is required!');return;}
+  const lto=document.getElementById('f-lto').value.trim(),nmis=document.getElementById('f-nmis').value.trim(),dim=document.getElementById('f-dim').value.trim(),notes=document.getElementById('f-notes').value.trim();
+  try{
+    if(editingRow){const t=allTrucks.find(x=>x.rowIndex===editingRow);await apiUpdate(`${SHEET_NAME}!A${editingRow}:F${editingRow}`,[[t.id,plate,lto,nmis,dim,notes]]);showToast('✅ Truck updated!');}
+    else{const id='TRK-'+String(allTrucks.length+1).padStart(3,'0');await apiAppend(SHEET_NAME+'!A:F',[[id,plate,lto,nmis,dim,notes]]);showToast('✅ Truck added!');}
+    closeDrawer();loadTrucks();
+  }catch{showToast('❌ Save failed.');}
+}
+
+document.getElementById('truck-drawer').addEventListener('click',function(e){if(e.target===this)closeDrawer();});
+
+let toastTimer;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body>
+</html>
