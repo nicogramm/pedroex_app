@@ -101,50 +101,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   100%{left:calc(50% - 102px)}
 }
 
-/* Truck wrapper - for transparency */
-.truck-img-wrap{
-  position:relative;
-  width:100%;
-  height:auto;
-}
-
-/* Truck image - FORCE TRANSPARENT BACKGROUND */
+/* Truck image - JPG with logo already embedded */
 .truck-img{
   width:100%;
   height:auto;
   display:block;
-  /* REMOVE BLACK - multiple methods for compatibility */
-  background: transparent;
-  isolation: isolate;
   filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
-}
-
-/* Logo overlay - APPEARS WITH TRUCK, centered on body */
-.truck-logo-overlay{
-  position:absolute;
-  /* Centered on truck body */
-  top: 42%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 35%;
-  /* SAME ANIMATION AS TRUCK - appears together */
-  opacity:0;
-  animation:logoWithTruck 2.2s cubic-bezier(0.16,1,0.3,1) forwards;
-  animation-delay:0.3s;
-  pointer-events:none;
-  z-index:2;
-}
-.truck-logo-overlay img{
-  width:100%;
-  height:auto;
-  filter:brightness(0.95) contrast(1.1) drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
-
-/* Logo fades in WITH truck movement */
-@keyframes logoWithTruck{
-  0%  {opacity:0}
-  70% {opacity:1}
-  100%{opacity:1}
 }
 
 /* Welcome logo — fades in above truck */
@@ -545,16 +507,9 @@ textarea.fi{resize:none;min-height:80px}
     <div class="road-base"></div>
     <div class="road-marks"></div>
 
-    <!-- Truck container - everything scales together -->
+    <!-- Truck with embedded logo from Photoshop -->
     <div class="truck-container">
-      <div class="truck-img-wrap">
-        <img class="truck-img" src="truck.png" alt="PedroEX Truck">
-        
-        <!-- Logo overlaid on truck body - appears WITH truck -->
-        <div class="truck-logo-overlay">
-          <img src="logo2.png" alt="PedroEX Logo">
-        </div>
-      </div>
+      <img class="truck-img" src="truck.jpg" alt="PedroEX Truck">
     </div>
 
     <!-- PedroEX logo appears above -->
@@ -751,8 +706,8 @@ textarea.fi{resize:none;min-height:80px}
 
 <div class="toast" id="toast"></div>
 
-<!-- Load Google Identity Services FIRST -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- Load Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer onload="onGoogleLibraryLoad()"></script>
 
 <script>
 // ── CONFIG ───────────────────────────────────────────
@@ -770,6 +725,7 @@ let curPage    = 'dashboard';
 let prevPage   = 'dashboard';
 let isDark     = true;
 let tokenClient = null;
+let googleLibraryLoaded = false;
 
 // ── MODULE DEFINITIONS - 9 OPTIONS ──────────────────
 const ADMIN_MODULES = [
@@ -798,65 +754,78 @@ const pageTitles = {
   settings:'Settings'
 };
 
-// ── WAIT FOR GOOGLE API TO LOAD ─────────────────────
-function initGoogleAuth() {
-  console.log('🔑 Initializing Google Auth...');
-  
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: CLIENT_ID,
-    scope: SCOPES,
-    callback: handleAuthResponse,
-  });
-  
-  console.log('✅ Google Auth ready');
-  
-  // Attach login handler
-  document.getElementById('login-btn').addEventListener('click', signIn);
+// ── GOOGLE LIBRARY LOAD CALLBACK ─────────────────────
+function onGoogleLibraryLoad() {
+  console.log('✅ Google library loaded');
+  googleLibraryLoaded = true;
+  initGoogleAuth();
 }
 
-// Wait for Google API to load
-window.addEventListener('load', () => {
-  if (typeof google !== 'undefined' && google.accounts) {
-    initGoogleAuth();
-  } else {
+// ── INITIALIZE GOOGLE AUTH ──────────────────────────
+function initGoogleAuth() {
+  if (!googleLibraryLoaded || typeof google === 'undefined') {
     console.log('⏳ Waiting for Google API...');
-    const checkGoogle = setInterval(() => {
-      if (typeof google !== 'undefined' && google.accounts) {
-        clearInterval(checkGoogle);
-        initGoogleAuth();
-      }
-    }, 100);
+    setTimeout(initGoogleAuth, 100);
+    return;
   }
-});
 
-// ── AUTH ─────────────────────────────────────────────
+  console.log('🔑 Initializing Google Auth...');
+  
+  try {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: handleAuthResponse,
+    });
+    
+    console.log('✅ Token client initialized');
+    
+    // Attach login handler
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', signIn);
+      console.log('✅ Login button ready');
+    }
+  } catch (error) {
+    console.error('❌ Auth init error:', error);
+  }
+}
+
+// ── SIGN IN ──────────────────────────────────────────
 function signIn() {
-  console.log('🔐 Sign in clicked...');
+  console.log('🔐 Sign in clicked');
   
   if (!tokenClient) {
-    console.error('❌ Token client not initialized');
-    alert('Authentication not ready. Please refresh the page.');
+    console.error('❌ Token client not ready');
+    showToast('Authentication not ready. Please refresh.');
     return;
   }
   
-  tokenClient.requestAccessToken({ prompt: 'consent' });
+  try {
+    tokenClient.requestAccessToken({ prompt: 'consent' });
+    console.log('📤 Access token requested');
+  } catch (error) {
+    console.error('❌ Sign in error:', error);
+    showToast('Sign in failed. Please try again.');
+  }
 }
 
+// ── HANDLE AUTH RESPONSE ─────────────────────────────
 async function handleAuthResponse(response) {
-  console.log('📥 Auth response:', response);
+  console.log('📥 Auth response received');
   
   if (response.error) {
     console.error('❌ Auth error:', response.error);
-    alert('Login failed: ' + response.error);
+    showToast('Login failed: ' + response.error);
     return;
   }
   
   token = response.access_token;
-  console.log('✅ Token received');
+  console.log('✅ Token acquired');
   
   try {
-    // Fetch user info
     console.log('👤 Fetching user info...');
+    
     const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
@@ -866,24 +835,29 @@ async function handleAuthResponse(response) {
     }
     
     const user = await userRes.json();
-    console.log('✅ User loaded:', user.email);
+    console.log('✅ User info loaded:', user.email);
     
-    // Check role
+    // Determine role
     userRole = ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase()) ? 'admin' : 'employee';
-    console.log('👔 Role:', userRole);
+    console.log('👔 User role:', userRole);
     
-    // Set UI
-    ['user-avatar', 'more-avatar'].forEach(id => {
+    // Update UI elements
+    const avatarIds = ['user-avatar', 'more-avatar'];
+    avatarIds.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.src = user.picture || '';
     });
     
-    document.getElementById('more-name').textContent = user.name || '';
-    document.getElementById('more-email').textContent = user.email || '';
-    document.getElementById('more-role').textContent = userRole === 'admin' ? 'Admin' : 'Employee';
+    const nameEl = document.getElementById('more-name');
+    const emailEl = document.getElementById('more-email');
+    const roleEl = document.getElementById('more-role');
     
-    // Switch to app
-    console.log('🚀 Launching app...');
+    if (nameEl) nameEl.textContent = user.name || '';
+    if (emailEl) emailEl.textContent = user.email || '';
+    if (roleEl) roleEl.textContent = userRole === 'admin' ? 'Admin' : 'Employee';
+    
+    // Switch screens
+    console.log('🚀 Switching to app screen...');
     document.getElementById('s-login').classList.remove('active');
     document.getElementById('s-app').classList.add('active');
     
@@ -891,23 +865,34 @@ async function handleAuthResponse(response) {
     const now = new Date();
     const hour = now.getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('dash-name').textContent = greeting + ', ' + (user.given_name || 'team') + '!';
-    document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+    
+    const dashNameEl = document.getElementById('dash-name');
+    const dashDateEl = document.getElementById('dash-date');
+    
+    if (dashNameEl) dashNameEl.textContent = greeting + ', ' + (user.given_name || 'team') + '!';
+    if (dashDateEl) dashDateEl.textContent = now.toLocaleDateString('en-PH', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
     
     // Build dashboard
     console.log('🏗️ Building dashboard...');
     buildDashboard();
+    
+    console.log('📄 Showing dashboard page...');
     showPage('dashboard');
+    
+    console.log('🚛 Loading trucks...');
     loadTrucks();
     
+    console.log('✅ App launched successfully');
+    
   } catch (error) {
-    console.error('❌ Error:', error);
-    alert('Failed to load user information: ' + error.message);
+    console.error('❌ User info error:', error);
+    showToast('Failed to load user info: ' + error.message);
   }
 }
 
+// ── SIGN OUT ─────────────────────────────────────────
 function signOut() {
   if (token && typeof google !== 'undefined') {
     google.accounts.oauth2.revoke(token, () => {
@@ -940,14 +925,24 @@ const savedTheme = localStorage.getItem('theme');
 applyTheme(savedTheme !== 'light');
 
 // ── PWA ──────────────────────────────────────────────
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(err => {
+    console.log('Service worker registration failed:', err);
+  });
+}
 
 // ── DASHBOARD ────────────────────────────────────────
 function buildDashboard() {
   const mods = userRole === 'admin' ? ADMIN_MODULES : EMPLOYEE_MODULES;
-  console.log('📊 Building', mods.length, 'modules');
+  console.log('📊 Building', mods.length, 'modules for', userRole);
   
-  document.getElementById('mod-grid').innerHTML = mods.map(m => `
+  const gridEl = document.getElementById('mod-grid');
+  if (!gridEl) {
+    console.error('❌ mod-grid element not found');
+    return;
+  }
+  
+  gridEl.innerHTML = mods.map(m => `
     <div class="mod-card${m.wide ? ' wide' : ''}" onclick="showPage('${m.id}')">
       <span class="mod-icon">${m.icon}</span>
       <div class="mod-label">${m.label}</div>
@@ -956,29 +951,39 @@ function buildDashboard() {
     </div>
   `).join('');
   
-  console.log('✅ Dashboard built');
+  console.log('✅ Dashboard built with', mods.length, 'modules');
 }
 
 // ── NAVIGATION ───────────────────────────────────────
 function showPage(name) {
-  console.log('📄 Page:', name);
+  console.log('📄 Showing page:', name);
   prevPage = curPage;
   
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
   
   const page = document.getElementById('page-' + name);
-  if (page) page.classList.add('active');
+  if (page) {
+    page.classList.add('active');
+    console.log('✅ Page activated:', name);
+  } else {
+    console.error('❌ Page not found:', name);
+  }
   
   const bbMap = { dashboard:'bb-home', trucks:'bb-trucks', trips:'bb-trips', billing:'bb-billing', settings:'bb-settings' };
   const btn = document.getElementById(bbMap[name]);
   if (btn) btn.classList.add('active');
   
-  document.getElementById('tb-title').textContent = pageTitles[name] || '';
-  document.getElementById('page-wrap').scrollTop = 0;
+  const titleEl = document.getElementById('tb-title');
+  if (titleEl) titleEl.textContent = pageTitles[name] || '';
+  
+  const wrapEl = document.getElementById('page-wrap');
+  if (wrapEl) wrapEl.scrollTop = 0;
+  
   curPage = name;
   
-  document.getElementById('fab').style.display = (name === 'trucks' && userRole === 'admin') ? 'flex' : 'none';
+  const fabEl = document.getElementById('fab');
+  if (fabEl) fabEl.style.display = (name === 'trucks' && userRole === 'admin') ? 'flex' : 'none';
   
   if (name === 'trucks') loadTrucks();
 }
@@ -1013,11 +1018,15 @@ function apiUpdate(range, values) {
 // ── TRUCKS ───────────────────────────────────────────
 function loadTrucks() {
   console.log('🚛 Loading trucks...');
-  document.getElementById('trucks-loading').style.display = 'flex';
-  document.getElementById('trucks-list').innerHTML = '';
-  document.getElementById('trucks-empty').style.display = 'none';
-  const searchInput = document.getElementById('truck-search');
-  if (searchInput) searchInput.value = '';
+  const loadingEl = document.getElementById('trucks-loading');
+  const listEl = document.getElementById('trucks-list');
+  const emptyEl = document.getElementById('trucks-empty');
+  const searchEl = document.getElementById('truck-search');
+  
+  if (loadingEl) loadingEl.style.display = 'flex';
+  if (listEl) listEl.innerHTML = '';
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (searchEl) searchEl.value = '';
   
   apiGet(SHEET_NAME + '!A2:F')
     .then(res => {
@@ -1037,11 +1046,11 @@ function loadTrucks() {
       if (statEl) statEl.textContent = allTrucks.length;
       
       renderTrucks(allTrucks);
-      document.getElementById('trucks-loading').style.display = 'none';
+      if (loadingEl) loadingEl.style.display = 'none';
     })
     .catch(err => {
       console.error('❌ Truck load error:', err);
-      document.getElementById('trucks-loading').style.display = 'none';
+      if (loadingEl) loadingEl.style.display = 'none';
       showToast('Cannot load data. Check connection.');
     });
 }
@@ -1049,6 +1058,8 @@ function loadTrucks() {
 function renderTrucks(list) {
   const container = document.getElementById('trucks-list');
   const empty = document.getElementById('trucks-empty');
+  
+  if (!container || !empty) return;
   
   if (!list.length) {
     container.innerHTML = '';
@@ -1091,7 +1102,10 @@ function openDrawer() {
   editingRow = null;
   document.getElementById('drawer-title').textContent = 'Add Truck';
   document.getElementById('drawer-sub').textContent = 'Fill in the truck details';
-  ['plate', 'lto', 'nmis', 'dim', 'notes'].forEach(f => document.getElementById('f-' + f).value = '');
+  ['plate', 'lto', 'nmis', 'dim', 'notes'].forEach(f => {
+    const el = document.getElementById('f-' + f);
+    if (el) el.value = '';
+  });
   document.getElementById('truck-drawer').classList.add('open');
 }
 
@@ -1152,6 +1166,7 @@ document.getElementById('truck-drawer').addEventListener('click', function(e) {
 let toastTimer;
 function showToast(msg) {
   const toast = document.getElementById('toast');
+  if (!toast) return;
   toast.textContent = msg;
   toast.classList.add('show');
   clearTimeout(toastTimer);
@@ -1159,7 +1174,8 @@ function showToast(msg) {
 }
 
 // ── INITIALIZATION ───────────────────────────────────
-console.log('✅ PedroEX loaded');
+console.log('✅ PedroEX app script loaded');
+console.log('📍 Waiting for Google library...');
 </script>
 </body>
 </html>
