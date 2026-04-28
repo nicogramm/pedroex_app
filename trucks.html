@@ -815,7 +815,7 @@ function saveTruck() {
           setTimeout(loadTrucks, 400);
         });
     } else {
-      var id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
+      var id = 'PDX-TRUCK-' + String(allTrucks.length + 1).padStart(3, '0');
       row = [id, plate, lto, nmis, dim, notes, photoUrl];
       return apiAppend(SHEET_TAB + '!A:G', [row])
         .then(function() {
