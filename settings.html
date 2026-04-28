@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Settings - PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   NEUMORPHIC THEME VARIABLES
+═══════════════════════════════════════ */
+:root {
+  --bg:       #e0e0e5;
+  --bg2:      #e8e8ed;
+  --shadow-d: #b8b9be;
+  --shadow-l: #ffffff;
+  --text:     #2a2a2e;
+  --text2:    #777;
+  --text3:    #aaa;
+  --red:      #B32533;
+  --red-d:    #8f1e29;
+  --card:     #e0e0e5;
+
+  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+  
+  /* Font settings */
+  --font-family: 'Inter', sans-serif;
+  --font-size: 16px;
+}
+
+body.dark {
+  --bg:       #2a2a2f;
+  --bg2:      #313137;
+  --shadow-d: #16161a;
+  --shadow-l: #3e3e46;
+  --text:     #e8e8ec;
+  --text2:    #888;
+  --text3:    #555;
+  --card:     #2a2a2f;
+
+  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
+}
+
+/* Font size variants */
+body.font-small { --font-size: 14px }
+body.font-medium { --font-size: 16px }
+body.font-large { --font-size: 18px }
+
+/* Font family variants */
+body.font-inter { --font-family: 'Inter', sans-serif }
+body.font-roboto { --font-family: 'Roboto', sans-serif }
+body.font-opensans { --font-family: 'Open Sans', sans-serif }
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
+html,body { 
+  height:100%; overflow:hidden; 
+  background:var(--bg); color:var(--text); 
+  font-family:var(--font-family); 
+  font-size:var(--font-size);
+  -webkit-font-smoothing:antialiased; 
+  transition:background 0.4s,color 0.4s 
+}
+
+.screen { display:flex; flex-direction:column; height:100dvh; width:100% }
+
+/* TOPBAR */
+.topbar {
+  background: var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
+  flex-shrink:0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
+
+.tb-brand { display:flex; align-items:center; gap:2px }
+.tb-right { display:flex; align-items:center; gap:12px }
+.tb-title { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text3) }
+.tb-avatar { width:32px; height:32px; border-radius:50%; border:2px solid var(--red); object-fit:cover; box-shadow: var(--neu-xs) }
+
+/* PAGE WRAP */
+.page-wrap { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; padding-bottom:90px }
+
+/* PAGE HEADER */
+.page-header { display:flex; align-items:center; gap:12px; margin-bottom:20px }
+.back-btn {
+  width:36px; height:36px;
+  background:var(--bg); border:none; border-radius:12px;
+  box-shadow: var(--neu-sm);
+  color:var(--text2); font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition: box-shadow 0.15s;
+}
+.back-btn:active { box-shadow: var(--neu-in) }
+.page-title { font-size:20px; font-weight:700; color:var(--text); letter-spacing:-0.3px }
+
+/* PROFILE CARD */
+.profile-card {
+  background:var(--bg); border-radius:20px;
+  box-shadow: var(--neu-out);
+  padding:20px; display:flex; align-items:center; gap:16px; margin-bottom:24px;
+}
+.profile-card img { 
+  width:64px; height:64px; border-radius:50%; 
+  border:3px solid var(--red); object-fit:cover; 
+  box-shadow: var(--neu-xs) 
+}
+.profile-info { flex:1; min-width:0 }
+.profile-name { font-size:18px; font-weight:700; color:var(--text); margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.profile-email { font-size:13px; color:var(--text2); margin-bottom:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.role-pill { 
+  display:inline-block; background:var(--red); color:#fff; 
+  font-size:10px; font-weight:700; letter-spacing:1.5px; 
+  text-transform:uppercase; padding:4px 12px; border-radius:20px;
+}
+
+/* SETTINGS SECTIONS */
+.settings-section { margin-bottom:24px }
+.settings-label { 
+  font-size:11px; font-weight:700; letter-spacing:2px; 
+  text-transform:uppercase; color:var(--text3); 
+  margin-bottom:12px; padding-left:4px 
+}
+.settings-card { 
+  background:var(--bg); border-radius:18px; 
+  box-shadow: var(--neu-out); overflow:hidden 
+}
+
+/* SETTINGS ITEMS */
+.settings-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 18px;
+  border-bottom:1px solid rgba(0,0,0,0.05);
+  cursor:pointer; transition:background 0.15s;
+}
+body.dark .settings-item { border-bottom-color:rgba(255,255,255,0.04) }
+.settings-item:last-child { border-bottom:none }
+.settings-item:active { background:rgba(0,0,0,0.03) }
+body.dark .settings-item:active { background:rgba(255,255,255,0.03) }
+
+.si-left { display:flex; align-items:center; gap:14px; flex:1; min-width:0 }
+.si-icon {
+  width:36px; height:36px; border-radius:10px;
+  background:var(--bg); box-shadow: var(--neu-xs);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.si-icon svg { width:18px; height:18px }
+.si-label { font-size:15px; font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.si-value { font-size:13px; color:var(--text2); margin-right:8px; flex-shrink:0 }
+.si-chev { color:var(--text3); font-size:18px; flex-shrink:0 }
+.si-red { color:var(--red) }
+
+/* TOGGLE */
+.toggle-track {
+  width:48px; height:28px;
+  border-radius:14px;
+  background:var(--bg);
+  box-shadow: var(--neu-in);
+  position:relative; cursor:pointer; flex-shrink:0;
+}
+.toggle-thumb {
+  width:22px; height:22px; border-radius:50%;
+  background:var(--text3);
+  position:absolute; top:3px; left:3px;
+  transition:transform 0.25s, background 0.25s;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+.toggle-track.on .toggle-thumb { transform:translateX(20px); background:var(--red) }
+
+/* SELECT DROPDOWN */
+.select-wrap {
+  position:relative;
+  background:var(--bg);
+  border-radius:10px;
+  box-shadow: var(--neu-in);
+  overflow:hidden;
+}
+.select-wrap select {
+  width:100%; padding:8px 32px 8px 12px;
+  background:transparent; border:none;
+  color:var(--text); font-size:13px;
+  font-family:inherit; font-weight:500;
+  cursor:pointer; outline:none;
+  appearance:none; -webkit-appearance:none;
+}
+.select-wrap::after {
+  content:'›'; position:absolute; right:12px; top:50%;
+  transform:translateY(-50%) rotate(90deg);
+  color:var(--text3); font-size:16px; pointer-events:none;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--bg);
+  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex; align-items:center; justify-content:space-around;
+  box-shadow: 0 -3px 14px rgba(0,0,0,0.07);
+  z-index:40;
+}
+body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
+
+.bnav {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+  color:var(--text3); cursor:pointer; border:none; background:none;
+  font-family:'Inter',sans-serif;
+}
+.bnav.active { color:var(--red) }
+
+.bnav-icon {
+  width:42px; height:42px;
+  border-radius:14px;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  transition: box-shadow 0.2s;
+}
+.bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm) }
+.bnav.active .bnav-icon { box-shadow: var(--neu-in) }
+
+/* TOAST */
+.toast {
+  position:fixed;
+  bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  left:50%; transform:translateX(-50%);
+  background:var(--bg); border-radius:14px;
+  box-shadow: var(--neu-out);
+  border-left:3px solid var(--red);
+  padding:13px 22px; font-size:13px; font-weight:500; color:var(--text);
+  z-index:300; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity 0.25s;
+}
+.toast.show { opacity:1 }
+
+/* CONFIRMATION MODAL */
+.confirm-overlay {
+  display:none; position:fixed; inset:0; 
+  background:rgba(0,0,0,0.6); z-index:200; 
+  align-items:center; justify-content:center; padding:20px;
+}
+.confirm-overlay.open { display:flex }
+.confirm-box {
+  background:var(--bg); border-radius:20px;
+  max-width:360px; width:100%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+
+.confirm-header {
+  padding:24px 24px 16px;
+  border-bottom:1px solid rgba(0,0,0,0.05);
+}
+body.dark .confirm-header { border-bottom-color:rgba(255,255,255,0.04) }
+.confirm-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px }
+.confirm-message { font-size:14px; color:var(--text2); line-height:1.6 }
+
+.confirm-footer {
+  padding:16px 24px;
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+.confirm-btn {
+  padding:12px; border-radius:12px;
+  font-size:14px; font-weight:600; font-family:inherit;
+  cursor:pointer; border:none; transition:transform 0.15s;
+}
+.confirm-btn:active { transform:scale(0.98) }
+.confirm-btn-cancel { 
+  background:var(--bg); color:var(--text2); 
+  box-shadow: var(--neu-sm) 
+}
+.confirm-btn-cancel:active { box-shadow: var(--neu-in) }
+.confirm-btn-confirm { 
+  background:var(--red); color:#fff; 
+  box-shadow:4px 4px 12px rgba(179,37,51,0.4) 
+}
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <img src="logo2.png" alt="PedroEX" style="height:22px">
+    </div>
+    <div class="tb-right">
+      <span class="tb-title">Settings</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-wrap">
+    <div class="page-header">
+      <button class="back-btn" onclick="location.href='index.html'">‹</button>
+      <div class="page-title">Settings</div>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+      <img id="profile-avatar" src="" alt="">
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name">Loading...</div>
+        <div class="profile-email" id="profile-email">Loading...</div>
+        <div class="role-pill" id="profile-role">User</div>
+      </div>
+    </div>
+
+    <!-- APPEARANCE -->
+    <div class="settings-section">
+      <div class="settings-label">Appearance</div>
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="var(--text2)" stroke-width="2"/>
+              </svg>
+            </div>
+            <span class="si-label">Dark Mode</span>
+          </div>
+          <span class="si-value" id="theme-value">Off</span>
+          <div class="toggle-track" id="theme-toggle" onclick="toggleTheme()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M4 7h16M4 12h16M4 17h10" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label">Font Size</span>
+          </div>
+          <div class="select-wrap">
+            <select id="font-size-select" onchange="changeFontSize(this.value)">
+              <option value="small">Small</option>
+              <option value="medium" selected>Medium</option>
+              <option value="large">Large</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <text x="3" y="18" font-size="16" fill="var(--text2)" font-weight="600">Aa</text>
+              </svg>
+            </div>
+            <span class="si-label">Font Family</span>
+          </div>
+          <div class="select-wrap">
+            <select id="font-family-select" onchange="changeFontFamily(this.value)">
+              <option value="inter" selected>Inter</option>
+              <option value="roboto">Roboto</option>
+              <option value="opensans">Open Sans</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="settings-section">
+      <div class="settings-label">Notifications</div>
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label">Push Notifications</span>
+          </div>
+          <span class="si-value" id="notif-value">Off</span>
+          <div class="toggle-track" id="notif-toggle" onclick="toggleNotifications()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label">Sound</span>
+          </div>
+          <span class="si-value" id="sound-value">Off</span>
+          <div class="toggle-track" id="sound-toggle" onclick="toggleSound()">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LANGUAGE -->
+    <div class="settings-section">
+      <div class="settings-label">Language</div>
+      <div class="settings-card">
+        <div class="settings-item">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="var(--text2)" stroke-width="2"/>
+                <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="var(--text2)" stroke-width="2"/>
+              </svg>
+            </div>
+            <span class="si-label">Language</span>
+          </div>
+          <div class="select-wrap">
+            <select id="language-select" onchange="changeLanguage(this.value)">
+              <option value="en" selected>English</option>
+              <option value="fil">Filipino</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA & PRIVACY -->
+    <div class="settings-section">
+      <div class="settings-label">Data & Privacy</div>
+      <div class="settings-card">
+        <div class="settings-item" onclick="clearCache()">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label">Clear Cache</span>
+          </div>
+          <span class="si-chev">›</span>
+        </div>
+
+        <div class="settings-item" onclick="exportData()">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label">Export My Data</span>
+          </div>
+          <span class="si-chev">›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="settings-section">
+      <div class="settings-label">About</div>
+      <div class="settings-card">
+        <div class="settings-item" onclick="showToast('PedroEX v1.0.0')">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="var(--text2)" stroke-width="2"/>
+                <path d="M12 16v-4M12 8h.01" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label">App Version</span>
+          </div>
+          <span class="si-value">1.0.0</span>
+        </div>
+
+        <div class="settings-item" onclick="showToast('Terms of Service')">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="var(--text2)" stroke-width="2"/>
+                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label">Terms of Service</span>
+          </div>
+          <span class="si-chev">›</span>
+        </div>
+
+        <div class="settings-item" onclick="showToast('Privacy Policy')">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="var(--text2)" stroke-width="2"/>
+              </svg>
+            </div>
+            <span class="si-label">Privacy Policy</span>
+          </div>
+          <span class="si-chev">›</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div class="settings-section">
+      <div class="settings-label">Account</div>
+      <div class="settings-card">
+        <div class="settings-item" onclick="confirmSignOut()">
+          <div class="si-left">
+            <div class="si-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/>
+                <polyline points="16 17 21 12 16 7" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/>
+                <line x1="21" y1="12" x2="9" y2="12" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="si-label si-red">Sign Out</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="bnav" onclick="location.href='index.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
+      Home
+    </button>
+    <button class="bnav" onclick="location.href='trucks.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trucks
+    </button>
+    <button class="bnav" onclick="location.href='trips.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trips
+    </button>
+    <button class="bnav" onclick="location.href='billing.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Billing
+    </button>
+    <button class="bnav active">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Settings
+    </button>
+  </div>
+</div>
+
+<!-- CONFIRMATION MODAL -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-header">
+      <div class="confirm-title" id="confirm-title">Confirm Action</div>
+      <div class="confirm-message" id="confirm-message">Are you sure?</div>
+    </div>
+    <div class="confirm-footer">
+      <button class="confirm-btn confirm-btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-btn confirm-btn-confirm" id="confirm-action-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_EMAIL = 'nicolobalonzo@gmail.com';
+
+// INIT
+function init() {
+  // Check auth
+  const token = localStorage.getItem('pedroex-token');
+  const expiry = localStorage.getItem('pedroex-token-expiry');
+  if (!token || !expiry || Date.now() >= parseInt(expiry)) {
+    location.href = 'index.html';
+    return;
+  }
+
+  // Load user info
+  const name = localStorage.getItem('pedroex-name') || 'User';
+  const email = localStorage.getItem('pedroex-email') || '';
+  const picture = localStorage.getItem('pedroex-picture') || '';
+  const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+  document.getElementById('profile-name').textContent = name;
+  document.getElementById('profile-email').textContent = email;
+  document.getElementById('profile-role').textContent = isAdmin ? 'Admin' : 'Employee';
+  
+  if (picture) {
+    document.getElementById('profile-avatar').src = picture;
+    document.getElementById('user-avatar').src = picture;
+  }
+
+  // Load settings
+  loadSettings();
+}
+
+// LOAD SETTINGS
+function loadSettings() {
+  // Theme
+  const isDark = localStorage.getItem('pedroex-theme') === 'dark';
+  applyTheme(isDark);
+
+  // Font size
+  const fontSize = localStorage.getItem('pedroex-font-size') || 'medium';
+  document.getElementById('font-size-select').value = fontSize;
+  changeFontSize(fontSize);
+
+  // Font family
+  const fontFamily = localStorage.getItem('pedroex-font-family') || 'inter';
+  document.getElementById('font-family-select').value = fontFamily;
+  changeFontFamily(fontFamily);
+
+  // Notifications
+  const notifEnabled = localStorage.getItem('pedroex-notifications') === 'true';
+  updateToggle('notif-toggle', 'notif-value', notifEnabled);
+
+  // Sound
+  const soundEnabled = localStorage.getItem('pedroex-sound') === 'true';
+  updateToggle('sound-toggle', 'sound-value', soundEnabled);
+
+  // Language
+  const language = localStorage.getItem('pedroex-language') || 'en';
+  document.getElementById('language-select').value = language;
+}
+
+// THEME
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('pedroex-theme', isDark ? 'dark' : 'light');
+  updateToggle('theme-toggle', 'theme-value', isDark);
+}
+
+function applyTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+  updateToggle('theme-toggle', 'theme-value', dark);
+}
+
+// FONT SIZE
+function changeFontSize(size) {
+  document.body.className = document.body.className.replace(/font-(small|medium|large)/g, '');
+  document.body.classList.add('font-' + size);
+  localStorage.setItem('pedroex-font-size', size);
+  showToast('Font size changed to ' + size);
+}
+
+// FONT FAMILY
+function changeFontFamily(family) {
+  document.body.className = document.body.className.replace(/font-(inter|roboto|opensans)/g, '');
+  document.body.classList.add('font-' + family);
+  localStorage.setItem('pedroex-font-family', family);
+  showToast('Font changed to ' + family);
+}
+
+// NOTIFICATIONS
+function toggleNotifications() {
+  const enabled = !localStorage.getItem('pedroex-notifications') || localStorage.getItem('pedroex-notifications') === 'false';
+  localStorage.setItem('pedroex-notifications', enabled);
+  updateToggle('notif-toggle', 'notif-value', enabled);
+  showToast(enabled ? 'Notifications enabled' : 'Notifications disabled');
+}
+
+// SOUND
+function toggleSound() {
+  const enabled = !localStorage.getItem('pedroex-sound') || localStorage.getItem('pedroex-sound') === 'false';
+  localStorage.setItem('pedroex-sound', enabled);
+  updateToggle('sound-toggle', 'sound-value', enabled);
+  showToast(enabled ? 'Sound enabled' : 'Sound disabled');
+}
+
+// LANGUAGE
+function changeLanguage(lang) {
+  localStorage.setItem('pedroex-language', lang);
+  showToast(lang === 'en' ? 'Language: English' : 'Wika: Filipino');
+}
+
+// CLEAR CACHE
+function clearCache() {
+  showConfirm(
+    'Clear Cache',
+    'This will remove all cached data. Your login session will be preserved.',
+    () => {
+      // Clear everything except auth tokens
+      const token = localStorage.getItem('pedroex-token');
+      const expiry = localStorage.getItem('pedroex-token-expiry');
+      const name = localStorage.getItem('pedroex-name');
+      const email = localStorage.getItem('pedroex-email');
+      const picture = localStorage.getItem('pedroex-picture');
+      
+      localStorage.clear();
+      
+      localStorage.setItem('pedroex-token', token);
+      localStorage.setItem('pedroex-token-expiry', expiry);
+      localStorage.setItem('pedroex-name', name);
+      localStorage.setItem('pedroex-email', email);
+      localStorage.setItem('pedroex-picture', picture);
+      
+      showToast('✅ Cache cleared!');
+      setTimeout(() => location.reload(), 1000);
+    }
+  );
+}
+
+// EXPORT DATA
+function exportData() {
+  showToast('📥 Preparing data export...');
+  setTimeout(() => {
+    const data = {
+      user: {
+        name: localStorage.getItem('pedroex-name'),
+        email: localStorage.getItem('pedroex-email')
+      },
+      settings: {
+        theme: localStorage.getItem('pedroex-theme'),
+        fontSize: localStorage.getItem('pedroex-font-size'),
+        fontFamily: localStorage.getItem('pedroex-font-family'),
+        language: localStorage.getItem('pedroex-language')
+      },
+      exportDate: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pedroex-data-' + Date.now() + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('✅ Data exported!');
+  }, 1000);
+}
+
+// SIGN OUT
+function confirmSignOut() {
+  showConfirm(
+    'Sign Out',
+    'Are you sure you want to sign out?',
+    () => {
+      localStorage.removeItem('pedroex-token');
+      localStorage.removeItem('pedroex-token-expiry');
+      localStorage.removeItem('pedroex-name');
+      localStorage.removeItem('pedroex-email');
+      localStorage.removeItem('pedroex-picture');
+      location.href = 'index.html';
+    }
+  );
+}
+
+// HELPERS
+function updateToggle(toggleId, valueId, isOn) {
+  const toggle = document.getElementById(toggleId);
+  const value = document.getElementById(valueId);
+  if (toggle) toggle.classList.toggle('on', isOn);
+  if (value) value.textContent = isOn ? 'On' : 'Off';
+}
+
+function showConfirm(title, message, onConfirm) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-message').textContent = message;
+  document.getElementById('confirm-action-btn').onclick = () => {
+    closeConfirm();
+    onConfirm();
+  };
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+}
+
+// TOAST
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close modal on overlay click
+document.getElementById('confirm-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
+});
+
+// INIT
+init();
+</script>
+</body>
+</html>
