@@ -436,58 +436,77 @@ function apiAppend(range, values) {
   });
 }
 
-// ═══ PHOTO — Google Drive upload ══════════════════════
+function compressPhoto(base64DataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var maxSize = 800;
+      var w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else       { w = Math.round(w * maxSize / h); h = maxSize; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.src = base64DataUrl;
+  });
+}
+
 function uploadPhotoToDrive(base64DataUrl) {
-  // Extract pure base64 and mime
-  var parts    = base64DataUrl.split(',');
-  var mime     = parts[0].match(/:(.*?);/)[1];
-  var b64data  = parts[1];
-  var binary   = atob(b64data);
-  var bytes    = new Uint8Array(binary.length);
-  for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  var blob     = new Blob([bytes], { type: mime });
-  var filename = 'truck-' + Date.now() + '.jpg';
+  return compressPhoto(base64DataUrl).then(function(compressed) {
+    var b64   = compressed.split(',')[1];
+    var bin   = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i) & 0xff;
 
-  // Multipart upload to Drive
-  var boundary = 'pedroex_boundary';
-  var metadata = JSON.stringify({ name: filename, parents: [] });
+    var filename = 'pedroex-truck-' + Date.now() + '.jpg';
+    var boundary = 'pedroex_bnd';
+    var metaStr  = JSON.stringify({ name: filename });
 
-  // Build multipart body
-  var bodyParts = [
-    '--' + boundary + '\r\n',
-    'Content-Type: application/json; charset=UTF-8\r\n\r\n',
-    metadata + '\r\n',
-    '--' + boundary + '\r\n',
-    'Content-Type: ' + mime + '\r\n\r\n',
-  ];
-  var textEncoder = new TextEncoder();
-  var part1 = textEncoder.encode(bodyParts.join(''));
-  var part2 = bytes;
-  var part3 = textEncoder.encode('\r\n--' + boundary + '--');
+    function strToBytes(s) {
+      var a = new Uint8Array(s.length);
+      for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i) & 0xff;
+      return a;
+    }
 
-  var combined = new Uint8Array(part1.length + part2.length + part3.length);
-  combined.set(part1, 0);
-  combined.set(part2, part1.length);
-  combined.set(part3, part1.length + part2.length);
+    var p1 = strToBytes(
+      '--' + boundary + '\r\n' +
+      'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+      metaStr + '\r\n' +
+      '--' + boundary + '\r\n' +
+      'Content-Type: image/jpeg\r\n\r\n'
+    );
+    var p3 = strToBytes('\r\n--' + boundary + '--');
 
-  return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink,webContentLink', {
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + token,
-      'Content-Type': 'multipart/related; boundary=' + boundary,
-    },
-    body: combined,
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(file) {
-    if (!file.id) throw new Error('Upload failed');
-    // Make file public readable
-    return fetch('https://www.googleapis.com/drive/v3/files/' + file.id + '/permissions', {
+    var body = new Uint8Array(p1.length + bytes.length + p3.length);
+    body.set(p1, 0);
+    body.set(bytes, p1.length);
+    body.set(p3, p1.length + bytes.length);
+
+    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
       method: 'POST',
-      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role: 'reader', type: 'anyone' }),
-    }).then(function() {
-      return 'https://drive.google.com/uc?export=view&id=' + file.id;
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'multipart/related; boundary=' + boundary,
+      },
+      body: body,
+    })
+    .then(function(r) {
+      if (!r.ok) return r.text().then(function(t) { throw new Error('Upload failed: ' + t); });
+      return r.json();
+    })
+    .then(function(file) {
+      if (!file.id) throw new Error('No file ID returned');
+      return fetch('https://www.googleapis.com/drive/v3/files/' + file.id + '/permissions', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: 'reader', type: 'anyone' }),
+      }).then(function() {
+        return 'https://lh3.googleusercontent.com/d/' + file.id;
+      });
     });
   });
 }
