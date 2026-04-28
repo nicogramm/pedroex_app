@@ -21,6 +21,8 @@
   --text3:    #aaa;
   --red:      #B32533;
   --red-d:    #8f1e29;
+  --orange:   #ff9800;
+  --green:    #4caf50;
   --card:     #e0e0e5;
 
   --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
@@ -91,6 +93,33 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 .icon-btn:active { box-shadow: var(--neu-in) }
 
+/* NOTIFICATION BANNER */
+.notif-banner {
+  background: linear-gradient(135deg, var(--orange), var(--red));
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--neu-out);
+  display: none;
+  animation: slideDown 0.4s ease;
+}
+.notif-banner.show { display: block }
+@keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+.notif-icon { font-size: 28px; margin-bottom: 8px }
+.notif-text { font-size: 14px; line-height: 1.6; font-weight: 500; margin-bottom: 8px }
+.notif-close {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
 /* SEARCH */
 .search-bar {
   display:flex; align-items:center; gap:10px;
@@ -112,8 +141,11 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   margin-bottom:14px; overflow:hidden;
   cursor:pointer;
   transition: transform 0.15s;
+  position: relative;
 }
 .truck-card:active { transform:scale(0.98) }
+.truck-card.expiring-soon { border-left: 4px solid var(--orange) }
+.truck-card.expired { border-left: 4px solid var(--red) }
 
 .tc-head {
   display:flex; align-items:center; justify-content:space-between;
@@ -150,6 +182,8 @@ body.dark .tc-head { border-bottom-color: rgba(255,255,255,0.04) }
   padding:5px 12px; font-size:11px; color:var(--text2); font-weight:500;
 }
 .chip b { color:var(--text); font-weight:600 }
+.chip.warning { background: var(--orange); color: #fff; box-shadow: 3px 3px 8px rgba(255,152,0,0.4) }
+.chip.danger { background: var(--red); color: #fff; box-shadow: 3px 3px 8px rgba(179,37,51,0.4) }
 .tc-note { font-size:12px; color:var(--text2); line-height:1.6 }
 
 /* FAB */
@@ -161,7 +195,7 @@ body.dark .tc-head { border-bottom-color: rgba(255,255,255,0.04) }
   background:var(--red); color:#fff;
   border:none; border-radius:50%;
   font-size:28px;
-  display:none; /* Hidden by default, shown only for admin */
+  display:none;
   align-items:center; justify-content:center;
   cursor:pointer;
   box-shadow: 5px 5px 14px rgba(179,37,51,0.5), -2px -2px 8px rgba(179,37,51,0.2);
@@ -198,7 +232,7 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
 .bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm) }
 .bnav.active .bnav-icon { box-shadow: var(--neu-in) }
 
-/* DRAWER (for add/edit) */
+/* DRAWER */
 .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:flex-end }
 .overlay.open { display:flex }
 .drawer {
@@ -305,10 +339,10 @@ body.dark .detail-header { border-bottom-color:rgba(255,255,255,0.04) }
 .detail-value { font-size:16px; color:var(--text); font-weight:500; line-height:1.6 }
 .detail-value.large { font-size:24px; font-weight:700; letter-spacing:2px }
 
-.detail-footer { padding:16px 24px; border-top:1px solid rgba(0,0,0,0.05) }
+.detail-footer { padding:16px 24px; border-top:1px solid rgba(0,0,0,0.05); display:flex; gap:12px }
 body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
 .detail-edit-btn {
-  width:100%; padding:14px;
+  flex:1; padding:14px;
   background:var(--red); color:#fff;
   border:none; border-radius:14px;
   font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
@@ -316,6 +350,44 @@ body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
   box-shadow:4px 4px 12px rgba(179,37,51,0.4);
 }
 .detail-edit-btn:active { transform:scale(0.98) }
+.detail-delete-btn {
+  flex:1; padding:14px;
+  background:var(--bg); color:var(--text2);
+  border:none; border-radius:14px;
+  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
+  cursor:pointer;
+  box-shadow: var(--neu-sm);
+}
+.detail-delete-btn:active { box-shadow: var(--neu-in) }
+
+/* CONFIRM DIALOG */
+.confirm-dialog {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:250; align-items:center; justify-content:center;
+  padding:20px;
+}
+.confirm-dialog.open { display:flex }
+.confirm-box {
+  background:var(--bg);
+  border-radius:20px;
+  padding:24px;
+  max-width:340px;
+  width:100%;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.confirm-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:12px }
+.confirm-message { font-size:14px; color:var(--text2); line-height:1.6; margin-bottom:20px }
+.confirm-buttons { display:flex; gap:12px }
+.confirm-btn {
+  flex:1; padding:12px; border-radius:12px;
+  font-size:14px; font-weight:600; font-family:'Inter',sans-serif;
+  cursor:pointer; border:none;
+  transition: box-shadow 0.15s;
+}
+.confirm-btn-cancel { background:var(--bg); color:var(--text2); box-shadow: var(--neu-sm) }
+.confirm-btn-cancel:active { box-shadow: var(--neu-in) }
+.confirm-btn-delete { background:var(--red); color:#fff; box-shadow:4px 4px 12px rgba(179,37,51,0.4) }
+.confirm-btn-delete:active { transform:scale(0.98) }
 
 /* LOADING & EMPTY */
 .loading-wrap { display:flex; align-items:center; justify-content:center; gap:10px; padding:56px; color:var(--text3); font-size:13px }
@@ -362,6 +434,13 @@ body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
         <div class="page-title">Truck Roster</div>
       </div>
       <button class="icon-btn" onclick="loadTrucks()">↻</button>
+    </div>
+    
+    <!-- NOTIFICATION BANNER -->
+    <div class="notif-banner" id="notif-banner">
+      <div class="notif-icon">⚠️</div>
+      <div class="notif-text" id="notif-text"></div>
+      <button class="notif-close" onclick="closeNotif()">Dismiss</button>
     </div>
     
     <div class="search-bar">
@@ -426,8 +505,8 @@ body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
     
     <div class="fg"><label class="fl">Plate Number *</label><input class="fi" id="f-plate" placeholder="e.g. ABC 1234" style="font-size:20px;font-weight:700;letter-spacing:3px"></div>
     <div class="row2">
-      <div class="fg"><label class="fl">LTO Registration</label><input class="fi" id="f-lto" placeholder="e.g. Jan 2026"></div>
-      <div class="fg"><label class="fl">NMIS Expiry</label><input class="fi" id="f-nmis" placeholder="e.g. Mar 2026"></div>
+      <div class="fg"><label class="fl">LTO Registration</label><input class="fi" id="f-lto" type="date"></div>
+      <div class="fg"><label class="fl">NMIS Expiry *</label><input class="fi" id="f-nmis" type="date"></div>
     </div>
     <div class="fg"><label class="fl">Dimensions / Type</label><input class="fi" id="f-dim" placeholder="e.g. 10-wheeler Reefer 40ft"></div>
     <div class="fg"><label class="fl">Additional Notes</label><textarea class="fi" id="f-notes" placeholder="Other details..."></textarea></div>
@@ -471,7 +550,20 @@ body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
       </div>
     </div>
     <div class="detail-footer" id="detail-footer" style="display:none">
-      <button class="detail-edit-btn" onclick="editFromDetail()">Edit Truck</button>
+      <button class="detail-edit-btn" onclick="editFromDetail()">Edit</button>
+      <button class="detail-delete-btn" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE DIALOG -->
+<div class="confirm-dialog" id="confirm-dialog">
+  <div class="confirm-box">
+    <div class="confirm-title">Delete Truck?</div>
+    <div class="confirm-message">Are you sure you want to delete <strong id="confirm-truck-name"></strong>? This action cannot be undone.</div>
+    <div class="confirm-buttons">
+      <button class="confirm-btn confirm-btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-btn confirm-btn-delete" onclick="deleteTruck()">Delete</button>
     </div>
   </div>
 </div>
@@ -547,6 +639,11 @@ function apiUpdate(range, values) {
   }).then(r => r.json());
 }
 
+function apiDelete(rowIndex) {
+  // Clear the row by setting all values to empty
+  return apiUpdate(SHEET_TAB + '!A' + rowIndex + ':G' + rowIndex, [['', '', '', '', '', '', '']]);
+}
+
 // LOAD TRUCKS
 function loadTrucks() {
   document.getElementById('trucks-loading').style.display = 'flex';
@@ -562,15 +659,82 @@ function loadTrucks() {
       nmis: r[3] || '',
       dim: r[4] || '',
       notes: r[5] || '',
-      photo: r[6] || '' // Base64 image data
+      photo: r[6] || ''
     })).filter(t => t.plate);
     
+    checkNMISExpiry();
     renderTrucks(allTrucks);
     document.getElementById('trucks-loading').style.display = 'none';
   }).catch(() => {
     document.getElementById('trucks-loading').style.display = 'none';
     showToast('Cannot load data.');
   });
+}
+
+// CHECK NMIS EXPIRY AND SHOW NOTIFICATION
+function checkNMISExpiry() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  let expiringSoon = [];
+  let expired = [];
+  
+  allTrucks.forEach(truck => {
+    if (!truck.nmis) return;
+    
+    const expiryDate = new Date(truck.nmis);
+    expiryDate.setHours(0, 0, 0, 0);
+    
+    const diffTime = expiryDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Expired
+    if (diffDays < 0) {
+      expired.push({...truck, daysOverdue: Math.abs(diffDays)});
+    }
+    // 1 day before to 7 days after expiry
+    else if (diffDays <= 1) {
+      expiringSoon.push({...truck, daysLeft: diffDays});
+    }
+    // 2 weeks before
+    else if (diffDays <= 14) {
+      expiringSoon.push({...truck, daysLeft: diffDays});
+    }
+    // 1 month before
+    else if (diffDays <= 30) {
+      expiringSoon.push({...truck, daysLeft: diffDays});
+    }
+  });
+  
+  // Show notification banner
+  if (expired.length > 0) {
+    const truck = expired[0];
+    showNotification(`🚨 <strong>${truck.plate}</strong> NMIS expired ${truck.daysOverdue} days ago!`);
+  } else if (expiringSoon.length > 0) {
+    const truck = expiringSoon[0];
+    if (truck.daysLeft === 0) {
+      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires TODAY!`);
+    } else if (truck.daysLeft === 1) {
+      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires TOMORROW!`);
+    } else if (truck.daysLeft <= 7) {
+      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires in ${truck.daysLeft} days`);
+    } else if (truck.daysLeft <= 14) {
+      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires in 2 weeks`);
+    } else if (truck.daysLeft <= 30) {
+      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires in 1 month`);
+    }
+  }
+}
+
+function showNotification(message) {
+  const banner = document.getElementById('notif-banner');
+  const text = document.getElementById('notif-text');
+  text.innerHTML = message;
+  banner.classList.add('show');
+}
+
+function closeNotif() {
+  document.getElementById('notif-banner').classList.remove('show');
 }
 
 // RENDER TRUCKS
@@ -585,12 +749,37 @@ function renderTrucks(list) {
   }
   
   e.style.display = 'none';
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
   c.innerHTML = list.map(t => {
     const photoHtml = t.photo 
       ? `<img src="${t.photo}" alt="${t.plate}">`
       : `<div class="tc-photo-placeholder">🚛</div>`;
     
-    return `<div class="truck-card" onclick="viewDetail(${t.rowIndex})">
+    // Check NMIS expiry status
+    let cardClass = 'truck-card';
+    let nmisChip = '';
+    
+    if (t.nmis) {
+      const expiryDate = new Date(t.nmis);
+      expiryDate.setHours(0, 0, 0, 0);
+      const diffTime = expiryDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays < 0) {
+        cardClass += ' expired';
+        nmisChip = `<span class="chip danger">NMIS <b>EXPIRED</b></span>`;
+      } else if (diffDays <= 30) {
+        cardClass += ' expiring-soon';
+        nmisChip = `<span class="chip warning">NMIS <b>${diffDays}d left</b></span>`;
+      } else {
+        nmisChip = `<span class="chip">NMIS <b>${t.nmis}</b></span>`;
+      }
+    }
+    
+    return `<div class="${cardClass}" onclick="viewDetail(${t.rowIndex})">
       <div class="tc-head">
         <span class="tc-plate">${t.plate}</span>
         <span class="tc-id">${t.id}</span>
@@ -600,7 +789,7 @@ function renderTrucks(list) {
         <div class="tc-info">
           <div class="tc-chips">
             ${t.lto ? `<span class="chip">LTO <b>${t.lto}</b></span>` : ''}
-            ${t.nmis ? `<span class="chip">NMIS <b>${t.nmis}</b></span>` : ''}
+            ${nmisChip}
             ${t.dim ? `<span class="chip">📐 <b>${t.dim}</b></span>` : ''}
           </div>
           ${t.notes ? `<div class="tc-note">${t.notes}</div>` : ''}
@@ -640,8 +829,8 @@ function viewDetail(rowIndex) {
     photoEl.innerHTML = `<div class="detail-photo-placeholder">🚛</div>`;
   }
   
-  // Show edit button only for admin
-  document.getElementById('detail-footer').style.display = isAdmin ? 'block' : 'none';
+  // Show edit/delete buttons only for admin
+  document.getElementById('detail-footer').style.display = isAdmin ? 'flex' : 'none';
   
   document.getElementById('detail-modal').classList.add('open');
 }
@@ -770,6 +959,31 @@ function saveTruck() {
   }
 }
 
+// DELETE TRUCK
+function confirmDelete() {
+  if (!isAdmin || !selectedTruck) return;
+  
+  document.getElementById('confirm-truck-name').textContent = selectedTruck.plate;
+  document.getElementById('confirm-dialog').classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-dialog').classList.remove('open');
+}
+
+function deleteTruck() {
+  if (!isAdmin || !selectedTruck) return;
+  
+  apiDelete(selectedTruck.rowIndex)
+    .then(() => {
+      showToast('✅ Truck deleted!');
+      closeConfirm();
+      closeDetail();
+      loadTrucks();
+    })
+    .catch(() => showToast('❌ Delete failed.'));
+}
+
 // TOAST
 let toastTimer;
 function showToast(msg) {
@@ -786,6 +1000,9 @@ document.getElementById('truck-drawer').addEventListener('click', e => {
 });
 document.getElementById('detail-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('detail-modal')) closeDetail();
+});
+document.getElementById('confirm-dialog').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-dialog')) closeConfirm();
 });
 
 // INIT
