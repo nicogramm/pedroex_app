@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#e0e0e5">
+<link rel="manifest" href="manifest.json">
+<title>Attendance — PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
+  --text:#2a2a2e;--text2:#777;--text3:#aaa;
+  --red:#B32533;--green:#16a34a;--orange:#f59e0b;
+  --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
+}
+body.dark {
+  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
+  --text:#e8e8ec;--text2:#888;--text3:#555;
+  --neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background 0.4s,color 0.4s}
+.screen{display:flex;flex-direction:column;height:100dvh;width:100%}
+
+/* TOPBAR */
+.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07)}
+body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+.tb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs)}
+
+/* PAGE */
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:90px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.ph-left{display:flex;align-items:center;gap:12px}
+.back-btn{width:36px;height:36px;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);color:var(--text2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.back-btn:active{box-shadow:var(--neu-in)}
+.page-title{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+
+/* EMPLOYEE CARD */
+.emp-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.emp-avatar{width:52px;height:52px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs);flex-shrink:0}
+.emp-name{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.emp-role{font-size:12px;color:var(--text2);margin-top:2px}
+.emp-status{margin-top:6px;display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+.emp-status.present{background:var(--green);color:#fff}
+.emp-status.absent{background:var(--red);color:#fff;opacity:0.7}
+.emp-status.pending{background:var(--orange);color:#fff}
+
+/* CHECK-IN CARD */
+.checkin-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px}
+.checkin-title{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none}
+.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.25)}
+select.fi{cursor:pointer}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* LOCATION BOX */
+.loc-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;min-height:52px;display:flex;align-items:center;gap:10px}
+.loc-icon{flex-shrink:0;color:var(--red)}
+.loc-text{font-size:13px;color:var(--text2);line-height:1.5;flex:1}
+.loc-text.got{color:var(--text);font-size:12px}
+.loc-retry{background:none;border:none;color:var(--red);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+
+/* CHECK-IN BUTTON */
+.checkin-btn{width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:-0.2px;box-shadow:5px 5px 14px rgba(179,37,51,0.4),-2px -2px 8px rgba(179,37,51,0.15);margin-top:6px;transition:transform 0.15s}
+.checkin-btn:active{transform:scale(0.98)}
+.checkin-btn:disabled{background:var(--text3);box-shadow:var(--neu-sm);cursor:not-allowed}
+
+/* SUCCESS STATE */
+.success-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:28px 20px;margin-bottom:16px;text-align:center}
+.success-icon{font-size:52px;margin-bottom:12px}
+.success-title{font-size:20px;font-weight:700;color:var(--green);margin-bottom:6px}
+.success-sub{font-size:13px;color:var(--text2);line-height:1.6}
+.success-detail{background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:14px;margin-top:16px;text-align:left}
+.sd-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
+body.dark .sd-row{border-bottom-color:rgba(255,255,255,0.04)}
+.sd-row:last-child{border-bottom:none}
+.sd-label{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.5px}
+.sd-value{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:60%}
+
+/* CALENDAR */
+.cal-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-title{font-size:15px;font-weight:700;color:var(--text)}
+.cal-nav{width:32px;height:32px;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cal-nav:active{box-shadow:var(--neu-in)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day-name{font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);text-align:center;padding:4px 0}
+.cal-day{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;background:var(--bg)}
+.cal-day.has-record{background:var(--bg);box-shadow:var(--neu-xs);color:var(--text);font-weight:600}
+.cal-day.has-record::after{content:'';display:block;width:5px;height:5px;border-radius:50%;background:var(--green);position:absolute;bottom:4px}
+.cal-day{position:relative}
+.cal-day.today{color:var(--red);font-weight:700}
+.cal-day.today.has-record{color:var(--red)}
+.cal-day.other-month{opacity:0.3}
+.cal-day.selected{box-shadow:var(--neu-in);color:var(--red)}
+
+/* HISTORY */
+.history-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
+.history-title{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+.hist-item{padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:flex-start}
+body.dark .hist-item{border-bottom-color:rgba(255,255,255,0.04)}
+.hist-item:last-child{border-bottom:none}
+.hist-date{font-size:13px;font-weight:600;color:var(--text)}
+.hist-loc{font-size:11px;color:var(--text2);margin-top:2px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--green);color:#fff;white-space:nowrap}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 14px rgba(0,0,0,0.07);z-index:40}
+body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
+.bnav{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
+.bnav.active{color:var(--red)}
+.bnav-icon{width:42px;height:42px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:box-shadow 0.2s}
+.bnav:not(.active) .bnav-icon{box-shadow:var(--neu-sm)}
+.bnav.active .bnav-icon{box-shadow:var(--neu-in)}
+
+/* LOADING */
+.loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:56px;color:var(--text3);font-size:13px}
+.spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:300;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.toast.show{opacity:1}
+
+/* SAVING */
+.saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
+.saving-overlay.show{display:flex}
+.saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
+.saving-text{font-size:14px;color:var(--text2);font-weight:500}
+
+/* NOT REGISTERED */
+.not-reg-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:40px 24px;text-align:center;margin-bottom:16px}
+.nr-icon{font-size:48px;margin-bottom:14px;opacity:0.4}
+.nr-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.nr-sub{font-size:13px;color:var(--text2);line-height:1.7}
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <div class="topbar">
+    <img src="logo2.png" alt="PedroEX" style="height:22px;object-fit:contain">
+    <div class="tb-right">
+      <span class="tb-title">Attendance</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
+    </div>
+  </div>
+
+  <div class="page-wrap" id="page-wrap">
+    <div class="page-header">
+      <div class="ph-left">
+        <button class="back-btn" onclick="location.href='index.html'">‹</button>
+        <div class="page-title">Attendance</div>
+      </div>
+      <div id="today-date" style="font-size:12px;color:var(--text2)"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="wrap-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
+
+    <!-- Not registered -->
+    <div id="wrap-not-reg" style="display:none">
+      <div class="not-reg-card">
+        <div class="nr-icon">🚫</div>
+        <div class="nr-title">Not Registered</div>
+        <div class="nr-sub">Your email is not registered in the system.<br>Please contact your administrator.</div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div id="wrap-main" style="display:none">
+
+      <!-- Employee Card -->
+      <div class="emp-card">
+        <img class="emp-avatar" id="emp-avatar" src="" alt="">
+        <div>
+          <div class="emp-name" id="emp-name"></div>
+          <div class="emp-role" id="emp-role"></div>
+          <span class="emp-status" id="emp-status-badge">Checking...</span>
+        </div>
+      </div>
+
+      <!-- Already checked in today -->
+      <div id="wrap-done" style="display:none">
+        <div class="success-card">
+          <div class="success-icon">✅</div>
+          <div class="success-title">Attendance Recorded!</div>
+          <div class="success-sub">You have already checked in today.</div>
+          <div class="success-detail" id="today-record-detail"></div>
+        </div>
+      </div>
+
+      <!-- Check-in form -->
+      <div id="wrap-form" style="display:none">
+        <div class="checkin-card">
+          <div class="checkin-title">Today's Check-in</div>
+
+          <div class="fg">
+            <label class="fl">2-Man Team (Partner)</label>
+            <input class="fi" id="f-team" placeholder="Partner's name (optional)">
+          </div>
+
+          <div class="row2">
+            <div class="fg">
+              <label class="fl">Crates</label>
+              <input class="fi" id="f-crates" type="number" placeholder="0" min="0">
+            </div>
+            <div class="fg">
+              <label class="fl">Meal Allowance</label>
+              <select class="fi" id="f-meal">
+                <option value="No">No</option>
+                <option value="Yes">Yes — Meals Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="fg">
+            <label class="fl">Assigned Truck</label>
+            <select class="fi" id="f-truck">
+              <option value="">— Select Truck —</option>
+            </select>
+          </div>
+
+          <div class="fg">
+            <label class="fl">Location</label>
+            <div class="loc-box" id="loc-box">
+              <svg class="loc-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg>
+              <span class="loc-text" id="loc-text">Getting your location...</span>
+              <button class="loc-retry" id="loc-retry" onclick="getLocation()" style="display:none">Retry</button>
+            </div>
+          </div>
+
+          <button class="checkin-btn" id="checkin-btn" onclick="submitAttendance()" disabled>
+            Check In Now
+          </button>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="cal-card">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+          <div class="cal-title" id="cal-title"></div>
+          <button class="cal-nav" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <!-- History -->
+      <div class="history-card" id="history-card" style="display:none">
+        <div class="history-title">Attendance History</div>
+        <div id="history-list"></div>
+      </div>
+
+    </div><!-- end wrap-main -->
+  </div>
+
+  <div class="bottom-nav">
+    <button class="bnav" onclick="location.href='index.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>Home
+    </button>
+    <button class="bnav" onclick="location.href='trucks.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>Trucks
+    </button>
+    <button class="bnav active">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 14l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Attendance
+    </button>
+    <button class="bnav" onclick="location.href='billing.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Billing
+    </button>
+    <button class="bnav" onclick="location.href='settings.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Settings
+    </button>
+  </div>
+</div>
+
+<div class="saving-overlay" id="saving-overlay">
+  <div class="saving-box">
+    <div class="saving-spinner"></div>
+    <div class="saving-text" id="saving-text">Saving...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ CONFIG ══════════════════════════════════════════
+const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const TAB_ATTENDANCE = 'Attendance';
+const TAB_EMPLOYEES  = 'Employees';
+const TAB_TRUCKS     = 'Truck Roster';
+const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
+
+// ═══ STATE ═══════════════════════════════════════════
+var token       = '';
+var currentUser = null; // { email, firstName, lastName, fullName, role }
+var myRecords   = [];   // this employee's attendance records
+var allTrucks   = [];
+var locationData = null; // { lat, lng, address }
+var calYear, calMonth;
+var todayStr    = '';
+
+// ═══ INIT ════════════════════════════════════════════
+(function init() {
+  document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
+
+  token = localStorage.getItem('pedroex-token') || '';
+  var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
+
+  var now = new Date();
+  todayStr = formatDate(now);
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+
+  document.getElementById('today-date').textContent =
+    now.toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  var pic = localStorage.getItem('pedroex-picture') || '';
+  if (pic) {
+    document.getElementById('user-avatar').src = pic;
+    document.getElementById('emp-avatar').src  = pic;
+  }
+
+  loadAll();
+})();
+
+// ═══ LOAD ALL DATA ═══════════════════════════════════
+function loadAll() {
+  var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+
+  // Load Employees sheet to verify user
+  Promise.all([
+    apiGet(TAB_EMPLOYEES + '!A2:D'),
+    apiGet(TAB_TRUCKS + '!A2:B'),
+    apiGet(TAB_ATTENDANCE + '!A2:K')
+  ]).then(function(results) {
+    var empRows    = results[0].values || [];
+    var truckRows  = results[1].values || [];
+    var attendRows = results[2].values || [];
+
+    // Find current user in Employees sheet
+    var empRow = empRows.find(function(r) {
+      return (r[0] || '').toLowerCase() === email;
+    });
+
+    if (!empRow) {
+      document.getElementById('wrap-loading').style.display = 'none';
+      document.getElementById('wrap-not-reg').style.display = 'block';
+      return;
+    }
+
+    currentUser = {
+      email:     empRow[0] || '',
+      firstName: empRow[1] || '',
+      lastName:  empRow[2] || '',
+      fullName:  (empRow[1] + ' ' + empRow[2]).trim(),
+      role:      empRow[3] || 'Employee'
+    };
+
+    // Fill trucks dropdown
+    allTrucks = truckRows.filter(function(r) { return r[1]; }).map(function(r) { return r[1]; });
+    var sel = document.getElementById('f-truck');
+    allTrucks.forEach(function(plate) {
+      var opt = document.createElement('option');
+      opt.value = plate; opt.textContent = plate;
+      sel.appendChild(opt);
+    });
+
+    // Filter my attendance records
+    myRecords = attendRows.filter(function(r) {
+      return (r[2] || '').toLowerCase() === currentUser.fullName.toLowerCase();
+    }).map(function(r, i) {
+      return {
+        rowIndex: i + 2,
+        id: r[0] || '', date: r[1] || '', name: r[2] || '',
+        team: r[3] || '', crates: r[4] || '', meal: r[5] || '',
+        truck: r[6] || '', location: r[7] || '',
+        lat: r[8] || '', lng: r[9] || '', time: r[10] || ''
+      };
+    });
+
+    // Update UI
+    document.getElementById('emp-name').textContent = currentUser.fullName;
+    document.getElementById('emp-role').textContent = currentUser.role;
+
+    // Check if already attended today
+    var todayRecord = myRecords.find(function(r) { return r.date === todayStr; });
+
+    if (todayRecord) {
+      showTodayRecord(todayRecord);
+    } else {
+      document.getElementById('wrap-form').style.display = 'block';
+      document.getElementById('emp-status-badge').textContent = 'Not yet checked in';
+      document.getElementById('emp-status-badge').className = 'emp-status pending';
+      getLocation();
+    }
+
+    renderCalendar();
+    renderHistory();
+
+    document.getElementById('wrap-loading').style.display = 'none';
+    document.getElementById('wrap-main').style.display = 'block';
+
+  }).catch(function(err) {
+    document.getElementById('wrap-loading').style.display = 'none';
+    showToast('Failed to load data.');
+    console.error(err);
+  });
+}
+
+// ═══ SHOW TODAY RECORD ═══════════════════════════════
+function showTodayRecord(rec) {
+  document.getElementById('emp-status-badge').textContent = 'Present ✓';
+  document.getElementById('emp-status-badge').className = 'emp-status present';
+  document.getElementById('wrap-done').style.display = 'block';
+  document.getElementById('wrap-form').style.display = 'none';
+
+  var detail = document.getElementById('today-record-detail');
+  detail.innerHTML = [
+    ['Date',       rec.date],
+    ['Time',       rec.time],
+    ['Partner',    rec.team  || '—'],
+    ['Crates',     rec.crates || '0'],
+    ['Meal Allow', rec.meal],
+    ['Truck',      rec.truck || '—'],
+    ['Location',   rec.location || '—'],
+  ].map(function(item) {
+    return '<div class="sd-row">'
+      + '<span class="sd-label">' + item[0] + '</span>'
+      + '<span class="sd-value">' + item[1] + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+// ═══ GEOLOCATION ═════════════════════════════════════
+function getLocation() {
+  var locText  = document.getElementById('loc-text');
+  var locRetry = document.getElementById('loc-retry');
+  var btn      = document.getElementById('checkin-btn');
+
+  locText.textContent = 'Getting your location...';
+  locText.className   = 'loc-text';
+  locRetry.style.display = 'none';
+  btn.disabled = true;
+  locationData = null;
+
+  if (!navigator.geolocation) {
+    locText.textContent = 'GPS not supported on this device.';
+    locRetry.style.display = 'block';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var lat = pos.coords.latitude;
+      var lng = pos.coords.longitude;
+
+      // Reverse geocode
+      fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var address = data.display_name || (lat.toFixed(5) + ', ' + lng.toFixed(5));
+          locationData = { lat: lat, lng: lng, address: address };
+          locText.textContent = address;
+          locText.className   = 'loc-text got';
+          locRetry.style.display = 'none';
+          btn.disabled = false;
+        })
+        .catch(function() {
+          // Fallback — just use coordinates
+          locationData = { lat: lat, lng: lng, address: lat.toFixed(5) + ', ' + lng.toFixed(5) };
+          locText.textContent = lat.toFixed(5) + ', ' + lng.toFixed(5);
+          locText.className   = 'loc-text got';
+          btn.disabled = false;
+        });
+    },
+    function(err) {
+      var msg = err.code === 1
+        ? 'Location access denied. Please allow GPS.'
+        : 'Cannot get location. Please retry.';
+      locText.textContent = msg;
+      locRetry.style.display = 'block';
+      btn.disabled = false; // allow check-in without location
+      locationData = { lat: '', lng: '', address: 'Location not available' };
+    },
+    { timeout: 12000, enableHighAccuracy: true }
+  );
+}
+
+// ═══ SUBMIT ATTENDANCE ═══════════════════════════════
+function submitAttendance() {
+  if (!currentUser) return;
+
+  var team   = document.getElementById('f-team').value.trim();
+  var crates = document.getElementById('f-crates').value.trim() || '0';
+  var meal   = document.getElementById('f-meal').value;
+  var truck  = document.getElementById('f-truck').value;
+  var loc    = locationData || { lat: '', lng: '', address: '' };
+
+  var now     = new Date();
+  var timeStr = now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', hour12:true });
+  var id      = 'ATT-' + todayStr.replace(/-/g,'') + '-' + (myRecords.length + 1);
+
+  var row = [
+    id,
+    todayStr,
+    currentUser.fullName,
+    team,
+    crates,
+    meal,
+    truck,
+    loc.address,
+    loc.lat,
+    loc.lng,
+    timeStr
+  ];
+
+  showSaving('Recording attendance...');
+
+  apiAppend(TAB_ATTENDANCE + '!A:K', [row])
+    .then(function() {
+      hideSaving();
+      // Add to local records
+      var rec = {
+        rowIndex: myRecords.length + 2,
+        id: id, date: todayStr, name: currentUser.fullName,
+        team: team, crates: crates, meal: meal,
+        truck: truck, location: loc.address,
+        lat: String(loc.lat), lng: String(loc.lng), time: timeStr
+      };
+      myRecords.push(rec);
+      showTodayRecord(rec);
+      renderCalendar();
+      renderHistory();
+      showToast('✅ Attendance recorded!');
+    })
+    .catch(function(err) {
+      hideSaving();
+      showToast('❌ Failed to save. Try again.');
+      console.error(err);
+    });
+}
+
+// ═══ CALENDAR ════════════════════════════════════════
+var MONTHS = ['January','February','March','April','May','June',
+              'July','August','September','October','November','December'];
+var DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0;  calYear++; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  document.getElementById('cal-title').textContent = MONTHS[calMonth] + ' ' + calYear;
+
+  var grid  = document.getElementById('cal-grid');
+  var today = new Date();
+  var first = new Date(calYear, calMonth, 1).getDay();
+  var days  = new Date(calYear, calMonth + 1, 0).getDate();
+
+  // Build set of dates with records
+  var recordDates = {};
+  myRecords.forEach(function(r) { recordDates[r.date] = true; });
+
+  var html = DAYS.map(function(d) {
+    return '<div class="cal-day-name">' + d + '</div>';
+  }).join('');
+
+  // Empty cells before first day
+  for (var i = 0; i < first; i++) {
+    html += '<div class="cal-day other-month"></div>';
+  }
+
+  for (var d = 1; d <= days; d++) {
+    var dateStr = calYear + '-' + pad(calMonth+1) + '-' + pad(d);
+    var cls     = 'cal-day';
+    if (dateStr === todayStr) cls += ' today';
+    if (recordDates[dateStr]) cls += ' has-record';
+    html += '<div class="' + cls + '">' + d + '</div>';
+  }
+
+  grid.innerHTML = html;
+}
+
+// ═══ HISTORY ═════════════════════════════════════════
+function renderHistory() {
+  var card = document.getElementById('history-card');
+  var list = document.getElementById('history-list');
+
+  if (!myRecords.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  var sorted = myRecords.slice().sort(function(a,b) {
+    return b.date.localeCompare(a.date);
+  }).slice(0, 20);
+
+  list.innerHTML = sorted.map(function(r) {
+    var d = new Date(r.date + 'T00:00:00');
+    var label = d.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
+    return '<div class="hist-item">'
+      + '<div><div class="hist-date">' + label + (r.time ? ' · ' + r.time : '') + '</div>'
+      + '<div class="hist-loc">' + (r.location || '—') + '</div>'
+      + (r.truck ? '<div class="hist-loc" style="margin-top:2px">🚛 ' + r.truck + '</div>' : '')
+      + '</div>'
+      + '<span class="hist-badge">Present</span>'
+      + '</div>';
+  }).join('');
+}
+
+// ═══ API ═════════════════════════════════════════════
+function apiGet(range) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+    '/values/' + encodeURIComponent(range),
+    { headers: { Authorization: 'Bearer ' + token } }
+  ).then(function(r) {
+    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+    return r.json();
+  });
+}
+
+function apiAppend(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+    '/values/' + encodeURIComponent(range) + ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    { method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: values }) }
+  ).then(function(r) {
+    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+    if (!r.ok) throw new Error('Append failed');
+    return r.json();
+  });
+}
+
+// ═══ HELPERS ═════════════════════════════════════════
+function formatDate(d) {
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+function showSaving(msg) {
+  document.getElementById('saving-text').textContent = msg || 'Saving...';
+  document.getElementById('saving-overlay').classList.add('show');
+}
+function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
+
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+</script>
+</body>
+</html>
