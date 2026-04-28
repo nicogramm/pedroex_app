@@ -505,7 +505,7 @@ function uploadPhotoToDrive(base64DataUrl) {
         headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: 'reader', type: 'anyone' }),
       }).then(function() {
-        return 'https://lh3.googleusercontent.com/d/' + file.id;
+        return 'https://drive.google.com/thumbnail?id=' + file.id + '&sz=w800';
       });
     });
   });
