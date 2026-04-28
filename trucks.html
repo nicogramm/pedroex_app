@@ -6,6 +6,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Trucks - PedroEX</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#B32533">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════
@@ -583,13 +585,17 @@ let editingRow = null;
 let currentPhotoBase64 = '';
 let selectedTruck = null;
 
+// ═══════════════════════════════════════
 // THEME
+// ═══════════════════════════════════════
 function applyTheme(dark) {
   document.body.classList.toggle('dark', dark);
 }
 applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
+// ═══════════════════════════════════════
 // AUTH CHECK
+// ═══════════════════════════════════════
 function checkAuth() {
   token = localStorage.getItem('pedroex-token');
   const expiry = localStorage.getItem('pedroex-token-expiry');
@@ -613,30 +619,124 @@ function checkAuth() {
   const picture = localStorage.getItem('pedroex-picture');
   if (picture) document.getElementById('user-avatar').src = picture;
   
+  // ✅ REGISTER SERVICE WORKER & REQUEST NOTIFICATION PERMISSION
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(registration => {
+        console.log('✅ Service Worker registered');
+        return requestNotificationPermission();
+      })
+      .catch(err => console.log('❌ Service Worker registration failed:', err));
+  }
+  
   loadTrucks();
 }
 
-// API
+// ═══════════════════════════════════════
+// NOTIFICATION PERMISSION
+// ═══════════════════════════════════════
+function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.log('Browser does not support notifications');
+    return Promise.resolve();
+  }
+  
+  if (Notification.permission === 'granted') {
+    console.log('✅ Notification permission already granted');
+    return Promise.resolve();
+  }
+  
+  if (Notification.permission !== 'denied') {
+    return Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        showToast('✅ Notifications enabled!');
+        console.log('✅ Notification permission granted');
+      } else {
+        console.log('⚠️ Notification permission denied');
+      }
+    });
+  }
+  
+  return Promise.resolve();
+}
+
+// ═══════════════════════════════════════
+// SEND LOCAL NOTIFICATION
+// ═══════════════════════════════════════
+function sendLocalNotification(title, message, tag = 'nmis-expiry') {
+  if (!('Notification' in window)) {
+    console.log('Browser does not support notifications');
+    return;
+  }
+  
+  if (Notification.permission === 'granted') {
+    try {
+      const notification = new Notification(title, {
+        body: message,
+        icon: 'logo2.png',
+        badge: 'logo2.png',
+        vibrate: [200, 100, 200],
+        tag: tag,
+        requireInteraction: true,
+        data: {
+          url: window.location.href
+        }
+      });
+      
+      notification.onclick = function(event) {
+        event.preventDefault();
+        window.focus();
+        notification.close();
+      };
+      
+      console.log('✅ Notification sent:', title);
+    } catch (error) {
+      console.error('❌ Notification error:', error);
+    }
+  } else {
+    console.log('⚠️ Notification permission not granted');
+  }
+}
+
+// ═══════════════════════════════════════
+// API FUNCTIONS
+// ═══════════════════════════════════════
 function apiGet(range) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range), {
     headers: {'Authorization': 'Bearer ' + token}
-  }).then(r => r.json());
+  }).then(r => {
+    if (!r.ok) throw new Error('API GET failed');
+    return r.json();
+  });
 }
 
 function apiAppend(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + ':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS', {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS', {
     method: 'POST',
     headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'},
     body: JSON.stringify({values: values})
-  }).then(r => r.json());
+  }).then(r => {
+    if (!r.ok) throw new Error('API APPEND failed');
+    return r.json();
+  });
 }
 
+// ✅ FIXED: Changed from RAW to USER_ENTERED
 function apiUpdate(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + '?valueInputOption=RAW', {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + '?valueInputOption=USER_ENTERED', {
     method: 'PUT',
-    headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'},
+    headers: {
+      'Authorization': 'Bearer ' + token, 
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({values: values})
-  }).then(r => r.json());
+  }).then(r => {
+    if (!r.ok) {
+      console.error('❌ API Update failed:', r.status, r.statusText);
+      throw new Error('Update failed');
+    }
+    return r.json();
+  });
 }
 
 function apiDelete(rowIndex) {
@@ -644,7 +744,9 @@ function apiDelete(rowIndex) {
   return apiUpdate(SHEET_TAB + '!A' + rowIndex + ':G' + rowIndex, [['', '', '', '', '', '', '']]);
 }
 
+// ═══════════════════════════════════════
 // LOAD TRUCKS
+// ═══════════════════════════════════════
 function loadTrucks() {
   document.getElementById('trucks-loading').style.display = 'flex';
   document.getElementById('trucks-list').innerHTML = '';
@@ -665,13 +767,16 @@ function loadTrucks() {
     checkNMISExpiry();
     renderTrucks(allTrucks);
     document.getElementById('trucks-loading').style.display = 'none';
-  }).catch(() => {
+  }).catch(err => {
+    console.error('❌ Load trucks failed:', err);
     document.getElementById('trucks-loading').style.display = 'none';
-    showToast('Cannot load data.');
+    showToast('❌ Cannot load data.');
   });
 }
 
+// ═══════════════════════════════════════
 // CHECK NMIS EXPIRY AND SHOW NOTIFICATION
+// ═══════════════════════════════════════
 function checkNMISExpiry() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -706,23 +811,49 @@ function checkNMISExpiry() {
     }
   });
   
-  // Show notification banner
+  // Show notification banner + push notification
   if (expired.length > 0) {
     const truck = expired[0];
-    showNotification(`🚨 <strong>${truck.plate}</strong> NMIS expired ${truck.daysOverdue} days ago!`);
+    const message = `🚨 <strong>${truck.plate}</strong> NMIS expired ${truck.daysOverdue} days ago!`;
+    showNotification(message);
+    
+    // ✅ SEND PUSH NOTIFICATION
+    sendLocalNotification(
+      '🚨 NMIS EXPIRED!',
+      `${truck.plate} expired ${truck.daysOverdue} days ago`,
+      'nmis-expired-' + truck.plate
+    );
+    
   } else if (expiringSoon.length > 0) {
     const truck = expiringSoon[0];
+    let message = '';
+    let notifMessage = '';
+    
     if (truck.daysLeft === 0) {
-      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires TODAY!`);
+      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires TODAY!`;
+      notifMessage = `${truck.plate} NMIS expires TODAY!`;
     } else if (truck.daysLeft === 1) {
-      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires TOMORROW!`);
+      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires TOMORROW!`;
+      notifMessage = `${truck.plate} NMIS expires TOMORROW!`;
     } else if (truck.daysLeft <= 7) {
-      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires in ${truck.daysLeft} days`);
+      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires in ${truck.daysLeft} days`;
+      notifMessage = `${truck.plate} NMIS expires in ${truck.daysLeft} days`;
     } else if (truck.daysLeft <= 14) {
-      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires in 2 weeks`);
+      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires in 2 weeks`;
+      notifMessage = `${truck.plate} NMIS expires in 2 weeks`;
     } else if (truck.daysLeft <= 30) {
-      showNotification(`⚠️ <strong>${truck.plate}</strong> NMIS expires in 1 month`);
+      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires in 1 month`;
+      notifMessage = `${truck.plate} NMIS expires in 1 month`;
     }
+    
+    showNotification(message);
+    
+    // ✅ SEND PUSH NOTIFICATION
+    sendLocalNotification(
+      '⚠️ NMIS Expiring Soon',
+      notifMessage,
+      'nmis-expiring-' + truck.plate
+    );
   }
 }
 
@@ -737,7 +868,9 @@ function closeNotif() {
   document.getElementById('notif-banner').classList.remove('show');
 }
 
+// ═══════════════════════════════════════
 // RENDER TRUCKS
+// ═══════════════════════════════════════
 function renderTrucks(list) {
   const c = document.getElementById('trucks-list');
   const e = document.getElementById('trucks-empty');
@@ -799,7 +932,9 @@ function renderTrucks(list) {
   }).join('');
 }
 
+// ═══════════════════════════════════════
 // FILTER
+// ═══════════════════════════════════════
 function filterTrucks(q) {
   const f = q.toLowerCase();
   renderTrucks(allTrucks.filter(t => 
@@ -810,7 +945,9 @@ function filterTrucks(q) {
   ));
 }
 
+// ═══════════════════════════════════════
 // VIEW DETAIL
+// ═══════════════════════════════════════
 function viewDetail(rowIndex) {
   selectedTruck = allTrucks.find(t => t.rowIndex === rowIndex);
   if (!selectedTruck) return;
@@ -845,10 +982,12 @@ function editFromDetail() {
   if (selectedTruck) editTruck(selectedTruck.rowIndex);
 }
 
+// ═══════════════════════════════════════
 // DRAWER
+// ═══════════════════════════════════════
 function openDrawer() {
   if (!isAdmin) {
-    showToast('Read-only mode');
+    showToast('❌ Read-only mode');
     return;
   }
   
@@ -865,7 +1004,7 @@ function openDrawer() {
 
 function editTruck(rowIndex) {
   if (!isAdmin) {
-    showToast('Read-only mode');
+    showToast('❌ Read-only mode');
     return;
   }
   
@@ -899,13 +1038,15 @@ function closeDrawer() {
   document.getElementById('truck-drawer').classList.remove('open');
 }
 
+// ═══════════════════════════════════════
 // PHOTO PREVIEW
+// ═══════════════════════════════════════
 function previewPhoto(input) {
   if (!input.files || !input.files[0]) return;
   
   const file = input.files[0];
   if (file.size > 2 * 1024 * 1024) {
-    showToast('Photo must be less than 2MB');
+    showToast('❌ Photo must be less than 2MB');
     input.value = '';
     return;
   }
@@ -920,16 +1061,18 @@ function previewPhoto(input) {
   reader.readAsDataURL(file);
 }
 
+// ═══════════════════════════════════════
 // SAVE TRUCK
+// ═══════════════════════════════════════
 function saveTruck() {
   if (!isAdmin) {
-    showToast('Read-only mode');
+    showToast('❌ Read-only mode');
     return;
   }
   
   const plate = document.getElementById('f-plate').value.trim().toUpperCase();
   if (!plate) {
-    showToast('Plate Number is required!');
+    showToast('❌ Plate Number is required!');
     return;
   }
   
@@ -940,26 +1083,38 @@ function saveTruck() {
   
   if (editingRow) {
     const t = allTrucks.find(x => x.rowIndex === editingRow);
+    console.log('📝 Updating truck:', plate, 'at row', editingRow);
+    
     apiUpdate(SHEET_TAB + '!A' + editingRow + ':G' + editingRow, [[t.id, plate, lto, nmis, dim, notes, currentPhotoBase64]])
       .then(() => {
         showToast('✅ Truck updated!');
         closeDrawer();
         loadTrucks();
       })
-      .catch(() => showToast('❌ Save failed.'));
+      .catch(err => {
+        console.error('❌ Update failed:', err);
+        showToast('❌ Save failed. Check console.');
+      });
   } else {
     const id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
+    console.log('➕ Adding new truck:', plate);
+    
     apiAppend(SHEET_TAB + '!A:G', [[id, plate, lto, nmis, dim, notes, currentPhotoBase64]])
       .then(() => {
         showToast('✅ Truck added!');
         closeDrawer();
         loadTrucks();
       })
-      .catch(() => showToast('❌ Save failed.'));
+      .catch(err => {
+        console.error('❌ Add failed:', err);
+        showToast('❌ Save failed. Check console.');
+      });
   }
 }
 
+// ═══════════════════════════════════════
 // DELETE TRUCK
+// ═══════════════════════════════════════
 function confirmDelete() {
   if (!isAdmin || !selectedTruck) return;
   
@@ -974,6 +1129,8 @@ function closeConfirm() {
 function deleteTruck() {
   if (!isAdmin || !selectedTruck) return;
   
+  console.log('🗑️ Deleting truck:', selectedTruck.plate, 'at row', selectedTruck.rowIndex);
+  
   apiDelete(selectedTruck.rowIndex)
     .then(() => {
       showToast('✅ Truck deleted!');
@@ -981,10 +1138,15 @@ function deleteTruck() {
       closeDetail();
       loadTrucks();
     })
-    .catch(() => showToast('❌ Delete failed.'));
+    .catch(err => {
+      console.error('❌ Delete failed:', err);
+      showToast('❌ Delete failed. Check console.');
+    });
 }
 
+// ═══════════════════════════════════════
 // TOAST
+// ═══════════════════════════════════════
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -994,7 +1156,9 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// Close drawer/modal on overlay click
+// ═══════════════════════════════════════
+// CLOSE OVERLAYS ON CLICK
+// ═══════════════════════════════════════
 document.getElementById('truck-drawer').addEventListener('click', e => {
   if (e.target === document.getElementById('truck-drawer')) closeDrawer();
 });
@@ -1005,7 +1169,9 @@ document.getElementById('confirm-dialog').addEventListener('click', e => {
   if (e.target === document.getElementById('confirm-dialog')) closeConfirm();
 });
 
+// ═══════════════════════════════════════
 // INIT
+// ═══════════════════════════════════════
 checkAuth();
 </script>
 </body>
