@@ -617,11 +617,9 @@ function getLocation() {
   }, { timeout:12000, enableHighAccuracy:true });
 }
 
-// ═══ SUBMIT ATTENDANCE ════════════════════════════════
 function submitAttendance() {
-  if (!currentUser) return;
+  if (!currentUser) { showToast('No user loaded.'); return; }
 
-  // Block if already attended today (double-check)
   if (myRecords.find(function(r){ return r.date === todayStr; })) {
     showToast('Already checked in today!'); return;
   }
@@ -639,7 +637,27 @@ function submitAttendance() {
 
   showSaving('Recording attendance...');
 
-  apiAppend(TAB_ATTENDANCE + '!A:K', [row]).then(function() {
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+    '/values/' + encodeURIComponent(TAB_ATTENDANCE + '!A:K') +
+    ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ values: [row] })
+  })
+  .then(function(r) {
+    return r.json().then(function(data) {
+      if (!r.ok) {
+        // Show exact API error
+        var msg = (data.error && data.error.message) || ('HTTP ' + r.status);
+        throw new Error(msg);
+      }
+      return data;
+    });
+  })
+  .then(function() {
     hideSaving();
     var rec = { rowIndex: allAttendance.length+2, id:id, date:todayStr,
       name:currentUser.fullName, team:teamValue, crates:crates, meal:meal,
@@ -649,11 +667,13 @@ function submitAttendance() {
     showDoneState(rec);
     renderCalendar();
     showToast('✅ Attendance recorded!');
-  }).catch(function(err) {
-    hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err);
+  })
+  .catch(function(err) {
+    hideSaving();
+    showToast('❌ ' + err.message);
+    console.error('Save error:', err);
   });
 }
-
 // ═══ CALENDAR ═════════════════════════════════════════
 var MONTHS = ['January','February','March','April','May','June',
               'July','August','September','October','November','December'];
