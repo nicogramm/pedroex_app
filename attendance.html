@@ -839,24 +839,32 @@ var activeFilters = { name:'', team:'', meal:'', truck:'', crates:'' };
 var filteredAttendance = [];
 
 function buildFilterDropdowns() {
-  // Employee names
+  // Employee names from Employees sheet — hindi mula sa attendance
   var nameSel = document.getElementById('filter-name');
-  var names   = [];
-  allAttendance.forEach(function(r) {
-    if (r.name && names.indexOf(r.name) === -1) names.push(r.name);
-  });
-  names.sort().forEach(function(n) {
-    var o = document.createElement('option'); o.value = n; o.textContent = n;
+  // Clear existing options except first
+  while (nameSel.options.length > 1) nameSel.remove(1);
+
+  allEmployees.forEach(function(r) {
+    var firstName = r[1] || '';
+    var lastName  = r[2] || '';
+    var fullName  = (firstName + ' ' + lastName).trim();
+    if (!fullName) return;
+    var o = document.createElement('option');
+    o.value = fullName;
+    o.textContent = fullName;
     nameSel.appendChild(o);
   });
 
   // Trucks
   var truckSel = document.getElementById('filter-truck');
+  while (truckSel.options.length > 1) truckSel.remove(1);
   allTrucks.forEach(function(p) {
-    var o = document.createElement('option'); o.value = p; o.textContent = p;
+    var o = document.createElement('option');
+    o.value = p; o.textContent = p;
     truckSel.appendChild(o);
   });
 }
+
 
 function applyFilters() {
   activeFilters.name   = document.getElementById('filter-name').value;
