@@ -142,10 +142,6 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 /* PAGE WRAP */
 .page-wrap { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; padding-bottom:90px }
 
-/* PAGES */
-.page { display:none }
-.page.active { display:block }
-
 /* ═══════════════════════════════════════
    DASHBOARD
 ═══════════════════════════════════════ */
@@ -188,103 +184,6 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 .mod-sub { font-size:10px; color:var(--text3); margin-top:2px }
 
 /* ═══════════════════════════════════════
-   PAGE HEADERS
-═══════════════════════════════════════ */
-.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px }
-.page-header-left { display:flex; align-items:center; gap:12px }
-.back-btn {
-  width:36px; height:36px;
-  background:var(--bg); border:none; border-radius:12px;
-  box-shadow: var(--neu-sm);
-  color:var(--text2); font-size:20px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition: box-shadow 0.15s;
-}
-.back-btn:active { box-shadow: var(--neu-in) }
-.page-title { font-size:20px; font-weight:700; color:var(--text); letter-spacing:-0.3px }
-.icon-btn {
-  background:var(--bg); border:none; border-radius:10px;
-  box-shadow: var(--neu-xs);
-  color:var(--text2); padding:8px 14px;
-  font-size:13px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;
-  transition: box-shadow 0.15s;
-}
-.icon-btn:active { box-shadow: var(--neu-in) }
-
-/* ═══════════════════════════════════════
-   TRUCK CARDS
-═══════════════════════════════════════ */
-.truck-card {
-  background:var(--bg); border-radius:18px;
-  box-shadow: var(--neu-out);
-  margin-bottom:14px; overflow:hidden;
-}
-.tc-head {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px 12px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-body.dark .tc-head { border-bottom-color: rgba(255,255,255,0.04) }
-.tc-plate {
-  font-size:18px; font-weight:700; letter-spacing:2px;
-  background:var(--red); padding:5px 14px; border-radius:10px; color:#fff;
-  box-shadow: 3px 3px 8px rgba(179,37,51,0.35);
-}
-.tc-id { font-size:11px; color:var(--text3); letter-spacing:1px }
-.tc-chips { padding:10px 18px; display:flex; flex-wrap:wrap; gap:8px }
-.chip {
-  background:var(--bg); border-radius:8px;
-  box-shadow: var(--neu-xs);
-  padding:5px 12px; font-size:11px; color:var(--text2); font-weight:500;
-}
-.chip b { color:var(--text); font-weight:600 }
-.tc-note { padding:0 18px 12px; font-size:12px; color:var(--text2); line-height:1.6 }
-.tc-foot { padding:2px 8px 8px }
-.tc-edit-btn {
-  width:100%; padding:10px;
-  background:var(--bg); border:none; border-radius:12px;
-  box-shadow: var(--neu-xs);
-  color:var(--red); font-size:13px; font-weight:600;
-  font-family:'Inter',sans-serif; cursor:pointer;
-  transition: box-shadow 0.15s;
-}
-.tc-edit-btn:active { box-shadow: var(--neu-in) }
-
-/* ═══════════════════════════════════════
-   SEARCH
-═══════════════════════════════════════ */
-.search-bar {
-  display:flex; align-items:center; gap:10px;
-  background:var(--bg); border-radius:14px;
-  box-shadow: var(--neu-in);
-  padding:0 16px; margin-bottom:16px;
-}
-.search-bar input {
-  flex:1; background:none; border:none; outline:none;
-  color:var(--text); font-size:14px;
-  font-family:'Inter',sans-serif; padding:13px 0;
-}
-.search-bar input::placeholder { color:var(--text3) }
-
-/* ═══════════════════════════════════════
-   FAB
-═══════════════════════════════════════ */
-.fab {
-  position:fixed;
-  bottom:calc(80px + env(safe-area-inset-bottom,0px));
-  right:18px;
-  width:54px; height:54px;
-  background:var(--red); color:#fff;
-  border:none; border-radius:50%;
-  font-size:28px;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer;
-  box-shadow: 5px 5px 14px rgba(179,37,51,0.5), -2px -2px 8px rgba(179,37,51,0.2);
-  z-index:50;
-}
-.fab:active { transform:scale(0.93) }
-
-/* ═══════════════════════════════════════
    BOTTOM NAV
 ═══════════════════════════════════════ */
 .bottom-nav {
@@ -316,69 +215,8 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
 .bnav.active .bnav-icon { box-shadow: var(--neu-in) }
 
 /* ═══════════════════════════════════════
-   DRAWER
-═══════════════════════════════════════ */
-.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:flex-end }
-.overlay.open { display:flex }
-.drawer {
-  background:var(--bg);
-  border-radius:28px 28px 0 0;
-  padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));
-  width:100%; max-height:92dvh; overflow-y:auto;
-  animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
-}
-@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.drawer-handle { width:40px; height:4px; background:var(--text3); border-radius:2px; margin:0 auto 20px; opacity:0.3 }
-.drawer-title { font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.3px; margin-bottom:4px }
-.drawer-sub { font-size:13px; color:var(--text2); margin-bottom:22px }
-
-/* ═══════════════════════════════════════
-   FORMS
-═══════════════════════════════════════ */
-.fg { margin-bottom:16px }
-.fl { display:block; font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:8px }
-.fi {
-  width:100%; background:var(--bg);
-  border:none; border-radius:12px;
-  box-shadow: var(--neu-in);
-  padding:13px 16px; color:var(--text); font-size:15px;
-  font-family:'Inter',sans-serif; outline:none; -webkit-appearance:none;
-}
-textarea.fi { resize:none; min-height:80px }
-.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px }
-.btn-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px }
-.btn {
-  padding:14px; border-radius:14px;
-  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
-  cursor:pointer; border:none;
-  background:var(--bg);
-  transition: box-shadow 0.15s;
-}
-.btn:active { transform:scale(0.98) }
-.btn-red { background:var(--red); color:#fff; box-shadow:4px 4px 12px rgba(179,37,51,0.4), -2px -2px 8px rgba(179,37,51,0.1) }
-.btn-ghost { color:var(--text2); box-shadow: var(--neu-sm) }
-.btn-ghost:active { box-shadow: var(--neu-in) }
-
-/* ═══════════════════════════════════════
    STATES
 ═══════════════════════════════════════ */
-.loading-wrap { display:flex; align-items:center; justify-content:center; gap:10px; padding:56px; color:var(--text3); font-size:13px }
-.spinner { width:20px; height:20px; border:2px solid var(--text3); border-top-color:var(--red); border-radius:50%; animation:spin 0.7s linear infinite }
-@keyframes spin { to{transform:rotate(360deg)} }
-.empty-state { text-align:center; padding:64px 24px }
-.empty-icon { margin-bottom:14px }
-.empty-state p { font-size:14px; line-height:1.8; color:var(--text2) }
-
-.coming-soon {
-  background:var(--bg); border-radius:20px;
-  box-shadow: var(--neu-out);
-  padding:56px 24px; text-align:center;
-}
-.cs-icon { margin-bottom:14px }
-.cs-title { font-size:17px; font-weight:600; color:var(--text2); margin-bottom:6px }
-.cs-sub { font-size:13px; color:var(--text3); line-height:1.7 }
-
 .toast {
   position:fixed;
   bottom:calc(80px + env(safe-area-inset-bottom,0px));
@@ -391,64 +229,6 @@ textarea.fi { resize:none; min-height:80px }
   opacity:0; pointer-events:none; transition:opacity 0.25s;
 }
 .toast.show { opacity:1 }
-
-/* ═══════════════════════════════════════
-   SETTINGS
-═══════════════════════════════════════ */
-.profile-card {
-  background:var(--bg); border-radius:20px;
-  box-shadow: var(--neu-out);
-  padding:20px; display:flex; align-items:center; gap:16px; margin-bottom:20px;
-}
-.profile-card img { width:54px; height:54px; border-radius:50%; border:2px solid var(--red); object-fit:cover; box-shadow: var(--neu-xs) }
-.profile-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:2px }
-.profile-email { font-size:12px; color:var(--text2) }
-.role-pill { display:inline-block; background:var(--red); color:#fff; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:3px 10px; border-radius:20px; margin-top:6px }
-
-.settings-section { margin-bottom:20px }
-.settings-label { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:10px; padding-left:4px }
-.settings-card { background:var(--bg); border-radius:18px; box-shadow: var(--neu-out); overflow:hidden }
-
-.settings-item {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:15px 18px;
-  border-bottom:1px solid rgba(0,0,0,0.05);
-  cursor:pointer; transition:background 0.15s;
-}
-body.dark .settings-item { border-bottom-color:rgba(255,255,255,0.04) }
-.settings-item:last-child { border-bottom:none }
-.settings-item:active { background:rgba(0,0,0,0.03) }
-body.dark .settings-item:active { background:rgba(255,255,255,0.03) }
-.si-left { display:flex; align-items:center; gap:14px }
-.si-icon {
-  width:34px; height:34px; border-radius:10px;
-  background:var(--bg); box-shadow: var(--neu-xs);
-  display:flex; align-items:center; justify-content:center;
-}
-.si-icon svg { width:16px; height:16px }
-.si-label { font-size:14px; font-weight:500; color:var(--text) }
-.si-chev { color:var(--text3); font-size:16px }
-.si-red { color:var(--red) }
-
-/* THEME TOGGLE */
-.toggle-wrap { display:flex; align-items:center; gap:14px; padding:15px 18px }
-.toggle-label { font-size:14px; font-weight:500; color:var(--text); flex:1 }
-.toggle-val { font-size:12px; color:var(--text2); margin-right:8px }
-.toggle-track {
-  width:46px; height:26px;
-  border-radius:13px;
-  background:var(--bg);
-  box-shadow: var(--neu-in);
-  position:relative; cursor:pointer; flex-shrink:0;
-}
-.toggle-thumb {
-  width:20px; height:20px; border-radius:50%;
-  background:var(--text3);
-  position:absolute; top:3px; left:3px;
-  transition:transform 0.25s, background 0.25s;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-}
-.toggle-track.on .toggle-thumb { transform:translateX(20px); background:var(--red) }
 </style>
 </head>
 <body>
@@ -470,195 +250,49 @@ body.dark .settings-item:active { background:rgba(255,255,255,0.03) }
   </div>
 </div>
 
-<!-- ═══ APP ═══ -->
+<!-- ═══ DASHBOARD ═══ -->
 <div class="screen" id="s-app">
-
   <div class="topbar">
     <div class="tb-brand">
       <img src="logo2.png" alt="PedroEX" style="height:22px;width:auto;object-fit:contain">
     </div>
     <div class="tb-right">
-      <span class="tb-title" id="tb-title">Dashboard</span>
+      <span class="tb-title">Dashboard</span>
       <img class="tb-avatar" id="user-avatar" src="" alt="">
     </div>
   </div>
 
-  <div class="page-wrap" id="page-wrap">
-
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="dash-header">
-        <div class="dash-eyebrow">PedroEX Operations</div>
-        <div class="dash-name" id="dash-name">Good day!</div>
-        <div class="dash-date" id="dash-date"></div>
-      </div>
-      <div class="mod-grid" id="mod-grid"></div>
+  <div class="page-wrap">
+    <div class="dash-header">
+      <div class="dash-eyebrow">PedroEX Operations</div>
+      <div class="dash-name" id="dash-name">Good day!</div>
+      <div class="dash-date" id="dash-date"></div>
     </div>
-
-    <!-- TRUCKS -->
-    <div class="page" id="page-trucks">
-      <div class="page-header">
-        <div class="page-header-left">
-          <button class="back-btn" onclick="showPage('dashboard')">‹</button>
-          <div class="page-title">Truck Roster</div>
-        </div>
-        <button class="icon-btn" onclick="loadTrucks()">↻</button>
-      </div>
-      <div class="search-bar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><circle cx="11" cy="11" r="7" stroke="var(--text3)" stroke-width="2"/><path d="m16.5 16.5 4 4" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"/></svg>
-        <input type="text" placeholder="Search plate, type..." oninput="filterTrucks(this.value)" id="truck-search">
-      </div>
-      <div id="trucks-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading fleet...</div>
-      <div id="trucks-list"></div>
-      <div id="trucks-empty" class="empty-state" style="display:none">
-        <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="var(--text3)" stroke-width="1.5"/><path d="M15 11h4l3 4v3h-7V11z" stroke="var(--text3)" stroke-width="1.5"/><circle cx="5" cy="19" r="2" stroke="var(--text3)" stroke-width="1.5"/><circle cx="18" cy="19" r="2" stroke="var(--text3)" stroke-width="1.5"/></svg></div>
-        <p>No trucks yet.<br>Tap <strong style="color:var(--red)">+</strong> to add one.</p>
-      </div>
-    </div>
-
-    <!-- ATTENDANCE -->
-    <div class="page" id="page-attendance">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Attendance</div></div></div>
-      <div class="coming-soon"><div class="cs-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--text3)" stroke-width="1.5"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/><path d="M7 14l2 2 4-4" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cs-title">Attendance</div><div class="cs-sub">Daily attendance tracking<br>coming soon</div></div>
-    </div>
-
-    <!-- TRIPS -->
-    <div class="page" id="page-trips">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Active Trips</div></div></div>
-      <div class="coming-soon"><div class="cs-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="4" stroke="var(--text3)" stroke-width="1.5"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="var(--text3)" stroke-width="1.5"/></svg></div><div class="cs-title">Active Trips</div><div class="cs-sub">Real-time trip tracking<br>coming soon</div></div>
-    </div>
-
-    <!-- EMPLOYEES -->
-    <div class="page" id="page-employees">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Employees</div></div></div>
-      <div class="coming-soon"><div class="cs-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="var(--text3)" stroke-width="1.5"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="cs-title">Employees</div><div class="cs-sub">Employee management<br>coming soon</div></div>
-    </div>
-
-    <!-- EXPENSES -->
-    <div class="page" id="page-expenses">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Expenses</div></div></div>
-      <div class="coming-soon"><div class="cs-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--text3)" stroke-width="1.5"/><path d="M2 10h20" stroke="var(--text3)" stroke-width="1.5"/><path d="M6 15h4M14 15h2" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="cs-title">Expenses</div><div class="cs-sub">Expense tracking<br>coming soon</div></div>
-    </div>
-
-    <!-- BILLING -->
-    <div class="page" id="page-billing">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Billing</div></div></div>
-      <div class="coming-soon"><div class="cs-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="var(--text3)" stroke-width="1.5"/><path d="M8 7h8M8 11h8M8 15h5" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="cs-title">Billing</div><div class="cs-sub">Invoicing & billing<br>coming soon</div></div>
-    </div>
-
-    <!-- MATRIX -->
-    <div class="page" id="page-matrix">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Matrix</div></div></div>
-      <div class="coming-soon"><div class="cs-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cs-title">Matrix</div><div class="cs-sub">Business performance matrix<br>coming soon</div></div>
-    </div>
-
-    <!-- SCHEDULER -->
-    <div class="page" id="page-scheduler">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Scheduler</div></div></div>
-      <div class="coming-soon"><div class="cs-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--text3)" stroke-width="1.5"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round"/><rect x="7" y="13" width="3" height="3" rx="0.5" fill="var(--text3)"/><rect x="13" y="13" width="3" height="3" rx="0.5" fill="var(--text3)"/></svg></div><div class="cs-title">Scheduler</div><div class="cs-sub">Trip scheduling<br>coming soon</div></div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="page" id="page-settings">
-      <div class="page-header"><div class="page-header-left"><button class="back-btn" onclick="goBack()">‹</button><div class="page-title">Settings</div></div></div>
-
-      <div class="profile-card">
-        <img id="more-avatar" src="" alt="">
-        <div>
-          <div class="profile-name" id="more-name"></div>
-          <div class="profile-email" id="more-email"></div>
-          <div class="role-pill" id="more-role">User</div>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <div class="settings-label">Appearance</div>
-        <div class="settings-card">
-          <div class="toggle-wrap">
-            <div class="si-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="var(--text2)" stroke-width="2"/></svg>
-            </div>
-            <span class="toggle-label" id="theme-label">Dark Mode</span>
-            <span class="toggle-val" id="theme-val">Off</span>
-            <div class="toggle-track" id="theme-toggle" onclick="toggleTheme()">
-              <div class="toggle-thumb"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-section" id="admin-section" style="display:none">
-        <div class="settings-label">Admin</div>
-        <div class="settings-card">
-          <div class="settings-item" onclick="showPage('employees')">
-            <div class="si-left"><div class="si-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="var(--text2)" stroke-width="2"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="var(--text2)" stroke-width="2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87" stroke="var(--text2)" stroke-width="2"/></svg></div><span class="si-label">Employees</span></div><span class="si-chev">›</span>
-          </div>
-          <div class="settings-item" onclick="showPage('matrix')">
-            <div class="si-left"><div class="si-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--text2)" stroke-width="2" stroke-linecap="round"/></svg></div><span class="si-label">Matrix</span></div><span class="si-chev">›</span>
-          </div>
-          <div class="settings-item" onclick="showPage('scheduler')">
-            <div class="si-left"><div class="si-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--text2)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--text2)" stroke-width="2"/></svg></div><span class="si-label">Scheduler</span></div><span class="si-chev">›</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <div class="settings-label">Account</div>
-        <div class="settings-card">
-          <div class="settings-item" onclick="signOut()">
-            <div class="si-left"><div class="si-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><polyline points="16 17 21 12 16 7" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="12" x2="9" y2="12" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg></div><span class="si-label si-red">Sign Out</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <div class="mod-grid" id="mod-grid"></div>
   </div>
 
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
-    <button class="bnav active" id="bnav-home" onclick="showPage('dashboard')">
+    <button class="bnav active">
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
       Home
     </button>
-    <button class="bnav" id="bnav-trucks" onclick="showPage('trucks')">
+    <button class="bnav" onclick="location.href='trucks.html'">
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
       Trucks
     </button>
-    <button class="bnav" id="bnav-trips" onclick="showPage('trips')">
+    <button class="bnav" onclick="location.href='trips.html'">
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
       Trips
     </button>
-    <button class="bnav" id="bnav-billing" onclick="showPage('billing')">
+    <button class="bnav" onclick="location.href='billing.html'">
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
       Billing
     </button>
-    <button class="bnav" id="bnav-settings" onclick="showPage('settings')">
+    <button class="bnav" onclick="location.href='settings.html'">
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
       Settings
     </button>
-  </div>
-
-</div>
-
-<button class="fab" id="fab" onclick="openDrawer()" style="display:none">+</button>
-
-<!-- TRUCK DRAWER -->
-<div class="overlay" id="truck-drawer">
-  <div class="drawer">
-    <div class="drawer-handle"></div>
-    <div class="drawer-title" id="drawer-title">Add Truck</div>
-    <div class="drawer-sub" id="drawer-sub">Fill in the truck details</div>
-    <div class="fg"><label class="fl">Plate Number *</label><input class="fi" id="f-plate" placeholder="e.g. ABC 1234" autocomplete="off" style="font-size:20px;font-weight:700;letter-spacing:3px"></div>
-    <div class="row2">
-      <div class="fg"><label class="fl">LTO Registration</label><input class="fi" id="f-lto" placeholder="e.g. Jan 2026"></div>
-      <div class="fg"><label class="fl">NMIS Expiry</label><input class="fi" id="f-nmis" placeholder="e.g. Mar 2026"></div>
-    </div>
-    <div class="fg"><label class="fl">Dimensions / Type</label><input class="fi" id="f-dim" placeholder="e.g. 10-wheeler Reefer 40ft"></div>
-    <div class="fg"><label class="fl">Additional Notes</label><textarea class="fi" id="f-notes" placeholder="Other details..."></textarea></div>
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
-      <button class="btn btn-red" onclick="saveTruck()">Save Truck</button>
-    </div>
   </div>
 </div>
 
@@ -667,20 +301,19 @@ body.dark .settings-item:active { background:rgba(255,255,255,0.03) }
 <script>
 const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
 const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-const SHEET_TAB  = 'Truck Roster';
 const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets openid email profile';
 const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
 
 const ALL_MODULES = [
-  {id:'trucks',     icon:'truck',     label:'Trucks',       stat:'sv-trucks',  sub:'Fleet roster'},
-  {id:'attendance', icon:'calendar',  label:'Attendance',   stat:'sv-attend',  sub:'Daily logs'},
-  {id:'trips',      icon:'location',  label:'Active Trips', stat:'sv-trips',   sub:'On the road'},
-  {id:'employees',  icon:'users',     label:'Employees',    stat:'sv-emp',     sub:'Total staff'},
-  {id:'expenses',   icon:'card',      label:'Expenses',     stat:'sv-exp',     sub:'Cost tracking'},
-  {id:'billing',    icon:'doc',       label:'Billing',      stat:'sv-billing', sub:'Invoices'},
-  {id:'matrix',     icon:'chart',     label:'Matrix',       stat:'sv-matrix',  sub:'Performance'},
-  {id:'scheduler',  icon:'sched',     label:'Scheduler',    stat:'sv-sched',   sub:'Trip planning', wide:true},
-  {id:'settings',   icon:'settings',  label:'Settings',     stat:'sv-set',     sub:'App settings', wide:true},
+  {id:'trucks',     icon:'truck',     label:'Trucks',       stat:'sv-trucks',  sub:'Fleet roster', link:'trucks.html'},
+  {id:'attendance', icon:'calendar',  label:'Attendance',   stat:'sv-attend',  sub:'Daily logs', link:'attendance.html'},
+  {id:'trips',      icon:'location',  label:'Active Trips', stat:'sv-trips',   sub:'On the road', link:'trips.html'},
+  {id:'employees',  icon:'users',     label:'Employees',    stat:'sv-emp',     sub:'Total staff', link:'employees.html'},
+  {id:'expenses',   icon:'card',      label:'Expenses',     stat:'sv-exp',     sub:'Cost tracking', link:'expenses.html'},
+  {id:'billing',    icon:'doc',       label:'Billing',      stat:'sv-billing', sub:'Invoices', link:'billing.html'},
+  {id:'matrix',     icon:'chart',     label:'Matrix',       stat:'sv-matrix',  sub:'Performance', link:'matrix.html'},
+  {id:'scheduler',  icon:'sched',     label:'Scheduler',    stat:'sv-sched',   sub:'Trip planning', wide:true, link:'scheduler.html'},
+  {id:'settings',   icon:'settings',  label:'Settings',     stat:'sv-set',     sub:'App settings', wide:true, link:'settings.html'},
 ];
 
 const ICONS = {
@@ -695,63 +328,46 @@ const ICONS = {
   settings: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
 };
 
-const pageTitles = {
-  dashboard:'Dashboard', trucks:'Truck Roster', attendance:'Attendance',
-  trips:'Active Trips', employees:'Employees', expenses:'Expenses',
-  billing:'Billing', matrix:'Matrix', scheduler:'Scheduler', settings:'Settings'
-};
-
-let token=null, allTrucks=[], editingRow=null, curPage='dashboard', prevPage='dashboard', isDark=false;
+let token = null;
+let isDark = false;
 
 // THEME
 function applyTheme(dark) {
   isDark = dark;
   document.body.classList.toggle('dark', dark);
-  var t=document.getElementById('theme-toggle');
-  var l=document.getElementById('theme-label');
-  var v=document.getElementById('theme-val');
-  if(t) t.classList.toggle('on', dark);
-  if(l) l.textContent = dark ? 'Dark Mode' : 'Light Mode';
-  if(v) v.textContent = dark ? 'On' : 'Off';
   localStorage.setItem('pedroex-theme', dark ? 'dark' : 'light');
 }
-function toggleTheme() { applyTheme(!isDark); }
 applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
-// 🆕 AUTO-LOGIN CHECK
+// AUTO-LOGIN
 function tryAutoLogin() {
   const savedToken = localStorage.getItem('pedroex-token');
   const expiry = localStorage.getItem('pedroex-token-expiry');
   
   if (!savedToken || !expiry) return false;
-  
-  // Check if token expired
   if (Date.now() >= parseInt(expiry)) {
     localStorage.removeItem('pedroex-token');
     localStorage.removeItem('pedroex-token-expiry');
     return false;
   }
   
-  // Token valid — use it
   token = savedToken;
   loadUser();
   return true;
 }
 
-// Run on page load
 if (!tryAutoLogin()) {
-  // Show login screen only if no valid token
   document.getElementById('s-login').classList.add('active');
 }
 
 // PWA
-if('serviceWorker' in navigator)
-
-
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
 
 // AUTH
 function signIn() {
-  if(typeof google === 'undefined' || !google.accounts) {
+  if (typeof google === 'undefined' || !google.accounts) {
     showToast('Loading... please try again.');
     setTimeout(signIn, 600);
     return;
@@ -759,17 +375,16 @@ function signIn() {
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
     scope: SCOPES,
-        callback: function(res) {
-        if(res.error) { showToast('Login error: ' + res.error); return; }
-        token = res.access_token;
-        
-        // 🆕 SAVE TOKEN + EXPIRY
-        const expiresAt = Date.now() + (res.expires_in * 1000);
-        localStorage.setItem('pedroex-token', token);
-        localStorage.setItem('pedroex-token-expiry', expiresAt);
-        
-        loadUser();
-        }
+    callback: function(res) {
+      if (res.error) { showToast('Login error: ' + res.error); return; }
+      token = res.access_token;
+      
+      const expiresAt = Date.now() + (res.expires_in * 1000);
+      localStorage.setItem('pedroex-token', token);
+      localStorage.setItem('pedroex-token-expiry', expiresAt);
+      
+      loadUser();
+    }
   }).requestAccessToken({ prompt: '' });
 }
 
@@ -777,196 +392,71 @@ function loadUser() {
   fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
-  .then(function(r) { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-  .then(function(u) {
-    var isAdmin = ADMIN_EMAILS.map(function(e){ return e.toLowerCase(); }).indexOf(u.email.toLowerCase()) >= 0;
-    ['user-avatar','more-avatar'].forEach(function(id){ var el=document.getElementById(id); if(el) el.src=u.picture||''; });
-    document.getElementById('more-name').textContent  = u.name||'';
-    document.getElementById('more-email').textContent = u.email||'';
-    document.getElementById('more-role').textContent  = isAdmin ? 'Admin' : 'Employee';
-    if(isAdmin) document.getElementById('admin-section').style.display = 'block';
-
-    var now=new Date(), h=now.getHours();
-    var gr = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-    document.getElementById('dash-name').textContent = gr+', '+(u.given_name||'team')+'!';
-    document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
+  .then(r => r.json())
+  .then(u => {
+    localStorage.setItem('pedroex-name', u.name || '');
+    localStorage.setItem('pedroex-email', u.email || '');
+    localStorage.setItem('pedroex-picture', u.picture || '');
+    
+    document.getElementById('user-avatar').src = u.picture || '';
+    
+    const now = new Date();
+    const h = now.getHours();
+    const gr = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('dash-name').textContent = gr + ', ' + (u.given_name || 'team') + '!';
+    document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    
     document.getElementById('s-login').classList.remove('active');
     document.getElementById('s-app').classList.add('active');
     buildDashboard();
-    showPage('dashboard');
-    loadTrucks();
+    loadDashboardStats();
   })
-  .catch(function(err) { showToast('Login failed. Try again.'); console.error(err); });
-}
-
-function signOut() {
-  // 🆕 CLEAR SAVED TOKEN
-  localStorage.removeItem('pedroex-token');
-  localStorage.removeItem('pedroex-token-expiry');
-  
-  if(token && typeof google!=='undefined') {
-    google.accounts.oauth2.revoke(token, function() {
-      token=null; allTrucks=[];
-      document.getElementById('s-app').classList.remove('active');
-      document.getElementById('s-login').classList.add('active');
-      document.getElementById('fab').style.display='none';
-    });
-  } else {
-    // Fallback if google SDK not loaded
-    token=null; allTrucks=[];
-    document.getElementById('s-app').classList.remove('active');
-    document.getElementById('s-login').classList.add('active');
-    document.getElementById('fab').style.display='none';
-  }
+  .catch(err => { showToast('Login failed. Try again.'); console.error(err); });
 }
 
 // DASHBOARD
 function buildDashboard() {
-  document.getElementById('mod-grid').innerHTML = ALL_MODULES.map(function(m) {
-    var icon = ICONS[m.icon] || '';
-    if(m.wide) {
-      return '<div class="mod-card wide" onclick="showPage(\''+m.id+'\')">'
-        +'<div class="mod-icon-box">'+icon+'</div>'
-        +'<div><div class="mod-label">'+m.label+'</div>'
-        +'<div class="mod-value" id="'+m.stat+'">—</div>'
-        +'<div class="mod-sub">'+m.sub+'</div></div></div>';
+  document.getElementById('mod-grid').innerHTML = ALL_MODULES.map(m => {
+    const icon = ICONS[m.icon] || '';
+    const onclick = m.link ? `location.href='${m.link}'` : '';
+    if (m.wide) {
+      return `<div class="mod-card wide" onclick="${onclick}">
+        <div class="mod-icon-box">${icon}</div>
+        <div><div class="mod-label">${m.label}</div>
+        <div class="mod-value" id="${m.stat}">—</div>
+        <div class="mod-sub">${m.sub}</div></div></div>`;
     }
-    return '<div class="mod-card" onclick="showPage(\''+m.id+'\')">'
-      +'<div class="mod-icon-box">'+icon+'</div>'
-      +'<div class="mod-label">'+m.label+'</div>'
-      +'<div class="mod-value" id="'+m.stat+'">—</div>'
-      +'<div class="mod-sub">'+m.sub+'</div></div>';
+    return `<div class="mod-card" onclick="${onclick}">
+      <div class="mod-icon-box">${icon}</div>
+      <div class="mod-label">${m.label}</div>
+      <div class="mod-value" id="${m.stat}">—</div>
+      <div class="mod-sub">${m.sub}</div></div>`;
   }).join('');
 }
 
-// NAV
-function showPage(name) {
-  prevPage = curPage;
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.bnav').forEach(function(b){ b.classList.remove('active'); });
-  var pg = document.getElementById('page-'+name);
-  if(pg) pg.classList.add('active');
-  var bbMap={dashboard:'bnav-home',trucks:'bnav-trucks',trips:'bnav-trips',billing:'bnav-billing',settings:'bnav-settings'};
-  var bb = document.getElementById(bbMap[name]);
-  if(bb) bb.classList.add('active');
-  document.getElementById('tb-title').textContent = pageTitles[name]||'';
-  document.getElementById('page-wrap').scrollTop = 0;
-  curPage = name;
-  document.getElementById('fab').style.display = (name==='trucks') ? 'flex' : 'none';
-  if(name==='trucks') loadTrucks();
-}
-function goBack() { showPage(prevPage||'dashboard'); }
-
-// API
-function apiGet(r) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(r),
-    {headers:{'Authorization':'Bearer '+token}}).then(function(r){return r.json();});
-}
-function apiAppend(r,v) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(r)+':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS',
-    {method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:v})}).then(function(r){return r.json();});
-}
-function apiUpdate(r,v) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(r)+'?valueInputOption=RAW',
-    {method:'PUT',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:v})}).then(function(r){return r.json();});
+// LOAD DASHBOARD STATS
+function loadDashboardStats() {
+  // Load truck count
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Truck%20Roster!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).length;
+    const el = document.getElementById('sv-trucks');
+    if (el) el.textContent = count;
+  })
+  .catch(() => {});
 }
 
-// TRUCKS
-function loadTrucks() {
-  document.getElementById('trucks-loading').style.display='flex';
-  document.getElementById('trucks-list').innerHTML='';
-  document.getElementById('trucks-empty').style.display='none';
-  var s=document.getElementById('truck-search'); if(s) s.value='';
-  apiGet(SHEET_TAB+'!A2:F').then(function(res) {
-    allTrucks=(res.values||[]).map(function(r,i){
-      return {rowIndex:i+2,id:r[0]||'',plate:r[1]||'',lto:r[2]||'',nmis:r[3]||'',dim:r[4]||'',notes:r[5]||''};
-    }).filter(function(t){return t.plate;});
-    var sv=document.getElementById('sv-trucks'); if(sv) sv.textContent=allTrucks.length;
-    renderTrucks(allTrucks);
-    document.getElementById('trucks-loading').style.display='none';
-  }).catch(function(){
-    document.getElementById('trucks-loading').style.display='none';
-    showToast('Cannot load data.');
-  });
-}
-
-function renderTrucks(list) {
-  var c=document.getElementById('trucks-list'), e=document.getElementById('trucks-empty');
-  if(!list.length){c.innerHTML='';e.style.display='block';return;}
-  e.style.display='none';
-  c.innerHTML=list.map(function(t){
-    return '<div class="truck-card">'
-      +'<div class="tc-head"><span class="tc-plate">'+t.plate+'</span><span class="tc-id">'+t.id+'</span></div>'
-      +'<div class="tc-chips">'
-      +(t.lto?'<span class="chip">LTO <b>'+t.lto+'</b></span>':'')
-      +(t.nmis?'<span class="chip">NMIS <b>'+t.nmis+'</b></span>':'')
-      +(t.dim?'<span class="chip">📐 <b>'+t.dim+'</b></span>':'')
-      +'</div>'
-      +(t.notes?'<div class="tc-note">'+t.notes+'</div>':'')
-      +'<div class="tc-foot"><button class="tc-edit-btn" onclick="editTruck('+t.rowIndex+')">Edit Truck</button></div>'
-      +'</div>';
-  }).join('');
-}
-
-function filterTrucks(q) {
-  var f=q.toLowerCase();
-  renderTrucks(allTrucks.filter(function(t){
-    return t.plate.toLowerCase().indexOf(f)>=0||t.lto.toLowerCase().indexOf(f)>=0
-      ||t.dim.toLowerCase().indexOf(f)>=0||t.notes.toLowerCase().indexOf(f)>=0;
-  }));
-}
-
-function openDrawer() {
-  editingRow=null;
-  document.getElementById('drawer-title').textContent='Add Truck';
-  document.getElementById('drawer-sub').textContent='Fill in the truck details';
-  ['plate','lto','nmis','dim','notes'].forEach(function(f){document.getElementById('f-'+f).value='';});
-  document.getElementById('truck-drawer').classList.add('open');
-}
-function editTruck(rowIndex) {
-  var t=allTrucks.filter(function(x){return x.rowIndex===rowIndex;})[0];
-  if(!t) return;
-  editingRow=rowIndex;
-  document.getElementById('drawer-title').textContent='Edit Truck';
-  document.getElementById('drawer-sub').textContent=t.plate;
-  document.getElementById('f-plate').value=t.plate;
-  document.getElementById('f-lto').value=t.lto;
-  document.getElementById('f-nmis').value=t.nmis;
-  document.getElementById('f-dim').value=t.dim;
-  document.getElementById('f-notes').value=t.notes;
-  document.getElementById('truck-drawer').classList.add('open');
-}
-function closeDrawer(){document.getElementById('truck-drawer').classList.remove('open');}
-
-function saveTruck() {
-  var plate=document.getElementById('f-plate').value.trim().toUpperCase();
-  if(!plate){showToast('Plate Number is required!');return;}
-  var lto=document.getElementById('f-lto').value.trim();
-  var nmis=document.getElementById('f-nmis').value.trim();
-  var dim=document.getElementById('f-dim').value.trim();
-  var notes=document.getElementById('f-notes').value.trim();
-  if(editingRow) {
-    var t=allTrucks.filter(function(x){return x.rowIndex===editingRow;})[0];
-    apiUpdate(SHEET_TAB+'!A'+editingRow+':F'+editingRow,[[t.id,plate,lto,nmis,dim,notes]])
-      .then(function(){showToast('✅ Truck updated!');closeDrawer();loadTrucks();})
-      .catch(function(){showToast('❌ Save failed.');});
-  } else {
-    var id='TRK-'+String(allTrucks.length+1).padStart(3,'0');
-    apiAppend(SHEET_TAB+'!A:F',[[id,plate,lto,nmis,dim,notes]])
-      .then(function(){showToast('✅ Truck added!');closeDrawer();loadTrucks();})
-      .catch(function(){showToast('❌ Save failed.');});
-  }
-}
-
-document.getElementById('truck-drawer').addEventListener('click',function(e){if(e.target===this)closeDrawer();});
-
-var toastTimer;
+// TOAST
+let toastTimer;
 function showToast(msg) {
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){t.classList.remove('show');},3000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
 </body>
