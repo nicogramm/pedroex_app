@@ -397,21 +397,45 @@ function loadUser() {
     localStorage.setItem('pedroex-name', u.name || '');
     localStorage.setItem('pedroex-email', u.email || '');
     localStorage.setItem('pedroex-picture', u.picture || '');
-    
+
     document.getElementById('user-avatar').src = u.picture || '';
-    
-    const now = new Date();
-    const h = now.getHours();
-    const gr = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-    document.getElementById('dash-name').textContent = gr + ', ' + (u.given_name || 'team') + '!';
-    document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-    
+
     document.getElementById('s-login').classList.remove('active');
     document.getElementById('s-app').classList.add('active');
     buildDashboard();
     loadDashboardStats();
+
+    // Get firstName from Employees sheet
+    var email = (u.email || '').toLowerCase();
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:B', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      var rows      = res.values || [];
+      var empRow    = rows.find(function(r) { return (r[0]||'').toLowerCase() === email; });
+      var firstName = empRow ? (empRow[1] || u.given_name || 'team') : (u.given_name || 'team');
+
+      var now = new Date();
+      var h   = now.getHours();
+      var gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('dash-name').textContent = gr + ', ' + firstName + '!';
+      document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+        weekday:'long', year:'numeric', month:'long', day:'numeric'
+      });
+    })
+    .catch(function() {
+      // Fallback to Google name
+      var now = new Date();
+      var h   = now.getHours();
+      var gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('dash-name').textContent = gr + ', ' + (u.given_name || 'team') + '!';
+      document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+        weekday:'long', year:'numeric', month:'long', day:'numeric'
+      });
+    });
   })
-  .catch(err => { showToast('Login failed. Try again.'); console.error(err); });
+  .catch(function(err) { showToast('Login failed. Try again.'); console.error(err); });
 }
 
 // DASHBOARD
