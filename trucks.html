@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Trucks - PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   NEUMORPHIC THEME VARIABLES
+═══════════════════════════════════════ */
+:root {
+  --bg:       #e0e0e5;
+  --bg2:      #e8e8ed;
+  --shadow-d: #b8b9be;
+  --shadow-l: #ffffff;
+  --text:     #2a2a2e;
+  --text2:    #777;
+  --text3:    #aaa;
+  --red:      #B32533;
+  --red-d:    #8f1e29;
+  --card:     #e0e0e5;
+
+  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+}
+
+body.dark {
+  --bg:       #2a2a2f;
+  --bg2:      #313137;
+  --shadow-d: #16161a;
+  --shadow-l: #3e3e46;
+  --text:     #e8e8ec;
+  --text2:    #888;
+  --text3:    #555;
+  --card:     #2a2a2f;
+
+  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
+
+.screen { display:flex; flex-direction:column; height:100dvh; width:100% }
+
+/* TOPBAR */
+.topbar {
+  background: var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
+  flex-shrink:0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
+
+.tb-brand { display:flex; align-items:center; gap:2px }
+.tb-right { display:flex; align-items:center; gap:12px }
+.tb-title { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text3) }
+.tb-avatar { width:32px; height:32px; border-radius:50%; border:2px solid var(--red); object-fit:cover; box-shadow: var(--neu-xs) }
+
+/* PAGE WRAP */
+.page-wrap { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; padding-bottom:90px }
+
+/* PAGE HEADER */
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px }
+.page-header-left { display:flex; align-items:center; gap:12px }
+.back-btn {
+  width:36px; height:36px;
+  background:var(--bg); border:none; border-radius:12px;
+  box-shadow: var(--neu-sm);
+  color:var(--text2); font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition: box-shadow 0.15s;
+}
+.back-btn:active { box-shadow: var(--neu-in) }
+.page-title { font-size:20px; font-weight:700; color:var(--text); letter-spacing:-0.3px }
+.icon-btn {
+  background:var(--bg); border:none; border-radius:10px;
+  box-shadow: var(--neu-xs);
+  color:var(--text2); padding:8px 14px;
+  font-size:13px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;
+  transition: box-shadow 0.15s;
+}
+.icon-btn:active { box-shadow: var(--neu-in) }
+
+/* SEARCH */
+.search-bar {
+  display:flex; align-items:center; gap:10px;
+  background:var(--bg); border-radius:14px;
+  box-shadow: var(--neu-in);
+  padding:0 16px; margin-bottom:16px;
+}
+.search-bar input {
+  flex:1; background:none; border:none; outline:none;
+  color:var(--text); font-size:14px;
+  font-family:'Inter',sans-serif; padding:13px 0;
+}
+.search-bar input::placeholder { color:var(--text3) }
+
+/* TRUCK CARDS */
+.truck-card {
+  background:var(--bg); border-radius:18px;
+  box-shadow: var(--neu-out);
+  margin-bottom:14px; overflow:hidden;
+  cursor:pointer;
+  transition: transform 0.15s;
+}
+.truck-card:active { transform:scale(0.98) }
+
+.tc-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+body.dark .tc-head { border-bottom-color: rgba(255,255,255,0.04) }
+
+.tc-plate {
+  font-size:18px; font-weight:700; letter-spacing:2px;
+  background:var(--red); padding:5px 14px; border-radius:10px; color:#fff;
+  box-shadow: 3px 3px 8px rgba(179,37,51,0.35);
+}
+.tc-id { font-size:11px; color:var(--text3); letter-spacing:1px }
+
+.tc-body { display:flex; gap:14px; padding:14px 18px }
+
+.tc-photo {
+  width:80px; height:80px; flex-shrink:0;
+  border-radius:12px;
+  background:var(--bg2);
+  box-shadow: var(--neu-in);
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.tc-photo img { width:100%; height:100%; object-fit:cover }
+.tc-photo-placeholder { font-size:32px; opacity:0.3 }
+
+.tc-info { flex:1; min-width:0 }
+.tc-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px }
+.chip {
+  background:var(--bg); border-radius:8px;
+  box-shadow: var(--neu-xs);
+  padding:5px 12px; font-size:11px; color:var(--text2); font-weight:500;
+}
+.chip b { color:var(--text); font-weight:600 }
+.tc-note { font-size:12px; color:var(--text2); line-height:1.6 }
+
+/* FAB */
+.fab {
+  position:fixed;
+  bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  right:18px;
+  width:54px; height:54px;
+  background:var(--red); color:#fff;
+  border:none; border-radius:50%;
+  font-size:28px;
+  display:none; /* Hidden by default, shown only for admin */
+  align-items:center; justify-content:center;
+  cursor:pointer;
+  box-shadow: 5px 5px 14px rgba(179,37,51,0.5), -2px -2px 8px rgba(179,37,51,0.2);
+  z-index:50;
+}
+.fab:active { transform:scale(0.93) }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--bg);
+  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex; align-items:center; justify-content:space-around;
+  box-shadow: 0 -3px 14px rgba(0,0,0,0.07);
+  z-index:40;
+}
+body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
+
+.bnav {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+  color:var(--text3); cursor:pointer; border:none; background:none;
+  font-family:'Inter',sans-serif;
+}
+.bnav.active { color:var(--red) }
+
+.bnav-icon {
+  width:42px; height:42px;
+  border-radius:14px;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  transition: box-shadow 0.2s;
+}
+.bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm) }
+.bnav.active .bnav-icon { box-shadow: var(--neu-in) }
+
+/* DRAWER (for add/edit) */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:flex-end }
+.overlay.open { display:flex }
+.drawer {
+  background:var(--bg);
+  border-radius:28px 28px 0 0;
+  padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));
+  width:100%; max-height:92dvh; overflow-y:auto;
+  animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.drawer-handle { width:40px; height:4px; background:var(--text3); border-radius:2px; margin:0 auto 20px; opacity:0.3 }
+.drawer-title { font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.3px; margin-bottom:4px }
+.drawer-sub { font-size:13px; color:var(--text2); margin-bottom:22px }
+
+/* FORMS */
+.fg { margin-bottom:16px }
+.fl { display:block; font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:8px }
+.fi {
+  width:100%; background:var(--bg);
+  border:none; border-radius:12px;
+  box-shadow: var(--neu-in);
+  padding:13px 16px; color:var(--text); font-size:15px;
+  font-family:'Inter',sans-serif; outline:none; -webkit-appearance:none;
+}
+textarea.fi { resize:none; min-height:80px }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px }
+.btn-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px }
+.btn {
+  padding:14px; border-radius:14px;
+  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
+  cursor:pointer; border:none;
+  background:var(--bg);
+  transition: box-shadow 0.15s;
+}
+.btn:active { transform:scale(0.98) }
+.btn-red { background:var(--red); color:#fff; box-shadow:4px 4px 12px rgba(179,37,51,0.4), -2px -2px 8px rgba(179,37,51,0.1) }
+.btn-ghost { color:var(--text2); box-shadow: var(--neu-sm) }
+.btn-ghost:active { box-shadow: var(--neu-in) }
+
+/* PHOTO UPLOAD */
+.photo-upload {
+  width:100%; height:180px;
+  border-radius:16px;
+  background:var(--bg);
+  box-shadow: var(--neu-in);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  cursor:pointer;
+  overflow:hidden;
+  position:relative;
+}
+.photo-upload input { display:none }
+.photo-upload img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0 }
+.photo-placeholder { font-size:48px; opacity:0.3; margin-bottom:8px }
+.photo-label { font-size:13px; color:var(--text2) }
+
+/* DETAIL MODAL */
+.detail-modal {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;
+  padding:20px;
+}
+.detail-modal.open { display:flex }
+.detail-content {
+  background:var(--bg);
+  border-radius:24px;
+  max-width:500px; width:100%;
+  max-height:85dvh;
+  overflow-y:auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+
+.detail-header {
+  padding:24px 24px 16px;
+  border-bottom:1px solid rgba(0,0,0,0.05);
+  display:flex; align-items:center; justify-content:space-between;
+}
+body.dark .detail-header { border-bottom-color:rgba(255,255,255,0.04) }
+.detail-close {
+  width:32px; height:32px;
+  background:var(--bg); border:none; border-radius:10px;
+  box-shadow: var(--neu-sm);
+  color:var(--text2); font-size:20px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.detail-close:active { box-shadow: var(--neu-in) }
+
+.detail-body { padding:20px 24px }
+.detail-photo {
+  width:100%; height:220px;
+  border-radius:16px;
+  background:var(--bg2);
+  box-shadow: var(--neu-in);
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:20px;
+}
+.detail-photo img { width:100%; height:100%; object-fit:cover }
+.detail-photo-placeholder { font-size:64px; opacity:0.2 }
+
+.detail-section { margin-bottom:20px }
+.detail-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:8px }
+.detail-value { font-size:16px; color:var(--text); font-weight:500; line-height:1.6 }
+.detail-value.large { font-size:24px; font-weight:700; letter-spacing:2px }
+
+.detail-footer { padding:16px 24px; border-top:1px solid rgba(0,0,0,0.05) }
+body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
+.detail-edit-btn {
+  width:100%; padding:14px;
+  background:var(--red); color:#fff;
+  border:none; border-radius:14px;
+  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
+  cursor:pointer;
+  box-shadow:4px 4px 12px rgba(179,37,51,0.4);
+}
+.detail-edit-btn:active { transform:scale(0.98) }
+
+/* LOADING & EMPTY */
+.loading-wrap { display:flex; align-items:center; justify-content:center; gap:10px; padding:56px; color:var(--text3); font-size:13px }
+.spinner { width:20px; height:20px; border:2px solid var(--text3); border-top-color:var(--red); border-radius:50%; animation:spin 0.7s linear infinite }
+@keyframes spin { to{transform:rotate(360deg)} }
+.empty-state { text-align:center; padding:64px 24px }
+.empty-icon { margin-bottom:14px; font-size:48px; opacity:0.3 }
+.empty-state p { font-size:14px; line-height:1.8; color:var(--text2) }
+
+/* TOAST */
+.toast {
+  position:fixed;
+  bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  left:50%; transform:translateX(-50%);
+  background:var(--bg); border-radius:14px;
+  box-shadow: var(--neu-out);
+  border-left:3px solid var(--red);
+  padding:13px 22px; font-size:13px; font-weight:500; color:var(--text);
+  z-index:300; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity 0.25s;
+}
+.toast.show { opacity:1 }
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <img src="logo2.png" alt="PedroEX" style="height:22px">
+    </div>
+    <div class="tb-right">
+      <span class="tb-title">Truck Roster</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-wrap">
+    <div class="page-header">
+      <div class="page-header-left">
+        <button class="back-btn" onclick="location.href='index.html'">‹</button>
+        <div class="page-title">Truck Roster</div>
+      </div>
+      <button class="icon-btn" onclick="loadTrucks()">↻</button>
+    </div>
+    
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="var(--text3)" stroke-width="2"/><path d="m16.5 16.5 4 4" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search plate, type..." oninput="filterTrucks(this.value)">
+    </div>
+    
+    <div id="trucks-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading fleet...</div>
+    <div id="trucks-list"></div>
+    <div id="trucks-empty" class="empty-state" style="display:none">
+      <div class="empty-icon">🚛</div>
+      <p>No trucks yet.<br><span id="empty-hint">Tap <strong style="color:var(--red)">+</strong> to add one.</span></p>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="bnav" onclick="location.href='index.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
+      Home
+    </button>
+    <button class="bnav active">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trucks
+    </button>
+    <button class="bnav" onclick="location.href='trips.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trips
+    </button>
+    <button class="bnav" onclick="location.href='billing.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Billing
+    </button>
+    <button class="bnav" onclick="location.href='settings.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Settings
+    </button>
+  </div>
+</div>
+
+<!-- FAB (admin only) -->
+<button class="fab" id="fab" onclick="openDrawer()">+</button>
+
+<!-- ADD/EDIT DRAWER (admin only) -->
+<div class="overlay" id="truck-drawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title" id="drawer-title">Add Truck</div>
+    <div class="drawer-sub" id="drawer-sub">Fill in the truck details</div>
+    
+    <div class="fg">
+      <label class="fl">Truck Photo</label>
+      <label class="photo-upload" id="photo-upload-label">
+        <input type="file" id="f-photo" accept="image/*" onchange="previewPhoto(this)">
+        <img id="photo-preview" style="display:none">
+        <div id="photo-placeholder">
+          <div class="photo-placeholder">📷</div>
+          <div class="photo-label">Tap to upload photo</div>
+        </div>
+      </label>
+    </div>
+    
+    <div class="fg"><label class="fl">Plate Number *</label><input class="fi" id="f-plate" placeholder="e.g. ABC 1234" style="font-size:20px;font-weight:700;letter-spacing:3px"></div>
+    <div class="row2">
+      <div class="fg"><label class="fl">LTO Registration</label><input class="fi" id="f-lto" placeholder="e.g. Jan 2026"></div>
+      <div class="fg"><label class="fl">NMIS Expiry</label><input class="fi" id="f-nmis" placeholder="e.g. Mar 2026"></div>
+    </div>
+    <div class="fg"><label class="fl">Dimensions / Type</label><input class="fi" id="f-dim" placeholder="e.g. 10-wheeler Reefer 40ft"></div>
+    <div class="fg"><label class="fl">Additional Notes</label><textarea class="fi" id="f-notes" placeholder="Other details..."></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
+      <button class="btn btn-red" onclick="saveTruck()">Save Truck</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="detail-modal" id="detail-modal">
+  <div class="detail-content">
+    <div class="detail-header">
+      <div class="detail-plate" id="detail-plate"></div>
+      <button class="detail-close" onclick="closeDetail()">×</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-photo" id="detail-photo">
+        <div class="detail-photo-placeholder">🚛</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Truck ID</div>
+        <div class="detail-value" id="detail-id"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">LTO Registration</div>
+        <div class="detail-value" id="detail-lto"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">NMIS Expiry</div>
+        <div class="detail-value" id="detail-nmis"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Dimensions / Type</div>
+        <div class="detail-value" id="detail-dim"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Notes</div>
+        <div class="detail-value" id="detail-notes"></div>
+      </div>
+    </div>
+    <div class="detail-footer" id="detail-footer" style="display:none">
+      <button class="detail-edit-btn" onclick="editFromDetail()">Edit Truck</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const SHEET_TAB  = 'Truck Roster';
+const ADMIN_EMAIL = 'nicolobalonzo@gmail.com';
+
+let token = null;
+let isAdmin = false;
+let allTrucks = [];
+let editingRow = null;
+let currentPhotoBase64 = '';
+let selectedTruck = null;
+
+// THEME
+function applyTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+}
+applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
+
+// AUTH CHECK
+function checkAuth() {
+  token = localStorage.getItem('pedroex-token');
+  const expiry = localStorage.getItem('pedroex-token-expiry');
+  const email = localStorage.getItem('pedroex-email');
+  
+  if (!token || !expiry || Date.now() >= parseInt(expiry)) {
+    location.href = 'index.html';
+    return;
+  }
+  
+  isAdmin = (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+  
+  // Show/hide admin features
+  if (isAdmin) {
+    document.getElementById('fab').style.display = 'flex';
+  } else {
+    document.getElementById('empty-hint').textContent = 'Read-only mode';
+  }
+  
+  // Load user info
+  const picture = localStorage.getItem('pedroex-picture');
+  if (picture) document.getElementById('user-avatar').src = picture;
+  
+  loadTrucks();
+}
+
+// API
+function apiGet(range) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range), {
+    headers: {'Authorization': 'Bearer ' + token}
+  }).then(r => r.json());
+}
+
+function apiAppend(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + ':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS', {
+    method: 'POST',
+    headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'},
+    body: JSON.stringify({values: values})
+  }).then(r => r.json());
+}
+
+function apiUpdate(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + '?valueInputOption=RAW', {
+    method: 'PUT',
+    headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'},
+    body: JSON.stringify({values: values})
+  }).then(r => r.json());
+}
+
+// LOAD TRUCKS
+function loadTrucks() {
+  document.getElementById('trucks-loading').style.display = 'flex';
+  document.getElementById('trucks-list').innerHTML = '';
+  document.getElementById('trucks-empty').style.display = 'none';
+  
+  apiGet(SHEET_TAB + '!A2:G').then(res => {
+    allTrucks = (res.values || []).map((r, i) => ({
+      rowIndex: i + 2,
+      id: r[0] || '',
+      plate: r[1] || '',
+      lto: r[2] || '',
+      nmis: r[3] || '',
+      dim: r[4] || '',
+      notes: r[5] || '',
+      photo: r[6] || '' // Base64 image data
+    })).filter(t => t.plate);
+    
+    renderTrucks(allTrucks);
+    document.getElementById('trucks-loading').style.display = 'none';
+  }).catch(() => {
+    document.getElementById('trucks-loading').style.display = 'none';
+    showToast('Cannot load data.');
+  });
+}
+
+// RENDER TRUCKS
+function renderTrucks(list) {
+  const c = document.getElementById('trucks-list');
+  const e = document.getElementById('trucks-empty');
+  
+  if (!list.length) {
+    c.innerHTML = '';
+    e.style.display = 'block';
+    return;
+  }
+  
+  e.style.display = 'none';
+  c.innerHTML = list.map(t => {
+    const photoHtml = t.photo 
+      ? `<img src="${t.photo}" alt="${t.plate}">`
+      : `<div class="tc-photo-placeholder">🚛</div>`;
+    
+    return `<div class="truck-card" onclick="viewDetail(${t.rowIndex})">
+      <div class="tc-head">
+        <span class="tc-plate">${t.plate}</span>
+        <span class="tc-id">${t.id}</span>
+      </div>
+      <div class="tc-body">
+        <div class="tc-photo">${photoHtml}</div>
+        <div class="tc-info">
+          <div class="tc-chips">
+            ${t.lto ? `<span class="chip">LTO <b>${t.lto}</b></span>` : ''}
+            ${t.nmis ? `<span class="chip">NMIS <b>${t.nmis}</b></span>` : ''}
+            ${t.dim ? `<span class="chip">📐 <b>${t.dim}</b></span>` : ''}
+          </div>
+          ${t.notes ? `<div class="tc-note">${t.notes}</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// FILTER
+function filterTrucks(q) {
+  const f = q.toLowerCase();
+  renderTrucks(allTrucks.filter(t => 
+    t.plate.toLowerCase().includes(f) || 
+    t.lto.toLowerCase().includes(f) ||
+    t.dim.toLowerCase().includes(f) ||
+    t.notes.toLowerCase().includes(f)
+  ));
+}
+
+// VIEW DETAIL
+function viewDetail(rowIndex) {
+  selectedTruck = allTrucks.find(t => t.rowIndex === rowIndex);
+  if (!selectedTruck) return;
+  
+  document.getElementById('detail-plate').innerHTML = `<span class="tc-plate">${selectedTruck.plate}</span>`;
+  document.getElementById('detail-id').textContent = selectedTruck.id;
+  document.getElementById('detail-lto').textContent = selectedTruck.lto || '—';
+  document.getElementById('detail-nmis').textContent = selectedTruck.nmis || '—';
+  document.getElementById('detail-dim').textContent = selectedTruck.dim || '—';
+  document.getElementById('detail-notes').textContent = selectedTruck.notes || '—';
+  
+  const photoEl = document.getElementById('detail-photo');
+  if (selectedTruck.photo) {
+    photoEl.innerHTML = `<img src="${selectedTruck.photo}" alt="${selectedTruck.plate}">`;
+  } else {
+    photoEl.innerHTML = `<div class="detail-photo-placeholder">🚛</div>`;
+  }
+  
+  // Show edit button only for admin
+  document.getElementById('detail-footer').style.display = isAdmin ? 'block' : 'none';
+  
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-modal').classList.remove('open');
+  selectedTruck = null;
+}
+
+function editFromDetail() {
+  closeDetail();
+  if (selectedTruck) editTruck(selectedTruck.rowIndex);
+}
+
+// DRAWER
+function openDrawer() {
+  if (!isAdmin) {
+    showToast('Read-only mode');
+    return;
+  }
+  
+  editingRow = null;
+  currentPhotoBase64 = '';
+  document.getElementById('drawer-title').textContent = 'Add Truck';
+  document.getElementById('drawer-sub').textContent = 'Fill in the truck details';
+  ['plate','lto','nmis','dim','notes'].forEach(f => document.getElementById('f-' + f).value = '');
+  document.getElementById('f-photo').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-placeholder').style.display = 'block';
+  document.getElementById('truck-drawer').classList.add('open');
+}
+
+function editTruck(rowIndex) {
+  if (!isAdmin) {
+    showToast('Read-only mode');
+    return;
+  }
+  
+  const t = allTrucks.find(x => x.rowIndex === rowIndex);
+  if (!t) return;
+  
+  editingRow = rowIndex;
+  currentPhotoBase64 = t.photo || '';
+  
+  document.getElementById('drawer-title').textContent = 'Edit Truck';
+  document.getElementById('drawer-sub').textContent = t.plate;
+  document.getElementById('f-plate').value = t.plate;
+  document.getElementById('f-lto').value = t.lto;
+  document.getElementById('f-nmis').value = t.nmis;
+  document.getElementById('f-dim').value = t.dim;
+  document.getElementById('f-notes').value = t.notes;
+  
+  if (t.photo) {
+    document.getElementById('photo-preview').src = t.photo;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
+  } else {
+    document.getElementById('photo-preview').style.display = 'none';
+    document.getElementById('photo-placeholder').style.display = 'block';
+  }
+  
+  document.getElementById('truck-drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('truck-drawer').classList.remove('open');
+}
+
+// PHOTO PREVIEW
+function previewPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  
+  const file = input.files[0];
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('Photo must be less than 2MB');
+    input.value = '';
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    currentPhotoBase64 = e.target.result;
+    document.getElementById('photo-preview').src = currentPhotoBase64;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// SAVE TRUCK
+function saveTruck() {
+  if (!isAdmin) {
+    showToast('Read-only mode');
+    return;
+  }
+  
+  const plate = document.getElementById('f-plate').value.trim().toUpperCase();
+  if (!plate) {
+    showToast('Plate Number is required!');
+    return;
+  }
+  
+  const lto = document.getElementById('f-lto').value.trim();
+  const nmis = document.getElementById('f-nmis').value.trim();
+  const dim = document.getElementById('f-dim').value.trim();
+  const notes = document.getElementById('f-notes').value.trim();
+  
+  if (editingRow) {
+    const t = allTrucks.find(x => x.rowIndex === editingRow);
+    apiUpdate(SHEET_TAB + '!A' + editingRow + ':G' + editingRow, [[t.id, plate, lto, nmis, dim, notes, currentPhotoBase64]])
+      .then(() => {
+        showToast('✅ Truck updated!');
+        closeDrawer();
+        loadTrucks();
+      })
+      .catch(() => showToast('❌ Save failed.'));
+  } else {
+    const id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
+    apiAppend(SHEET_TAB + '!A:G', [[id, plate, lto, nmis, dim, notes, currentPhotoBase64]])
+      .then(() => {
+        showToast('✅ Truck added!');
+        closeDrawer();
+        loadTrucks();
+      })
+      .catch(() => showToast('❌ Save failed.'));
+  }
+}
+
+// TOAST
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Close drawer/modal on overlay click
+document.getElementById('truck-drawer').addEventListener('click', e => {
+  if (e.target === document.getElementById('truck-drawer')) closeDrawer();
+});
+document.getElementById('detail-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('detail-modal')) closeDetail();
+});
+
+// INIT
+checkAuth();
+</script>
+</body>
+</html>
