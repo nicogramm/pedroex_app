@@ -722,66 +722,61 @@ function getLocation() {
 function submitAttendance() {
   if (!currentUser) { showToast('No user loaded.'); return; }
 
-  if (myRecords.find(function(r){ return r.date === todayStr; })) {
-    showToast('Already checked in today!'); return;
-  }
+  // Double-check sa Sheets mismo bago mag-save
+  showSaving('Checking attendance...');
 
-  var crates = document.getElementById('f-crates').value.trim() || '0';
-  var meal   = document.getElementById('f-meal').value;
-  var truck  = document.getElementById('f-truck').value;
-  var loc    = locationData || { lat:'', lng:'', address:'' };
-  var now    = new Date();
-  var time   = now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true});
-  var id     = 'ATT-' + todayStr.replace(/-/g,'') + '-' + pad(allAttendance.length+1);
-
-  var row = [id, todayStr, currentUser.fullName, teamValue, crates, meal,
-             truck, loc.address, String(loc.lat), String(loc.lng), time];
-
-  showSaving('Recording attendance...');
-
-  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
-    '/values/' + encodeURIComponent(TAB_ATTENDANCE + '!A:K') +
-    ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ values: [row] })
-  })
-  
-  .then(function(r) {
-    return r.json().then(function(data) {
-      if (!r.ok) {
-        // Show exact API error
-        var msg = (data.error && data.error.message) || ('HTTP ' + r.status);
-        throw new Error(msg);
-      }
-      return data;
+  apiGet(TAB_ATTENDANCE + '!B2:C').then(function(res) {
+    var rows = res.values || [];
+    var alreadyExists = rows.find(function(r) {
+      return r[0] === todayStr &&
+             (r[1]||'').toLowerCase() === currentUser.fullName.toLowerCase();
     });
-  })
-  .then(function() {
-    hideSaving();
-    var rec = { rowIndex: allAttendance.length+2, id:id, date:todayStr,
-      name:currentUser.fullName, team:teamValue, crates:crates, meal:meal,
-      truck:truck, location:loc.address, lat:String(loc.lat), lng:String(loc.lng), time:time };
-    allAttendance.push(rec);
-    myRecords.push(rec);
-    showDoneState(rec);
-    renderCalendar();
-    showToast('✅ Attendance recorded!');
-  })
 
-  .catch(function(err) {
-    hideSaving();
-    showToast('❌ ' + err.message);
-    console.error('Save error:', err);
+    if (alreadyExists) {
+      hideSaving();
+      showToast('⚠️ You already checked in today!');
+      // Show done state
+      var rec = myRecords.find(function(r){ return r.date === todayStr; });
+      if (rec) showDoneState(rec);
+      return;
+    }
+
+    // Proceed with save
+    var crates = document.getElementById('f-crates').value.trim() || '0';
+    var meal   = document.getElementById('f-meal').value;
+    var truck  = document.getElementById('f-truck').value;
+    var loc    = locationData || { lat:'', lng:'', address:'' };
+    var now    = new Date();
+    var time   = now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true});
+    var id     = 'ATT-' + todayStr.replace(/-/g,'') + '-' + pad(allAttendance.length+1);
+
+    var row = [id, todayStr, currentUser.fullName, teamValue, crates, meal,
+               truck, loc.address, String(loc.lat), String(loc.lng), time];
+
+    document.getElementById('saving-text').textContent = 'Recording attendance...';
+
+    apiAppend(TAB_ATTENDANCE + '!A:K', [row]).then(function() {
+      hideSaving();
+      var rec = { rowIndex: allAttendance.length+2, id:id, date:todayStr,
+        name:currentUser.fullName, team:teamValue, crates:crates, meal:meal,
+        truck:truck, location:loc.address, lat:String(loc.lat), lng:String(loc.lng), time:time };
+      allAttendance.push(rec);
+      myRecords.push(rec);
+      filteredAttendance = allAttendance.slice();
+      buildColorMap();
+      renderLegend();
+      showDoneState(rec);
+      renderCalendar();
+      showToast('✅ Attendance recorded!');
+    }).catch(function(err) {
+      hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err);
+    });
+
+  }).catch(function(err) {
+    hideSaving(); showToast('❌ Connection error. Try again.'); console.error(err);
   });
-
-    filteredAttendance = allAttendance.slice();
-    buildColorMap();
-    renderLegend();
 }
+
 // ═══ EMPLOYEE COLORS (red-adjacent gradients) ═════════
 var EMP_COLORS = [
   { bg:'#B32533', text:'#fff' },  // Red (brand)
