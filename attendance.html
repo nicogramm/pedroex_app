@@ -32,123 +32,164 @@ body.dark {
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background 0.4s,color 0.4s}
 .screen{display:flex;flex-direction:column;height:100dvh;width:100%}
-
-/* TOPBAR */
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07)}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .tb-right{display:flex;align-items:center;gap:12px}
 .tb-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
 .tb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs)}
-
-/* PAGE */
-.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:90px}
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:100px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .ph-left{display:flex;align-items:center;gap:12px}
 .back-btn{width:36px;height:36px;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);color:var(--text2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .back-btn:active{box-shadow:var(--neu-in)}
-.page-title{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.page-title{font-size:20px;font-weight:700;color:var(--text)}
 
-/* EMPLOYEE CARD */
-.emp-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
-.emp-avatar{width:52px;height:52px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs);flex-shrink:0}
-.emp-name{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
-.emp-role{font-size:12px;color:var(--text2);margin-top:2px}
-.emp-status{margin-top:6px;display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px}
-.emp-status.present{background:var(--green);color:#fff}
-.emp-status.absent{background:var(--red);color:#fff;opacity:0.7}
-.emp-status.pending{background:var(--orange);color:#fff}
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:16px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px}
+.tab{flex:1;padding:10px;border:none;background:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all 0.2s}
+.tab.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
 
-/* CHECK-IN CARD */
-.checkin-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px}
-.checkin-title{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+/* CARDS */
+.neu-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:20px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+
+/* EMP HEADER */
+.emp-header{display:flex;align-items:center;gap:14px;margin-bottom:0}
+.emp-avatar{width:50px;height:50px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs)}
+.emp-name{font-size:17px;font-weight:700;color:var(--text)}
+.emp-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.status-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-top:5px}
+.pill-present{background:var(--green);color:#fff}
+.pill-pending{background:var(--orange);color:#fff}
 
 /* FORM */
 .fg{margin-bottom:14px}
 .fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
 .fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none}
-.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.25)}
+.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.2)}
 select.fi{cursor:pointer}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* LOCATION BOX */
-.loc-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;min-height:52px;display:flex;align-items:center;gap:10px}
-.loc-icon{flex-shrink:0;color:var(--red)}
-.loc-text{font-size:13px;color:var(--text2);line-height:1.5;flex:1}
-.loc-text.got{color:var(--text);font-size:12px}
-.loc-retry{background:none;border:none;color:var(--red);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+/* TOGGLE (Yes/No) */
+.toggle-group{display:flex;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);overflow:hidden}
+.tg-btn{flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all 0.2s}
+.tg-btn.active-yes{background:var(--green);color:#fff;box-shadow:none}
+.tg-btn.active-no{background:var(--red);color:#fff;box-shadow:none}
 
-/* CHECK-IN BUTTON */
-.checkin-btn{width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:-0.2px;box-shadow:5px 5px 14px rgba(179,37,51,0.4),-2px -2px 8px rgba(179,37,51,0.15);margin-top:6px;transition:transform 0.15s}
+/* LOCATION */
+.loc-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;min-height:52px}
+.loc-icon{color:var(--red);flex-shrink:0;margin-top:2px}
+.loc-text{font-size:12px;color:var(--text2);line-height:1.5;flex:1}
+.loc-text.got{color:var(--text)}
+.loc-retry{background:none;border:none;color:var(--red);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;padding:0;flex-shrink:0}
+
+/* CHECK-IN BTN */
+.checkin-btn{width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:16px;font-size:16px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:5px 5px 14px rgba(179,37,51,0.4),-2px -2px 8px rgba(179,37,51,0.15);margin-top:6px}
 .checkin-btn:active{transform:scale(0.98)}
-.checkin-btn:disabled{background:var(--text3);box-shadow:var(--neu-sm);cursor:not-allowed}
+.checkin-btn:disabled{background:var(--text3);box-shadow:var(--neu-sm);cursor:not-allowed;transform:none}
 
-/* SUCCESS STATE */
-.success-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:28px 20px;margin-bottom:16px;text-align:center}
-.success-icon{font-size:52px;margin-bottom:12px}
+/* SUCCESS */
+.success-card{text-align:center;padding:28px 20px}
+.success-icon{font-size:52px;margin-bottom:10px}
 .success-title{font-size:20px;font-weight:700;color:var(--green);margin-bottom:6px}
 .success-sub{font-size:13px;color:var(--text2);line-height:1.6}
-.success-detail{background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:14px;margin-top:16px;text-align:left}
-.sd-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
-body.dark .sd-row{border-bottom-color:rgba(255,255,255,0.04)}
-.sd-row:last-child{border-bottom:none}
-.sd-label{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.5px}
-.sd-value{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:60%}
+.detail-table{background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:14px;margin-top:16px;text-align:left}
+.dt-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
+body.dark .dt-row{border-bottom-color:rgba(255,255,255,0.04)}
+.dt-row:last-child{border-bottom:none}
+.dt-label{font-size:11px;color:var(--text3);font-weight:600}
+.dt-val{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:65%}
 
 /* CALENDAR */
-.cal-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
 .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .cal-title{font-size:15px;font-weight:700;color:var(--text)}
 .cal-nav{width:32px;height:32px;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .cal-nav:active{box-shadow:var(--neu-in)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.cal-day-name{font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);text-align:center;padding:4px 0}
-.cal-day{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;background:var(--bg)}
-.cal-day.has-record{background:var(--bg);box-shadow:var(--neu-xs);color:var(--text);font-weight:600}
-.cal-day.has-record::after{content:'';display:block;width:5px;height:5px;border-radius:50%;background:var(--green);position:absolute;bottom:4px}
-.cal-day{position:relative}
-.cal-day.today{color:var(--red);font-weight:700}
-.cal-day.today.has-record{color:var(--red)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dn{font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);text-align:center;padding:4px 0}
+.cal-day{border-radius:10px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;cursor:pointer;min-height:44px;position:relative;transition:box-shadow 0.15s}
+.cal-day-num{font-size:13px;font-weight:500;color:var(--text2);line-height:1.4}
+.cal-day.today .cal-day-num{color:var(--red);font-weight:700}
+.cal-day.has-att{box-shadow:var(--neu-xs)}
+.cal-day.has-att .cal-day-num{color:var(--text);font-weight:600}
+.cal-day.selected{box-shadow:var(--neu-in)}
 .cal-day.other-month{opacity:0.3}
-.cal-day.selected{box-shadow:var(--neu-in);color:var(--red)}
+.cal-names{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;width:100%}
+.cal-name-dot{font-size:8px;color:var(--green);font-weight:700;letter-spacing:0;line-height:1.2;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 
-/* HISTORY */
-.history-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
-.history-title{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
-.hist-item{padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.05);display:flex;justify-content:space-between;align-items:flex-start}
-body.dark .hist-item{border-bottom-color:rgba(255,255,255,0.04)}
-.hist-item:last-child{border-bottom:none}
-.hist-date{font-size:13px;font-weight:600;color:var(--text)}
-.hist-loc{font-size:11px;color:var(--text2);margin-top:2px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hist-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--green);color:#fff;white-space:nowrap}
+/* DAY DETAIL PANEL */
+.day-panel{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-top:12px;display:none}
+.day-panel.show{display:block;animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.day-panel-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px}
+.att-item{background:var(--bg);border-radius:12px;box-shadow:var(--neu-xs);padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.att-item:active{box-shadow:var(--neu-in)}
+.att-name{font-size:14px;font-weight:600;color:var(--text)}
+.att-meta{font-size:11px;color:var(--text2);margin-top:3px}
+.att-badges{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);box-shadow:var(--neu-xs);color:var(--text2)}
+.badge.green{background:var(--green);color:#fff;box-shadow:none}
+.badge.red{background:var(--red);color:#fff;box-shadow:none}
+.badge.orange{background:var(--orange);color:#fff;box-shadow:none}
+
+/* ADMIN PANEL */
+.admin-section{margin-bottom:14px}
+.section-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;padding-left:2px}
+.emp-list-item{background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.eli-info{flex:1}
+.eli-name{font-size:14px;font-weight:600;color:var(--text)}
+.eli-email{font-size:11px;color:var(--text2);margin-top:2px}
+.eli-del{width:32px;height:32px;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
+.eli-del:active{box-shadow:var(--neu-in)}
+.add-emp-form{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:14px}
+
+/* DETAIL SHEET */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:85dvh;overflow-y:auto;animation:slideUp 0.28s cubic-bezier(0.16,1,0.3,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;opacity:0.3}
+.sheet-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.sheet-sub{font-size:13px;color:var(--text2);margin-bottom:18px}
+
+/* CONFIRM */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg);border-radius:22px;padding:24px;max-width:340px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
+.confirm-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px}
+.cb{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none}
+.cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
+.cb-cancel:active{box-shadow:var(--neu-in)}
+.cb-confirm{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4)}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 14px rgba(0,0,0,0.07);z-index:40}
 body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 .bnav{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
 .bnav.active{color:var(--red)}
-.bnav-icon{width:42px;height:42px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:box-shadow 0.2s}
+.bnav-icon{width:42px;height:42px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center}
 .bnav:not(.active) .bnav-icon{box-shadow:var(--neu-sm)}
 .bnav.active .bnav-icon{box-shadow:var(--neu-in)}
 
-/* LOADING */
+/* LOADING / TOAST / SAVING */
 .loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:56px;color:var(--text3);font-size:13px}
 .spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* TOAST */
-.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:300;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .toast.show{opacity:1}
-
-/* SAVING */
 .saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
 .saving-overlay.show{display:flex}
 .saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
 .saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
 .saving-text{font-size:14px;color:var(--text2);font-weight:500}
 
-/* NOT REGISTERED */
-.not-reg-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:40px 24px;text-align:center;margin-bottom:16px}
-.nr-icon{font-size:48px;margin-bottom:14px;opacity:0.4}
+.empty-hint{text-align:center;padding:32px 20px;color:var(--text3);font-size:13px}
+.icon-btn{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-xs);color:var(--text2);padding:8px 14px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer}
+.icon-btn:active{box-shadow:var(--neu-in)}
+.not-reg{text-align:center;padding:48px 24px}
+.nr-icon{font-size:48px;opacity:0.35;margin-bottom:14px}
 .nr-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
 .nr-sub{font-size:13px;color:var(--text2);line-height:1.7}
 </style>
@@ -170,66 +211,78 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         <button class="back-btn" onclick="location.href='index.html'">‹</button>
         <div class="page-title">Attendance</div>
       </div>
-      <div id="today-date" style="font-size:12px;color:var(--text2)"></div>
+      <div id="today-label" style="font-size:11px;color:var(--text2)"></div>
     </div>
 
-    <!-- Loading -->
+    <!-- TABS -->
+    <div class="tabs" id="tabs-bar">
+      <button class="tab active" id="tab-checkin" onclick="switchTab('checkin')">Check-in</button>
+      <button class="tab" id="tab-calendar" onclick="switchTab('calendar')">Calendar</button>
+      <button class="tab admin-only" id="tab-admin" onclick="switchTab('admin')" style="display:none">Manage</button>
+    </div>
+
+    <!-- LOADING -->
     <div id="wrap-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
 
-    <!-- Not registered -->
+    <!-- NOT REGISTERED -->
     <div id="wrap-not-reg" style="display:none">
-      <div class="not-reg-card">
+      <div class="not-reg">
         <div class="nr-icon">🚫</div>
         <div class="nr-title">Not Registered</div>
-        <div class="nr-sub">Your email is not registered in the system.<br>Please contact your administrator.</div>
+        <div class="nr-sub">Your email is not registered.<br>Contact your administrator.</div>
       </div>
     </div>
 
-    <!-- Main content -->
-    <div id="wrap-main" style="display:none">
+    <!-- ══ TAB: CHECK-IN ══ -->
+    <div id="tab-content-checkin" style="display:none">
 
-      <!-- Employee Card -->
-      <div class="emp-card">
-        <img class="emp-avatar" id="emp-avatar" src="" alt="">
-        <div>
-          <div class="emp-name" id="emp-name"></div>
-          <div class="emp-role" id="emp-role"></div>
-          <span class="emp-status" id="emp-status-badge">Checking...</span>
+      <!-- Employee header -->
+      <div class="neu-card" style="padding:16px">
+        <div class="emp-header">
+          <img class="emp-avatar" id="emp-avatar" src="" alt="">
+          <div>
+            <div class="emp-name" id="emp-name"></div>
+            <div class="emp-sub" id="emp-role"></div>
+            <span class="status-pill" id="status-pill">Checking...</span>
+          </div>
         </div>
       </div>
 
-      <!-- Already checked in today -->
+      <!-- Already checked in -->
       <div id="wrap-done" style="display:none">
-        <div class="success-card">
+        <div class="neu-card success-card">
           <div class="success-icon">✅</div>
           <div class="success-title">Attendance Recorded!</div>
           <div class="success-sub">You have already checked in today.</div>
-          <div class="success-detail" id="today-record-detail"></div>
+          <div class="detail-table" id="today-detail"></div>
         </div>
       </div>
 
       <!-- Check-in form -->
       <div id="wrap-form" style="display:none">
-        <div class="checkin-card">
-          <div class="checkin-title">Today's Check-in</div>
+        <div class="neu-card">
+          <div class="card-title">Today's Check-in</div>
 
           <div class="fg">
-            <label class="fl">2-Man Team (Partner)</label>
-            <input class="fi" id="f-team" placeholder="Partner's name (optional)">
+            <label class="fl">2-Man Team</label>
+            <div class="toggle-group">
+              <button class="tg-btn" id="team-no" onclick="setTeam('No')">No</button>
+              <button class="tg-btn" id="team-yes" onclick="setTeam('Yes')">Yes</button>
+            </div>
           </div>
 
-          <div class="row2">
-            <div class="fg">
-              <label class="fl">Crates</label>
-              <input class="fi" id="f-crates" type="number" placeholder="0" min="0">
-            </div>
-            <div class="fg">
-              <label class="fl">Meal Allowance</label>
-              <select class="fi" id="f-meal">
-                <option value="No">No</option>
-                <option value="Yes">Yes — Meals Only</option>
-              </select>
-            </div>
+          <div class="fg">
+            <label class="fl">Crates</label>
+            <input class="fi" id="f-crates" type="number" placeholder="0" min="0" value="0">
+          </div>
+
+          <div class="fg">
+            <label class="fl">Meal Allowance</label>
+            <select class="fi" id="f-meal">
+              <option value="Yes" selected>Yes — Full Allowance</option>
+              <option value="Meals Only">Meals Only</option>
+              <option value="No">No</option>
+            </select>
           </div>
 
           <div class="fg">
@@ -241,9 +294,9 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
           <div class="fg">
             <label class="fl">Location</label>
-            <div class="loc-box" id="loc-box">
-              <svg class="loc-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg>
-              <span class="loc-text" id="loc-text">Getting your location...</span>
+            <div class="loc-box">
+              <svg class="loc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg>
+              <span class="loc-text" id="loc-text">Getting location...</span>
               <button class="loc-retry" id="loc-retry" onclick="getLocation()" style="display:none">Retry</button>
             </div>
           </div>
@@ -254,8 +307,11 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         </div>
       </div>
 
-      <!-- Calendar -->
-      <div class="cal-card">
+    </div><!-- end checkin tab -->
+
+    <!-- ══ TAB: CALENDAR ══ -->
+    <div id="tab-content-calendar" style="display:none">
+      <div class="neu-card">
         <div class="cal-header">
           <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
           <div class="cal-title" id="cal-title"></div>
@@ -263,15 +319,49 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         </div>
         <div class="cal-grid" id="cal-grid"></div>
       </div>
+      <!-- Day detail panel -->
+      <div class="day-panel" id="day-panel">
+        <div class="day-panel-title" id="day-panel-title"></div>
+        <div id="day-panel-list"></div>
+      </div>
+    </div><!-- end calendar tab -->
 
-      <!-- History -->
-      <div class="history-card" id="history-card" style="display:none">
-        <div class="history-title">Attendance History</div>
-        <div id="history-list"></div>
+    <!-- ══ TAB: ADMIN MANAGE ══ -->
+    <div id="tab-content-admin" style="display:none">
+
+      <!-- Add Employee -->
+      <div class="section-label">Add Employee</div>
+      <div class="add-emp-form">
+        <div class="fg"><label class="fl">Email</label><input class="fi" id="ae-email" type="email" placeholder="employee@gmail.com"></div>
+        <div class="row2">
+          <div class="fg"><label class="fl">First Name</label><input class="fi" id="ae-fname" placeholder="First Name"></div>
+          <div class="fg"><label class="fl">Last Name</label><input class="fi" id="ae-lname" placeholder="Last Name"></div>
+        </div>
+        <div class="fg"><label class="fl">Role</label>
+          <select class="fi" id="ae-role">
+            <option value="Employee">Employee</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <button class="checkin-btn" onclick="addEmployee()" style="margin-top:0">Add Employee</button>
       </div>
 
-    </div><!-- end wrap-main -->
-  </div>
+      <!-- Employee List -->
+      <div class="section-label">Registered Employees</div>
+      <div id="emp-list-wrap">
+        <div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
+      </div>
+
+      <!-- Admin: Edit Attendance -->
+      <div class="section-label" style="margin-top:20px">Edit Attendance Record</div>
+      <div class="neu-card" style="padding:16px">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Select a date from the Calendar tab, then tap an attendance record to edit it.</div>
+        <button class="icon-btn" onclick="switchTab('calendar')">Go to Calendar →</button>
+      </div>
+
+    </div><!-- end admin tab -->
+
+  </div><!-- end page-wrap -->
 
   <div class="bottom-nav">
     <button class="bnav" onclick="location.href='index.html'">
@@ -292,6 +382,28 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
   </div>
 </div>
 
+<!-- ATTENDANCE DETAIL / EDIT SHEET -->
+<div class="sheet-overlay" id="att-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="att-sheet-title">Attendance Detail</div>
+    <div class="sheet-sub" id="att-sheet-sub"></div>
+    <div id="att-sheet-body"></div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirm</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-btns">
+      <button class="cb cb-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="cb cb-confirm" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <div class="saving-overlay" id="saving-overlay">
   <div class="saving-box">
     <div class="saving-spinner"></div>
@@ -302,37 +414,42 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══ CONFIG ══════════════════════════════════════════
+// ═══ CONFIG ═══════════════════════════════════════════
 const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const TAB_ATTENDANCE = 'Attendance';
 const TAB_EMPLOYEES  = 'Employees';
 const TAB_TRUCKS     = 'Truck Roster';
 const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
 
-// ═══ STATE ═══════════════════════════════════════════
-var token       = '';
-var currentUser = null; // { email, firstName, lastName, fullName, role }
-var myRecords   = [];   // this employee's attendance records
-var allTrucks   = [];
-var locationData = null; // { lat, lng, address }
+// ═══ STATE ════════════════════════════════════════════
+var token        = '';
+var isAdmin      = false;
+var currentUser  = null;
+var allAttendance = [];  // all records from sheet
+var myRecords    = [];   // current user's records
+var allEmployees = [];
+var allTrucks    = [];
+var locationData = null;
 var calYear, calMonth;
-var todayStr    = '';
+var todayStr     = '';
+var teamValue    = 'No';
+var selectedAtt  = null; // for edit
+var confirmCb    = null;
 
-// ═══ INIT ════════════════════════════════════════════
+// ═══ INIT ═════════════════════════════════════════════
 (function init() {
   document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
-
   token = localStorage.getItem('pedroex-token') || '';
   var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
   if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
 
   var now = new Date();
-  todayStr = formatDate(now);
-  calYear  = now.getFullYear();
-  calMonth = now.getMonth();
+  todayStr  = fmtDate(now);
+  calYear   = now.getFullYear();
+  calMonth  = now.getMonth();
 
-  document.getElementById('today-date').textContent =
-    now.toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  document.getElementById('today-label').textContent =
+    now.toLocaleDateString('en-PH', { weekday:'short', month:'short', day:'numeric' });
 
   var pic = localStorage.getItem('pedroex-picture') || '';
   if (pic) {
@@ -340,26 +457,45 @@ var todayStr    = '';
     document.getElementById('emp-avatar').src  = pic;
   }
 
+  setTeam('No'); // default
   loadAll();
 })();
 
-// ═══ LOAD ALL DATA ═══════════════════════════════════
+// ═══ LOAD ALL ═════════════════════════════════════════
 function loadAll() {
   var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+  isAdmin   = (email === ADMIN_EMAIL.toLowerCase());
 
-  // Load Employees sheet to verify user
   Promise.all([
-    apiGet(TAB_EMPLOYEES + '!A2:D'),
-    apiGet(TAB_TRUCKS + '!A2:B'),
+    apiGet(TAB_EMPLOYEES  + '!A2:D'),
+    apiGet(TAB_TRUCKS     + '!A2:B'),
     apiGet(TAB_ATTENDANCE + '!A2:K')
-  ]).then(function(results) {
-    var empRows    = results[0].values || [];
-    var truckRows  = results[1].values || [];
-    var attendRows = results[2].values || [];
+  ]).then(function(res) {
+    allEmployees  = (res[0].values || []).filter(function(r){ return r[0]; });
+    var truckRows = res[1].values || [];
+    var attRows   = res[2].values || [];
 
-    // Find current user in Employees sheet
-    var empRow = empRows.find(function(r) {
-      return (r[0] || '').toLowerCase() === email;
+    // Build trucks list
+    allTrucks = truckRows.filter(function(r){ return r[1]; }).map(function(r){ return r[1]; });
+    var sel = document.getElementById('f-truck');
+    allTrucks.forEach(function(p) {
+      var o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o);
+    });
+
+    // Build attendance records with row index
+    allAttendance = attRows.map(function(r, i) {
+      return {
+        rowIndex: i + 2,
+        id: r[0]||'', date: r[1]||'', name: r[2]||'',
+        team: r[3]||'', crates: r[4]||'', meal: r[5]||'',
+        truck: r[6]||'', location: r[7]||'',
+        lat: r[8]||'', lng: r[9]||'', time: r[10]||''
+      };
+    }).filter(function(r){ return r.date; });
+
+    // Find current user
+    var empRow = allEmployees.find(function(r){
+      return (r[0]||'').toLowerCase() === (localStorage.getItem('pedroex-email')||'').toLowerCase();
     });
 
     if (!empRow) {
@@ -369,309 +505,473 @@ function loadAll() {
     }
 
     currentUser = {
-      email:     empRow[0] || '',
-      firstName: empRow[1] || '',
-      lastName:  empRow[2] || '',
-      fullName:  (empRow[1] + ' ' + empRow[2]).trim(),
-      role:      empRow[3] || 'Employee'
+      email:     empRow[0]||'',
+      firstName: empRow[1]||'',
+      lastName:  empRow[2]||'',
+      fullName:  ((empRow[1]||'') + ' ' + (empRow[2]||'')).trim(),
+      role:      empRow[3]||'Employee'
     };
 
-    // Fill trucks dropdown
-    allTrucks = truckRows.filter(function(r) { return r[1]; }).map(function(r) { return r[1]; });
-    var sel = document.getElementById('f-truck');
-    allTrucks.forEach(function(plate) {
-      var opt = document.createElement('option');
-      opt.value = plate; opt.textContent = plate;
-      sel.appendChild(opt);
-    });
-
-    // Filter my attendance records
-    myRecords = attendRows.filter(function(r) {
-      return (r[2] || '').toLowerCase() === currentUser.fullName.toLowerCase();
-    }).map(function(r, i) {
-      return {
-        rowIndex: i + 2,
-        id: r[0] || '', date: r[1] || '', name: r[2] || '',
-        team: r[3] || '', crates: r[4] || '', meal: r[5] || '',
-        truck: r[6] || '', location: r[7] || '',
-        lat: r[8] || '', lng: r[9] || '', time: r[10] || ''
-      };
-    });
-
-    // Update UI
     document.getElementById('emp-name').textContent = currentUser.fullName;
     document.getElementById('emp-role').textContent = currentUser.role;
 
-    // Check if already attended today
-    var todayRecord = myRecords.find(function(r) { return r.date === todayStr; });
+    // My records
+    myRecords = allAttendance.filter(function(r){
+      return r.name.toLowerCase() === currentUser.fullName.toLowerCase();
+    });
 
-    if (todayRecord) {
-      showTodayRecord(todayRecord);
+    // Admin tab
+    if (isAdmin) document.getElementById('tab-admin').style.display = '';
+
+    // Check today
+    var todayRec = myRecords.find(function(r){ return r.date === todayStr; });
+    if (todayRec) {
+      showDoneState(todayRec);
     } else {
       document.getElementById('wrap-form').style.display = 'block';
-      document.getElementById('emp-status-badge').textContent = 'Not yet checked in';
-      document.getElementById('emp-status-badge').className = 'emp-status pending';
+      document.getElementById('status-pill').textContent  = 'Not checked in';
+      document.getElementById('status-pill').className    = 'status-pill pill-pending';
       getLocation();
     }
 
     renderCalendar();
-    renderHistory();
+    if (isAdmin) renderEmployeeList();
 
     document.getElementById('wrap-loading').style.display = 'none';
-    document.getElementById('wrap-main').style.display = 'block';
+    switchTab('checkin');
 
   }).catch(function(err) {
     document.getElementById('wrap-loading').style.display = 'none';
-    showToast('Failed to load data.');
+    showToast('Failed to load. Check connection.');
     console.error(err);
   });
 }
 
-// ═══ SHOW TODAY RECORD ═══════════════════════════════
-function showTodayRecord(rec) {
-  document.getElementById('emp-status-badge').textContent = 'Present ✓';
-  document.getElementById('emp-status-badge').className = 'emp-status present';
+// ═══ TABS ═════════════════════════════════════════════
+function switchTab(name) {
+  ['checkin','calendar','admin'].forEach(function(t) {
+    document.getElementById('tab-' + t).classList.toggle('active', t === name);
+    var el = document.getElementById('tab-content-' + t);
+    if (el) el.style.display = (t === name ? 'block' : 'none');
+  });
+}
+
+// ═══ TEAM TOGGLE ══════════════════════════════════════
+function setTeam(val) {
+  teamValue = val;
+  document.getElementById('team-no').className  = 'tg-btn' + (val==='No'  ? ' active-no'  : '');
+  document.getElementById('team-yes').className = 'tg-btn' + (val==='Yes' ? ' active-yes' : '');
+}
+
+// ═══ SHOW DONE STATE ══════════════════════════════════
+function showDoneState(rec) {
+  document.getElementById('status-pill').textContent = 'Present ✓';
+  document.getElementById('status-pill').className   = 'status-pill pill-present';
   document.getElementById('wrap-done').style.display = 'block';
   document.getElementById('wrap-form').style.display = 'none';
 
-  var detail = document.getElementById('today-record-detail');
-  detail.innerHTML = [
-    ['Date',       rec.date],
-    ['Time',       rec.time],
-    ['Partner',    rec.team  || '—'],
-    ['Crates',     rec.crates || '0'],
-    ['Meal Allow', rec.meal],
-    ['Truck',      rec.truck || '—'],
-    ['Location',   rec.location || '—'],
-  ].map(function(item) {
-    return '<div class="sd-row">'
-      + '<span class="sd-label">' + item[0] + '</span>'
-      + '<span class="sd-value">' + item[1] + '</span>'
-      + '</div>';
+  document.getElementById('today-detail').innerHTML = [
+    ['Date', rec.date], ['Time', rec.time],
+    ['2-Man Team', rec.team||'No'], ['Crates', rec.crates||'0'],
+    ['Meal Allowance', rec.meal], ['Truck', rec.truck||'—'],
+    ['Location', rec.location||'—']
+  ].map(function(r) {
+    return '<div class="dt-row"><span class="dt-label">' + r[0] +
+      '</span><span class="dt-val">' + r[1] + '</span></div>';
   }).join('');
 }
 
-// ═══ GEOLOCATION ═════════════════════════════════════
+// ═══ GEOLOCATION ══════════════════════════════════════
 function getLocation() {
-  var locText  = document.getElementById('loc-text');
-  var locRetry = document.getElementById('loc-retry');
-  var btn      = document.getElementById('checkin-btn');
-
-  locText.textContent = 'Getting your location...';
-  locText.className   = 'loc-text';
-  locRetry.style.display = 'none';
-  btn.disabled = true;
+  var lt = document.getElementById('loc-text');
+  var lr = document.getElementById('loc-retry');
+  lt.textContent = 'Getting location...'; lt.className = 'loc-text';
+  lr.style.display = 'none';
+  document.getElementById('checkin-btn').disabled = true;
   locationData = null;
 
   if (!navigator.geolocation) {
-    locText.textContent = 'GPS not supported on this device.';
-    locRetry.style.display = 'block';
-    return;
+    lt.textContent = 'GPS not supported.'; lr.style.display = 'block';
+    locationData = { lat:'', lng:'', address:'Not available' };
+    document.getElementById('checkin-btn').disabled = false; return;
   }
 
-  navigator.geolocation.getCurrentPosition(
-    function(pos) {
-      var lat = pos.coords.latitude;
-      var lng = pos.coords.longitude;
-
-      // Reverse geocode
-      fetch('https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lng + '&format=json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          var address = data.display_name || (lat.toFixed(5) + ', ' + lng.toFixed(5));
-          locationData = { lat: lat, lng: lng, address: address };
-          locText.textContent = address;
-          locText.className   = 'loc-text got';
-          locRetry.style.display = 'none';
-          btn.disabled = false;
-        })
-        .catch(function() {
-          // Fallback — just use coordinates
-          locationData = { lat: lat, lng: lng, address: lat.toFixed(5) + ', ' + lng.toFixed(5) };
-          locText.textContent = lat.toFixed(5) + ', ' + lng.toFixed(5);
-          locText.className   = 'loc-text got';
-          btn.disabled = false;
-        });
-    },
-    function(err) {
-      var msg = err.code === 1
-        ? 'Location access denied. Please allow GPS.'
-        : 'Cannot get location. Please retry.';
-      locText.textContent = msg;
-      locRetry.style.display = 'block';
-      btn.disabled = false; // allow check-in without location
-      locationData = { lat: '', lng: '', address: 'Location not available' };
-    },
-    { timeout: 12000, enableHighAccuracy: true }
-  );
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude, lng = pos.coords.longitude;
+    fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json')
+      .then(function(r){ return r.json(); })
+      .then(function(d) {
+        locationData = { lat:lat, lng:lng, address: d.display_name || (lat.toFixed(5)+','+lng.toFixed(5)) };
+        lt.textContent = locationData.address; lt.className = 'loc-text got';
+        document.getElementById('checkin-btn').disabled = false;
+      }).catch(function() {
+        locationData = { lat:lat, lng:lng, address: lat.toFixed(5)+', '+lng.toFixed(5) };
+        lt.textContent = locationData.address; lt.className = 'loc-text got';
+        document.getElementById('checkin-btn').disabled = false;
+      });
+  }, function(err) {
+    lt.textContent = err.code===1 ? 'Location denied. Allow GPS.' : 'Cannot get location.';
+    lr.style.display = 'block';
+    locationData = { lat:'', lng:'', address:'Location not available' };
+    document.getElementById('checkin-btn').disabled = false;
+  }, { timeout:12000, enableHighAccuracy:true });
 }
 
-// ═══ SUBMIT ATTENDANCE ═══════════════════════════════
+// ═══ SUBMIT ATTENDANCE ════════════════════════════════
 function submitAttendance() {
   if (!currentUser) return;
 
-  var team   = document.getElementById('f-team').value.trim();
+  // Block if already attended today (double-check)
+  if (myRecords.find(function(r){ return r.date === todayStr; })) {
+    showToast('Already checked in today!'); return;
+  }
+
   var crates = document.getElementById('f-crates').value.trim() || '0';
   var meal   = document.getElementById('f-meal').value;
   var truck  = document.getElementById('f-truck').value;
-  var loc    = locationData || { lat: '', lng: '', address: '' };
+  var loc    = locationData || { lat:'', lng:'', address:'' };
+  var now    = new Date();
+  var time   = now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true});
+  var id     = 'ATT-' + todayStr.replace(/-/g,'') + '-' + pad(allAttendance.length+1);
 
-  var now     = new Date();
-  var timeStr = now.toLocaleTimeString('en-PH', { hour:'2-digit', minute:'2-digit', hour12:true });
-  var id      = 'ATT-' + todayStr.replace(/-/g,'') + '-' + (myRecords.length + 1);
-
-  var row = [
-    id,
-    todayStr,
-    currentUser.fullName,
-    team,
-    crates,
-    meal,
-    truck,
-    loc.address,
-    loc.lat,
-    loc.lng,
-    timeStr
-  ];
+  var row = [id, todayStr, currentUser.fullName, teamValue, crates, meal,
+             truck, loc.address, String(loc.lat), String(loc.lng), time];
 
   showSaving('Recording attendance...');
 
-  apiAppend(TAB_ATTENDANCE + '!A:K', [row])
-    .then(function() {
-      hideSaving();
-      // Add to local records
-      var rec = {
-        rowIndex: myRecords.length + 2,
-        id: id, date: todayStr, name: currentUser.fullName,
-        team: team, crates: crates, meal: meal,
-        truck: truck, location: loc.address,
-        lat: String(loc.lat), lng: String(loc.lng), time: timeStr
-      };
-      myRecords.push(rec);
-      showTodayRecord(rec);
-      renderCalendar();
-      renderHistory();
-      showToast('✅ Attendance recorded!');
-    })
-    .catch(function(err) {
-      hideSaving();
-      showToast('❌ Failed to save. Try again.');
-      console.error(err);
-    });
+  apiAppend(TAB_ATTENDANCE + '!A:K', [row]).then(function() {
+    hideSaving();
+    var rec = { rowIndex: allAttendance.length+2, id:id, date:todayStr,
+      name:currentUser.fullName, team:teamValue, crates:crates, meal:meal,
+      truck:truck, location:loc.address, lat:String(loc.lat), lng:String(loc.lng), time:time };
+    allAttendance.push(rec);
+    myRecords.push(rec);
+    showDoneState(rec);
+    renderCalendar();
+    showToast('✅ Attendance recorded!');
+  }).catch(function(err) {
+    hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err);
+  });
 }
 
-// ═══ CALENDAR ════════════════════════════════════════
+// ═══ CALENDAR ═════════════════════════════════════════
 var MONTHS = ['January','February','March','April','May','June',
               'July','August','September','October','November','December'];
-var DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var DAYS   = ['S','M','T','W','T','F','S'];
+var selectedDay = null;
 
-function changeMonth(dir) {
-  calMonth += dir;
-  if (calMonth < 0)  { calMonth = 11; calYear--; }
-  if (calMonth > 11) { calMonth = 0;  calYear++; }
+function changeMonth(d) {
+  calMonth += d;
+  if (calMonth < 0)  { calMonth=11; calYear--; }
+  if (calMonth > 11) { calMonth=0;  calYear++; }
   renderCalendar();
+  document.getElementById('day-panel').classList.remove('show');
 }
 
 function renderCalendar() {
   document.getElementById('cal-title').textContent = MONTHS[calMonth] + ' ' + calYear;
-
   var grid  = document.getElementById('cal-grid');
-  var today = new Date();
+  var days  = new Date(calYear, calMonth+1, 0).getDate();
   var first = new Date(calYear, calMonth, 1).getDay();
-  var days  = new Date(calYear, calMonth + 1, 0).getDate();
 
-  // Build set of dates with records
-  var recordDates = {};
-  myRecords.forEach(function(r) { recordDates[r.date] = true; });
+  // Map: date -> [firstName, ...]
+  var dayMap = {};
+  allAttendance.forEach(function(r) {
+    if (!r.date || !r.name) return;
+    var parts = r.date.split('-');
+    if (parseInt(parts[0])!==calYear || parseInt(parts[1])-1!==calMonth) return;
+    var day = parseInt(parts[2]);
+    if (!dayMap[day]) dayMap[day] = [];
+    // Get first name only
+    var firstName = r.name.split(' ')[0];
+    dayMap[day].push(firstName);
+  });
 
-  var html = DAYS.map(function(d) {
-    return '<div class="cal-day-name">' + d + '</div>';
-  }).join('');
+  var html = DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
+  for (var i=0; i<first; i++) html += '<div class="cal-day other-month"></div>';
 
-  // Empty cells before first day
-  for (var i = 0; i < first; i++) {
-    html += '<div class="cal-day other-month"></div>';
-  }
-
-  for (var d = 1; d <= days; d++) {
-    var dateStr = calYear + '-' + pad(calMonth+1) + '-' + pad(d);
+  for (var d=1; d<=days; d++) {
+    var dateStr = calYear+'-'+pad(calMonth+1)+'-'+pad(d);
+    var names   = dayMap[d] || [];
     var cls     = 'cal-day';
-    if (dateStr === todayStr) cls += ' today';
-    if (recordDates[dateStr]) cls += ' has-record';
-    html += '<div class="' + cls + '">' + d + '</div>';
-  }
+    if (dateStr === todayStr)   cls += ' today';
+    if (names.length)           cls += ' has-att';
+    if (dateStr === selectedDay) cls += ' selected';
 
+    var namesHtml = '';
+    if (names.length) {
+      namesHtml = '<div class="cal-names">'
+        + names.slice(0,3).map(function(n){
+            return '<div class="cal-name-dot">'+n+'</div>';
+          }).join('')
+        + (names.length > 3 ? '<div class="cal-name-dot">+' + (names.length-3) + '</div>' : '')
+        + '</div>';
+    }
+
+    html += '<div class="'+cls+'" onclick="selectDay(\''+dateStr+'\')">'
+      + '<div class="cal-day-num">'+d+'</div>'
+      + namesHtml
+      + '</div>';
+  }
   grid.innerHTML = html;
 }
 
-// ═══ HISTORY ═════════════════════════════════════════
-function renderHistory() {
-  var card = document.getElementById('history-card');
-  var list = document.getElementById('history-list');
+function selectDay(dateStr) {
+  selectedDay = dateStr;
+  renderCalendar();
 
-  if (!myRecords.length) { card.style.display = 'none'; return; }
-  card.style.display = 'block';
+  var recs = allAttendance.filter(function(r){ return r.date === dateStr; });
+  var panel = document.getElementById('day-panel');
+  var d     = new Date(dateStr+'T00:00:00');
+  var label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 
-  var sorted = myRecords.slice().sort(function(a,b) {
-    return b.date.localeCompare(a.date);
-  }).slice(0, 20);
+  document.getElementById('day-panel-title').textContent = label + ' — ' + recs.length + ' employee(s)';
 
-  list.innerHTML = sorted.map(function(r) {
-    var d = new Date(r.date + 'T00:00:00');
-    var label = d.toLocaleDateString('en-PH', { month:'short', day:'numeric', year:'numeric' });
-    return '<div class="hist-item">'
-      + '<div><div class="hist-date">' + label + (r.time ? ' · ' + r.time : '') + '</div>'
-      + '<div class="hist-loc">' + (r.location || '—') + '</div>'
-      + (r.truck ? '<div class="hist-loc" style="margin-top:2px">🚛 ' + r.truck + '</div>' : '')
+  if (!recs.length) {
+    document.getElementById('day-panel-list').innerHTML =
+      '<div class="empty-hint">No attendance recorded for this day.</div>';
+  } else {
+    document.getElementById('day-panel-list').innerHTML = recs.map(function(r) {
+      var mealBadge = r.meal==='Yes' ? '<span class="badge green">Full Allowance</span>'
+                    : r.meal==='Meals Only' ? '<span class="badge orange">Meals Only</span>'
+                    : '<span class="badge">No Allowance</span>';
+      var teamBadge = r.team==='Yes' ? '<span class="badge green">2-Man Team</span>' : '';
+      return '<div class="att-item" onclick="openAttDetail('+r.rowIndex+')">'
+        + '<div class="att-name">'+r.name+'</div>'
+        + '<div class="att-meta">'+(r.time||'')+(r.truck?' · 🚛 '+r.truck:'')+'</div>'
+        + '<div class="att-badges">'
+        + (r.crates ? '<span class="badge">'+r.crates+' crates</span>' : '')
+        + mealBadge + teamBadge
+        + '</div></div>';
+    }).join('');
+  }
+
+  panel.classList.add('show');
+  // Scroll to panel
+  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+}
+
+// ═══ ATTENDANCE DETAIL / EDIT ═════════════════════════
+function openAttDetail(rowIndex) {
+  var rec = allAttendance.find(function(r){ return r.rowIndex===rowIndex; });
+  if (!rec) return;
+  selectedAtt = rec;
+
+  var sheet = document.getElementById('att-sheet');
+  document.getElementById('att-sheet-title').textContent = rec.name;
+  document.getElementById('att-sheet-sub').textContent   = rec.date + (rec.time ? ' · ' + rec.time : '');
+
+  var body = document.getElementById('att-sheet-body');
+
+  if (isAdmin) {
+    // Admin: show edit form
+    body.innerHTML = '<div class="fg"><label class="fl">2-Man Team</label>'
+      + '<div class="toggle-group">'
+      + '<button class="tg-btn'+(rec.team!=='Yes'?' active-no':'')+'" id="edit-team-no" onclick="setEditTeam(\'No\')">No</button>'
+      + '<button class="tg-btn'+(rec.team==='Yes'?' active-yes':'')+'" id="edit-team-yes" onclick="setEditTeam(\'Yes\')">Yes</button>'
+      + '</div></div>'
+      + '<div class="fg"><label class="fl">Crates</label><input class="fi" id="edit-crates" type="number" value="'+(rec.crates||0)+'" min="0"></div>'
+      + '<div class="fg"><label class="fl">Meal Allowance</label><select class="fi" id="edit-meal">'
+      + ['Yes','Meals Only','No'].map(function(v){
+          return '<option value="'+v+'"'+(rec.meal===v?' selected':'')+'>'+v+'</option>';
+        }).join('')
+      + '</select></div>'
+      + '<div class="fg"><label class="fl">Assigned Truck</label><select class="fi" id="edit-truck">'
+      + '<option value="">— None —</option>'
+      + allTrucks.map(function(p){
+          return '<option value="'+p+'"'+(rec.truck===p?' selected':'')+'>'+p+'</option>';
+        }).join('')
+      + '</select></div>'
+      + '<div class="fg"><label class="fl">Location</label><input class="fi" id="edit-loc" value="'+(rec.location||'')+'"></div>'
+      + '<div class="btn-row" style="margin-top:8px">'
+      + '<button class="btn btn-ghost cb cb-cancel" onclick="closeAttSheet()" style="padding:14px;border-radius:14px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;border:none;background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)">Cancel</button>'
+      + '<button class="cb cb-confirm" onclick="saveEditAtt()" style="padding:14px;border-radius:14px;font-size:14px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:none">Save</button>'
       + '</div>'
-      + '<span class="hist-badge">Present</span>'
+      + '<button onclick="promptDeleteAtt()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Delete Record</button>';
+  } else {
+    // User: view only
+    body.innerHTML = [
+      ['Date', rec.date], ['Time', rec.time||'—'],
+      ['2-Man Team', rec.team||'No'], ['Crates', rec.crates||'0'],
+      ['Meal Allowance', rec.meal], ['Truck', rec.truck||'—'],
+      ['Location', rec.location||'—']
+    ].map(function(r){
+      return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';
+    }).join('')
+    + '<div style="height:16px"></div>'
+    + '<button onclick="closeAttSheet()" style="width:100%;padding:14px;background:var(--bg);border:none;border-radius:14px;box-shadow:var(--neu-sm);font-size:15px;font-weight:600;font-family:Inter,sans-serif;color:var(--text2);cursor:pointer">Close</button>';
+  }
+
+  sheet.classList.add('open');
+}
+
+var editTeamVal = 'No';
+function setEditTeam(v) {
+  editTeamVal = v;
+  document.getElementById('edit-team-no').className  = 'tg-btn'+(v==='No' ?' active-no' :'');
+  document.getElementById('edit-team-yes').className = 'tg-btn'+(v==='Yes'?' active-yes':'');
+}
+
+function saveEditAtt() {
+  if (!selectedAtt || !isAdmin) return;
+  var crates = document.getElementById('edit-crates').value.trim()||'0';
+  var meal   = document.getElementById('edit-meal').value;
+  var truck  = document.getElementById('edit-truck').value;
+  var loc    = document.getElementById('edit-loc').value.trim();
+  var row    = [selectedAtt.id, selectedAtt.date, selectedAtt.name,
+                editTeamVal, crates, meal, truck, loc,
+                selectedAtt.lat, selectedAtt.lng, selectedAtt.time];
+
+  showSaving('Updating...');
+  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex, [row])
+    .then(function() {
+      hideSaving();
+      // Update local
+      Object.assign(selectedAtt, {team:editTeamVal,crates:crates,meal:meal,truck:truck,location:loc});
+      closeAttSheet();
+      renderCalendar();
+      if (selectedDay) selectDay(selectedDay);
+      // If it's my own record update done state
+      if (selectedAtt.name.toLowerCase()===currentUser.fullName.toLowerCase() && selectedAtt.date===todayStr) {
+        showDoneState(selectedAtt);
+      }
+      showToast('✅ Updated!');
+    }).catch(function(err){ hideSaving(); showToast('❌ Update failed.'); console.error(err); });
+}
+
+function promptDeleteAtt() {
+  document.getElementById('confirm-title').textContent = 'Delete Record?';
+  document.getElementById('confirm-msg').textContent   =
+    'Delete attendance of ' + selectedAtt.name + ' on ' + selectedAtt.date + '?';
+  document.getElementById('confirm-ok').onclick = doDeleteAtt;
+  closeAttSheet();
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function doDeleteAtt() {
+  if (!selectedAtt || !isAdmin) return;
+  closeConfirm();
+  showSaving('Deleting...');
+  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex,
+    [['','','','','','','','','','','']])
+    .then(function() {
+      hideSaving();
+      allAttendance = allAttendance.filter(function(r){ return r.rowIndex!==selectedAtt.rowIndex; });
+      myRecords     = myRecords.filter(function(r){ return r.rowIndex!==selectedAtt.rowIndex; });
+      selectedAtt = null;
+      renderCalendar();
+      if (selectedDay) selectDay(selectedDay);
+      showToast('✅ Record deleted.');
+    }).catch(function(err){ hideSaving(); showToast('❌ Delete failed.'); console.error(err); });
+}
+
+function closeAttSheet() { document.getElementById('att-sheet').classList.remove('open'); }
+
+// ═══ ADMIN: EMPLOYEE MANAGEMENT ══════════════════════
+function renderEmployeeList() {
+  var wrap = document.getElementById('emp-list-wrap');
+  if (!allEmployees.length) {
+    wrap.innerHTML = '<div class="empty-hint">No employees yet.</div>'; return;
+  }
+  wrap.innerHTML = allEmployees.map(function(r, i) {
+    var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
+    return '<div class="emp-list-item">'
+      + '<div class="eli-info">'
+      + '<div class="eli-name">'+fullName+'</div>'
+      + '<div class="eli-email">'+r[0]+'  ·  '+(r[3]||'Employee')+'</div>'
+      + '</div>'
+      + '<button class="eli-del" onclick="promptDeleteEmp('+i+')" title="Remove">×</button>'
       + '</div>';
   }).join('');
 }
 
-// ═══ API ═════════════════════════════════════════════
+function addEmployee() {
+  var email  = document.getElementById('ae-email').value.trim().toLowerCase();
+  var fname  = document.getElementById('ae-fname').value.trim();
+  var lname  = document.getElementById('ae-lname').value.trim();
+  var role   = document.getElementById('ae-role').value;
+
+  if (!email || !fname || !lname) { showToast('Fill in all fields.'); return; }
+  if (allEmployees.find(function(r){ return (r[0]||'').toLowerCase()===email; })) {
+    showToast('Email already registered.'); return;
+  }
+
+  showSaving('Adding employee...');
+  apiAppend(TAB_EMPLOYEES+'!A:D', [[email, fname, lname, role]])
+    .then(function() {
+      hideSaving();
+      allEmployees.push([email, fname, lname, role]);
+      renderEmployeeList();
+      document.getElementById('ae-email').value  = '';
+      document.getElementById('ae-fname').value  = '';
+      document.getElementById('ae-lname').value  = '';
+      showToast('✅ Employee added!');
+    }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
+}
+
+function promptDeleteEmp(idx) {
+  var r = allEmployees[idx];
+  if (!r) return;
+  document.getElementById('confirm-title').textContent = 'Remove Employee?';
+  document.getElementById('confirm-msg').textContent   =
+    'Remove ' + ((r[1]||'')+' '+(r[2]||'')).trim() + ' from the system?';
+  document.getElementById('confirm-ok').onclick = function() { doDeleteEmp(idx); };
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function doDeleteEmp(idx) {
+  var rowIndex = idx + 2; // header is row 1
+  closeConfirm();
+  showSaving('Removing...');
+  apiUpdate(TAB_EMPLOYEES+'!A'+rowIndex+':D'+rowIndex, [['','','','']])
+    .then(function() {
+      hideSaving();
+      allEmployees.splice(idx, 1);
+      renderEmployeeList();
+      showToast('✅ Employee removed.');
+    }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
+}
+
+// ═══ API ══════════════════════════════════════════════
 function apiGet(range) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
-    '/values/' + encodeURIComponent(range),
-    { headers: { Authorization: 'Bearer ' + token } }
-  ).then(function(r) {
-    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
-    return r.json();
-  });
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
+    '/values/'+encodeURIComponent(range),
+    { headers:{ Authorization:'Bearer '+token } })
+    .then(function(r){ if(r.status===401){location.href='index.html';throw new Error('Auth');}return r.json(); });
 }
-
 function apiAppend(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
-    '/values/' + encodeURIComponent(range) + ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
-    { method: 'POST',
-      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: values }) }
-  ).then(function(r) {
-    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
-    if (!r.ok) throw new Error('Append failed');
-    return r.json();
-  });
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
+    '/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    { method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({values:values}) })
+    .then(function(r){ if(!r.ok) throw new Error('Append failed '+r.status); return r.json(); });
+}
+function apiUpdate(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
+    '/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
+    { method:'PUT', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({values:values}) })
+    .then(function(r){ if(!r.ok) throw new Error('Update failed '+r.status); return r.json(); });
 }
 
-// ═══ HELPERS ═════════════════════════════════════════
-function formatDate(d) {
-  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
-}
-function pad(n) { return n < 10 ? '0' + n : String(n); }
-
-function showSaving(msg) {
-  document.getElementById('saving-text').textContent = msg || 'Saving...';
-  document.getElementById('saving-overlay').classList.add('show');
-}
+// ═══ HELPERS ══════════════════════════════════════════
+function fmtDate(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n) { return n<10?'0'+n:String(n); }
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+function showSaving(m) { document.getElementById('saving-text').textContent=m||'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
 function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
 
-var toastTimer;
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+var _tt;
+function showToast(m) {
+  var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },3000);
 }
+
+// Close overlays on backdrop tap
+['att-sheet','confirm-overlay'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
+});
 </script>
 </body>
 </html>
