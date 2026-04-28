@@ -984,13 +984,34 @@ function closeDetail() {
   selectedTruck = null;
 }
 
+// ═══════════════════════════════════════
+// EDIT FROM DETAIL MODAL
+// ═══════════════════════════════════════
 function editFromDetail() {
+  console.log('✏️ Edit from detail modal');
+  
+  if (!selectedTruck) {
+    console.error('❌ No truck selected');
+    showToast('❌ No truck selected');
+    return;
+  }
+  
+  console.log('✏️ Selected truck:', selectedTruck);
+  
+  // Close detail modal first
   closeDetail();
-  if (selectedTruck) editTruck(selectedTruck.rowIndex);
+  
+  // Small delay to allow modal to close smoothly
+  setTimeout(() => {
+    editTruck(selectedTruck.rowIndex);
+  }, 200);
 }
 
 // ═══════════════════════════════════════
 // DRAWER
+// ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// OPEN DRAWER (ADD MODE)
 // ═══════════════════════════════════════
 function openDrawer() {
   if (!isAdmin) {
@@ -998,51 +1019,120 @@ function openDrawer() {
     return;
   }
   
+  console.log('➕ Opening drawer in ADD mode');
+  
+  // ✅ RESET EDIT MODE
   editingRow = null;
   currentPhotoBase64 = '';
+  
+  // ✅ SET ADD MODE TITLE
   document.getElementById('drawer-title').textContent = 'Add Truck';
   document.getElementById('drawer-sub').textContent = 'Fill in the truck details';
-  ['plate','lto','nmis','dim','notes'].forEach(f => document.getElementById('f-' + f).value = '');
+  
+  // ✅ CLEAR ALL FIELDS
+  document.getElementById('f-plate').value = '';
+  document.getElementById('f-lto').value = '';
+  document.getElementById('f-nmis').value = '';
+  document.getElementById('f-dim').value = '';
+  document.getElementById('f-notes').value = '';
   document.getElementById('f-photo').value = '';
+  
+  // ✅ RESET PHOTO PREVIEW
   document.getElementById('photo-preview').style.display = 'none';
   document.getElementById('photo-placeholder').style.display = 'block';
+  
+  // ✅ OPEN OVERLAY
   document.getElementById('truck-drawer').classList.add('open');
+  
+  console.log('✅ Drawer opened in ADD mode');
 }
 
+// ═══════════════════════════════════════
+// EDIT TRUCK - COMPLETE REWRITE
+// ═══════════════════════════════════════
 function editTruck(rowIndex) {
   if (!isAdmin) {
     showToast('❌ Read-only mode');
     return;
   }
   
-  const t = allTrucks.find(x => x.rowIndex === rowIndex);
-  if (!t) return;
+  console.log('✏️ Edit truck at row:', rowIndex);
   
+  const t = allTrucks.find(x => x.rowIndex === rowIndex);
+  if (!t) {
+    console.error('❌ Truck not found');
+    showToast('❌ Truck not found');
+    return;
+  }
+  
+  console.log('✏️ Editing truck:', t);
+  
+  // ✅ SET EDIT MODE
   editingRow = rowIndex;
   currentPhotoBase64 = t.photo || '';
   
+  // ✅ UPDATE DRAWER TITLE
   document.getElementById('drawer-title').textContent = 'Edit Truck';
-  document.getElementById('drawer-sub').textContent = t.plate;
-  document.getElementById('f-plate').value = t.plate;
-  document.getElementById('f-lto').value = t.lto;
-  document.getElementById('f-nmis').value = t.nmis;
-  document.getElementById('f-dim').value = t.dim;
-  document.getElementById('f-notes').value = t.notes;
+  document.getElementById('drawer-sub').textContent = 'Update ' + t.plate;
+  
+  // ✅ POPULATE ALL FIELDS
+  document.getElementById('f-plate').value = t.plate || '';
+  document.getElementById('f-lto').value = t.lto || '';
+  document.getElementById('f-nmis').value = t.nmis || '';
+  document.getElementById('f-dim').value = t.dim || '';
+  document.getElementById('f-notes').value = t.notes || '';
+  
+  // ✅ SHOW EXISTING PHOTO
+  const photoPreview = document.getElementById('photo-preview');
+  const photoPlaceholder = document.getElementById('photo-placeholder');
   
   if (t.photo) {
-    document.getElementById('photo-preview').src = t.photo;
-    document.getElementById('photo-preview').style.display = 'block';
-    document.getElementById('photo-placeholder').style.display = 'none';
+    console.log('✅ Loading existing photo');
+    photoPreview.src = t.photo;
+    photoPreview.style.display = 'block';
+    photoPlaceholder.style.display = 'none';
   } else {
-    document.getElementById('photo-preview').style.display = 'none';
-    document.getElementById('photo-placeholder').style.display = 'block';
+    console.log('⚠️ No existing photo');
+    photoPreview.style.display = 'none';
+    photoPlaceholder.style.display = 'block';
   }
   
+  // ✅ RESET FILE INPUT
+  document.getElementById('f-photo').value = '';
+  
+  // ✅ OPEN DRAWER
   document.getElementById('truck-drawer').classList.add('open');
+  
+  console.log('✅ Edit drawer opened');
 }
 
+
+// ═══════════════════════════════════════
+// CLOSE DRAWER
+// ═══════════════════════════════════════
 function closeDrawer() {
+  console.log('🚪 Closing drawer');
+  
+  // ✅ RESET EDIT MODE
+  editingRow = null;
+  currentPhotoBase64 = '';
+  
+  // ✅ CLEAR ALL FIELDS
+  document.getElementById('f-plate').value = '';
+  document.getElementById('f-lto').value = '';
+  document.getElementById('f-nmis').value = '';
+  document.getElementById('f-dim').value = '';
+  document.getElementById('f-notes').value = '';
+  document.getElementById('f-photo').value = '';
+  
+  // ✅ RESET PHOTO PREVIEW
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-placeholder').style.display = 'block';
+  
+  // ✅ CLOSE OVERLAY
   document.getElementById('truck-drawer').classList.remove('open');
+  
+  console.log('✅ Drawer closed and reset');
 }
 
 // ═══════════════════════════════════════
@@ -1071,12 +1161,16 @@ function previewPhoto(input) {
 // ═══════════════════════════════════════
 // SAVE TRUCK
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// SAVE TRUCK - UPDATED FOR EDIT MODE
+// ═══════════════════════════════════════
 function saveTruck() {
   if (!isAdmin) {
     showToast('❌ Read-only mode');
     return;
   }
   
+  // ✅ VALIDATE INPUTS
   const plate = document.getElementById('f-plate').value.trim().toUpperCase();
   if (!plate) {
     showToast('❌ Plate Number is required!');
@@ -1088,37 +1182,100 @@ function saveTruck() {
   const dim = document.getElementById('f-dim').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
   
+  // ✅ CHECK TOKEN VALIDITY
+  const expiry = localStorage.getItem('pedroex-token-expiry');
+  if (!token || !expiry || Date.now() >= parseInt(expiry)) {
+    showToast('❌ Session expired. Please login again.');
+    setTimeout(() => location.href = 'index.html', 2000);
+    return;
+  }
+  
+  console.log('💾 Saving truck...');
+  console.log('  Mode:', editingRow ? 'EDIT' : 'ADD');
+  console.log('  Plate:', plate);
+  console.log('  LTO:', lto);
+  console.log('  NMIS:', nmis);
+  console.log('  Dimensions:', dim);
+  console.log('  Notes:', notes);
+  console.log('  Photo:', currentPhotoBase64 ? 'YES (' + currentPhotoBase64.length + ' chars)' : 'NO');
+  
   if (editingRow) {
+    // ═══════════════════════════════════════
+    // EDIT MODE
+    // ═══════════════════════════════════════
     const t = allTrucks.find(x => x.rowIndex === editingRow);
-    console.log('📝 Updating truck:', plate, 'at row', editingRow);
+    if (!t) {
+      showToast('❌ Truck not found!');
+      return;
+    }
     
-    apiUpdate(SHEET_TAB + '!A' + editingRow + ':G' + editingRow, [[t.id, plate, lto, nmis, dim, notes, currentPhotoBase64]])
+    console.log('📝 EDIT MODE');
+    console.log('  Row:', editingRow);
+    console.log('  Original ID:', t.id);
+    console.log('  Original Plate:', t.plate);
+    
+    // ✅ KEEP ORIGINAL ID, UPDATE EVERYTHING ELSE
+    const rowData = [
+      t.id,              // Keep original ID
+      plate,             // New plate
+      lto,               // New LTO
+      nmis,              // New NMIS
+      dim,               // New dimensions
+      notes,             // New notes
+      currentPhotoBase64 // New or existing photo
+    ];
+    
+    console.log('📝 Updating row', editingRow, 'with data:', rowData);
+    
+    apiUpdate(SHEET_TAB + '!A' + editingRow + ':G' + editingRow, [rowData])
       .then(() => {
+        console.log('✅ Update successful');
         showToast('✅ Truck updated!');
         closeDrawer();
-        loadTrucks();
+        
+        // Reset edit mode
+        editingRow = null;
+        currentPhotoBase64 = '';
+        
+        // Reload trucks after short delay
+        setTimeout(() => loadTrucks(), 500);
       })
       .catch(err => {
         console.error('❌ Update failed:', err);
-        showToast('❌ Save failed. Check console.');
+        showToast('❌ Save failed: ' + err.message);
       });
+      
   } else {
-    const id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
-    console.log('➕ Adding new truck:', plate);
+    // ═══════════════════════════════════════
+    // ADD MODE
+    // ═══════════════════════════════════════
+    console.log('➕ ADD MODE');
     
-    apiAppend(SHEET_TAB + '!A:G', [[id, plate, lto, nmis, dim, notes, currentPhotoBase64]])
+    // Generate new ID
+    const id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
+    console.log('  New ID:', id);
+    
+    const rowData = [id, plate, lto, nmis, dim, notes, currentPhotoBase64];
+    console.log('➕ Appending new row with data:', rowData);
+    
+    apiAppend(SHEET_TAB + '!A:G', [rowData])
       .then(() => {
+        console.log('✅ Append successful');
         showToast('✅ Truck added!');
         closeDrawer();
-        loadTrucks();
+        
+        // Reset add mode
+        currentPhotoBase64 = '';
+        
+        // Reload trucks after short delay
+        setTimeout(() => loadTrucks(), 500);
       })
       .catch(err => {
-        console.error('❌ Add failed:', err);
-        showToast('❌ Save failed. Check console.');
+        console.error('❌ Append failed:', err);
+        showToast('❌ Save failed: ' + err.message);
       });
   }
 }
-
 // ═══════════════════════════════════════
 // DELETE TRUCK
 // ═══════════════════════════════════════
