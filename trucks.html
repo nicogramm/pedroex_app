@@ -5,507 +5,285 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Trucks - PedroEX</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#e0e0e5">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#B32533">
+<title>Trucks — PedroEX</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════
-   NEUMORPHIC THEME VARIABLES
-═══════════════════════════════════════ */
 :root {
-  --bg:       #e0e0e5;
-  --bg2:      #e8e8ed;
-  --shadow-d: #b8b9be;
-  --shadow-l: #ffffff;
-  --text:     #2a2a2e;
-  --text2:    #777;
-  --text3:    #aaa;
-  --red:      #B32533;
-  --red-d:    #8f1e29;
-  --orange:   #ff9800;
-  --green:    #4caf50;
-  --card:     #e0e0e5;
-
-  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
-  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
-  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
-  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+  --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
+  --text:#2a2a2e;--text2:#777;--text3:#aaa;
+  --red:#B32533;--orange:#f59e0b;--green:#16a34a;--card:#e0e0e5;
+  --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
 }
-
 body.dark {
-  --bg:       #2a2a2f;
-  --bg2:      #313137;
-  --shadow-d: #16161a;
-  --shadow-l: #3e3e46;
-  --text:     #e8e8ec;
-  --text2:    #888;
-  --text3:    #555;
-  --card:     #2a2a2f;
-
-  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
-  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
-  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
-  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
+  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
+  --text:#e8e8ec;--text2:#888;--text3:#555;--card:#2a2a2f;
+  --neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
 }
-
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
-html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
-
-.screen { display:flex; flex-direction:column; height:100dvh; width:100% }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background 0.4s,color 0.4s}
+.screen{display:flex;flex-direction:column;height:100dvh;width:100%}
 
 /* TOPBAR */
-.topbar {
-  background: var(--bg);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px;
-  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
-  flex-shrink:0;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-}
-body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
-
-.tb-brand { display:flex; align-items:center; gap:2px }
-.tb-right { display:flex; align-items:center; gap:12px }
-.tb-title { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text3) }
-.tb-avatar { width:32px; height:32px; border-radius:50%; border:2px solid var(--red); object-fit:cover; box-shadow: var(--neu-xs) }
+.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07)}
+body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+.tb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs)}
 
 /* PAGE WRAP */
-.page-wrap { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; padding-bottom:90px }
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:90px}
 
 /* PAGE HEADER */
-.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px }
-.page-header-left { display:flex; align-items:center; gap:12px }
-.back-btn {
-  width:36px; height:36px;
-  background:var(--bg); border:none; border-radius:12px;
-  box-shadow: var(--neu-sm);
-  color:var(--text2); font-size:20px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  transition: box-shadow 0.15s;
-}
-.back-btn:active { box-shadow: var(--neu-in) }
-.page-title { font-size:20px; font-weight:700; color:var(--text); letter-spacing:-0.3px }
-.icon-btn {
-  background:var(--bg); border:none; border-radius:10px;
-  box-shadow: var(--neu-xs);
-  color:var(--text2); padding:8px 14px;
-  font-size:13px; font-family:'Inter',sans-serif; font-weight:500; cursor:pointer;
-  transition: box-shadow 0.15s;
-}
-.icon-btn:active { box-shadow: var(--neu-in) }
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ph-left{display:flex;align-items:center;gap:12px}
+.back-btn{width:36px;height:36px;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);color:var(--text2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.back-btn:active{box-shadow:var(--neu-in)}
+.page-title{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.icon-btn{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-xs);color:var(--text2);padding:8px 14px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer}
+.icon-btn:active{box-shadow:var(--neu-in)}
 
-/* NOTIFICATION BANNER */
-.notif-banner {
-  background: linear-gradient(135deg, var(--orange), var(--red));
-  color: #fff;
-  padding: 14px 18px;
-  border-radius: 16px;
-  margin-bottom: 16px;
-  box-shadow: var(--neu-out);
-  display: none;
-  animation: slideDown 0.4s ease;
-}
-.notif-banner.show { display: block }
-@keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
-.notif-icon { font-size: 28px; margin-bottom: 8px }
-.notif-text { font-size: 14px; line-height: 1.6; font-weight: 500; margin-bottom: 8px }
-.notif-close {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-}
+/* ALERT BANNER */
+.alert-banner{border-radius:14px;padding:14px 16px;margin-bottom:14px;display:none;animation:slideDown 0.35s ease}
+.alert-banner.show{display:flex;align-items:flex-start;gap:12px}
+.alert-banner.danger{background:var(--red);color:#fff;box-shadow:4px 4px 14px rgba(179,37,51,0.35)}
+.alert-banner.warning{background:var(--orange);color:#fff;box-shadow:4px 4px 14px rgba(245,158,11,0.35)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.alert-body{flex:1}
+.alert-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.alert-msg{font-size:12px;opacity:0.9;line-height:1.5}
+.alert-close{background:rgba(255,255,255,0.2);border:none;border-radius:6px;color:#fff;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;align-self:flex-start}
 
 /* SEARCH */
-.search-bar {
-  display:flex; align-items:center; gap:10px;
-  background:var(--bg); border-radius:14px;
-  box-shadow: var(--neu-in);
-  padding:0 16px; margin-bottom:16px;
-}
-.search-bar input {
-  flex:1; background:none; border:none; outline:none;
-  color:var(--text); font-size:14px;
-  font-family:'Inter',sans-serif; padding:13px 0;
-}
-.search-bar input::placeholder { color:var(--text3) }
+.search-bar{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:0 16px;margin-bottom:14px}
+.search-bar input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;padding:13px 0}
+.search-bar input::placeholder{color:var(--text3)}
 
 /* TRUCK CARDS */
-.truck-card {
-  background:var(--bg); border-radius:18px;
-  box-shadow: var(--neu-out);
-  margin-bottom:14px; overflow:hidden;
-  cursor:pointer;
-  transition: transform 0.15s;
-  position: relative;
-}
-.truck-card:active { transform:scale(0.98) }
-.truck-card.expiring-soon { border-left: 4px solid var(--orange) }
-.truck-card.expired { border-left: 4px solid var(--red) }
-
-.tc-head {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px 12px;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-body.dark .tc-head { border-bottom-color: rgba(255,255,255,0.04) }
-
-.tc-plate {
-  font-size:18px; font-weight:700; letter-spacing:2px;
-  background:var(--red); padding:5px 14px; border-radius:10px; color:#fff;
-  box-shadow: 3px 3px 8px rgba(179,37,51,0.35);
-}
-.tc-id { font-size:11px; color:var(--text3); letter-spacing:1px }
-
-.tc-body { display:flex; gap:14px; padding:14px 18px }
-
-.tc-photo {
-  width:80px; height:80px; flex-shrink:0;
-  border-radius:12px;
-  background:var(--bg2);
-  box-shadow: var(--neu-in);
-  overflow:hidden;
-  display:flex; align-items:center; justify-content:center;
-}
-.tc-photo img { width:100%; height:100%; object-fit:cover }
-.tc-photo-placeholder { font-size:32px; opacity:0.3 }
-
-.tc-info { flex:1; min-width:0 }
-.tc-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px }
-.chip {
-  background:var(--bg); border-radius:8px;
-  box-shadow: var(--neu-xs);
-  padding:5px 12px; font-size:11px; color:var(--text2); font-weight:500;
-}
-.chip b { color:var(--text); font-weight:600 }
-.chip.warning { background: var(--orange); color: #fff; box-shadow: 3px 3px 8px rgba(255,152,0,0.4) }
-.chip.danger { background: var(--red); color: #fff; box-shadow: 3px 3px 8px rgba(179,37,51,0.4) }
-.tc-note { font-size:12px; color:var(--text2); line-height:1.6 }
+.truck-card{background:var(--bg);border-radius:18px;box-shadow:var(--neu-out);margin-bottom:14px;overflow:hidden;cursor:pointer;transition:transform 0.12s;position:relative}
+.truck-card:active{transform:scale(0.98)}
+.truck-card.expiring{border-left:4px solid var(--orange)}
+.truck-card.expired{border-left:4px solid var(--red)}
+.tc-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid rgba(0,0,0,0.05)}
+body.dark .tc-head{border-bottom-color:rgba(255,255,255,0.04)}
+.tc-plate{font-size:18px;font-weight:700;letter-spacing:2px;background:var(--red);padding:5px 14px;border-radius:10px;color:#fff;box-shadow:3px 3px 8px rgba(179,37,51,0.35)}
+.tc-id{font-size:11px;color:var(--text3);letter-spacing:1px}
+.tc-body{display:flex;gap:14px;padding:14px 18px}
+.tc-photo{width:78px;height:78px;flex-shrink:0;border-radius:12px;background:var(--bg2);box-shadow:var(--neu-in);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.tc-photo img{width:100%;height:100%;object-fit:cover}
+.tc-photo-ph{font-size:28px;opacity:0.25}
+.tc-info{flex:1;min-width:0}
+.tc-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:7px}
+.chip{background:var(--bg);border-radius:8px;box-shadow:var(--neu-xs);padding:5px 11px;font-size:11px;color:var(--text2);font-weight:500}
+.chip b{color:var(--text);font-weight:600}
+.chip.warn{background:var(--orange);color:#fff;box-shadow:3px 3px 8px rgba(245,158,11,0.4)}
+.chip.danger{background:var(--red);color:#fff;box-shadow:3px 3px 8px rgba(179,37,51,0.4)}
+.tc-note{font-size:12px;color:var(--text2);line-height:1.6}
 
 /* FAB */
-.fab {
-  position:fixed;
-  bottom:calc(80px + env(safe-area-inset-bottom,0px));
-  right:18px;
-  width:54px; height:54px;
-  background:var(--red); color:#fff;
-  border:none; border-radius:50%;
-  font-size:28px;
-  display:none;
-  align-items:center; justify-content:center;
-  cursor:pointer;
-  box-shadow: 5px 5px 14px rgba(179,37,51,0.5), -2px -2px 8px rgba(179,37,51,0.2);
-  z-index:50;
-}
-.fab:active { transform:scale(0.93) }
+.fab{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom,0px));right:18px;width:54px;height:54px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:28px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:5px 5px 14px rgba(179,37,51,0.5),-2px -2px 8px rgba(179,37,51,0.2);z-index:50}
+.fab:active{transform:scale(0.93)}
 
 /* BOTTOM NAV */
-.bottom-nav {
-  position:fixed; bottom:0; left:0; right:0;
-  background:var(--bg);
-  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
-  display:flex; align-items:center; justify-content:space-around;
-  box-shadow: 0 -3px 14px rgba(0,0,0,0.07);
-  z-index:40;
-}
-body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
-
-.bnav {
-  display:flex; flex-direction:column; align-items:center; gap:4px;
-  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
-  color:var(--text3); cursor:pointer; border:none; background:none;
-  font-family:'Inter',sans-serif;
-}
-.bnav.active { color:var(--red) }
-
-.bnav-icon {
-  width:42px; height:42px;
-  border-radius:14px;
-  background:var(--bg);
-  display:flex; align-items:center; justify-content:center;
-  transition: box-shadow 0.2s;
-}
-.bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm) }
-.bnav.active .bnav-icon { box-shadow: var(--neu-in) }
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 14px rgba(0,0,0,0.07);z-index:40}
+body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
+.bnav{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
+.bnav.active{color:var(--red)}
+.bnav-icon{width:42px;height:42px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:box-shadow 0.2s}
+.bnav:not(.active) .bnav-icon{box-shadow:var(--neu-sm)}
+.bnav.active .bnav-icon{box-shadow:var(--neu-in)}
 
 /* DRAWER */
-.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:flex-end }
-.overlay.open { display:flex }
-.drawer {
-  background:var(--bg);
-  border-radius:28px 28px 0 0;
-  padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));
-  width:100%; max-height:92dvh; overflow-y:auto;
-  animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
-}
-@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.drawer-handle { width:40px; height:4px; background:var(--text3); border-radius:2px; margin:0 auto 20px; opacity:0.3 }
-.drawer-title { font-size:22px; font-weight:700; color:var(--text); letter-spacing:-0.3px; margin-bottom:4px }
-.drawer-sub { font-size:13px; color:var(--text2); margin-bottom:22px }
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end}
+.overlay.open{display:flex}
+.drawer{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:92dvh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 -8px 30px rgba(0,0,0,0.15)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.drawer-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 20px;opacity:0.3}
+.drawer-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-0.3px;margin-bottom:4px}
+.drawer-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
 
-/* FORMS */
-.fg { margin-bottom:16px }
-.fl { display:block; font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:8px }
-.fi {
-  width:100%; background:var(--bg);
-  border:none; border-radius:12px;
-  box-shadow: var(--neu-in);
-  padding:13px 16px; color:var(--text); font-size:15px;
-  font-family:'Inter',sans-serif; outline:none; -webkit-appearance:none;
-}
-textarea.fi { resize:none; min-height:80px }
-.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px }
-.btn-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px }
-.btn {
-  padding:14px; border-radius:14px;
-  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
-  cursor:pointer; border:none;
-  background:var(--bg);
-  transition: box-shadow 0.15s;
-}
-.btn:active { transform:scale(0.98) }
-.btn-red { background:var(--red); color:#fff; box-shadow:4px 4px 12px rgba(179,37,51,0.4), -2px -2px 8px rgba(179,37,51,0.1) }
-.btn-ghost { color:var(--text2); box-shadow: var(--neu-sm) }
-.btn-ghost:active { box-shadow: var(--neu-in) }
+/* FORM */
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:13px 16px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:box-shadow 0.15s}
+.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.3)}
+textarea.fi{resize:none;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.btn{padding:14px;border-radius:14px;font-size:15px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none;background:var(--bg);transition:box-shadow 0.15s,transform 0.1s}
+.btn:active{transform:scale(0.98)}
+.btn-red{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4),-2px -2px 8px rgba(179,37,51,0.1)}
+.btn-ghost{color:var(--text2);box-shadow:var(--neu-sm)}
+.btn-ghost:active{box-shadow:var(--neu-in)}
 
 /* PHOTO UPLOAD */
-.photo-upload {
-  width:100%; height:180px;
-  border-radius:16px;
-  background:var(--bg);
-  box-shadow: var(--neu-in);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  cursor:pointer;
-  overflow:hidden;
-  position:relative;
-}
-.photo-upload input { display:none }
-.photo-upload img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0 }
-.photo-placeholder { font-size:48px; opacity:0.3; margin-bottom:8px }
-.photo-label { font-size:13px; color:var(--text2) }
+.photo-upload{width:100%;height:160px;border-radius:16px;background:var(--bg);box-shadow:var(--neu-in);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;margin-bottom:16px}
+.photo-upload input[type=file]{display:none}
+.photo-upload img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.photo-ph{text-align:center;pointer-events:none}
+.photo-ph-icon{font-size:40px;opacity:0.25;margin-bottom:8px}
+.photo-ph-text{font-size:13px;color:var(--text3)}
 
-/* DETAIL MODAL */
-.detail-modal {
-  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; align-items:center; justify-content:center;
-  padding:20px;
-}
-.detail-modal.open { display:flex }
-.detail-content {
-  background:var(--bg);
-  border-radius:24px;
-  max-width:500px; width:100%;
-  max-height:85dvh;
-  overflow-y:auto;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-  animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-@keyframes modalIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+/* DETAIL SHEET */
+.detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end}
+.detail-overlay.open{display:flex}
+.detail-sheet{background:var(--bg);border-radius:28px 28px 0 0;width:100%;max-height:90dvh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 -8px 30px rgba(0,0,0,0.2)}
+.detail-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:12px auto 0;opacity:0.3}
+.detail-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px}
+.detail-close{width:32px;height:32px;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.detail-close:active{box-shadow:var(--neu-in)}
+.detail-photo-wrap{margin:0 20px 16px;height:200px;border-radius:18px;background:var(--bg);box-shadow:var(--neu-in);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.detail-photo-wrap img{width:100%;height:100%;object-fit:cover}
+.detail-photo-ph{font-size:64px;opacity:0.15}
+.detail-fields{padding:0 20px 16px}
+.df{margin-bottom:14px}
+.df-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.df-value{font-size:15px;color:var(--text);font-weight:500;line-height:1.5}
+.df-value.mono{font-size:20px;font-weight:700;letter-spacing:2px}
+.detail-footer{padding:12px 20px calc(20px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;border-top:1px solid rgba(0,0,0,0.05)}
+body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
+.df-btn{flex:1;padding:14px;border-radius:14px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none}
+.df-btn:active{transform:scale(0.98)}
+.df-btn-edit{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4)}
+.df-btn-nmis{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
+.df-btn-nmis:active{box-shadow:var(--neu-in)}
+.df-btn-delete{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
+.df-btn-delete:active{box-shadow:var(--neu-in)}
 
-.detail-header {
-  padding:24px 24px 16px;
-  border-bottom:1px solid rgba(0,0,0,0.05);
-  display:flex; align-items:center; justify-content:space-between;
-}
-body.dark .detail-header { border-bottom-color:rgba(255,255,255,0.04) }
-.detail-close {
-  width:32px; height:32px;
-  background:var(--bg); border:none; border-radius:10px;
-  box-shadow: var(--neu-sm);
-  color:var(--text2); font-size:20px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-}
-.detail-close:active { box-shadow: var(--neu-in) }
+/* NMIS UPDATE SHEET */
+.nmis-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:210;align-items:flex-end}
+.nmis-overlay.open{display:flex}
+.nmis-sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 -8px 30px rgba(0,0,0,0.2)}
+.nmis-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 20px;opacity:0.3}
 
-.detail-body { padding:20px 24px }
-.detail-photo {
-  width:100%; height:220px;
-  border-radius:16px;
-  background:var(--bg2);
-  box-shadow: var(--neu-in);
-  overflow:hidden;
-  display:flex; align-items:center; justify-content:center;
-  margin-bottom:20px;
-}
-.detail-photo img { width:100%; height:100%; object-fit:cover }
-.detail-photo-placeholder { font-size:64px; opacity:0.2 }
+/* CONFIRM */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:220;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg);border-radius:22px;padding:24px;max-width:340px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.3);animation:popIn 0.25s cubic-bezier(0.16,1,0.3,1)}
+@keyframes popIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.confirm-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px}
+.confirm-msg{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.confirm-btns{display:flex;gap:12px}
+.cb{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none}
+.cb:active{transform:scale(0.98)}
+.cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
+.cb-cancel:active{box-shadow:var(--neu-in)}
+.cb-delete{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4)}
 
-.detail-section { margin-bottom:20px }
-.detail-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:8px }
-.detail-value { font-size:16px; color:var(--text); font-weight:500; line-height:1.6 }
-.detail-value.large { font-size:24px; font-weight:700; letter-spacing:2px }
-
-.detail-footer { padding:16px 24px; border-top:1px solid rgba(0,0,0,0.05); display:flex; gap:12px }
-body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
-.detail-edit-btn {
-  flex:1; padding:14px;
-  background:var(--red); color:#fff;
-  border:none; border-radius:14px;
-  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
-  cursor:pointer;
-  box-shadow:4px 4px 12px rgba(179,37,51,0.4);
-}
-.detail-edit-btn:active { transform:scale(0.98) }
-.detail-delete-btn {
-  flex:1; padding:14px;
-  background:var(--bg); color:var(--text2);
-  border:none; border-radius:14px;
-  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
-  cursor:pointer;
-  box-shadow: var(--neu-sm);
-}
-.detail-delete-btn:active { box-shadow: var(--neu-in) }
-
-/* CONFIRM DIALOG */
-.confirm-dialog {
-  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:250; align-items:center; justify-content:center;
-  padding:20px;
-}
-.confirm-dialog.open { display:flex }
-.confirm-box {
-  background:var(--bg);
-  border-radius:20px;
-  padding:24px;
-  max-width:340px;
-  width:100%;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-  animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-.confirm-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:12px }
-.confirm-message { font-size:14px; color:var(--text2); line-height:1.6; margin-bottom:20px }
-.confirm-buttons { display:flex; gap:12px }
-.confirm-btn {
-  flex:1; padding:12px; border-radius:12px;
-  font-size:14px; font-weight:600; font-family:'Inter',sans-serif;
-  cursor:pointer; border:none;
-  transition: box-shadow 0.15s;
-}
-.confirm-btn-cancel { background:var(--bg); color:var(--text2); box-shadow: var(--neu-sm) }
-.confirm-btn-cancel:active { box-shadow: var(--neu-in) }
-.confirm-btn-delete { background:var(--red); color:#fff; box-shadow:4px 4px 12px rgba(179,37,51,0.4) }
-.confirm-btn-delete:active { transform:scale(0.98) }
-
-/* LOADING & EMPTY */
-.loading-wrap { display:flex; align-items:center; justify-content:center; gap:10px; padding:56px; color:var(--text3); font-size:13px }
-.spinner { width:20px; height:20px; border:2px solid var(--text3); border-top-color:var(--red); border-radius:50%; animation:spin 0.7s linear infinite }
-@keyframes spin { to{transform:rotate(360deg)} }
-.empty-state { text-align:center; padding:64px 24px }
-.empty-icon { margin-bottom:14px; font-size:48px; opacity:0.3 }
-.empty-state p { font-size:14px; line-height:1.8; color:var(--text2) }
+/* LOADING / EMPTY */
+.loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:56px;color:var(--text3);font-size:13px}
+.spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:64px 24px}
+.empty-icon{font-size:48px;opacity:0.25;margin-bottom:14px}
+.empty-state p{font-size:14px;line-height:1.8;color:var(--text2)}
 
 /* TOAST */
-.toast {
-  position:fixed;
-  bottom:calc(80px + env(safe-area-inset-bottom,0px));
-  left:50%; transform:translateX(-50%);
-  background:var(--bg); border-radius:14px;
-  box-shadow: var(--neu-out);
-  border-left:3px solid var(--red);
-  padding:13px 22px; font-size:13px; font-weight:500; color:var(--text);
-  z-index:300; white-space:nowrap;
-  opacity:0; pointer-events:none; transition:opacity 0.25s;
-}
-.toast.show { opacity:1 }
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.toast.show{opacity:1}
+
+/* SAVING OVERLAY */
+.saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
+.saving-overlay.show{display:flex}
+.saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
+.saving-text{font-size:14px;color:var(--text2);font-weight:500}
 </style>
 </head>
 <body>
 
 <div class="screen">
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="tb-brand">
-      <img src="logo2.png" alt="PedroEX" style="height:22px">
-    </div>
+    <img src="logo2.png" alt="PedroEX" style="height:22px;object-fit:contain">
     <div class="tb-right">
       <span class="tb-title">Truck Roster</span>
       <img class="tb-avatar" id="user-avatar" src="" alt="">
     </div>
   </div>
 
-  <!-- PAGE CONTENT -->
   <div class="page-wrap">
     <div class="page-header">
-      <div class="page-header-left">
+      <div class="ph-left">
         <button class="back-btn" onclick="location.href='index.html'">‹</button>
         <div class="page-title">Truck Roster</div>
       </div>
       <button class="icon-btn" onclick="loadTrucks()">↻</button>
     </div>
-    
-    <!-- NOTIFICATION BANNER -->
-    <div class="notif-banner" id="notif-banner">
-      <div class="notif-icon">⚠️</div>
-      <div class="notif-text" id="notif-text"></div>
-      <button class="notif-close" onclick="closeNotif()">Dismiss</button>
+
+    <!-- ALERT BANNER -->
+    <div class="alert-banner" id="alert-banner">
+      <div class="alert-icon" id="alert-icon"></div>
+      <div class="alert-body">
+        <div class="alert-title" id="alert-title"></div>
+        <div class="alert-msg" id="alert-msg"></div>
+      </div>
+      <button class="alert-close" onclick="closeAlert()">✕</button>
     </div>
-    
+
     <div class="search-bar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="var(--text3)" stroke-width="2"/><path d="m16.5 16.5 4 4" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"/></svg>
-      <input type="text" placeholder="Search plate, type..." oninput="filterTrucks(this.value)">
+      <input type="text" placeholder="Search plate, type..." oninput="filterTrucks(this.value)" id="truck-search">
     </div>
-    
+
     <div id="trucks-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading fleet...</div>
     <div id="trucks-list"></div>
     <div id="trucks-empty" class="empty-state" style="display:none">
       <div class="empty-icon">🚛</div>
-      <p>No trucks yet.<br><span id="empty-hint">Tap <strong style="color:var(--red)">+</strong> to add one.</span></p>
+      <p id="empty-msg">No trucks yet.<br>Tap <strong style="color:var(--red)">+</strong> to add one.</p>
     </div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <button class="bnav" onclick="location.href='index.html'">
-      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
-      Home
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>Home
     </button>
     <button class="bnav active">
-      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
-      Trucks
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>Trucks
     </button>
-    <button class="bnav" onclick="location.href='trips.html'">
-      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
-      Trips
+    <button class="bnav" onclick="location.href='index.html#trips'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>Trips
     </button>
-    <button class="bnav" onclick="location.href='billing.html'">
-      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-      Billing
+    <button class="bnav" onclick="location.href='index.html#billing'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Billing
     </button>
-    <button class="bnav" onclick="location.href='settings.html'">
-      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-      Settings
+    <button class="bnav" onclick="location.href='index.html#settings'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Settings
     </button>
   </div>
 </div>
 
 <!-- FAB (admin only) -->
-<button class="fab" id="fab" onclick="openDrawer()">+</button>
+<button class="fab" id="fab" onclick="openAddDrawer()">+</button>
 
-<!-- ADD/EDIT DRAWER (admin only) -->
-<div class="overlay" id="truck-drawer">
+<!-- ═══ ADD/EDIT DRAWER ═══ -->
+<div class="overlay" id="add-drawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
     <div class="drawer-title" id="drawer-title">Add Truck</div>
     <div class="drawer-sub" id="drawer-sub">Fill in the truck details</div>
-    
-    <div class="fg">
-      <label class="fl">Truck Photo</label>
-      <label class="photo-upload" id="photo-upload-label">
-        <input type="file" id="f-photo" accept="image/*" onchange="previewPhoto(this)">
-        <img id="photo-preview" style="display:none">
-        <div id="photo-placeholder">
-          <div class="photo-placeholder">📷</div>
-          <div class="photo-label">Tap to upload photo</div>
-        </div>
-      </label>
-    </div>
-    
-    <div class="fg"><label class="fl">Plate Number *</label><input class="fi" id="f-plate" placeholder="e.g. ABC 1234" style="font-size:20px;font-weight:700;letter-spacing:3px"></div>
+
+    <!-- PHOTO -->
+    <div class="fl">Truck Photo</div>
+    <label class="photo-upload" id="photo-label" onclick="triggerPhotoInput()">
+      <input type="file" id="f-photo" accept="image/*" onchange="handlePhotoChange(this)">
+      <img id="photo-preview" style="display:none">
+      <div class="photo-ph" id="photo-ph">
+        <div class="photo-ph-icon">📷</div>
+        <div class="photo-ph-text">Tap to upload photo</div>
+      </div>
+    </label>
+
+    <div class="fg"><label class="fl">Plate Number *</label><input class="fi" id="f-plate" placeholder="e.g. ABC 1234" autocomplete="off" style="font-size:20px;font-weight:700;letter-spacing:3px"></div>
     <div class="row2">
       <div class="fg"><label class="fl">LTO Registration</label><input class="fi" id="f-lto" type="date"></div>
       <div class="fg"><label class="fl">NMIS Expiry *</label><input class="fi" id="f-nmis" type="date"></div>
@@ -513,830 +291,620 @@ body.dark .detail-footer { border-top-color:rgba(255,255,255,0.04) }
     <div class="fg"><label class="fl">Dimensions / Type</label><input class="fi" id="f-dim" placeholder="e.g. 10-wheeler Reefer 40ft"></div>
     <div class="fg"><label class="fl">Additional Notes</label><textarea class="fi" id="f-notes" placeholder="Other details..."></textarea></div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeDrawer()">Cancel</button>
+      <button class="btn btn-ghost" onclick="closeAddDrawer()">Cancel</button>
       <button class="btn btn-red" onclick="saveTruck()">Save Truck</button>
     </div>
   </div>
 </div>
 
-<!-- DETAIL MODAL -->
-<div class="detail-modal" id="detail-modal">
-  <div class="detail-content">
-    <div class="detail-header">
-      <div class="detail-plate" id="detail-plate"></div>
+<!-- ═══ DETAIL SHEET ═══ -->
+<div class="detail-overlay" id="detail-overlay">
+  <div class="detail-sheet">
+    <div class="detail-handle"></div>
+    <div class="detail-head">
+      <span id="detail-plate-badge" style="font-size:18px;font-weight:700;letter-spacing:2px;background:var(--red);padding:5px 14px;border-radius:10px;color:#fff"></span>
       <button class="detail-close" onclick="closeDetail()">×</button>
     </div>
-    <div class="detail-body">
-      <div class="detail-photo" id="detail-photo">
-        <div class="detail-photo-placeholder">🚛</div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-label">Truck ID</div>
-        <div class="detail-value" id="detail-id"></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-label">LTO Registration</div>
-        <div class="detail-value" id="detail-lto"></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-label">NMIS Expiry</div>
-        <div class="detail-value" id="detail-nmis"></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-label">Dimensions / Type</div>
-        <div class="detail-value" id="detail-dim"></div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-label">Notes</div>
-        <div class="detail-value" id="detail-notes"></div>
-      </div>
+    <div class="detail-photo-wrap" id="detail-photo-wrap">
+      <div class="detail-photo-ph">🚛</div>
     </div>
-    <div class="detail-footer" id="detail-footer" style="display:none">
-      <button class="detail-edit-btn" onclick="editFromDetail()">Edit</button>
-      <button class="detail-delete-btn" onclick="confirmDelete()">Delete</button>
+    <div class="detail-fields">
+      <div class="df"><div class="df-label">Truck ID</div><div class="df-value mono" id="d-id"></div></div>
+      <div class="df"><div class="df-label">LTO Registration</div><div class="df-value" id="d-lto"></div></div>
+      <div class="df"><div class="df-label">NMIS Expiry</div><div class="df-value" id="d-nmis"></div></div>
+      <div class="df"><div class="df-label">Dimensions / Type</div><div class="df-value" id="d-dim"></div></div>
+      <div class="df" id="d-notes-wrap"><div class="df-label">Notes</div><div class="df-value" id="d-notes"></div></div>
+    </div>
+    <div class="detail-footer" id="detail-footer"></div>
+  </div>
+</div>
+
+<!-- ═══ NMIS UPDATE SHEET ═══ -->
+<div class="nmis-overlay" id="nmis-overlay">
+  <div class="nmis-sheet">
+    <div class="nmis-handle"></div>
+    <div class="drawer-title">Update NMIS</div>
+    <div class="drawer-sub" id="nmis-sub">Update the NMIS expiry date</div>
+    <div class="fg"><label class="fl">New NMIS Expiry Date *</label><input class="fi" id="f-nmis-update" type="date"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeNMIS()">Cancel</button>
+      <button class="btn btn-red" onclick="saveNMIS()">Update NMIS</button>
     </div>
   </div>
 </div>
 
-<!-- CONFIRM DELETE DIALOG -->
-<div class="confirm-dialog" id="confirm-dialog">
+<!-- ═══ CONFIRM DELETE ═══ -->
+<div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-title">Delete Truck?</div>
-    <div class="confirm-message">Are you sure you want to delete <strong id="confirm-truck-name"></strong>? This action cannot be undone.</div>
-    <div class="confirm-buttons">
-      <button class="confirm-btn confirm-btn-cancel" onclick="closeConfirm()">Cancel</button>
-      <button class="confirm-btn confirm-btn-delete" onclick="deleteTruck()">Delete</button>
+    <div class="confirm-msg">Are you sure you want to delete <strong id="confirm-name"></strong>? This cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="cb cb-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="cb cb-delete" onclick="doDelete()">Delete</button>
     </div>
+  </div>
+</div>
+
+<!-- SAVING OVERLAY -->
+<div class="saving-overlay" id="saving-overlay">
+  <div class="saving-box">
+    <div class="saving-spinner"></div>
+    <div class="saving-text" id="saving-text">Saving...</div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+// ═══ CONFIG ═══════════════════════════════════════════
 const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SHEET_TAB  = 'Truck Roster';
 const ADMIN_EMAIL = 'nicolobalonzo@gmail.com';
 
-let token = null;
-let isAdmin = false;
+// ═══ STATE ════════════════════════════════════════════
+let token    = '';
+let isAdmin  = false;
 let allTrucks = [];
-let editingRow = null;
-let currentPhotoBase64 = '';
-let selectedTruck = null;
+let editingRow  = null;   // null = add mode, number = edit mode
+let selectedTruck = null; // truck currently in detail view
+let newPhotoBase64 = '';  // new photo chosen by user (empty = no change)
+let hasNewPhoto = false;  // flag: user picked a new photo
 
-// ═══════════════════════════════════════
-// THEME
-// ═══════════════════════════════════════
-function applyTheme(dark) {
+// ═══ INIT ═════════════════════════════════════════════
+(function init() {
+  // Apply saved theme
+  const dark = localStorage.getItem('pedroex-theme') === 'dark';
   document.body.classList.toggle('dark', dark);
-}
-applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
-// ═══════════════════════════════════════
-// AUTH CHECK
-// ═══════════════════════════════════════
-// ═══════════════════════════════════════
-// AUTH CHECK
-// ═══════════════════════════════════════
-function checkAuth() {
-  token = localStorage.getItem('pedroex-token');
-  const expiry = localStorage.getItem('pedroex-token-expiry');
-  const email = localStorage.getItem('pedroex-email');
-  
-  if (!token || !expiry || Date.now() >= parseInt(expiry)) {
+  // Check auth
+  token = localStorage.getItem('pedroex-token') || '';
+  const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  if (!token || Date.now() >= expiry) {
     location.href = 'index.html';
     return;
   }
-  
-  isAdmin = (email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
-  
-  // Show/hide admin features
-  if (isAdmin) {
-    document.getElementById('fab').style.display = 'flex';
-  } else {
-    document.getElementById('empty-hint').textContent = 'Read-only mode';
-  }
-  
-  // Load user info
-  const picture = localStorage.getItem('pedroex-picture');
-  if (picture) document.getElementById('user-avatar').src = picture;
-  
-  // ✅ REGISTER SERVICE WORKER (PALITAN ANG FILENAME!)
-  if ('serviceWorker' in navigator && 'PushManager' in window) {
-    navigator.serviceWorker.register('sw.js')  // ⬅️ CHANGED: service-worker.js → sw.js
-      .then(registration => {
-        console.log('✅ Service Worker registered:', registration.scope);
-        return requestNotificationPermission();
-      })
-      .catch(err => {
-        console.error('❌ Service Worker registration failed:', err);
-      });
-  } else {
-    console.warn('⚠️ Service Worker or Push Manager not supported');
-  }
-  
+
+  const email   = localStorage.getItem('pedroex-email') || '';
+  const picture = localStorage.getItem('pedroex-picture') || '';
+  isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+  // Avatar
+  const av = document.getElementById('user-avatar');
+  if (av && picture) av.src = picture;
+
+  // FAB — admin only
+  if (isAdmin) document.getElementById('fab').style.display = 'flex';
+  else document.getElementById('empty-msg').innerHTML = 'No trucks.<br><span style="color:var(--text3)">Read-only mode.</span>';
+
   loadTrucks();
-}
+})();
 
-// ═══════════════════════════════════════
-// NOTIFICATION PERMISSION
-// ═══════════════════════════════════════
-function requestNotificationPermission() {
-  if (!('Notification' in window)) {
-    console.log('Browser does not support notifications');
-    return Promise.resolve();
-  }
-  
-  if (Notification.permission === 'granted') {
-    console.log('✅ Notification permission already granted');
-    return Promise.resolve();
-  }
-  
-  if (Notification.permission !== 'denied') {
-    return Notification.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        showToast('✅ Notifications enabled!');
-        console.log('✅ Notification permission granted');
-      } else {
-        console.log('⚠️ Notification permission denied');
-      }
-    });
-  }
-  
-  return Promise.resolve();
-}
-
-// ═══════════════════════════════════════
-// SEND LOCAL NOTIFICATION
-// ═══════════════════════════════════════
-function sendLocalNotification(title, message, tag = 'nmis-expiry') {
-  if (!('Notification' in window)) {
-    console.log('Browser does not support notifications');
-    return;
-  }
-  
-  if (Notification.permission === 'granted') {
-    try {
-      const notification = new Notification(title, {
-        body: message,
-        icon: 'logo2.png',
-        badge: 'logo2.png',
-        vibrate: [200, 100, 200],
-        tag: tag,
-        requireInteraction: true,
-        data: {
-          url: window.location.href
-        }
-      });
-      
-      notification.onclick = function(event) {
-        event.preventDefault();
-        window.focus();
-        notification.close();
-      };
-      
-      console.log('✅ Notification sent:', title);
-    } catch (error) {
-      console.error('❌ Notification error:', error);
-    }
-  } else {
-    console.log('⚠️ Notification permission not granted');
-  }
-}
-
-// ═══════════════════════════════════════
-// API FUNCTIONS
-// ═══════════════════════════════════════
+// ═══ SHEETS API ════════════════════════════════════════
 function apiGet(range) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range), {
-    headers: {'Authorization': 'Bearer ' + token}
-  }).then(r => {
-    if (!r.ok) throw new Error('API GET failed');
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+    '/values/' + encodeURIComponent(range),
+    { headers: { Authorization: 'Bearer ' + token } }
+  ).then(function(r) {
+    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+    return r.json();
+  });
+}
+
+function apiUpdate(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+    '/values/' + encodeURIComponent(range) + '?valueInputOption=USER_ENTERED',
+    { method: 'PUT',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: values }) }
+  ).then(function(r) {
+    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+    if (!r.ok) throw new Error('Update failed ' + r.status);
     return r.json();
   });
 }
 
 function apiAppend(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS', {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+    '/values/' + encodeURIComponent(range) + ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    { method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: values }) }
+  ).then(function(r) {
+    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+    if (!r.ok) throw new Error('Append failed ' + r.status);
+    return r.json();
+  });
+}
+
+// ═══ PHOTO — Google Drive upload ══════════════════════
+function uploadPhotoToDrive(base64DataUrl) {
+  // Extract pure base64 and mime
+  var parts    = base64DataUrl.split(',');
+  var mime     = parts[0].match(/:(.*?);/)[1];
+  var b64data  = parts[1];
+  var binary   = atob(b64data);
+  var bytes    = new Uint8Array(binary.length);
+  for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  var blob     = new Blob([bytes], { type: mime });
+  var filename = 'truck-' + Date.now() + '.jpg';
+
+  // Multipart upload to Drive
+  var boundary = 'pedroex_boundary';
+  var metadata = JSON.stringify({ name: filename, parents: [] });
+
+  // Build multipart body
+  var bodyParts = [
+    '--' + boundary + '\r\n',
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n',
+    metadata + '\r\n',
+    '--' + boundary + '\r\n',
+    'Content-Type: ' + mime + '\r\n\r\n',
+  ];
+  var textEncoder = new TextEncoder();
+  var part1 = textEncoder.encode(bodyParts.join(''));
+  var part2 = bytes;
+  var part3 = textEncoder.encode('\r\n--' + boundary + '--');
+
+  var combined = new Uint8Array(part1.length + part2.length + part3.length);
+  combined.set(part1, 0);
+  combined.set(part2, part1.length);
+  combined.set(part3, part1.length + part2.length);
+
+  return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink,webContentLink', {
     method: 'POST',
-    headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'},
-    body: JSON.stringify({values: values})
-  }).then(r => {
-    if (!r.ok) throw new Error('API APPEND failed');
-    return r.json();
-  });
-}
-
-// ✅ FIXED: Changed from RAW to USER_ENTERED
-function apiUpdate(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(range) + '?valueInputOption=USER_ENTERED', {
-    method: 'PUT',
     headers: {
-      'Authorization': 'Bearer ' + token, 
-      'Content-Type': 'application/json'
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'multipart/related; boundary=' + boundary,
     },
-    body: JSON.stringify({values: values})
-  }).then(r => {
-    if (!r.ok) {
-      console.error('❌ API Update failed:', r.status, r.statusText);
-      throw new Error('Update failed');
-    }
-    return r.json();
+    body: combined,
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(file) {
+    if (!file.id) throw new Error('Upload failed');
+    // Make file public readable
+    return fetch('https://www.googleapis.com/drive/v3/files/' + file.id + '/permissions', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: 'reader', type: 'anyone' }),
+    }).then(function() {
+      return 'https://drive.google.com/uc?export=view&id=' + file.id;
+    });
   });
 }
 
-function apiDelete(rowIndex) {
-  // Clear the row by setting all values to empty
-  return apiUpdate(SHEET_TAB + '!A' + rowIndex + ':G' + rowIndex, [['', '', '', '', '', '', '']]);
-}
-
-// ═══════════════════════════════════════
-// LOAD TRUCKS
-// ═══════════════════════════════════════
+// ═══ LOAD TRUCKS ══════════════════════════════════════
 function loadTrucks() {
   document.getElementById('trucks-loading').style.display = 'flex';
   document.getElementById('trucks-list').innerHTML = '';
   document.getElementById('trucks-empty').style.display = 'none';
-  
-  apiGet(SHEET_TAB + '!A2:G').then(res => {
-    allTrucks = (res.values || []).map((r, i) => ({
-      rowIndex: i + 2,
-      id: r[0] || '',
-      plate: r[1] || '',
-      lto: r[2] || '',
-      nmis: r[3] || '',
-      dim: r[4] || '',
-      notes: r[5] || '',
-      photo: r[6] || ''
-    })).filter(t => t.plate);
-    
-    checkNMISExpiry();
+  var s = document.getElementById('truck-search');
+  if (s) s.value = '';
+
+  apiGet(SHEET_TAB + '!A2:G').then(function(res) {
+    allTrucks = (res.values || []).map(function(r, i) {
+      return {
+        rowIndex: i + 2,
+        id:    r[0] || '',
+        plate: r[1] || '',
+        lto:   r[2] || '',
+        nmis:  r[3] || '',
+        dim:   r[4] || '',
+        notes: r[5] || '',
+        photo: r[6] || ''
+      };
+    }).filter(function(t) { return t.plate; });
+
+    checkNMIS();
     renderTrucks(allTrucks);
     document.getElementById('trucks-loading').style.display = 'none';
-  }).catch(err => {
-    console.error('❌ Load trucks failed:', err);
+  }).catch(function(err) {
     document.getElementById('trucks-loading').style.display = 'none';
-    showToast('❌ Cannot load data.');
+    showToast('Cannot load data.');
+    console.error(err);
   });
 }
 
-// ═══════════════════════════════════════
-// CHECK NMIS EXPIRY AND SHOW NOTIFICATION
-// ═══════════════════════════════════════
-function checkNMISExpiry() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  let expiringSoon = [];
-  let expired = [];
-  
-  allTrucks.forEach(truck => {
-    if (!truck.nmis) return;
-    
-    const expiryDate = new Date(truck.nmis);
-    expiryDate.setHours(0, 0, 0, 0);
-    
-    const diffTime = expiryDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    // Expired
-    if (diffDays < 0) {
-      expired.push({...truck, daysOverdue: Math.abs(diffDays)});
-    }
-    // 1 day before to 7 days after expiry
-    else if (diffDays <= 1) {
-      expiringSoon.push({...truck, daysLeft: diffDays});
-    }
-    // 2 weeks before
-    else if (diffDays <= 14) {
-      expiringSoon.push({...truck, daysLeft: diffDays});
-    }
-    // 1 month before
-    else if (diffDays <= 30) {
-      expiringSoon.push({...truck, daysLeft: diffDays});
+// ═══ NMIS EXPIRY CHECK ════════════════════════════════
+function checkNMIS() {
+  var today = new Date(); today.setHours(0,0,0,0);
+  var worst = null; // { type: 'expired'|'expiring', truck, days }
+
+  allTrucks.forEach(function(t) {
+    if (!t.nmis) return;
+    var exp = new Date(t.nmis); exp.setHours(0,0,0,0);
+    var days = Math.ceil((exp - today) / 86400000);
+    if (days < 0 && (!worst || worst.type !== 'expired')) {
+      worst = { type: 'expired', truck: t, days: Math.abs(days) };
+    } else if (days >= 0 && days <= 30 && (!worst || worst.type !== 'expired')) {
+      if (!worst || days < worst.days) worst = { type: 'expiring', truck: t, days: days };
     }
   });
-  
-  // Show notification banner + push notification
-  if (expired.length > 0) {
-    const truck = expired[0];
-    const message = `🚨 <strong>${truck.plate}</strong> NMIS expired ${truck.daysOverdue} days ago!`;
-    showNotification(message);
-    
-    // ✅ SEND PUSH NOTIFICATION
-    sendLocalNotification(
-      '🚨 NMIS EXPIRED!',
-      `${truck.plate} expired ${truck.daysOverdue} days ago`,
-      'nmis-expired-' + truck.plate
-    );
-    
-  } else if (expiringSoon.length > 0) {
-    const truck = expiringSoon[0];
-    let message = '';
-    let notifMessage = '';
-    
-    if (truck.daysLeft === 0) {
-      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires TODAY!`;
-      notifMessage = `${truck.plate} NMIS expires TODAY!`;
-    } else if (truck.daysLeft === 1) {
-      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires TOMORROW!`;
-      notifMessage = `${truck.plate} NMIS expires TOMORROW!`;
-    } else if (truck.daysLeft <= 7) {
-      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires in ${truck.daysLeft} days`;
-      notifMessage = `${truck.plate} NMIS expires in ${truck.daysLeft} days`;
-    } else if (truck.daysLeft <= 14) {
-      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires in 2 weeks`;
-      notifMessage = `${truck.plate} NMIS expires in 2 weeks`;
-    } else if (truck.daysLeft <= 30) {
-      message = `⚠️ <strong>${truck.plate}</strong> NMIS expires in 1 month`;
-      notifMessage = `${truck.plate} NMIS expires in 1 month`;
-    }
-    
-    showNotification(message);
-    
-    // ✅ SEND PUSH NOTIFICATION
-    sendLocalNotification(
-      '⚠️ NMIS Expiring Soon',
-      notifMessage,
-      'nmis-expiring-' + truck.plate
-    );
+
+  if (!worst) return;
+
+  var banner = document.getElementById('alert-banner');
+  var icon   = document.getElementById('alert-icon');
+  var title  = document.getElementById('alert-title');
+  var msg    = document.getElementById('alert-msg');
+
+  if (worst.type === 'expired') {
+    banner.className = 'alert-banner danger show';
+    icon.textContent = '🚨';
+    title.textContent = 'NMIS EXPIRED';
+    msg.textContent = worst.truck.plate + ' — expired ' + worst.days + ' day(s) ago. Immediate renewal required.';
+  } else {
+    banner.className = 'alert-banner warning show';
+    icon.textContent = '⚠️';
+    title.textContent = 'NMIS Expiring Soon';
+    var daysText = worst.days === 0 ? 'TODAY' : worst.days === 1 ? 'TOMORROW' : 'in ' + worst.days + ' days';
+    msg.textContent = worst.truck.plate + ' — expires ' + daysText + '.';
   }
 }
 
-function showNotification(message) {
-  const banner = document.getElementById('notif-banner');
-  const text = document.getElementById('notif-text');
-  text.innerHTML = message;
-  banner.classList.add('show');
-}
+function closeAlert() { document.getElementById('alert-banner').classList.remove('show'); }
 
-function closeNotif() {
-  document.getElementById('notif-banner').classList.remove('show');
-}
-
-// ═══════════════════════════════════════
-// RENDER TRUCKS
-// ═══════════════════════════════════════
+// ═══ RENDER TRUCKS ════════════════════════════════════
 function renderTrucks(list) {
-  const c = document.getElementById('trucks-list');
-  const e = document.getElementById('trucks-empty');
-  
-  if (!list.length) {
-    c.innerHTML = '';
-    e.style.display = 'block';
-    return;
-  }
-  
+  var c = document.getElementById('trucks-list');
+  var e = document.getElementById('trucks-empty');
+  if (!list.length) { c.innerHTML = ''; e.style.display = 'block'; return; }
   e.style.display = 'none';
-  
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  c.innerHTML = list.map(t => {
-    const photoHtml = t.photo 
-      ? `<img src="${t.photo}" alt="${t.plate}">`
-      : `<div class="tc-photo-placeholder">🚛</div>`;
-    
-    // Check NMIS expiry status
-    let cardClass = 'truck-card';
-    let nmisChip = '';
-    
+
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  c.innerHTML = list.map(function(t) {
+    var photoHtml = t.photo
+      ? '<img src="' + t.photo + '" alt="' + t.plate + '">'
+      : '<div class="tc-photo-ph">🚛</div>';
+
+    var cardCls = 'truck-card';
+    var nmisChip = '';
+
     if (t.nmis) {
-      const expiryDate = new Date(t.nmis);
-      expiryDate.setHours(0, 0, 0, 0);
-      const diffTime = expiryDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      if (diffDays < 0) {
-        cardClass += ' expired';
-        nmisChip = `<span class="chip danger">NMIS <b>EXPIRED</b></span>`;
-      } else if (diffDays <= 30) {
-        cardClass += ' expiring-soon';
-        nmisChip = `<span class="chip warning">NMIS <b>${diffDays}d left</b></span>`;
+      var exp = new Date(t.nmis); exp.setHours(0,0,0,0);
+      var days = Math.ceil((exp - today) / 86400000);
+      if (days < 0) {
+        cardCls += ' expired';
+        nmisChip = '<span class="chip danger">NMIS <b>EXPIRED</b></span>';
+      } else if (days <= 30) {
+        cardCls += ' expiring';
+        nmisChip = '<span class="chip warn">NMIS <b>' + days + 'd left</b></span>';
       } else {
-        nmisChip = `<span class="chip">NMIS <b>${t.nmis}</b></span>`;
+        nmisChip = '<span class="chip">NMIS <b>' + t.nmis + '</b></span>';
       }
     }
-    
-    return `<div class="${cardClass}" onclick="viewDetail(${t.rowIndex})">
-      <div class="tc-head">
-        <span class="tc-plate">${t.plate}</span>
-        <span class="tc-id">${t.id}</span>
-      </div>
-      <div class="tc-body">
-        <div class="tc-photo">${photoHtml}</div>
-        <div class="tc-info">
-          <div class="tc-chips">
-            ${t.lto ? `<span class="chip">LTO <b>${t.lto}</b></span>` : ''}
-            ${nmisChip}
-            ${t.dim ? `<span class="chip">📐 <b>${t.dim}</b></span>` : ''}
-          </div>
-          ${t.notes ? `<div class="tc-note">${t.notes}</div>` : ''}
-        </div>
-      </div>
-    </div>`;
+
+    return '<div class="' + cardCls + '" onclick="openDetail(' + t.rowIndex + ')">'
+      + '<div class="tc-head"><span class="tc-plate">' + t.plate + '</span><span class="tc-id">' + t.id + '</span></div>'
+      + '<div class="tc-body">'
+      + '<div class="tc-photo">' + photoHtml + '</div>'
+      + '<div class="tc-info">'
+      + '<div class="tc-chips">'
+      + (t.lto ? '<span class="chip">LTO <b>' + t.lto + '</b></span>' : '')
+      + nmisChip
+      + (t.dim ? '<span class="chip">📐 <b>' + t.dim + '</b></span>' : '')
+      + '</div>'
+      + (t.notes ? '<div class="tc-note">' + t.notes + '</div>' : '')
+      + '</div></div></div>';
   }).join('');
 }
 
-// ═══════════════════════════════════════
-// FILTER
-// ═══════════════════════════════════════
 function filterTrucks(q) {
-  const f = q.toLowerCase();
-  renderTrucks(allTrucks.filter(t => 
-    t.plate.toLowerCase().includes(f) || 
-    t.lto.toLowerCase().includes(f) ||
-    t.dim.toLowerCase().includes(f) ||
-    t.notes.toLowerCase().includes(f)
-  ));
+  var f = q.toLowerCase();
+  renderTrucks(allTrucks.filter(function(t) {
+    return t.plate.toLowerCase().includes(f)
+      || t.lto.toLowerCase().includes(f)
+      || t.dim.toLowerCase().includes(f)
+      || t.notes.toLowerCase().includes(f);
+  }));
 }
 
-// ═══════════════════════════════════════
-// VIEW DETAIL
-// ═══════════════════════════════════════
-function viewDetail(rowIndex) {
-  selectedTruck = allTrucks.find(t => t.rowIndex === rowIndex);
+// ═══ DETAIL SHEET ═════════════════════════════════════
+function openDetail(rowIndex) {
+  selectedTruck = allTrucks.find(function(t) { return t.rowIndex === rowIndex; });
   if (!selectedTruck) return;
-  
-  document.getElementById('detail-plate').innerHTML = `<span class="tc-plate">${selectedTruck.plate}</span>`;
-  document.getElementById('detail-id').textContent = selectedTruck.id;
-  document.getElementById('detail-lto').textContent = selectedTruck.lto || '—';
-  document.getElementById('detail-nmis').textContent = selectedTruck.nmis || '—';
-  document.getElementById('detail-dim').textContent = selectedTruck.dim || '—';
-  document.getElementById('detail-notes').textContent = selectedTruck.notes || '—';
-  
-  const photoEl = document.getElementById('detail-photo');
-  if (selectedTruck.photo) {
-    photoEl.innerHTML = `<img src="${selectedTruck.photo}" alt="${selectedTruck.plate}">`;
-  } else {
-    photoEl.innerHTML = `<div class="detail-photo-placeholder">🚛</div>`;
+  var t = selectedTruck;
+
+  document.getElementById('detail-plate-badge').textContent = t.plate;
+  document.getElementById('d-id').textContent   = t.id || '—';
+  document.getElementById('d-lto').textContent  = t.lto || '—';
+  document.getElementById('d-dim').textContent  = t.dim || '—';
+  document.getElementById('d-notes').textContent = t.notes || '—';
+
+  // NMIS with expiry status
+  var today = new Date(); today.setHours(0,0,0,0);
+  var nmisText = t.nmis || '—';
+  if (t.nmis) {
+    var exp = new Date(t.nmis); exp.setHours(0,0,0,0);
+    var days = Math.ceil((exp - today) / 86400000);
+    if (days < 0) nmisText = t.nmis + ' ❌ EXPIRED';
+    else if (days <= 30) nmisText = t.nmis + ' ⚠️ ' + days + 'd left';
   }
-  
-  // Show edit/delete buttons only for admin
-  document.getElementById('detail-footer').style.display = isAdmin ? 'flex' : 'none';
-  
-  document.getElementById('detail-modal').classList.add('open');
+  document.getElementById('d-nmis').textContent = nmisText;
+
+  // Photo
+  var wrap = document.getElementById('detail-photo-wrap');
+  wrap.innerHTML = t.photo
+    ? '<img src="' + t.photo + '" alt="' + t.plate + '">'
+    : '<div class="detail-photo-ph">🚛</div>';
+
+  // Footer buttons based on role
+  var footer = document.getElementById('detail-footer');
+  if (isAdmin) {
+    footer.innerHTML =
+      '<button class="df-btn df-btn-edit" onclick="openEditDrawer(' + t.rowIndex + ')">Edit All</button>'
+      + '<button class="df-btn df-btn-nmis" onclick="openNMIS()">Update NMIS</button>'
+      + '<button class="df-btn df-btn-delete" onclick="promptDelete()">Delete</button>';
+  } else {
+    // Employee can only update NMIS
+    footer.innerHTML =
+      '<button class="df-btn df-btn-edit" onclick="openNMIS()" style="flex:1">Update NMIS</button>';
+  }
+
+  document.getElementById('detail-overlay').classList.add('open');
 }
 
 function closeDetail() {
-  document.getElementById('detail-modal').classList.remove('open');
+  document.getElementById('detail-overlay').classList.remove('open');
   selectedTruck = null;
 }
 
-// ═══════════════════════════════════════
-// EDIT FROM DETAIL MODAL
-// ═══════════════════════════════════════
-function editFromDetail() {
-  console.log('✏️ Edit from detail modal');
-  
-  if (!selectedTruck) {
-    console.error('❌ No truck selected');
-    showToast('❌ No truck selected');
-    return;
-  }
-  
-  console.log('✏️ Selected truck:', selectedTruck);
-  
-  // Close detail modal first
+// ═══ ADD DRAWER ═══════════════════════════════════════
+function openAddDrawer() {
+  if (!isAdmin) return;
+  editingRow   = null;
+  newPhotoBase64 = '';
+  hasNewPhoto  = false;
+
+  document.getElementById('drawer-title').textContent = 'Add Truck';
+  document.getElementById('drawer-sub').textContent   = 'Fill in the truck details';
+  document.getElementById('f-plate').value = '';
+  document.getElementById('f-lto').value   = '';
+  document.getElementById('f-nmis').value  = '';
+  document.getElementById('f-dim').value   = '';
+  document.getElementById('f-notes').value = '';
+  document.getElementById('f-photo').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-ph').style.display = 'block';
+
+  document.getElementById('add-drawer').classList.add('open');
+}
+
+// ═══ EDIT DRAWER ══════════════════════════════════════
+function openEditDrawer(rowIndex) {
+  if (!isAdmin) return;
   closeDetail();
-  
-  // Small delay to allow modal to close smoothly
-  setTimeout(() => {
-    editTruck(selectedTruck.rowIndex);
+
+  var t = allTrucks.find(function(x) { return x.rowIndex === rowIndex; });
+  if (!t) return;
+
+  editingRow     = rowIndex;
+  newPhotoBase64 = '';
+  hasNewPhoto    = false;
+
+  document.getElementById('drawer-title').textContent = 'Edit Truck';
+  document.getElementById('drawer-sub').textContent   = 'Editing ' + t.plate;
+  document.getElementById('f-plate').value = t.plate;
+  document.getElementById('f-lto').value   = t.lto;
+  document.getElementById('f-nmis').value  = t.nmis;
+  document.getElementById('f-dim').value   = t.dim;
+  document.getElementById('f-notes').value = t.notes;
+  document.getElementById('f-photo').value = '';
+
+  var preview = document.getElementById('photo-preview');
+  var ph      = document.getElementById('photo-ph');
+  if (t.photo) {
+    preview.src = t.photo;
+    preview.style.display = 'block';
+    ph.style.display = 'none';
+  } else {
+    preview.style.display = 'none';
+    ph.style.display = 'block';
+  }
+
+  setTimeout(function() {
+    document.getElementById('add-drawer').classList.add('open');
   }, 200);
 }
 
-// ═══════════════════════════════════════
-// DRAWER
-// ═══════════════════════════════════════
-// ═══════════════════════════════════════
-// OPEN DRAWER (ADD MODE)
-// ═══════════════════════════════════════
-function openDrawer() {
-  if (!isAdmin) {
-    showToast('❌ Read-only mode');
-    return;
-  }
-  
-  console.log('➕ Opening drawer in ADD mode');
-  
-  // ✅ RESET EDIT MODE
-  editingRow = null;
-  currentPhotoBase64 = '';
-  
-  // ✅ SET ADD MODE TITLE
-  document.getElementById('drawer-title').textContent = 'Add Truck';
-  document.getElementById('drawer-sub').textContent = 'Fill in the truck details';
-  
-  // ✅ CLEAR ALL FIELDS
-  document.getElementById('f-plate').value = '';
-  document.getElementById('f-lto').value = '';
-  document.getElementById('f-nmis').value = '';
-  document.getElementById('f-dim').value = '';
-  document.getElementById('f-notes').value = '';
-  document.getElementById('f-photo').value = '';
-  
-  // ✅ RESET PHOTO PREVIEW
-  document.getElementById('photo-preview').style.display = 'none';
-  document.getElementById('photo-placeholder').style.display = 'block';
-  
-  // ✅ OPEN OVERLAY
-  document.getElementById('truck-drawer').classList.add('open');
-  
-  console.log('✅ Drawer opened in ADD mode');
+function closeAddDrawer() {
+  document.getElementById('add-drawer').classList.remove('open');
+  editingRow     = null;
+  newPhotoBase64 = '';
+  hasNewPhoto    = false;
 }
 
-// ═══════════════════════════════════════
-// EDIT TRUCK - COMPLETE REWRITE
-// ═══════════════════════════════════════
-function editTruck(rowIndex) {
-  if (!isAdmin) {
-    showToast('❌ Read-only mode');
-    return;
-  }
-  
-  console.log('✏️ Edit truck at row:', rowIndex);
-  
-  const t = allTrucks.find(x => x.rowIndex === rowIndex);
-  if (!t) {
-    console.error('❌ Truck not found');
-    showToast('❌ Truck not found');
-    return;
-  }
-  
-  console.log('✏️ Editing truck:', t);
-  
-  // ✅ SET EDIT MODE
-  editingRow = rowIndex;
-  currentPhotoBase64 = t.photo || '';
-  
-  // ✅ UPDATE DRAWER TITLE
-  document.getElementById('drawer-title').textContent = 'Edit Truck';
-  document.getElementById('drawer-sub').textContent = 'Update ' + t.plate;
-  
-  // ✅ POPULATE ALL FIELDS
-  document.getElementById('f-plate').value = t.plate || '';
-  document.getElementById('f-lto').value = t.lto || '';
-  document.getElementById('f-nmis').value = t.nmis || '';
-  document.getElementById('f-dim').value = t.dim || '';
-  document.getElementById('f-notes').value = t.notes || '';
-  
-  // ✅ SHOW EXISTING PHOTO
-  const photoPreview = document.getElementById('photo-preview');
-  const photoPlaceholder = document.getElementById('photo-placeholder');
-  
-  if (t.photo) {
-    console.log('✅ Loading existing photo');
-    photoPreview.src = t.photo;
-    photoPreview.style.display = 'block';
-    photoPlaceholder.style.display = 'none';
-  } else {
-    console.log('⚠️ No existing photo');
-    photoPreview.style.display = 'none';
-    photoPlaceholder.style.display = 'block';
-  }
-  
-  // ✅ RESET FILE INPUT
-  document.getElementById('f-photo').value = '';
-  
-  // ✅ OPEN DRAWER
-  document.getElementById('truck-drawer').classList.add('open');
-  
-  console.log('✅ Edit drawer opened');
+// ═══ PHOTO HANDLING ═══════════════════════════════════
+function triggerPhotoInput() {
+  document.getElementById('f-photo').click();
 }
 
-
-// ═══════════════════════════════════════
-// CLOSE DRAWER
-// ═══════════════════════════════════════
-function closeDrawer() {
-  console.log('🚪 Closing drawer');
-  
-  // ✅ RESET EDIT MODE
-  editingRow = null;
-  currentPhotoBase64 = '';
-  
-  // ✅ CLEAR ALL FIELDS
-  document.getElementById('f-plate').value = '';
-  document.getElementById('f-lto').value = '';
-  document.getElementById('f-nmis').value = '';
-  document.getElementById('f-dim').value = '';
-  document.getElementById('f-notes').value = '';
-  document.getElementById('f-photo').value = '';
-  
-  // ✅ RESET PHOTO PREVIEW
-  document.getElementById('photo-preview').style.display = 'none';
-  document.getElementById('photo-placeholder').style.display = 'block';
-  
-  // ✅ CLOSE OVERLAY
-  document.getElementById('truck-drawer').classList.remove('open');
-  
-  console.log('✅ Drawer closed and reset');
-}
-
-// ═══════════════════════════════════════
-// PHOTO PREVIEW
-// ═══════════════════════════════════════
-function previewPhoto(input) {
+function handlePhotoChange(input) {
   if (!input.files || !input.files[0]) return;
-  
-  const file = input.files[0];
-  if (file.size > 2 * 1024 * 1024) {
-    showToast('❌ Photo must be less than 2MB');
+  var file = input.files[0];
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Photo must be under 5MB');
     input.value = '';
     return;
   }
-  
-  const reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
-    currentPhotoBase64 = e.target.result;
-    document.getElementById('photo-preview').src = currentPhotoBase64;
+    newPhotoBase64 = e.target.result;
+    hasNewPhoto    = true;
+    document.getElementById('photo-preview').src          = newPhotoBase64;
     document.getElementById('photo-preview').style.display = 'block';
-    document.getElementById('photo-placeholder').style.display = 'none';
+    document.getElementById('photo-ph').style.display      = 'none';
   };
   reader.readAsDataURL(file);
 }
 
-// ═══════════════════════════════════════
-// SAVE TRUCK
-// ═══════════════════════════════════════
-// ═══════════════════════════════════════
-// SAVE TRUCK - UPDATED FOR EDIT MODE
-// ═══════════════════════════════════════
+// ═══ SAVE TRUCK ═══════════════════════════════════════
 function saveTruck() {
-  if (!isAdmin) {
-    showToast('❌ Read-only mode');
-    return;
-  }
-  
-  // ✅ VALIDATE INPUTS
-  const plate = document.getElementById('f-plate').value.trim().toUpperCase();
-  if (!plate) {
-    showToast('❌ Plate Number is required!');
-    return;
-  }
-  
-  const lto = document.getElementById('f-lto').value.trim();
-  const nmis = document.getElementById('f-nmis').value.trim();
-  const dim = document.getElementById('f-dim').value.trim();
-  const notes = document.getElementById('f-notes').value.trim();
-  
-  // ✅ CHECK TOKEN VALIDITY
-  const expiry = localStorage.getItem('pedroex-token-expiry');
-  if (!token || !expiry || Date.now() >= parseInt(expiry)) {
-    showToast('❌ Session expired. Please login again.');
-    setTimeout(() => location.href = 'index.html', 2000);
-    return;
-  }
-  
-  console.log('💾 Saving truck...');
-  console.log('  Mode:', editingRow ? 'EDIT' : 'ADD');
-  console.log('  Plate:', plate);
-  console.log('  LTO:', lto);
-  console.log('  NMIS:', nmis);
-  console.log('  Dimensions:', dim);
-  console.log('  Notes:', notes);
-  console.log('  Photo:', currentPhotoBase64 ? 'YES (' + currentPhotoBase64.length + ' chars)' : 'NO');
-  
-  if (editingRow) {
-    // ═══════════════════════════════════════
-    // EDIT MODE
-    // ═══════════════════════════════════════
-    const t = allTrucks.find(x => x.rowIndex === editingRow);
-    if (!t) {
-      showToast('❌ Truck not found!');
-      return;
-    }
-    
-    console.log('📝 EDIT MODE');
-    console.log('  Row:', editingRow);
-    console.log('  Original ID:', t.id);
-    console.log('  Original Plate:', t.plate);
-    
-    // ✅ KEEP ORIGINAL ID, UPDATE EVERYTHING ELSE
-    const rowData = [
-      t.id,              // Keep original ID
-      plate,             // New plate
-      lto,               // New LTO
-      nmis,              // New NMIS
-      dim,               // New dimensions
-      notes,             // New notes
-      currentPhotoBase64 // New or existing photo
-    ];
-    
-    console.log('📝 Updating row', editingRow, 'with data:', rowData);
-    
-    apiUpdate(SHEET_TAB + '!A' + editingRow + ':G' + editingRow, [rowData])
-      .then(() => {
-        console.log('✅ Update successful');
-        showToast('✅ Truck updated!');
-        closeDrawer();
-        
-        // Reset edit mode
-        editingRow = null;
-        currentPhotoBase64 = '';
-        
-        // Reload trucks after short delay
-        setTimeout(() => loadTrucks(), 500);
-      })
-      .catch(err => {
-        console.error('❌ Update failed:', err);
-        showToast('❌ Save failed: ' + err.message);
-      });
-      
+  var plate = document.getElementById('f-plate').value.trim().toUpperCase();
+  if (!plate) { showToast('Plate Number is required!'); return; }
+
+  var lto   = document.getElementById('f-lto').value.trim();
+  var nmis  = document.getElementById('f-nmis').value.trim();
+  var dim   = document.getElementById('f-dim').value.trim();
+  var notes = document.getElementById('f-notes').value.trim();
+
+  showSaving('Saving truck...');
+
+  // If user picked a new photo, upload to Drive first
+  var photoPromise;
+  if (hasNewPhoto && newPhotoBase64) {
+    photoPromise = uploadPhotoToDrive(newPhotoBase64);
+  } else if (editingRow) {
+    // Keep existing photo URL
+    var existing = allTrucks.find(function(x) { return x.rowIndex === editingRow; });
+    photoPromise = Promise.resolve(existing ? existing.photo : '');
   } else {
-    // ═══════════════════════════════════════
-    // ADD MODE
-    // ═══════════════════════════════════════
-    console.log('➕ ADD MODE');
-    
-    // Generate new ID
-    const id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
-    console.log('  New ID:', id);
-    
-    const rowData = [id, plate, lto, nmis, dim, notes, currentPhotoBase64];
-    console.log('➕ Appending new row with data:', rowData);
-    
-    apiAppend(SHEET_TAB + '!A:G', [rowData])
-      .then(() => {
-        console.log('✅ Append successful');
-        showToast('✅ Truck added!');
-        closeDrawer();
-        
-        // Reset add mode
-        currentPhotoBase64 = '';
-        
-        // Reload trucks after short delay
-        setTimeout(() => loadTrucks(), 500);
-      })
-      .catch(err => {
-        console.error('❌ Append failed:', err);
-        showToast('❌ Save failed: ' + err.message);
-      });
+    photoPromise = Promise.resolve('');
   }
-}
-// ═══════════════════════════════════════
-// DELETE TRUCK
-// ═══════════════════════════════════════
-function confirmDelete() {
-  if (!isAdmin || !selectedTruck) return;
-  
-  document.getElementById('confirm-truck-name').textContent = selectedTruck.plate;
-  document.getElementById('confirm-dialog').classList.add('open');
+
+  photoPromise.then(function(photoUrl) {
+    var row;
+    if (editingRow) {
+      var t = allTrucks.find(function(x) { return x.rowIndex === editingRow; });
+      if (!t) { hideSaving(); showToast('Truck not found.'); return; }
+      row = [t.id, plate, lto, nmis, dim, notes, photoUrl];
+      return apiUpdate(SHEET_TAB + '!A' + editingRow + ':G' + editingRow, [row])
+        .then(function() {
+          hideSaving();
+          showToast('✅ Truck updated!');
+          closeAddDrawer();
+          setTimeout(loadTrucks, 400);
+        });
+    } else {
+      var id = 'TRK-' + String(allTrucks.length + 1).padStart(3, '0');
+      row = [id, plate, lto, nmis, dim, notes, photoUrl];
+      return apiAppend(SHEET_TAB + '!A:G', [row])
+        .then(function() {
+          hideSaving();
+          showToast('✅ Truck added!');
+          closeAddDrawer();
+          setTimeout(loadTrucks, 400);
+        });
+    }
+  }).catch(function(err) {
+    hideSaving();
+    showToast('❌ Save failed: ' + (err.message || 'try again'));
+    console.error(err);
+  });
 }
 
-function closeConfirm() {
-  document.getElementById('confirm-dialog').classList.remove('open');
+// ═══ NMIS UPDATE (available to ALL users) ═════════════
+function openNMIS() {
+  if (!selectedTruck) return;
+  document.getElementById('nmis-sub').textContent = 'Update NMIS for ' + selectedTruck.plate;
+  document.getElementById('f-nmis-update').value = selectedTruck.nmis || '';
+  document.getElementById('nmis-overlay').classList.add('open');
 }
+function closeNMIS() { document.getElementById('nmis-overlay').classList.remove('open'); }
 
-function deleteTruck() {
-  if (!isAdmin || !selectedTruck) return;
-  
-  console.log('🗑️ Deleting truck:', selectedTruck.plate, 'at row', selectedTruck.rowIndex);
-  
-  apiDelete(selectedTruck.rowIndex)
-    .then(() => {
-      showToast('✅ Truck deleted!');
-      closeConfirm();
+function saveNMIS() {
+  if (!selectedTruck) return;
+  var newDate = document.getElementById('f-nmis-update').value.trim();
+  if (!newDate) { showToast('Please select a date.'); return; }
+
+  showSaving('Updating NMIS...');
+
+  var t = selectedTruck;
+  var row = [t.id, t.plate, t.lto, newDate, t.dim, t.notes, t.photo];
+
+  apiUpdate(SHEET_TAB + '!A' + t.rowIndex + ':G' + t.rowIndex, [row])
+    .then(function() {
+      hideSaving();
+      showToast('✅ NMIS updated!');
+      closeNMIS();
       closeDetail();
-      loadTrucks();
+      setTimeout(loadTrucks, 400);
     })
-    .catch(err => {
-      console.error('❌ Delete failed:', err);
-      showToast('❌ Delete failed. Check console.');
+    .catch(function(err) {
+      hideSaving();
+      showToast('❌ Update failed.');
+      console.error(err);
     });
 }
 
-// ═══════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════
-let toastTimer;
+// ═══ DELETE ═══════════════════════════════════════════
+function promptDelete() {
+  if (!isAdmin || !selectedTruck) return;
+  document.getElementById('confirm-name').textContent = selectedTruck.plate;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+
+function doDelete() {
+  if (!selectedTruck) return;
+  showSaving('Deleting...');
+  apiUpdate(SHEET_TAB + '!A' + selectedTruck.rowIndex + ':G' + selectedTruck.rowIndex,
+    [['','','','','','','']])
+    .then(function() {
+      hideSaving();
+      showToast('✅ Truck deleted.');
+      closeConfirm();
+      closeDetail();
+      setTimeout(loadTrucks, 400);
+    })
+    .catch(function(err) {
+      hideSaving();
+      showToast('❌ Delete failed.');
+      console.error(err);
+    });
+}
+
+// ═══ SAVING OVERLAY ═══════════════════════════════════
+function showSaving(msg) {
+  document.getElementById('saving-text').textContent = msg || 'Saving...';
+  document.getElementById('saving-overlay').classList.add('show');
+}
+function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
+
+// ═══ TOAST ════════════════════════════════════════════
+var toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
 
-// ═══════════════════════════════════════
-// CLOSE OVERLAYS ON CLICK
-// ═══════════════════════════════════════
-document.getElementById('truck-drawer').addEventListener('click', e => {
-  if (e.target === document.getElementById('truck-drawer')) closeDrawer();
-});
-document.getElementById('detail-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('detail-modal')) closeDetail();
-});
-document.getElementById('confirm-dialog').addEventListener('click', e => {
-  if (e.target === document.getElementById('confirm-dialog')) closeConfirm();
+// ═══ CLOSE ON OVERLAY TAP ═════════════════════════════
+['add-drawer','detail-overlay','nmis-overlay','confirm-overlay'].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('click', function(e) {
+    if (e.target === el) {
+      el.classList.remove('open');
+      if (id === 'detail-overlay') closeDetail();
+      if (id === 'add-drawer') closeAddDrawer();
+    }
+  });
 });
 
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
-checkAuth();
+// Update SCOPES in index.html must include drive.file
+// Add to index.html SCOPES: https://www.googleapis.com/auth/drive.file
 </script>
 </body>
 </html>
