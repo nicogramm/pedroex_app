@@ -621,7 +621,7 @@ function checkAuth() {
   
   // ✅ REGISTER SERVICE WORKER & REQUEST NOTIFICATION PERMISSION
   if ('serviceWorker' in navigator && 'PushManager' in window) {
-    navigator.serviceWorker.register('service-worker.js')
+    navigator.serviceWorker.register('sw.js')
       .then(registration => {
         console.log('✅ Service Worker registered');
         return requestNotificationPermission();
