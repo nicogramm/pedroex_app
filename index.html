@@ -718,8 +718,36 @@ function applyTheme(dark) {
 function toggleTheme() { applyTheme(!isDark); }
 applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
+// 🆕 AUTO-LOGIN CHECK
+function tryAutoLogin() {
+  const savedToken = localStorage.getItem('pedroex-token');
+  const expiry = localStorage.getItem('pedroex-token-expiry');
+  
+  if (!savedToken || !expiry) return false;
+  
+  // Check if token expired
+  if (Date.now() >= parseInt(expiry)) {
+    localStorage.removeItem('pedroex-token');
+    localStorage.removeItem('pedroex-token-expiry');
+    return false;
+  }
+  
+  // Token valid — use it
+  token = savedToken;
+  loadUser();
+  return true;
+}
+
+// Run on page load
+if (!tryAutoLogin()) {
+  // Show login screen only if no valid token
+  document.getElementById('s-login').classList.add('active');
+}
+
 // PWA
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(function(){});
+if('serviceWorker' in navigator)
+
+
 
 // AUTH
 function signIn() {
@@ -731,11 +759,17 @@ function signIn() {
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
     scope: SCOPES,
-    callback: function(res) {
-      if(res.error) { showToast('Login error: ' + res.error); return; }
-      token = res.access_token;
-      loadUser();
-    }
+        callback: function(res) {
+        if(res.error) { showToast('Login error: ' + res.error); return; }
+        token = res.access_token;
+        
+        // 🆕 SAVE TOKEN + EXPIRY
+        const expiresAt = Date.now() + (res.expires_in * 1000);
+        localStorage.setItem('pedroex-token', token);
+        localStorage.setItem('pedroex-token-expiry', expiresAt);
+        
+        loadUser();
+        }
   }).requestAccessToken({ prompt: '' });
 }
 
@@ -767,6 +801,10 @@ function loadUser() {
 }
 
 function signOut() {
+  // 🆕 CLEAR SAVED TOKEN
+  localStorage.removeItem('pedroex-token');
+  localStorage.removeItem('pedroex-token-expiry');
+  
   if(token && typeof google!=='undefined') {
     google.accounts.oauth2.revoke(token, function() {
       token=null; allTrucks=[];
@@ -774,6 +812,12 @@ function signOut() {
       document.getElementById('s-login').classList.add('active');
       document.getElementById('fab').style.display='none';
     });
+  } else {
+    // Fallback if google SDK not loaded
+    token=null; allTrucks=[];
+    document.getElementById('s-app').classList.remove('active');
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('fab').style.display='none';
   }
 }
 
