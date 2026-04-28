@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#e0e0e5">
+<link rel="manifest" href="manifest.json">
+<title>Trips — PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
+  --text:#2a2a2e;--text2:#777;--text3:#aaa;
+  --red:#B32533;--green:#16a34a;--orange:#f59e0b;--blue:#2563eb;
+  --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
+}
+body.dark {
+  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
+  --text:#e8e8ec;--text2:#888;--text3:#555;
+  --neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background 0.4s,color 0.4s}
+.screen{display:flex;flex-direction:column;height:100dvh;width:100%}
+.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07)}
+body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-title{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+.tb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs)}
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:100px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ph-left{display:flex;align-items:center;gap:12px}
+.back-btn{width:36px;height:36px;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);color:var(--text2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.back-btn:active{box-shadow:var(--neu-in)}
+.page-title{font-size:20px;font-weight:700;color:var(--text)}
+
+/* FAB */
+.fab{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));right:18px;width:54px;height:54px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:28px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:5px 5px 14px rgba(179,37,51,0.5),-2px -2px 8px rgba(179,37,51,0.2);z-index:50}
+.fab:active{transform:scale(0.93)}
+
+/* CARDS */
+.neu-card{background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:20px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none}
+.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.2)}
+select.fi{cursor:pointer}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* TOGGLE */
+.toggle-group{display:flex;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);overflow:hidden}
+.tg-btn{flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all 0.2s}
+.tg-btn.active-yes{background:var(--green);color:#fff;box-shadow:none}
+.tg-btn.active-no{background:var(--red);color:#fff;box-shadow:none}
+
+/* BUTTONS */
+.btn{padding:14px;border-radius:14px;font-size:15px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none;background:var(--bg);transition:box-shadow 0.15s}
+.btn:active{transform:scale(0.98)}
+.btn-red{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4),-2px -2px 8px rgba(179,37,51,0.1)}
+.btn-ghost{color:var(--text2);box-shadow:var(--neu-sm)}
+.btn-ghost:active{box-shadow:var(--neu-in)}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-title{font-size:15px;font-weight:700;color:var(--text)}
+.cal-nav{width:32px;height:32px;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cal-nav:active{box-shadow:var(--neu-in)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dn{font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);text-align:center;padding:4px 0}
+.cal-day{border-radius:10px;padding:4px 2px;display:flex;flex-direction:column;align-items:center;cursor:pointer;min-height:44px;position:relative;transition:box-shadow 0.15s}
+.cal-day-num{font-size:13px;font-weight:500;color:var(--text2);line-height:1.4}
+.cal-day.today .cal-day-num{color:var(--red);font-weight:700}
+.cal-day.has-trip{box-shadow:var(--neu-xs)}
+.cal-day.has-trip .cal-day-num{color:var(--text);font-weight:600}
+.cal-day.selected{box-shadow:var(--neu-in)}
+.cal-day.other-month{opacity:0.3}
+.cal-names{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;width:100%}
+.cal-name-pill{font-size:8px;font-weight:700;padding:1px 5px;border-radius:6px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-bottom:1px;line-height:1.4}
+
+/* DAY PANEL */
+.day-panel{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-top:12px;display:none}
+.day-panel.show{display:block;animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.day-panel-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px}
+.trip-item{background:var(--bg);border-radius:12px;box-shadow:var(--neu-xs);padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.trip-item:active{box-shadow:var(--neu-in)}
+.trip-truck{font-size:14px;font-weight:600;color:var(--text)}
+.trip-meta{font-size:11px;color:var(--text2);margin-top:3px}
+.trip-badges{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);box-shadow:var(--neu-xs);color:var(--text2)}
+.badge.green{background:var(--green);color:#fff;box-shadow:none}
+.badge.red{background:var(--red);color:#fff;box-shadow:none}
+.badge.blue{background:var(--blue);color:#fff;box-shadow:none}
+.badge.orange{background:var(--orange);color:#fff;box-shadow:none}
+
+/* FILTER TAGS */
+.filter-tag{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);padding:4px 10px;font-size:11px;font-weight:600;color:var(--red)}
+.filter-tag button{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:0;line-height:1;font-family:Inter,sans-serif}
+
+/* LEGEND */
+.legend-item{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);padding:4px 10px;font-size:11px;font-weight:600;color:var(--text)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* DETAIL SHEET */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:85dvh;overflow-y:auto;animation:slideUp 0.28s cubic-bezier(0.16,1,0.3,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;opacity:0.3}
+.sheet-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.sheet-sub{font-size:13px;color:var(--text2);margin-bottom:18px}
+.dt-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
+body.dark .dt-row{border-bottom-color:rgba(255,255,255,0.04)}
+.dt-row:last-child{border-bottom:none}
+.dt-label{font-size:11px;color:var(--text3);font-weight:600}
+.dt-val{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:65%}
+
+/* CONFIRM */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg);border-radius:22px;padding:24px;max-width:340px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,0.3)}
+.confirm-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px}
+.cb{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none}
+.cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
+.cb-cancel:active{box-shadow:var(--neu-in)}
+.cb-confirm{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 14px rgba(0,0,0,0.07);z-index:40}
+body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
+.bnav{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
+.bnav.active{color:var(--red)}
+.bnav-icon{width:42px;height:42px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center}
+.bnav:not(.active) .bnav-icon{box-shadow:var(--neu-sm)}
+.bnav.active .bnav-icon{box-shadow:var(--neu-in)}
+
+/* LOADING / TOAST / SAVING */
+.loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:56px;color:var(--text3);font-size:13px}
+.spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.toast.show{opacity:1}
+.saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
+.saving-overlay.show{display:flex}
+.saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
+.saving-text{font-size:14px;color:var(--text2);font-weight:500}
+
+.empty-hint{text-align:center;padding:32px 20px;color:var(--text3);font-size:13px}
+.icon-btn{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-xs);color:var(--text2);padding:8px 14px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer}
+.icon-btn:active{box-shadow:var(--neu-in)}
+
+/* USER EDITABLE FIELDS */
+.user-edit-label{font-size:9px;color:var(--orange);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <div class="topbar">
+    <img src="logo2.png" alt="PedroEX" style="height:22px;object-fit:contain">
+    <div class="tb-right">
+      <span class="tb-title">Trips</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
+    </div>
+  </div>
+
+  <div class="page-wrap" id="page-wrap">
+    <div class="page-header">
+      <div class="ph-left">
+        <button class="back-btn" onclick="location.href='index.html'">‹</button>
+        <div class="page-title">Trip Schedule</div>
+      </div>
+      <button class="icon-btn" onclick="loadAll()">↻</button>
+    </div>
+
+    <!-- LOADING -->
+    <div id="wrap-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading trips...</div>
+
+    <!-- FILTER BAR -->
+    <div id="filter-bar" class="neu-card" style="padding:14px;margin-bottom:14px;display:none">
+      <div class="card-title" style="margin-bottom:10px">Filter Trips</div>
+
+      <div class="fg" style="margin-bottom:10px">
+        <label class="fl">Truck</label>
+        <select class="fi" id="filter-truck" onchange="applyFilters()">
+          <option value="">All Trucks</option>
+        </select>
+      </div>
+
+      <div class="row2" style="margin-bottom:10px">
+        <div>
+          <label class="fl">Fresh/Frozen</label>
+          <select class="fi" id="filter-type" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="Fresh">Fresh</option>
+            <option value="Frozen">Frozen</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl">Billed?</label>
+          <select class="fi" id="filter-billed" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fg" style="margin-bottom:10px">
+        <label class="fl">Route</label>
+        <select class="fi" id="filter-route" onchange="applyFilters()">
+          <option value="">All Routes</option>
+        </select>
+      </div>
+
+      <!-- Active filter tags -->
+      <div id="filter-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+
+      <button onclick="clearFilters()" id="clear-filters-btn"
+        style="display:none;width:100%;margin-top:10px;padding:10px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">
+        Clear All Filters
+      </button>
+    </div>
+
+    <!-- COLOR LEGEND -->
+    <div class="neu-card" id="color-legend" style="padding:14px;margin-bottom:14px;display:none">
+      <div class="card-title" style="margin-bottom:10px">Truck Colors</div>
+      <div id="legend-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="neu-card" id="calendar-card" style="display:none">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-title" id="cal-title"></div>
+        <button class="cal-nav" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+
+    <!-- Day detail panel -->
+    <div class="day-panel" id="day-panel">
+      <div class="day-panel-title" id="day-panel-title"></div>
+      <div id="day-panel-list"></div>
+    </div>
+
+  </div><!-- end page-wrap -->
+
+  <!-- FAB (admin only) -->
+  <button class="fab" id="fab" onclick="openAddTrip()">+</button>
+
+  <div class="bottom-nav">
+    <button class="bnav" onclick="location.href='index.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>Home
+    </button>
+    <button class="bnav" onclick="location.href='trucks.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>Trucks
+    </button>
+    <button class="bnav active">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>Trips
+    </button>
+    <button class="bnav" onclick="location.href='billing.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Billing
+    </button>
+    <button class="bnav" onclick="location.href='settings.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Settings
+    </button>
+  </div>
+</div>
+
+<!-- TRIP DETAIL / EDIT SHEET -->
+<div class="sheet-overlay" id="trip-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="trip-sheet-title">Trip Detail</div>
+    <div class="sheet-sub" id="trip-sheet-sub"></div>
+    <div id="trip-sheet-body"></div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirm</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-btns">
+      <button class="cb cb-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="cb cb-confirm" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="saving-overlay" id="saving-overlay">
+  <div class="saving-box">
+    <div class="saving-spinner"></div>
+    <div class="saving-text" id="saving-text">Saving...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ CONFIG ═══════════════════════════════════════════
+const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const TAB_TRIPS      = 'Trips';
+const TAB_TRUCKS     = 'Truck Roster';
+const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
+
+// ═══ STATE ════════════════════════════════════════════
+var token        = '';
+var isAdmin      = false;
+var currentUser  = null;
+var allTrips     = [];
+var allTrucks    = [];
+var calYear, calMonth;
+var todayStr     = '';
+var selectedTrip = null;
+var selectedDay  = null;
+var activeFilters = { truck:'', type:'', billed:'', route:'' };
+var filteredTrips = [];
+
+// ═══ TRUCK COLORS (red gradient) ══════════════════════
+var TRUCK_COLORS = [
+  { bg:'#B32533', text:'#fff' },  // Main red
+  { bg:'#D94452', text:'#fff' },  // Light red
+  { bg:'#8B1E28', text:'#fff' },  // Dark red
+  { bg:'#E85D6B', text:'#fff' },  // Pink-red
+  { bg:'#6B1720', text:'#fff' },  // Deep red
+  { bg:'#F07A85', text:'#fff' },  // Salmon red
+  { bg:'#A02030', text:'#fff' },  // Crimson
+  { bg:'#C83848', text:'#fff' },  // Rose red
+  { bg:'#7A1825', text:'#fff' },  // Wine red
+  { bg:'#EB6B7A', text:'#fff' },  // Coral red
+];
+
+var truckColorMap = {};
+
+function getTruckColor(truck) {
+  if (!truckColorMap[truck]) {
+    var keys = Object.keys(truckColorMap).length;
+    truckColorMap[truck] = TRUCK_COLORS[keys % TRUCK_COLORS.length];
+  }
+  return truckColorMap[truck];
+}
+
+function buildColorMap() {
+  var trucks = [];
+  allTrips.forEach(function(r) {
+    if (r.truck && trucks.indexOf(r.truck) === -1) trucks.push(r.truck);
+  });
+  trucks.sort();
+  trucks.forEach(function(t, i) {
+    truckColorMap[t] = TRUCK_COLORS[i % TRUCK_COLORS.length];
+  });
+}
+
+function renderLegend() {
+  var list = document.getElementById('legend-list');
+  var trucks = Object.keys(truckColorMap).sort();
+  if (!trucks.length) { document.getElementById('color-legend').style.display = 'none'; return; }
+  document.getElementById('color-legend').style.display = '';
+  list.innerHTML = trucks.map(function(t) {
+    var c = truckColorMap[t];
+    return '<div class="legend-item">'
+      + '<div class="legend-dot" style="background:' + c.bg + '"></div>'
+      + t
+      + '</div>';
+  }).join('');
+}
+
+// ═══ INIT ═════════════════════════════════════════════
+(function init() {
+  document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
+  token = localStorage.getItem('pedroex-token') || '';
+  var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
+
+  var now = new Date();
+  todayStr  = fmtDate(now);
+  calYear   = now.getFullYear();
+  calMonth  = now.getMonth();
+
+  var pic = localStorage.getItem('pedroex-picture') || '';
+  if (pic) document.getElementById('user-avatar').src = pic;
+
+  var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+  isAdmin   = (email === ADMIN_EMAIL.toLowerCase());
+
+  if (isAdmin) document.getElementById('fab').style.display = 'flex';
+
+  loadAll();
+})();
+
+// ═══ LOAD ALL ═════════════════════════════════════════
+function loadAll() {
+  Promise.all([
+    apiGet(TAB_TRUCKS + '!B2:B'),
+    apiGet(TAB_TRIPS  + '!A2:I')
+  ]).then(function(res) {
+    var truckRows = res[0].values || [];
+    var tripRows  = res[1].values || [];
+
+    // Build trucks list
+    allTrucks = truckRows.filter(function(r){ return r[0]; }).map(function(r){ return r[0]; });
+
+    // Build trips with row index
+    // Columns: ID, Delivery Date, Trucks, Shipment Date, Fresh/Frozen, Shipment Number, Billed?, Route, Rate
+    allTrips = tripRows.map(function(r, i) {
+      return {
+        rowIndex: i + 2,
+        id: r[0]||'',
+        deliveryDate: r[1]||'',
+        truck: r[2]||'',
+        shipmentDate: r[3]||'',
+        type: r[4]||'',
+        shipmentNumber: r[5]||'',
+        billed: r[6]||'',
+        route: r[7]||'',
+        rate: r[8]||''
+      };
+    }).filter(function(r){ return r.deliveryDate; });
+
+    buildColorMap();
+    renderLegend();
+    buildFilterDropdowns();
+    filteredTrips = allTrips.slice();
+
+    renderCalendar();
+
+    document.getElementById('wrap-loading').style.display = 'none';
+    document.getElementById('filter-bar').style.display = '';
+    document.getElementById('calendar-card').style.display = '';
+
+  }).catch(function(err) {
+    document.getElementById('wrap-loading').style.display = 'none';
+    showToast('Failed to load. Check connection.');
+    console.error(err);
+  });
+}
+
+// ═══ FILTER ═══════════════════════════════════════════
+function buildFilterDropdowns() {
+  // Trucks
+  var truckSel = document.getElementById('filter-truck');
+  while (truckSel.options.length > 1) truckSel.remove(1);
+  allTrucks.forEach(function(t) {
+    var o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    truckSel.appendChild(o);
+  });
+
+  // Routes (unique from trips)
+  var routes = [];
+  allTrips.forEach(function(r) {
+    if (r.route && routes.indexOf(r.route) === -1) routes.push(r.route);
+  });
+  routes.sort();
+  var routeSel = document.getElementById('filter-route');
+  while (routeSel.options.length > 1) routeSel.remove(1);
+  routes.forEach(function(r) {
+    var o = document.createElement('option');
+    o.value = r; o.textContent = r;
+    routeSel.appendChild(o);
+  });
+}
+
+function applyFilters() {
+  activeFilters.truck  = document.getElementById('filter-truck').value;
+  activeFilters.type   = document.getElementById('filter-type').value;
+  activeFilters.billed = document.getElementById('filter-billed').value;
+  activeFilters.route  = document.getElementById('filter-route').value;
+
+  filteredTrips = allTrips.filter(function(r) {
+    if (activeFilters.truck  && r.truck  !== activeFilters.truck)  return false;
+    if (activeFilters.type   && r.type   !== activeFilters.type)   return false;
+    if (activeFilters.billed && r.billed !== activeFilters.billed) return false;
+    if (activeFilters.route  && r.route  !== activeFilters.route)  return false;
+    return true;
+  });
+
+  renderFilterTags();
+  renderCalendar();
+  if (selectedDay) selectDay(selectedDay);
+}
+
+function renderFilterTags() {
+  var tags   = document.getElementById('filter-tags');
+  var clearB = document.getElementById('clear-filters-btn');
+  var active = [];
+
+  if (activeFilters.truck)  active.push({ label: '🚛 ' + activeFilters.truck,  key:'truck'  });
+  if (activeFilters.type)   active.push({ label: activeFilters.type,           key:'type'   });
+  if (activeFilters.billed) active.push({ label: 'Billed: ' + activeFilters.billed, key:'billed' });
+  if (activeFilters.route)  active.push({ label: '📍 ' + activeFilters.route,  key:'route'  });
+
+  clearB.style.display = active.length ? '' : 'none';
+
+  tags.innerHTML = active.map(function(a) {
+    return '<div class="filter-tag">' + a.label
+      + '<button onclick="removeFilter(\'' + a.key + '\')">×</button></div>';
+  }).join('');
+}
+
+function removeFilter(key) {
+  activeFilters[key] = '';
+  if (key === 'truck')  document.getElementById('filter-truck').value  = '';
+  if (key === 'type')   document.getElementById('filter-type').value   = '';
+  if (key === 'billed') document.getElementById('filter-billed').value = '';
+  if (key === 'route')  document.getElementById('filter-route').value  = '';
+  applyFilters();
+}
+
+function clearFilters() {
+  activeFilters = { truck:'', type:'', billed:'', route:'' };
+  document.getElementById('filter-truck').value  = '';
+  document.getElementById('filter-type').value   = '';
+  document.getElementById('filter-billed').value = '';
+  document.getElementById('filter-route').value  = '';
+  applyFilters();
+}
+
+// ═══ CALENDAR ═════════════════════════════════════════
+var MONTHS = ['January','February','March','April','May','June',
+              'July','August','September','October','November','December'];
+var DAYS   = ['S','M','T','W','T','F','S'];
+
+function changeMonth(d) {
+  calMonth += d;
+  if (calMonth < 0)  { calMonth=11; calYear--; }
+  if (calMonth > 11) { calMonth=0;  calYear++; }
+  renderCalendar();
+  document.getElementById('day-panel').classList.remove('show');
+}
+
+function renderCalendar() {
+  document.getElementById('cal-title').textContent = MONTHS[calMonth] + ' ' + calYear;
+  var grid  = document.getElementById('cal-grid');
+  var days  = new Date(calYear, calMonth+1, 0).getDate();
+  var first = new Date(calYear, calMonth, 1).getDay();
+
+  var source = hasActiveFilter() ? filteredTrips : allTrips;
+
+  // Map: day -> [{truck, color}]
+  var dayMap = {};
+  source.forEach(function(r) {
+    if (!r.deliveryDate || !r.truck) return;
+    var parts = r.deliveryDate.split('-');
+    if (parseInt(parts[0]) !== calYear || parseInt(parts[1])-1 !== calMonth) return;
+    var day = parseInt(parts[2]);
+    if (!dayMap[day]) dayMap[day] = [];
+    dayMap[day].push({ truck: r.truck, color: getTruckColor(r.truck) });
+  });
+
+  var html = DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
+  for (var i=0; i<first; i++) html += '<div class="cal-day other-month"></div>';
+
+  for (var d=1; d<=days; d++) {
+    var dateStr  = calYear + '-' + pad(calMonth+1) + '-' + pad(d);
+    var entries  = dayMap[d] || [];
+    var cls      = 'cal-day';
+    if (dateStr === todayStr)    cls += ' today';
+    if (entries.length)          cls += ' has-trip';
+    if (dateStr === selectedDay) cls += ' selected';
+
+    var pillsHtml = '';
+    if (entries.length) {
+      var shown = entries.slice(0, 3);
+      pillsHtml = '<div class="cal-names">'
+        + shown.map(function(e) {
+            return '<div class="cal-name-pill" style="background:' + e.color.bg + ';color:' + e.color.text + '">'
+              + e.truck + '</div>';
+          }).join('')
+        + (entries.length > 3
+            ? '<div class="cal-name-pill" style="background:var(--text3);color:#fff">+' + (entries.length-3) + '</div>'
+            : '')
+        + '</div>';
+    }
+
+    html += '<div class="' + cls + '" onclick="selectDay(\'' + dateStr + '\')">'
+      + '<div class="cal-day-num">' + d + '</div>'
+      + pillsHtml + '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function hasActiveFilter() {
+  return activeFilters.truck || activeFilters.type || activeFilters.billed || activeFilters.route;
+}
+
+function selectDay(dateStr) {
+  selectedDay = dateStr;
+  renderCalendar();
+
+  var source = hasActiveFilter() ? filteredTrips : allTrips;
+  var trips  = source.filter(function(r){ return r.deliveryDate === dateStr; });
+  var panel  = document.getElementById('day-panel');
+  var d      = new Date(dateStr + 'T00:00:00');
+  var label  = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+  document.getElementById('day-panel-title').textContent = label + ' — ' + trips.length + ' trip(s)';
+
+  if (!trips.length) {
+    document.getElementById('day-panel-list').innerHTML =
+      '<div class="empty-hint">No trips' + (hasActiveFilter() ? ' matching filters' : '') + ' for this day.</div>';
+  } else {
+    document.getElementById('day-panel-list').innerHTML = trips.map(function(r) {
+      var c = getTruckColor(r.truck);
+      var typeBadge   = r.type==='Fresh'  ? '<span class="badge green">Fresh</span>'
+                      : r.type==='Frozen' ? '<span class="badge blue">Frozen</span>'
+                      : '';
+      var billedBadge = r.billed==='Yes' ? '<span class="badge green">Billed</span>'
+                      : r.billed==='No'  ? '<span class="badge orange">Not Billed</span>'
+                      : '';
+
+      return '<div class="trip-item" onclick="openTripDetail(' + r.rowIndex + ')" '
+        + 'style="border-left:4px solid ' + c.bg + '">'
+        + '<div class="trip-truck" style="color:' + c.bg + '">🚛 ' + r.truck + '</div>'
+        + '<div class="trip-meta">'
+        + (r.shipmentNumber ? 'Shipment #' + r.shipmentNumber : 'No shipment #')
+        + (r.route ? ' · 📍 ' + r.route : '')
+        + '</div>'
+        + '<div class="trip-badges">'
+        + typeBadge + billedBadge
+        + (r.shipmentDate ? '<span class="badge">Ship: ' + r.shipmentDate + '</span>' : '')
+        + '</div></div>';
+    }).join('');
+  }
+
+  panel.classList.add('show');
+  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+}
+
+// ═══ TRIP DETAIL / EDIT ═══════════════════════════════
+function openTripDetail(rowIndex) {
+  var trip = allTrips.find(function(r){ return r.rowIndex===rowIndex; });
+  if (!trip) return;
+  selectedTrip = trip;
+
+  var sheet = document.getElementById('trip-sheet');
+  document.getElementById('trip-sheet-title').textContent = '🚛 ' + trip.truck;
+  document.getElementById('trip-sheet-sub').textContent   = 'Delivery: ' + trip.deliveryDate;
+
+  var body = document.getElementById('trip-sheet-body');
+
+  if (isAdmin) {
+    // ADMIN: Full edit form (all fields)
+    body.innerHTML = '<div class="fg"><label class="fl">Delivery Date</label><input class="fi" id="edit-delivery" type="date" value="'+trip.deliveryDate+'"></div>'
+      + '<div class="fg"><label class="fl">Truck</label><select class="fi" id="edit-truck">'
+      + '<option value="">— Select Truck —</option>'
+      + allTrucks.map(function(t){
+          return '<option value="'+t+'"'+(trip.truck===t?' selected':'')+'>'+t+'</option>';
+        }).join('')
+      + '</select></div>'
+      + '<div class="fg"><label class="fl">Shipment Date</label><input class="fi" id="edit-shipment-date" type="date" value="'+(trip.shipmentDate||'')+'"></div>'
+      + '<div class="fg"><label class="fl">Fresh or Frozen</label><select class="fi" id="edit-type">'
+      + ['','Fresh','Frozen'].map(function(v){
+          return '<option value="'+v+'"'+(trip.type===v?' selected':'')+'>'+(v||'— Select —')+'</option>';
+        }).join('')
+      + '</select></div>'
+      + '<div class="fg"><label class="fl">Shipment Number</label><input class="fi" id="edit-shipment-num" value="'+(trip.shipmentNumber||'')+'"></div>'
+      + '<div class="fg"><label class="fl">Billed?</label><div class="toggle-group">'
+      + '<button class="tg-btn'+(trip.billed!=='Yes'?' active-no':'')+'" id="edit-billed-no" onclick="setEditBilled(\'No\')">No</button>'
+      + '<button class="tg-btn'+(trip.billed==='Yes'?' active-yes':'')+'" id="edit-billed-yes" onclick="setEditBilled(\'Yes\')">Yes</button>'
+      + '</div></div>'
+      + '<div class="fg"><label class="fl">Route</label><input class="fi" id="edit-route" value="'+(trip.route||'')+'"></div>'
+      + '<div class="fg"><label class="fl">Rate</label><input class="fi" id="edit-rate" type="number" value="'+(trip.rate||'')+'"></div>'
+      + '<div class="btn-row">'
+      + '<button class="btn btn-ghost" onclick="closeTripSheet()">Cancel</button>'
+      + '<button class="btn btn-red" onclick="saveEditTrip()">Save</button>'
+      + '</div>'
+      + '<button onclick="promptDeleteTrip()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Delete Trip</button>';
+  } else {
+    // USER: View + edit only Shipment Date & Shipment Number
+    body.innerHTML = [
+      ['Delivery Date', trip.deliveryDate],
+      ['Truck', trip.truck],
+      ['Fresh/Frozen', trip.type||'—'],
+      ['Route', trip.route||'—'],
+      ['Billed?', trip.billed||'—']
+    ].map(function(r){
+      return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';
+    }).join('')
+    + '<div style="height:20px"></div>'
+    + '<div class="card-title" style="margin-bottom:10px">You Can Edit:</div>'
+    + '<div class="fg"><label class="fl">Shipment Date <span class="user-edit-label">✏️ Editable</span></label><input class="fi" id="edit-shipment-date" type="date" value="'+(trip.shipmentDate||'')+'"></div>'
+    + '<div class="fg"><label class="fl">Shipment Number <span class="user-edit-label">✏️ Editable</span></label><input class="fi" id="edit-shipment-num" value="'+(trip.shipmentNumber||'')+'"></div>'
+    + '<div class="btn-row">'
+    + '<button class="btn btn-ghost" onclick="closeTripSheet()">Cancel</button>'
+    + '<button class="btn btn-red" onclick="saveUserEdit()">Save Changes</button>'
+    + '</div>';
+  }
+
+  sheet.classList.add('open');
+}
+
+var editBilledVal = 'No';
+function setEditBilled(v) {
+  editBilledVal = v;
+  document.getElementById('edit-billed-no').className  = 'tg-btn'+(v==='No' ?' active-no' :'');
+  document.getElementById('edit-billed-yes').className = 'tg-btn'+(v==='Yes'?' active-yes':'');
+}
+
+// ADMIN: Save all fields
+function saveEditTrip() {
+  if (!selectedTrip || !isAdmin) return;
+
+  var delivery = document.getElementById('edit-delivery').value.trim();
+  var truck    = document.getElementById('edit-truck').value;
+  var shipDate = document.getElementById('edit-shipment-date').value.trim();
+  var type     = document.getElementById('edit-type').value;
+  var shipNum  = document.getElementById('edit-shipment-num').value.trim();
+  var route    = document.getElementById('edit-route').value.trim();
+  var rate     = document.getElementById('edit-rate').value.trim();
+
+  if (!delivery || !truck) { showToast('❌ Delivery Date and Truck required!'); return; }
+
+  var row = [selectedTrip.id, delivery, truck, shipDate, type, shipNum, editBilledVal, route, rate];
+
+  showSaving('Updating trip...');
+  apiUpdate(TAB_TRIPS+'!A'+selectedTrip.rowIndex+':I'+selectedTrip.rowIndex, [row])
+    .then(function() {
+      hideSaving();
+      Object.assign(selectedTrip, {
+        deliveryDate:delivery, truck:truck, shipmentDate:shipDate,
+        type:type, shipmentNumber:shipNum, billed:editBilledVal, route:route, rate:rate
+      });
+      closeTripSheet();
+      buildColorMap();
+      renderLegend();
+      renderCalendar();
+      if (selectedDay) selectDay(selectedDay);
+      showToast('✅ Trip updated!');
+    }).catch(function(err){ hideSaving(); showToast('❌ Update failed.'); console.error(err); });
+}
+
+// USER: Save only Shipment Date & Shipment Number
+function saveUserEdit() {
+  if (!selectedTrip) return;
+
+  var shipDate = document.getElementById('edit-shipment-date').value.trim();
+  var shipNum  = document.getElementById('edit-shipment-num').value.trim();
+
+  var row = [selectedTrip.id, selectedTrip.deliveryDate, selectedTrip.truck,
+             shipDate, selectedTrip.type, shipNum, selectedTrip.billed,
+             selectedTrip.route, selectedTrip.rate];
+
+  showSaving('Saving changes...');
+  apiUpdate(TAB_TRIPS+'!A'+selectedTrip.rowIndex+':I'+selectedTrip.rowIndex, [row])
+    .then(function() {
+      hideSaving();
+      selectedTrip.shipmentDate   = shipDate;
+      selectedTrip.shipmentNumber = shipNum;
+      closeTripSheet();
+      renderCalendar();
+      if (selectedDay) selectDay(selectedDay);
+      showToast('✅ Changes saved!');
+    }).catch(function(err){ hideSaving(); showToast('❌ Save failed.'); console.error(err); });
+}
+
+function promptDeleteTrip() {
+  if (!isAdmin) return;
+  document.getElementById('confirm-title').textContent = 'Delete Trip?';
+  document.getElementById('confirm-msg').textContent   =
+    'Delete trip for ' + selectedTrip.truck + ' on ' + selectedTrip.deliveryDate + '?';
+  document.getElementById('confirm-ok').onclick = doDeleteTrip;
+  closeTripSheet();
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function doDeleteTrip() {
+  if (!selectedTrip || !isAdmin) return;
+  closeConfirm();
+  showSaving('Deleting trip...');
+  apiUpdate(TAB_TRIPS+'!A'+selectedTrip.rowIndex+':I'+selectedTrip.rowIndex,
+    [['','','','','','','','','']])
+    .then(function() {
+      hideSaving();
+      allTrips = allTrips.filter(function(r){ return r.rowIndex!==selectedTrip.rowIndex; });
+      filteredTrips = filteredTrips.filter(function(r){ return r.rowIndex!==selectedTrip.rowIndex; });
+      selectedTrip = null;
+      buildColorMap();
+      renderLegend();
+      renderCalendar();
+      if (selectedDay) selectDay(selectedDay);
+      showToast('✅ Trip deleted.');
+    }).catch(function(err){ hideSaving(); showToast('❌ Delete failed.'); console.error(err); });
+}
+
+function closeTripSheet() { document.getElementById('trip-sheet').classList.remove('open'); }
+
+// ═══ ADD TRIP (ADMIN ONLY) ════════════════════════════
+function openAddTrip() {
+  if (!isAdmin) { showToast('❌ Admin only'); return; }
+
+  selectedTrip = null;
+  editBilledVal = 'No';
+
+  var sheet = document.getElementById('trip-sheet');
+  document.getElementById('trip-sheet-title').textContent = 'Add New Trip';
+  document.getElementById('trip-sheet-sub').textContent   = 'Fill in trip details';
+
+  var body = document.getElementById('trip-sheet-body');
+  body.innerHTML = '<div class="fg"><label class="fl">Delivery Date *</label><input class="fi" id="add-delivery" type="date" value="'+todayStr+'"></div>'
+    + '<div class="fg"><label class="fl">Truck *</label><select class="fi" id="add-truck">'
+    + '<option value="">— Select Truck —</option>'
+    + allTrucks.map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('')
+    + '</select></div>'
+    + '<div class="fg"><label class="fl">Shipment Date</label><input class="fi" id="add-shipment-date" type="date"></div>'
+    + '<div class="fg"><label class="fl">Fresh or Frozen</label><select class="fi" id="add-type">'
+    + '<option value="">— Select —</option><option value="Fresh">Fresh</option><option value="Frozen">Frozen</option>'
+    + '</select></div>'
+    + '<div class="fg"><label class="fl">Shipment Number</label><input class="fi" id="add-shipment-num"></div>'
+    + '<div class="fg"><label class="fl">Billed?</label><div class="toggle-group">'
+    + '<button class="tg-btn active-no" id="add-billed-no" onclick="setAddBilled(\'No\')">No</button>'
+    + '<button class="tg-btn" id="add-billed-yes" onclick="setAddBilled(\'Yes\')">Yes</button>'
+    + '</div></div>'
+    + '<div class="fg"><label class="fl">Route</label><input class="fi" id="add-route"></div>'
+    + '<div class="fg"><label class="fl">Rate</label><input class="fi" id="add-rate" type="number"></div>'
+    + '<div class="btn-row">'
+    + '<button class="btn btn-ghost" onclick="closeTripSheet()">Cancel</button>'
+    + '<button class="btn btn-red" onclick="saveAddTrip()">Add Trip</button>'
+    + '</div>';
+
+  sheet.classList.add('open');
+}
+
+var addBilledVal = 'No';
+function setAddBilled(v) {
+  addBilledVal = v;
+  document.getElementById('add-billed-no').className  = 'tg-btn'+(v==='No' ?' active-no' :'');
+  document.getElementById('add-billed-yes').className = 'tg-btn'+(v==='Yes'?' active-yes':'');
+}
+
+function saveAddTrip() {
+  if (!isAdmin) return;
+
+  var delivery = document.getElementById('add-delivery').value.trim();
+  var truck    = document.getElementById('add-truck').value;
+  var shipDate = document.getElementById('add-shipment-date').value.trim();
+  var type     = document.getElementById('add-type').value;
+  var shipNum  = document.getElementById('add-shipment-num').value.trim();
+  var route    = document.getElementById('add-route').value.trim();
+  var rate     = document.getElementById('add-rate').value.trim();
+
+  if (!delivery || !truck) { showToast('❌ Delivery Date and Truck required!'); return; }
+
+  var id  = 'TRIP-' + delivery.replace(/-/g,'') + '-' + pad(allTrips.length+1);
+  var row = [id, delivery, truck, shipDate, type, shipNum, addBilledVal, route, rate];
+
+  showSaving('Adding trip...');
+  apiAppend(TAB_TRIPS+'!A:I', [row])
+    .then(function() {
+      hideSaving();
+      var newTrip = {
+        rowIndex: allTrips.length+2, id:id, deliveryDate:delivery, truck:truck,
+        shipmentDate:shipDate, type:type, shipmentNumber:shipNum,
+        billed:addBilledVal, route:route, rate:rate
+      };
+      allTrips.push(newTrip);
+      filteredTrips = allTrips.slice();
+      buildColorMap();
+      renderLegend();
+      closeTripSheet();
+      renderCalendar();
+      showToast('✅ Trip added!');
+    }).catch(function(err){ hideSaving(); showToast('❌ Add failed.'); console.error(err); });
+}
+
+// ═══ API ══════════════════════════════════════════════
+function apiGet(range) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
+    '/values/'+encodeURIComponent(range),
+    { headers:{ Authorization:'Bearer '+token } })
+    .then(function(r){ if(r.status===401){location.href='index.html';throw new Error('Auth');}return r.json(); });
+}
+function apiAppend(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
+    '/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    { method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({values:values}) })
+    .then(function(r){ if(!r.ok) throw new Error('Append failed '+r.status); return r.json(); });
+}
+function apiUpdate(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
+    '/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
+    { method:'PUT', headers:{Authorization:'Bearer'+token,'Content-Type':'application/json'},
+      body:JSON.stringify({values:values}) })
+    .then(function(r){ if(!r.ok) throw new Error('Update failed '+r.status); return r.json(); });
+}
+
+// ═══ HELPERS ══════════════════════════════════════════
+function fmtDate(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n) { return n<10?'0'+n:String(n); }
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+function showSaving(m) { document.getElementById('saving-text').textContent=m||'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
+function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
+
+var _tt;
+function showToast(m) {
+  var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },3000);
+}
+
+// Close overlays on backdrop tap
+['trip-sheet','confirm-overlay'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
+});
+
+</script>
+</body>
+</html>
