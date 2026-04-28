@@ -192,6 +192,39 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 .nr-icon{font-size:48px;opacity:0.35;margin-bottom:14px}
 .nr-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
 .nr-sub{font-size:13px;color:var(--text2);line-height:1.7}
+
+/* FILTER TAGS */
+.filter-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);
+  padding:4px 10px;font-size:11px;font-weight:600;color:var(--red);
+}
+.filter-tag button{
+  background:none;border:none;color:var(--text3);
+  font-size:14px;cursor:pointer;padding:0;line-height:1;font-family:Inter,sans-serif;
+}
+
+/* LEGEND DOT */
+.legend-item{
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);
+  padding:4px 10px;font-size:11px;font-weight:600;color:var(--text);
+}
+.legend-dot{
+  width:10px;height:10px;border-radius:50%;flex-shrink:0;
+}
+
+/* CAL NAME PILLS */
+.cal-name-pill{
+  font-size:8px;font-weight:700;
+  padding:1px 5px;border-radius:6px;
+  color:#fff;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+  max-width:100%;margin-bottom:1px;
+  line-height:1.4;
+}
+
+
 </style>
 </head>
 <body>
@@ -310,21 +343,84 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
     </div><!-- end checkin tab -->
 
     <!-- ══ TAB: CALENDAR ══ -->
-    <div id="tab-content-calendar" style="display:none">
-      <div class="neu-card">
-        <div class="cal-header">
-          <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
-          <div class="cal-title" id="cal-title"></div>
-          <button class="cal-nav" onclick="changeMonth(1)">›</button>
-        </div>
-        <div class="cal-grid" id="cal-grid"></div>
+    <!-- ══ TAB: CALENDAR ══ -->
+<div id="tab-content-calendar" style="display:none">
+
+  <!-- FILTER BAR -->
+  <div class="neu-card" style="padding:14px;margin-bottom:14px">
+    <div class="card-title" style="margin-bottom:10px">Filter Attendance</div>
+
+    <div class="fg" style="margin-bottom:10px">
+      <label class="fl">Employee</label>
+      <select class="fi" id="filter-name" onchange="applyFilters()">
+        <option value="">All Employees</option>
+      </select>
+    </div>
+
+    <div class="row2" style="margin-bottom:10px">
+      <div>
+        <label class="fl">2-Man Team</label>
+        <select class="fi" id="filter-team" onchange="applyFilters()">
+          <option value="">All</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
       </div>
-      <!-- Day detail panel -->
-      <div class="day-panel" id="day-panel">
-        <div class="day-panel-title" id="day-panel-title"></div>
-        <div id="day-panel-list"></div>
+      <div>
+        <label class="fl">Meal Allowance</label>
+        <select class="fi" id="filter-meal" onchange="applyFilters()">
+          <option value="">All</option>
+          <option value="Yes">Full Allowance</option>
+          <option value="Meals Only">Meals Only</option>
+          <option value="No">No</option>
+        </select>
       </div>
-    </div><!-- end calendar tab -->
+    </div>
+
+    <div class="fg" style="margin-bottom:10px">
+      <label class="fl">Assigned Truck</label>
+      <select class="fi" id="filter-truck" onchange="applyFilters()">
+        <option value="">All Trucks</option>
+      </select>
+    </div>
+
+    <div class="fg" style="margin-bottom:0">
+      <label class="fl">Min Crates</label>
+      <input class="fi" id="filter-crates" type="number" min="0" placeholder="e.g. 5" oninput="applyFilters()">
+    </div>
+
+    <!-- Active filter tags -->
+    <div id="filter-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+
+    <button onclick="clearFilters()" id="clear-filters-btn"
+      style="display:none;width:100%;margin-top:10px;padding:10px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">
+      Clear All Filters
+    </button>
+  </div>
+
+  <!-- COLOR LEGEND -->
+  <div class="neu-card" style="padding:14px;margin-bottom:14px" id="color-legend">
+    <div class="card-title" style="margin-bottom:10px">Employee Colors</div>
+    <div id="legend-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="neu-card">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+      <div class="cal-title" id="cal-title"></div>
+      <button class="cal-nav" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <!-- Day detail panel -->
+  <div class="day-panel" id="day-panel">
+    <div class="day-panel-title" id="day-panel-title"></div>
+    <div id="day-panel-list"></div>
+  </div>
+
+</div>
 
     <!-- ══ TAB: ADMIN MANAGE ══ -->
     <div id="tab-content-admin" style="display:none">
@@ -493,6 +589,12 @@ function loadAll() {
       };
     }).filter(function(r){ return r.date; });
 
+    // After allAttendance is built:
+      buildColorMap();
+      renderLegend();
+      buildFilterDropdowns();
+      filteredAttendance = allAttendance.slice(); // init
+
     // Find current user
     var empRow = allEmployees.find(function(r){
       return (r[0]||'').toLowerCase() === (localStorage.getItem('pedroex-email')||'').toLowerCase();
@@ -647,6 +749,7 @@ function submitAttendance() {
     },
     body: JSON.stringify({ values: [row] })
   })
+  
   .then(function(r) {
     return r.json().then(function(data) {
       if (!r.ok) {
@@ -668,12 +771,153 @@ function submitAttendance() {
     renderCalendar();
     showToast('✅ Attendance recorded!');
   })
+
   .catch(function(err) {
     hideSaving();
     showToast('❌ ' + err.message);
     console.error('Save error:', err);
   });
+
+    filteredAttendance = allAttendance.slice();
+    buildColorMap();
+    renderLegend();
 }
+// ═══ EMPLOYEE COLORS (red-adjacent gradients) ═════════
+var EMP_COLORS = [
+  { bg:'#B32533', text:'#fff' },  // Red (brand)
+  { bg:'#c0392b', text:'#fff' },  // Crimson
+  { bg:'#8e44ad', text:'#fff' },  // Purple
+  { bg:'#2980b9', text:'#fff' },  // Blue
+  { bg:'#16a085', text:'#fff' },  // Teal
+  { bg:'#d35400', text:'#fff' },  // Orange
+  { bg:'#27ae60', text:'#fff' },  // Green
+  { bg:'#7f8c8d', text:'#fff' },  // Gray
+  { bg:'#8e2de2', text:'#fff' },  // Violet
+  { bg:'#e91e8c', text:'#fff' },  // Pink
+  { bg:'#00796b', text:'#fff' },  // Dark teal
+  { bg:'#5d4037', text:'#fff' },  // Brown
+];
+
+var empColorMap = {}; // name -> color object
+
+function getEmpColor(name) {
+  if (!empColorMap[name]) {
+    var keys  = Object.keys(empColorMap).length;
+    empColorMap[name] = EMP_COLORS[keys % EMP_COLORS.length];
+  }
+  return empColorMap[name];
+}
+
+function buildColorMap() {
+  // Pre-assign colors in consistent order
+  var names = [];
+  allAttendance.forEach(function(r) {
+    if (r.name && names.indexOf(r.name) === -1) names.push(r.name);
+  });
+  names.sort();
+  names.forEach(function(n, i) {
+    empColorMap[n] = EMP_COLORS[i % EMP_COLORS.length];
+  });
+}
+
+function renderLegend() {
+  var list = document.getElementById('legend-list');
+  var names = Object.keys(empColorMap).sort();
+  if (!names.length) { document.getElementById('color-legend').style.display = 'none'; return; }
+  document.getElementById('color-legend').style.display = '';
+  list.innerHTML = names.map(function(n) {
+    var c = empColorMap[n];
+    return '<div class="legend-item">'
+      + '<div class="legend-dot" style="background:' + c.bg + '"></div>'
+      + n.split(' ')[0]
+      + '</div>';
+  }).join('');
+}
+
+// ═══ FILTER STATE ═════════════════════════════════════
+var activeFilters = { name:'', team:'', meal:'', truck:'', crates:'' };
+var filteredAttendance = [];
+
+function buildFilterDropdowns() {
+  // Employee names
+  var nameSel = document.getElementById('filter-name');
+  var names   = [];
+  allAttendance.forEach(function(r) {
+    if (r.name && names.indexOf(r.name) === -1) names.push(r.name);
+  });
+  names.sort().forEach(function(n) {
+    var o = document.createElement('option'); o.value = n; o.textContent = n;
+    nameSel.appendChild(o);
+  });
+
+  // Trucks
+  var truckSel = document.getElementById('filter-truck');
+  allTrucks.forEach(function(p) {
+    var o = document.createElement('option'); o.value = p; o.textContent = p;
+    truckSel.appendChild(o);
+  });
+}
+
+function applyFilters() {
+  activeFilters.name   = document.getElementById('filter-name').value;
+  activeFilters.team   = document.getElementById('filter-team').value;
+  activeFilters.meal   = document.getElementById('filter-meal').value;
+  activeFilters.truck  = document.getElementById('filter-truck').value;
+  activeFilters.crates = document.getElementById('filter-crates').value;
+
+  filteredAttendance = allAttendance.filter(function(r) {
+    if (activeFilters.name   && r.name  !== activeFilters.name)   return false;
+    if (activeFilters.team   && r.team  !== activeFilters.team)   return false;
+    if (activeFilters.meal   && r.meal  !== activeFilters.meal)   return false;
+    if (activeFilters.truck  && r.truck !== activeFilters.truck)  return false;
+    if (activeFilters.crates && parseInt(r.crates||0) < parseInt(activeFilters.crates)) return false;
+    return true;
+  });
+
+  renderFilterTags();
+  renderCalendar();
+  if (selectedDay) selectDay(selectedDay);
+}
+
+function renderFilterTags() {
+  var tags   = document.getElementById('filter-tags');
+  var clearB = document.getElementById('clear-filters-btn');
+  var active = [];
+
+  if (activeFilters.name)   active.push({ label: activeFilters.name,                key:'name'   });
+  if (activeFilters.team)   active.push({ label: '2-Man: ' + activeFilters.team,    key:'team'   });
+  if (activeFilters.meal)   active.push({ label: 'Meal: ' + activeFilters.meal,     key:'meal'   });
+  if (activeFilters.truck)  active.push({ label: '🚛 ' + activeFilters.truck,       key:'truck'  });
+  if (activeFilters.crates) active.push({ label: '≥' + activeFilters.crates + ' crates', key:'crates' });
+
+  clearB.style.display = active.length ? '' : 'none';
+
+  tags.innerHTML = active.map(function(a) {
+    return '<div class="filter-tag">' + a.label
+      + '<button onclick="removeFilter(\'' + a.key + '\')">×</button></div>';
+  }).join('');
+}
+
+function removeFilter(key) {
+  activeFilters[key] = '';
+  if (key === 'name')   document.getElementById('filter-name').value   = '';
+  if (key === 'team')   document.getElementById('filter-team').value   = '';
+  if (key === 'meal')   document.getElementById('filter-meal').value   = '';
+  if (key === 'truck')  document.getElementById('filter-truck').value  = '';
+  if (key === 'crates') document.getElementById('filter-crates').value = '';
+  applyFilters();
+}
+
+function clearFilters() {
+  activeFilters = { name:'', team:'', meal:'', truck:'', crates:'' };
+  document.getElementById('filter-name').value   = '';
+  document.getElementById('filter-team').value   = '';
+  document.getElementById('filter-meal').value   = '';
+  document.getElementById('filter-truck').value  = '';
+  document.getElementById('filter-crates').value = '';
+  applyFilters();
+}
+
 // ═══ CALENDAR ═════════════════════════════════════════
 var MONTHS = ['January','February','March','April','May','June',
               'July','August','September','October','November','December'];
@@ -694,80 +938,93 @@ function renderCalendar() {
   var days  = new Date(calYear, calMonth+1, 0).getDate();
   var first = new Date(calYear, calMonth, 1).getDay();
 
-  // Map: date -> [firstName, ...]
+  // Use filteredAttendance if any filter active, else allAttendance
+  var source = hasActiveFilter() ? filteredAttendance : allAttendance;
+
+  // Map: day -> [{name, color}]
   var dayMap = {};
-  allAttendance.forEach(function(r) {
+  source.forEach(function(r) {
     if (!r.date || !r.name) return;
     var parts = r.date.split('-');
-    if (parseInt(parts[0])!==calYear || parseInt(parts[1])-1!==calMonth) return;
+    if (parseInt(parts[0]) !== calYear || parseInt(parts[1])-1 !== calMonth) return;
     var day = parseInt(parts[2]);
     if (!dayMap[day]) dayMap[day] = [];
-    // Get first name only
-    var firstName = r.name.split(' ')[0];
-    dayMap[day].push(firstName);
+    dayMap[day].push({ name: r.name, color: getEmpColor(r.name) });
   });
 
   var html = DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
   for (var i=0; i<first; i++) html += '<div class="cal-day other-month"></div>';
 
   for (var d=1; d<=days; d++) {
-    var dateStr = calYear+'-'+pad(calMonth+1)+'-'+pad(d);
-    var names   = dayMap[d] || [];
-    var cls     = 'cal-day';
-    if (dateStr === todayStr)   cls += ' today';
-    if (names.length)           cls += ' has-att';
+    var dateStr  = calYear + '-' + pad(calMonth+1) + '-' + pad(d);
+    var entries  = dayMap[d] || [];
+    var cls      = 'cal-day';
+    if (dateStr === todayStr)    cls += ' today';
+    if (entries.length)          cls += ' has-att';
     if (dateStr === selectedDay) cls += ' selected';
 
-    var namesHtml = '';
-    if (names.length) {
-      namesHtml = '<div class="cal-names">'
-        + names.slice(0,3).map(function(n){
-            return '<div class="cal-name-dot">'+n+'</div>';
+    var pillsHtml = '';
+    if (entries.length) {
+      var shown = entries.slice(0, 3);
+      pillsHtml = '<div class="cal-names">'
+        + shown.map(function(e) {
+            var firstName = e.name.split(' ')[0];
+            return '<div class="cal-name-pill" style="background:' + e.color.bg + ';color:' + e.color.text + '">'
+              + firstName + '</div>';
           }).join('')
-        + (names.length > 3 ? '<div class="cal-name-dot">+' + (names.length-3) + '</div>' : '')
+        + (entries.length > 3
+            ? '<div class="cal-name-pill" style="background:var(--text3);color:#fff">+' + (entries.length-3) + '</div>'
+            : '')
         + '</div>';
     }
 
-    html += '<div class="'+cls+'" onclick="selectDay(\''+dateStr+'\')">'
-      + '<div class="cal-day-num">'+d+'</div>'
-      + namesHtml
-      + '</div>';
+    html += '<div class="' + cls + '" onclick="selectDay(\'' + dateStr + '\')">'
+      + '<div class="cal-day-num">' + d + '</div>'
+      + pillsHtml + '</div>';
   }
   grid.innerHTML = html;
+}
+
+function hasActiveFilter() {
+  return activeFilters.name || activeFilters.team || activeFilters.meal
+      || activeFilters.truck || activeFilters.crates;
 }
 
 function selectDay(dateStr) {
   selectedDay = dateStr;
   renderCalendar();
 
-  var recs = allAttendance.filter(function(r){ return r.date === dateStr; });
-  var panel = document.getElementById('day-panel');
-  var d     = new Date(dateStr+'T00:00:00');
-  var label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  var source = hasActiveFilter() ? filteredAttendance : allAttendance;
+  var recs   = source.filter(function(r){ return r.date === dateStr; });
+  var panel  = document.getElementById('day-panel');
+  var d      = new Date(dateStr + 'T00:00:00');
+  var label  = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 
   document.getElementById('day-panel-title').textContent = label + ' — ' + recs.length + ' employee(s)';
 
   if (!recs.length) {
     document.getElementById('day-panel-list').innerHTML =
-      '<div class="empty-hint">No attendance recorded for this day.</div>';
+      '<div class="empty-hint">No attendance' + (hasActiveFilter() ? ' matching filters' : '') + ' for this day.</div>';
   } else {
     document.getElementById('day-panel-list').innerHTML = recs.map(function(r) {
-      var mealBadge = r.meal==='Yes' ? '<span class="badge green">Full Allowance</span>'
+      var c        = getEmpColor(r.name);
+      var mealBadge = r.meal==='Yes'        ? '<span class="badge green">Full Allowance</span>'
                     : r.meal==='Meals Only' ? '<span class="badge orange">Meals Only</span>'
-                    : '<span class="badge">No Allowance</span>';
+                    :                         '<span class="badge">No Allowance</span>';
       var teamBadge = r.team==='Yes' ? '<span class="badge green">2-Man Team</span>' : '';
-      return '<div class="att-item" onclick="openAttDetail('+r.rowIndex+')">'
-        + '<div class="att-name">'+r.name+'</div>'
-        + '<div class="att-meta">'+(r.time||'')+(r.truck?' · 🚛 '+r.truck:'')+'</div>'
+
+      return '<div class="att-item" onclick="openAttDetail(' + r.rowIndex + ')" '
+        + 'style="border-left:4px solid ' + c.bg + '">'
+        + '<div class="att-name" style="color:' + c.bg + '">' + r.name + '</div>'
+        + '<div class="att-meta">' + (r.time||'') + (r.truck ? ' · 🚛 ' + r.truck : '') + '</div>'
         + '<div class="att-badges">'
-        + (r.crates ? '<span class="badge">'+r.crates+' crates</span>' : '')
+        + (r.crates ? '<span class="badge">' + r.crates + ' crates</span>' : '')
         + mealBadge + teamBadge
         + '</div></div>';
     }).join('');
   }
 
   panel.classList.add('show');
-  // Scroll to panel
   setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
 }
 
