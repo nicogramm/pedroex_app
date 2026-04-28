@@ -170,6 +170,41 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 /* USER EDITABLE FIELDS */
 .user-edit-label{font-size:9px;color:var(--orange);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 
+/* PULL TO REFRESH */
+.ptr-indicator {
+  position: fixed;
+  top: calc(env(safe-area-inset-top,0px) + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--bg);
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  box-shadow: var(--neu-out);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+.ptr-indicator.visible {
+  transform: translateX(-50%) translateY(0px);
+}
+.ptr-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--text3);
+  border-top-color: var(--red);
+  border-radius: 50%;
+}
+.ptr-spinner.spinning {
+  animation: spin 0.7s linear infinite;
+}
+.ptr-arrow {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--red);
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
 </style>
 </head>
 <body>
@@ -325,6 +360,15 @@ const TAB_TRIPS      = 'Trips';
 const TAB_TRUCKS     = 'Truck Roster';
 const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
 
+// ✅ ROUTE OPTIONS
+const ROUTES = [
+  'Daraga/Legazpi/Albay/Camalig',
+  'Sorsogon/Pioduran/Pilar/Donsol',
+  'Nabua/Iriga/Pili/Bula',
+  'Tabaco',
+  'Ligao'
+];
+
 // ═══ STATE ════════════════════════════════════════════
 var token        = '';
 var isAdmin      = false;
@@ -408,6 +452,21 @@ function renderLegend() {
   if (isAdmin) document.getElementById('fab').style.display = 'flex';
 
   loadAll();
+
+  // ✅ INIT PULL TO REFRESH
+  initPullToRefresh(
+    document.querySelector('.page-wrap'),
+    function(done) {
+      loadAll();
+      setTimeout(done, 1500);
+    }
+  );
+
+  // ✅ INIT AUTO REFRESH (every 5 minutes)
+  initAutoRefresh(function(done) {
+    loadAll();
+    done();
+  });
 })();
 
 // ═══ LOAD ALL ═════════════════════════════════════════
@@ -468,15 +527,10 @@ function buildFilterDropdowns() {
     truckSel.appendChild(o);
   });
 
-  // Routes (unique from trips)
-  var routes = [];
-  allTrips.forEach(function(r) {
-    if (r.route && routes.indexOf(r.route) === -1) routes.push(r.route);
-  });
-  routes.sort();
+  // ✅ Routes - from predefined list
   var routeSel = document.getElementById('filter-route');
   while (routeSel.options.length > 1) routeSel.remove(1);
-  routes.forEach(function(r) {
+  ROUTES.forEach(function(r) {
     var o = document.createElement('option');
     o.value = r; o.textContent = r;
     routeSel.appendChild(o);
@@ -681,7 +735,13 @@ function openTripDetail(rowIndex) {
       + '<button class="tg-btn'+(trip.billed!=='Yes'?' active-no':'')+'" id="edit-billed-no" onclick="setEditBilled(\'No\')">No</button>'
       + '<button class="tg-btn'+(trip.billed==='Yes'?' active-yes':'')+'" id="edit-billed-yes" onclick="setEditBilled(\'Yes\')">Yes</button>'
       + '</div></div>'
-      + '<div class="fg"><label class="fl">Route</label><input class="fi" id="edit-route" value="'+(trip.route||'')+'"></div>'
+      // ✅ ROUTE DROPDOWN
+      + '<div class="fg"><label class="fl">Route</label><select class="fi" id="edit-route">'
+      + '<option value="">— Select Route —</option>'
+      + ROUTES.map(function(r){
+          return '<option value="'+r+'"'+(trip.route===r?' selected':'')+'>'+r+'</option>';
+        }).join('')
+      + '</select></div>'
       + '<div class="fg"><label class="fl">Rate</label><input class="fi" id="edit-rate" type="number" value="'+(trip.rate||'')+'"></div>'
       + '<div class="btn-row">'
       + '<button class="btn btn-ghost" onclick="closeTripSheet()">Cancel</button>'
@@ -728,7 +788,7 @@ function saveEditTrip() {
   var shipDate = document.getElementById('edit-shipment-date').value.trim();
   var type     = document.getElementById('edit-type').value;
   var shipNum  = document.getElementById('edit-shipment-num').value.trim();
-  var route    = document.getElementById('edit-route').value.trim();
+  var route    = document.getElementById('edit-route').value; // ✅ Now from dropdown
   var rate     = document.getElementById('edit-rate').value.trim();
 
   if (!delivery || !truck) { showToast('❌ Delivery Date and Truck required!'); return; }
@@ -833,7 +893,11 @@ function openAddTrip() {
     + '<button class="tg-btn active-no" id="add-billed-no" onclick="setAddBilled(\'No\')">No</button>'
     + '<button class="tg-btn" id="add-billed-yes" onclick="setAddBilled(\'Yes\')">Yes</button>'
     + '</div></div>'
-    + '<div class="fg"><label class="fl">Route</label><input class="fi" id="add-route"></div>'
+    // ✅ ROUTE DROPDOWN
+    + '<div class="fg"><label class="fl">Route</label><select class="fi" id="add-route">'
+    + '<option value="">— Select Route —</option>'
+    + ROUTES.map(function(r){ return '<option value="'+r+'">'+r+'</option>'; }).join('')
+    + '</select></div>'
     + '<div class="fg"><label class="fl">Rate</label><input class="fi" id="add-rate" type="number"></div>'
     + '<div class="btn-row">'
     + '<button class="btn btn-ghost" onclick="closeTripSheet()">Cancel</button>'
@@ -858,7 +922,7 @@ function saveAddTrip() {
   var shipDate = document.getElementById('add-shipment-date').value.trim();
   var type     = document.getElementById('add-type').value;
   var shipNum  = document.getElementById('add-shipment-num').value.trim();
-  var route    = document.getElementById('add-route').value.trim();
+  var route    = document.getElementById('add-route').value; // ✅ Now from dropdown
   var rate     = document.getElementById('add-rate').value.trim();
 
   if (!delivery || !truck) { showToast('❌ Delivery Date and Truck required!'); return; }
@@ -902,9 +966,70 @@ function apiAppend(range, values) {
 function apiUpdate(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
     '/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
-    { method:'PUT', headers:{Authorization:'Bearer'+token,'Content-Type':'application/json'},
+    { method:'PUT', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
       body:JSON.stringify({values:values}) })
     .then(function(r){ if(!r.ok) throw new Error('Update failed '+r.status); return r.json(); });
+}
+
+// ═══ PULL TO REFRESH ══════════════════════════════════
+function initPullToRefresh(scrollEl, onRefresh) {
+  var startY      = 0;
+  var pulling     = false;
+  var threshold   = 70;
+  var indicator   = document.createElement('div');
+  indicator.className = 'ptr-indicator';
+  indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+  document.body.appendChild(indicator);
+
+  scrollEl.addEventListener('touchstart', function(e) {
+    if (scrollEl.scrollTop === 0) {
+      startY  = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchmove', function(e) {
+    if (!pulling) return;
+    var dist = e.touches[0].clientY - startY;
+    if (dist < 0) { pulling = false; return; }
+
+    var progress = Math.min(dist / threshold, 1);
+    indicator.classList.add('visible');
+
+    var arrow = document.getElementById('ptr-arrow');
+    if (arrow) {
+      arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
+      arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    pulling = false;
+
+    var dist = e.changedTouches[0].clientY - startY;
+    if (dist >= threshold) {
+      // Trigger refresh
+      indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
+      onRefresh(function() {
+        // Done callback
+        indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+        indicator.classList.remove('visible');
+      });
+    } else {
+      indicator.classList.remove('visible');
+    }
+  });
+}
+
+// ═══ AUTO REFRESH (every 5 minutes) ══════════════════
+function initAutoRefresh(onRefresh) {
+  setInterval(function() {
+    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    if (!token || Date.now() >= expiry) return; // skip if not logged in
+    console.log('🔄 Auto-refresh triggered');
+    onRefresh(function() {}); // silent refresh
+  }, 5 * 60 * 1000); // 5 minutes
 }
 
 // ═══ HELPERS ══════════════════════════════════════════
