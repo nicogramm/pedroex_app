@@ -229,6 +229,42 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
   opacity:0; pointer-events:none; transition:opacity 0.25s;
 }
 .toast.show { opacity:1 }
+
+/* PULL TO REFRESH */
+.ptr-indicator {
+  position: fixed;
+  top: calc(env(safe-area-inset-top,0px) + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--bg);
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  box-shadow: var(--neu-out);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+.ptr-indicator.visible {
+  transform: translateX(-50%) translateY(0px);
+}
+.ptr-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--text3);
+  border-top-color: var(--red);
+  border-radius: 50%;
+}
+.ptr-spinner.spinning {
+  animation: spin 0.7s linear infinite;
+}
+.ptr-arrow {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--red);
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
 </style>
 </head>
 <body>
@@ -405,6 +441,21 @@ function loadUser() {
     buildDashboard();
     loadDashboardStats();
 
+          // Init pull to refresh
+      initPullToRefresh(
+        document.querySelector('.page-wrap'),
+        function(done) {
+          loadDashboardStats();
+          setTimeout(done, 1000);
+        }
+      );
+
+      // Auto refresh
+      initAutoRefresh(function(done) {
+        loadDashboardStats();
+        done();
+      });
+
     // Get firstName from Employees sheet
     var email = (u.email || '').toLowerCase();
     fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:B', {
@@ -482,6 +533,67 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
+// ═══ PULL TO REFRESH + AUTO REFRESH ══════════════════
+
+function initPullToRefresh(scrollEl, onRefresh) {
+  var startY      = 0;
+  var pulling     = false;
+  var threshold   = 70;
+  var indicator   = document.createElement('div');
+  indicator.className = 'ptr-indicator';
+  indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+  document.body.appendChild(indicator);
+
+  scrollEl.addEventListener('touchstart', function(e) {
+    if (scrollEl.scrollTop === 0) {
+      startY  = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchmove', function(e) {
+    if (!pulling) return;
+    var dist = e.touches[0].clientY - startY;
+    if (dist < 0) { pulling = false; return; }
+
+    var progress = Math.min(dist / threshold, 1);
+    indicator.classList.add('visible');
+
+    var arrow = document.getElementById('ptr-arrow');
+    if (arrow) {
+      arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
+      arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    pulling = false;
+
+    var dist = e.changedTouches[0].clientY - startY;
+    if (dist >= threshold) {
+      // Trigger refresh
+      indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
+      onRefresh(function() {
+        // Done callback
+        indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+        indicator.classList.remove('visible');
+      });
+    } else {
+      indicator.classList.remove('visible');
+    }
+  });
+}
+
+// AUTO REFRESH every 5 minutes
+function initAutoRefresh(onRefresh) {
+  setInterval(function() {
+    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    if (!token || Date.now() >= expiry) return; // skip if not logged in
+    onRefresh(function() {}); // silent refresh
+  }, 5 * 60 * 1000);
+}
+
 </script>
 </body>
 </html>
