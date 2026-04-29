@@ -690,7 +690,15 @@ function openDetail(rowIndex) {
   document.getElementById('d-id').textContent   = t.id || '—';
   document.getElementById('d-lto').textContent  = t.lto || '—';
   document.getElementById('d-dim').textContent  = t.dim || '—';
-  document.getElementById('d-notes').textContent = t.notes || '—';
+  
+  // Notes - hide section if empty
+  var notesWrap = document.getElementById('d-notes-wrap');
+  if (t.notes) {
+    document.getElementById('d-notes').textContent = t.notes;
+    notesWrap.style.display = 'block';
+  } else {
+    notesWrap.style.display = 'none';
+  }
 
   // NMIS with expiry status
   var today = new Date(); today.setHours(0,0,0,0);
@@ -712,16 +720,21 @@ function openDetail(rowIndex) {
   // Footer buttons based on role
   var footer = document.getElementById('detail-footer');
   if (isAdmin) {
+    // Admin: Full controls
     footer.innerHTML =
       '<button class="df-btn df-btn-edit" onclick="openEditDrawer(' + t.rowIndex + ')">Edit All</button>'
       + '<button class="df-btn df-btn-nmis" onclick="openNMIS()">Update NMIS</button>'
       + '<button class="df-btn df-btn-delete" onclick="promptDelete()">Delete</button>';
   } else {
+    // Employee: View-only + NMIS update
     footer.innerHTML =
-      '<button class="df-btn df-btn-nmis" onclick="openNMIS()" style="flex:1">Update NMIS</button>';
+      '<button class="df-btn df-btn-nmis" style="flex:1;background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4)" onclick="openNMIS()">Update NMIS</button>';
   }
-    document.getElementById('detail-overlay').classList.add('open');
-  }
+
+  // IMPORTANT: Show the detail overlay!
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
 
 function closeDetail() {
   document.getElementById('detail-overlay').classList.remove('open');
