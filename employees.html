@@ -566,6 +566,167 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   font-weight: 600;
 }
 
+
+/* ═══════════════════════════════════════
+   SECTION DIVIDER
+═══════════════════════════════════════ */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--shadow-d), transparent);
+  margin: 40px 0;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+/* ═══════════════════════════════════════
+   PAYROLL CALCULATOR CARD
+═══════════════════════════════════════ */
+.payroll-calc-card {
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: var(--neu-out);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.period-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.period-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--bg);
+  box-shadow: var(--neu-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.period-btn.active {
+  background: var(--red);
+  color: white;
+  box-shadow: 0 4px 12px rgba(179, 37, 51, 0.3);
+}
+
+.period-btn:not(.active):active {
+  box-shadow: var(--neu-in);
+}
+
+/* ═══════════════════════════════════════
+   PAYROLL SUMMARY MODAL
+═══════════════════════════════════════ */
+.payroll-summary {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.summary-employee {
+  text-align: center;
+  padding: 16px;
+  background: var(--bg2);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-employee strong {
+  display: block;
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.summary-employee span {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.summary-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--shadow-d);
+}
+
+.summary-section:last-of-type {
+  border-bottom: none;
+}
+
+.summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-item span {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.summary-item strong {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.summary-net {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: var(--red);
+  color: white;
+  border-radius: 14px;
+  margin-top: 20px;
+}
+
+.summary-net span {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.summary-net strong {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -635,6 +796,186 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
       <div class="empty-state" id="advances-empty" style="display:none">
         <div class="empty-icon">📋</div>
         <div class="empty-text">No advances found for selected filters</div>
+      </div>
+    </div>
+
+        <!-- PAYROLL CALCULATOR SECTION -->
+    <div class="section-divider"></div>
+
+    <div class="section-header">
+      <h3 class="section-title">Payroll Calculator</h3>
+      <p class="section-subtitle">Calculate employee salaries for selected period</p>
+    </div>
+
+    <div class="payroll-calc-card">
+      
+      <!-- Period Selection -->
+      <div class="form-group">
+        <label class="form-label">Select Month</label>
+        <input type="month" class="form-input" id="payroll-month">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Payroll Period</label>
+        <div class="period-selector">
+          <button class="period-btn active" id="period-1st" onclick="selectPeriod('1st')">
+            1st Kinsenas (1-15)
+          </button>
+          <button class="period-btn" id="period-2nd" onclick="selectPeriod('2nd')">
+            2nd Kinsenas (16-End)
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Select Employee</label>
+        <select class="form-select" id="payroll-employee">
+          <option value="">Select Employee</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%; margin-top:20px" onclick="calculatePayroll()">
+        🧮 Calculate Payroll
+      </button>
+
+    </div>
+
+    <!-- PAYROLL RESULT MODAL -->
+    <div class="modal" id="payroll-result-modal">
+      <div class="modal-content" style="max-width:500px">
+        <div class="modal-header">Payroll Summary</div>
+        
+        <div class="payroll-summary">
+          <div class="summary-employee">
+            <strong id="summary-name">—</strong>
+            <span id="summary-period">—</span>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">ATTENDANCE</div>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span>With Meal Allowance (Yes)</span>
+                <strong id="summary-att-yes">0</strong>
+              </div>
+              <div class="summary-item">
+                <span>Meals Only</span>
+                <strong id="summary-att-meals">0</strong>
+              </div>
+              <div class="summary-item">
+                <span>No Meal (Base Pay Only)</span>
+                <strong id="summary-att-no">0</strong>
+              </div>
+              <div class="summary-item">
+                <span>2-Man Team Days</span>
+                <strong id="summary-2man">0</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">ADVANCES</div>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span>Advance 1</span>
+                <strong id="summary-adv1">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Advance 2</span>
+                <strong id="summary-adv2">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Existing Advances</span>
+                <strong id="summary-existing">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Total Advances</span>
+                <strong id="summary-total-adv">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Deducted from Salary</span>
+                <strong id="summary-deducted">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>New Existing Advances</span>
+                <strong id="summary-new-existing">₱0.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">CONTRIBUTIONS</div>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span>Employee SSS</span>
+                <strong id="summary-emp-sss">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Employee Pag-IBIG</span>
+                <strong id="summary-emp-pagibig">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Employee PhilHealth</span>
+                <strong id="summary-emp-philhealth">₱0.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">EARNINGS</div>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span>Base Pay</span>
+                <strong id="summary-base">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>2-Man Team Bonus</span>
+                <strong id="summary-2man-pay">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Meal Allowance</span>
+                <strong id="summary-meal">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Gross Pay</span>
+                <strong id="summary-gross">₱0.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-label">DEDUCTIONS</div>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span>Savings Plan (5%)</span>
+                <strong id="summary-savings">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Advances Deducted</span>
+                <strong id="summary-adv-ded">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Gov't Contributions</span>
+                <strong id="summary-contrib">₱0.00</strong>
+              </div>
+              <div class="summary-item">
+                <span>Total Deductions</span>
+                <strong id="summary-total-ded">₱0.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-net">
+            <span>NET PAY</span>
+            <strong id="summary-net">₱0.00</strong>
+          </div>
+
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closePayrollResultModal()">Close</button>
+          <button class="btn btn-primary" onclick="savePayrollToHistory()">💾 Save to History</button>
+        </div>
       </div>
     </div>
 
@@ -735,6 +1076,382 @@ let allEmployees = [];
 let selectedAdvanceId = null;
 
 // ═══════════════════════════════════════════════════════
+// PAYROLL CALCULATOR
+// ═══════════════════════════════════════════════════════
+
+let selectedPeriod = '1st'; // '1st' or '2nd'
+let currentPayrollData = null;
+
+function selectPeriod(period) {
+  selectedPeriod = period;
+  
+  document.getElementById('period-1st').classList.remove('active');
+  document.getElementById('period-2nd').classList.remove('active');
+  
+  if (period === '1st') {
+    document.getElementById('period-1st').classList.add('active');
+  } else {
+    document.getElementById('period-2nd').classList.add('active');
+  }
+}
+
+async function calculatePayroll() {
+  const month = document.getElementById('payroll-month').value;
+  const employeeName = document.getElementById('payroll-employee').value;
+  
+  if (!month || !employeeName) {
+    showToast('Please select month and employee');
+    return;
+  }
+  
+  showToast('Calculating payroll...');
+  
+  try {
+    // Parse month
+    const [year, monthNum] = month.split('-');
+    const monthInt = parseInt(monthNum);
+    
+    // Determine date range
+    let startDate, endDate;
+    if (selectedPeriod === '1st') {
+      startDate = `${year}-${String(monthInt).padStart(2, '0')}-01`;
+      endDate = `${year}-${String(monthInt).padStart(2, '0')}-15`;
+    } else {
+      startDate = `${year}-${String(monthInt).padStart(2, '0')}-16`;
+      const lastDay = new Date(year, monthInt, 0).getDate();
+      endDate = `${year}-${String(monthInt).padStart(2, '0')}-${lastDay}`;
+    }
+    
+    // Get employee info
+    const employee = allEmployees.find(e => e.fullName === employeeName);
+    if (!employee) {
+      showToast('Employee not found');
+      return;
+    }
+    
+    // Get employee position (Driver or Helper)
+    const empResponse = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:E`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    const empData = await empResponse.json();
+    const empRow = (empData.values || []).find(r => `${r[1]} ${r[2]}` === employeeName);
+    const position = empRow ? (empRow[4] || 'Helper') : 'Helper'; // Column E = Position
+    
+    // Rates
+    const baseRate = position === 'Driver' ? 500 : 350;
+    const twoManRate = 280;
+    const mealRate = 210;
+    
+    // STEP 1: Get Attendance
+    const attResponse = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Attendance!A2:F`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    const attData = await attResponse.json();
+    const attRows = attData.values || [];
+    
+    // Filter attendance for this employee and period
+    const attendance = attRows.filter(r => {
+      const name = r[1]; // Column B = Name
+      const date = r[0]; // Column A = Date
+      return name === employeeName && date >= startDate && date <= endDate;
+    });
+    
+    // Count attendance types
+    let attYes = 0;    // Yes = Base Pay + Meal Allowance
+    let attMeals = 0;  // Meals Only = Meal Allowance only
+    let attNo = 0;     // No = Base Pay only
+    let twoManDays = 0;
+    
+    attendance.forEach(r => {
+      const mealAllowance = r[4]; // Column E = Meal Allowance
+      const twoMan = r[5];        // Column F = 2-Man Team
+      
+      if (mealAllowance === 'Yes') {
+        attYes++;
+      } else if (mealAllowance === 'Meals Only') {
+        attMeals++;
+      } else if (mealAllowance === 'No') {
+        attNo++;
+      }
+      
+      if (twoMan === 'Yes') {
+        twoManDays++;
+      }
+    });
+    
+    // STEP 2: Calculate Base Pay
+    // Base Pay = (attYes + attNo) * baseRate
+    const basePay = (attYes + attNo) * baseRate;
+    
+    // STEP 3: Calculate 2-Man Team Bonus
+    const twoManPay = twoManDays * twoManRate;
+    
+    // STEP 4: Calculate Meal Allowance
+    // Meal Allowance = (attYes + attMeals) * mealRate
+    const mealAllowance = (attYes + attMeals) * mealRate;
+    
+    // STEP 5: Calculate Gross Pay
+    const grossPay = basePay + twoManPay + mealAllowance;
+    
+    // STEP 6: Get Advances
+    const advResponse = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!A2:D`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    const advData = await advResponse.json();
+    const advRows = advData.values || [];
+    
+    // Filter advances for this employee and period
+    const advances = advRows
+      .filter(r => r[2] === employeeName && r[1] >= startDate && r[1] <= endDate)
+      .map(r => ({
+        date: r[1],
+        amount: parseFloat(r[3]) || 0
+      }));
+    
+    // Split advances into Week 1 and Week 2
+    let advance1 = 0;
+    let advance2 = 0;
+    
+    if (selectedPeriod === '1st') {
+      // Week 1 = Day 1-7, Week 2 = Day 8-15
+      advances.forEach(a => {
+        const day = parseInt(a.date.split('-')[2]);
+        if (day <= 7) {
+          advance1 += a.amount;
+        } else {
+          advance2 += a.amount;
+        }
+      });
+    } else {
+      // Week 3 = Day 16-23, Week 4 = Day 24-End
+      advances.forEach(a => {
+        const day = parseInt(a.date.split('-')[2]);
+        if (day <= 23) {
+          advance1 += a.amount;
+        } else {
+          advance2 += a.amount;
+        }
+      });
+    }
+    
+    // STEP 7: Get Existing Advances from Previous Payroll
+    const histResponse = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:Z`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    const histData = await histResponse.json();
+    const histRows = histData.values || [];
+    
+    // Get last payroll for this employee
+    const lastPayroll = histRows
+      .filter(r => r[1] === employeeName) // Column B = Name
+      .sort((a, b) => new Date(b[2]) - new Date(a[2])) // Sort by date desc
+      [0];
+    
+    const existingAdvances = lastPayroll ? (parseFloat(lastPayroll[16]) || 0) : 0; // Column Q = New Existing Advances
+    
+    // STEP 8: Calculate Total Advances
+    const totalAdvances = existingAdvances + advance1 + advance2;
+    
+    // STEP 9: Calculate Deduction from Salary (max 40% of gross pay)
+    const maxDeduction = grossPay * 0.40;
+    const deductedAdvances = Math.min(totalAdvances, maxDeduction);
+    
+    // STEP 10: Calculate New Existing Advances
+    const newExistingAdvances = totalAdvances - deductedAdvances;
+    
+    // STEP 11: Calculate Government Contributions
+    let empSSS = 0;
+    let empPagibig = 0;
+    let empPhilHealth = 0;
+    
+    if (selectedPeriod === '1st') {
+      // 1st Kinsenas: SSS + Pag-IBIG
+      empSSS = 225;
+      empPagibig = 200;
+      empPhilHealth = 0;
+    } else {
+      // 2nd Kinsenas: PhilHealth only
+      empSSS = 0;
+      empPagibig = 0;
+      empPhilHealth = 250;
+    }
+    
+    const totalContributions = empSSS + empPagibig + empPhilHealth;
+    
+    // STEP 12: Calculate Savings Plan (5% of base pay + 2-man bonus)
+    const savingsBase = (attYes + attNo) * (position === 'Driver' ? 560 : 350);
+    const savingsPlan = savingsBase * 0.05;
+    
+    // STEP 13: Calculate Total Deductions
+    const totalDeductions = deductedAdvances + totalContributions + savingsPlan;
+    
+    // STEP 14: Calculate Net Pay
+    const netPay = grossPay - totalDeductions;
+    
+    // Store payroll data
+    currentPayrollData = {
+      name: employeeName,
+      period: `${startDate} to ${endDate}`,
+      attYes,
+      attMeals,
+      attNo,
+      twoManDays,
+      advance1,
+      advance2,
+      existingAdvances,
+      totalAdvances,
+      deductedAdvances,
+      newExistingAdvances,
+      empSSS,
+      empPagibig,
+      empPhilHealth,
+      totalContributions,
+      basePay,
+      twoManPay,
+      mealAllowance,
+      grossPay,
+      savingsPlan,
+      totalDeductions,
+      netPay,
+      // For Payroll History sheet
+      pedroexSSS: 475,
+      pedroexPagibig: 200,
+      pedroexPhilHealth: 250
+    };
+    
+    // Show result modal
+    showPayrollResult();
+    
+  } catch (err) {
+    console.error('Error calculating payroll:', err);
+    showToast('❌ Error calculating payroll');
+  }
+}
+
+function showPayrollResult() {
+  const data = currentPayrollData;
+  
+  // Employee info
+  document.getElementById('summary-name').textContent = data.name;
+  document.getElementById('summary-period').textContent = data.period;
+  
+  // Attendance
+  document.getElementById('summary-att-yes').textContent = data.attYes;
+  document.getElementById('summary-att-meals').textContent = data.attMeals;
+  document.getElementById('summary-att-no').textContent = data.attNo;
+  document.getElementById('summary-2man').textContent = data.twoManDays;
+  
+  // Advances
+  document.getElementById('summary-adv1').textContent = '₱' + data.advance1.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-adv2').textContent = '₱' + data.advance2.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-existing').textContent = '₱' + data.existingAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-total-adv').textContent = '₱' + data.totalAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-deducted').textContent = '₱' + data.deductedAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-new-existing').textContent = '₱' + data.newExistingAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  
+  // Contributions
+  document.getElementById('summary-emp-sss').textContent = '₱' + data.empSSS.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-emp-pagibig').textContent = '₱' + data.empPagibig.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-emp-philhealth').textContent = '₱' + data.empPhilHealth.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  
+  // Earnings
+  document.getElementById('summary-base').textContent = '₱' + data.basePay.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-2man-pay').textContent = '₱' + data.twoManPay.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-meal').textContent = '₱' + data.mealAllowance.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-gross').textContent = '₱' + data.grossPay.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  
+  // Deductions
+  document.getElementById('summary-savings').textContent = '₱' + data.savingsPlan.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-adv-ded').textContent = '₱' + data.deductedAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-contrib').textContent = '₱' + data.totalContributions.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('summary-total-ded').textContent = '₱' + data.totalDeductions.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  
+  // Net Pay
+  document.getElementById('summary-net').textContent = '₱' + data.netPay.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  
+  document.getElementById('payroll-result-modal').classList.add('active');
+}
+
+function closePayrollResultModal() {
+  document.getElementById('payroll-result-modal').classList.remove('active');
+}
+
+async function savePayrollToHistory() {
+  if (!currentPayrollData) return;
+  
+  const data = currentPayrollData;
+  
+  try {
+    // Generate ID
+    const id = `PAY-${Date.now()}`;
+    
+    // Prepare row data matching your Payroll History columns
+    const row = [
+      id,                           // A: ID
+      data.name,                    // B: Name
+      data.period,                  // C: Payroll Period
+      data.attYes + data.attNo,     // D: Attendance (base pay days)
+      data.advance1,                // E: Advance 1
+      data.advance2,                // F: Advance 2
+      data.existingAdvances,        // G: Existing Advances
+      data.totalAdvances,           // H: Total Advances
+      data.pedroexSSS,              // I: PEDROEX SSS
+      data.empSSS,                  // J: Employee SSS
+      data.pedroexPagibig,          // K: PEDROEX Pag-IBIG
+      data.empPagibig,              // L: Employee Pag-IBIG
+      data.pedroexPhilHealth,       // M: PEDROEX PhilHealth
+      data.empPhilHealth,           // N: Employee PhilHealth
+      data.deductedAdvances,        // O: Deduction from Salary Advances
+      data.totalDeductions,         // P: Total Deductions
+      data.newExistingAdvances,     // Q: New Existing Advances
+      data.twoManDays,              // R: 2-Man Team Attendance
+      data.twoManPay,               // S: Total Additional Pay (2-Man Team)
+      selectedPeriod === '1st' ? data.savingsPlan : 0,  // T: Savings Plan (1st)
+      selectedPeriod === '2nd' ? data.savingsPlan : 0,  // U: Savings Plan (2nd)
+      data.savingsPlan,             // V: Savings Plan Total
+      '',                           // W: Savings Plan Withdrawals Dates
+      '',                           // X: Savings Plan Withdrawals Amounts
+      '',                           // Y: Savings Plan Interest Accrued
+      data.grossPay,                // Z: Gross Base Pay
+      data.mealAllowance,           // AA: Total Meal Allowance
+      data.netPay,                  // AB: Total Net Pay
+      ''                            // AC: Comments
+    ];
+    
+    // Append to Payroll History
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:AC:append?valueInputOption=USER_ENTERED`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          values: [row]
+        })
+      }
+    );
+    
+    if (response.ok) {
+      showToast('✅ Payroll saved to history!');
+      closePayrollResultModal();
+      currentPayrollData = null;
+    } else {
+      showToast('❌ Error saving payroll');
+    }
+    
+  } catch (err) {
+    console.error('Error saving payroll:', err);
+    showToast('❌ Error saving payroll');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════
 async function init() {
@@ -754,15 +1471,25 @@ async function init() {
     const now = new Date();
     const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     document.getElementById('filter-month').value = monthStr;
+    document.getElementById('payroll-month').value = monthStr; // Add this line
     
     await loadEmployees();
     await loadAdvances();
     loadCalendar();
+    
+    // Populate payroll employee dropdown (Add this)
+    const payrollSelect = document.getElementById('payroll-employee');
+    allEmployees.forEach(emp => {
+      const option = document.createElement('option');
+      option.value = emp.fullName;
+      option.textContent = emp.fullName;
+      payrollSelect.appendChild(option);
+    });
+    
   } else {
     document.getElementById('employee-section').style.display = 'block';
   }
 }
-
 // ═══════════════════════════════════════════════════════
 // LOAD EMPLOYEES
 // ═══════════════════════════════════════════════════════
