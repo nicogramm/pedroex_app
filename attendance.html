@@ -674,6 +674,7 @@ function loadAll() {
   var fTruck = document.getElementById('f-truck');
   var mTruck = document.getElementById('manual-truck');
   var mEmp   = document.getElementById('manual-emp');
+  var firstLoad = true;
   while (fTruck.options.length > 1) fTruck.remove(1);
   if (mTruck) while (mTruck.options.length > 1) mTruck.remove(1);
   if (mEmp)   while (mEmp.options.length > 1)   mEmp.remove(1);
@@ -752,7 +753,7 @@ function loadAll() {
       return r.name.toLowerCase() === currentUser.fullName.toLowerCase();
     });
 
-    // Admin tab — ipakita at i-render ang employee list
+    // Admin tab
     if (isAdmin) {
       document.getElementById('tab-admin').style.display = '';
       renderEmployeeList();
@@ -772,7 +773,12 @@ function loadAll() {
     renderCalendar();
 
     document.getElementById('wrap-loading').style.display = 'none';
-    switchTab('checkin');
+
+    // First load lang mag-switch sa checkin, refresh mananatili sa current tab
+    if (firstLoad) {
+      firstLoad = false;
+      switchTab('checkin');
+    }
 
   }).catch(function(err) {
     document.getElementById('wrap-loading').style.display = 'none';
@@ -782,14 +788,16 @@ function loadAll() {
 }
 
 
-
-// ═══ TABS ═════════════════════════════════════════════
 function switchTab(name) {
   ['checkin','calendar','admin'].forEach(function(t) {
     document.getElementById('tab-' + t).classList.toggle('active', t === name);
     var el = document.getElementById('tab-content-' + t);
     if (el) el.style.display = (t === name ? 'block' : 'none');
   });
+  // Re-render employee list kapag pumunta sa admin tab
+  if (name === 'admin' && isAdmin) {
+    renderEmployeeList();
+  }
 }
 
 // ═══ TEAM TOGGLE ══════════════════════════════════════
