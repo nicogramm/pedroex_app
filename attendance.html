@@ -774,11 +774,15 @@ function loadAll() {
 
     document.getElementById('wrap-loading').style.display = 'none';
 
-    // First load lang mag-switch sa checkin, refresh mananatili sa current tab
-    if (firstLoad) {
-      firstLoad = false;
-      switchTab('checkin');
-    }
+      // ✅ FIXED: Always show appropriate tab after loading
+      if (firstLoad) {
+        firstLoad = false;
+        switchTab('checkin'); // First load: default to checkin
+      } else {
+        // Refresh: re-render current active tab
+        var activeTab = document.querySelector('.tab.active').id.replace('tab-', '');
+        switchTab(activeTab);
+      }
 
   }).catch(function(err) {
     document.getElementById('wrap-loading').style.display = 'none';
