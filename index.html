@@ -375,44 +375,45 @@ function applyTheme(dark) {
 }
 applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
-// AUTO-LOGIN
-function tryAutoLogin() {
+// ✅ FIXED: Proper initialization order
+(function init() {
+  // PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
+  // Try auto-login
   const savedToken = localStorage.getItem('pedroex-token');
   const expiry = localStorage.getItem('pedroex-token-expiry');
   
-  if (!savedToken || !expiry) return false;
-  if (Date.now() >= parseInt(expiry)) {
-    localStorage.removeItem('pedroex-token');
-    localStorage.removeItem('pedroex-token-expiry');
-    return false;
+  if (savedToken && expiry && Date.now() < parseInt(expiry)) {
+    // Valid token exists — auto-login
+    token = savedToken;
+    loadUser();
+  } else {
+    // No valid token — show login screen
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('s-app').classList.remove('active');
   }
-  
-  token = savedToken;
-  loadUser();
-  return true;
-}
-
-if (!tryAutoLogin()) {
-  document.getElementById('s-login').classList.add('active');
-}
-
-// PWA
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
+})();
 
 // AUTH
 function signIn() {
   if (typeof google === 'undefined' || !google.accounts) {
-    showToast('Loading... please try again.');
-    setTimeout(signIn, 600);
+    showToast('Loading Google Sign-In...');
+    setTimeout(signIn, 800);
     return;
   }
+  
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
     scope: SCOPES,
     callback: function(res) {
-      if (res.error) { showToast('Login error: ' + res.error); return; }
+      if (res.error) { 
+        showToast('❌ Login error: ' + res.error); 
+        return; 
+      }
+      
       token = res.access_token;
       
       const expiresAt = Date.now() + (res.expires_in * 1000);
@@ -428,7 +429,10 @@ function loadUser() {
   fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
-  .then(r => r.json())
+  .then(r => {
+    if (!r.ok) throw new Error('Auth failed');
+    return r.json();
+  })
   .then(u => {
     localStorage.setItem('pedroex-name', u.name || '');
     localStorage.setItem('pedroex-email', u.email || '');
@@ -436,25 +440,27 @@ function loadUser() {
 
     document.getElementById('user-avatar').src = u.picture || '';
 
+    // ✅ Switch screens
     document.getElementById('s-login').classList.remove('active');
     document.getElementById('s-app').classList.add('active');
+    
     buildDashboard();
     loadDashboardStats();
 
-          // Init pull to refresh
-      initPullToRefresh(
-        document.querySelector('.page-wrap'),
-        function(done) {
-          loadDashboardStats();
-          setTimeout(done, 1000);
-        }
-      );
-
-      // Auto refresh
-      initAutoRefresh(function(done) {
+    // Init pull to refresh
+    initPullToRefresh(
+      document.querySelector('.page-wrap'),
+      function(done) {
         loadDashboardStats();
-        done();
-      });
+        setTimeout(done, 1000);
+      }
+    );
+
+    // Auto refresh
+    initAutoRefresh(function(done) {
+      loadDashboardStats();
+      done();
+    });
 
     // Get firstName from Employees sheet
     var email = (u.email || '').toLowerCase();
@@ -467,26 +473,36 @@ function loadUser() {
       var empRow    = rows.find(function(r) { return (r[0]||'').toLowerCase() === email; });
       var firstName = empRow ? (empRow[1] || u.given_name || 'team') : (u.given_name || 'team');
 
-      var now = new Date();
-      var h   = now.getHours();
-      var gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-      document.getElementById('dash-name').textContent = gr + ', ' + firstName + '!';
-      document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
-        weekday:'long', year:'numeric', month:'long', day:'numeric'
-      });
+      updateGreeting(firstName);
     })
     .catch(function() {
       // Fallback to Google name
-      var now = new Date();
-      var h   = now.getHours();
-      var gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-      document.getElementById('dash-name').textContent = gr + ', ' + (u.given_name || 'team') + '!';
-      document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
-        weekday:'long', year:'numeric', month:'long', day:'numeric'
-      });
+      updateGreeting(u.given_name || 'team');
     });
   })
-  .catch(function(err) { showToast('Login failed. Try again.'); console.error(err); });
+  .catch(function(err) { 
+    console.error('Load user error:', err);
+    
+    // ✅ Clear invalid token and show login
+    localStorage.removeItem('pedroex-token');
+    localStorage.removeItem('pedroex-token-expiry');
+    
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('s-app').classList.remove('active');
+    
+    showToast('❌ Session expired. Please sign in again.');
+  });
+}
+
+function updateGreeting(firstName) {
+  var now = new Date();
+  var h   = now.getHours();
+  var gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  
+  document.getElementById('dash-name').textContent = gr + ', ' + firstName + '!';
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric'
+  });
 }
 
 // DASHBOARD
@@ -511,6 +527,8 @@ function buildDashboard() {
 
 // LOAD DASHBOARD STATS
 function loadDashboardStats() {
+  if (!token) return;
+  
   // Load truck count
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Truck%20Roster!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
@@ -533,8 +551,8 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
-// ═══ PULL TO REFRESH + AUTO REFRESH ══════════════════
 
+// ═══ PULL TO REFRESH + AUTO REFRESH ══════════════════
 function initPullToRefresh(scrollEl, onRefresh) {
   var startY      = 0;
   var pulling     = false;
@@ -572,10 +590,8 @@ function initPullToRefresh(scrollEl, onRefresh) {
 
     var dist = e.changedTouches[0].clientY - startY;
     if (dist >= threshold) {
-      // Trigger refresh
       indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
       onRefresh(function() {
-        // Done callback
         indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
         indicator.classList.remove('visible');
       });
@@ -585,12 +601,11 @@ function initPullToRefresh(scrollEl, onRefresh) {
   });
 }
 
-// AUTO REFRESH every 5 minutes
 function initAutoRefresh(onRefresh) {
   setInterval(function() {
     var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    if (!token || Date.now() >= expiry) return; // skip if not logged in
-    onRefresh(function() {}); // silent refresh
+    if (!token || Date.now() >= expiry) return;
+    onRefresh(function() {});
   }, 5 * 60 * 1000);
 }
 
