@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Employees - PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   NEUMORPHIC THEME VARIABLES
+═══════════════════════════════════════ */
+:root {
+  --bg:       #e0e0e5;
+  --bg2:      #e8e8ed;
+  --shadow-d: #b8b9be;
+  --shadow-l: #ffffff;
+  --text:     #2a2a2e;
+  --text2:    #777;
+  --text3:    #aaa;
+  --red:      #B32533;
+  --red-d:    #8f1e29;
+  --green:    #27ae60;
+  --orange:   #f39c12;
+  --card:     #e0e0e5;
+
+  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+}
+
+body.dark {
+  --bg:       #2a2a2f;
+  --bg2:      #313137;
+  --shadow-d: #16161a;
+  --shadow-l: #3e3e46;
+  --text:     #e8e8ec;
+  --text2:    #888;
+  --text3:    #555;
+  --card:     #2a2a2f;
+  --green:    #2ecc71;
+  --orange:   #f1c40f;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.topbar {
+  background: var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
+
+.tb-left { display:flex; align-items:center; gap:12px }
+.tb-back {
+  width:36px; height:36px; border-radius:10px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none;
+}
+.tb-back:active { box-shadow:var(--neu-in) }
+
+.tb-title { font-size:18px; font-weight:700; color:var(--text) }
+
+.page-wrap {
+  height: calc(100vh - 64px - env(safe-area-inset-top,0px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  padding-bottom: 24px;
+}
+
+/* ═══════════════════════════════════════
+   ADMIN BADGE
+═══════════════════════════════════════ */
+.admin-badge {
+  display: inline-block;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 8px;
+  margin-left: 8px;
+}
+
+/* ═══════════════════════════════════════
+   FILTER BAR
+═══════════════════════════════════════ */
+.filter-bar {
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: var(--neu-out);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.filter-row:last-child { margin-bottom: 0 }
+
+.filter-select, .filter-input {
+  flex: 1;
+  background: var(--bg);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--neu-in);
+  padding: 12px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.filter-select:focus, .filter-input:focus {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════
+   CALENDAR HEADER
+═══════════════════════════════════════ */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cal-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: var(--neu-sm);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 18px;
+}
+.cal-nav-btn:active { box-shadow: var(--neu-in) }
+
+.cal-month-year {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 150px;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════
+   CALENDAR GRID
+═══════════════════════════════════════ */
+.calendar-container {
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: var(--neu-out);
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cal-weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  box-shadow: var(--neu-xs);
+}
+
+.cal-day:active {
+  box-shadow: var(--neu-in);
+  transform: scale(0.95);
+}
+
+.cal-day.empty {
+  background: transparent;
+  box-shadow: none;
+  cursor: default;
+}
+
+.cal-day.today {
+  border: 2px solid var(--red);
+}
+
+.cal-day-num {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.cal-day-dots {
+  display: flex;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.cal-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.cal-dot.pending { background: var(--red) }
+.cal-dot.deducted { background: var(--green) }
+
+/* ═══════════════════════════════════════
+   ADVANCES LIST
+═══════════════════════════════════════ */
+.advances-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.advance-card {
+  background: var(--bg);
+  border-radius: 14px;
+  box-shadow: var(--neu-out);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.advance-card:active {
+  box-shadow: var(--neu-in);
+  transform: scale(0.98);
+}
+
+.advance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.advance-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.advance-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.advance-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.advance-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.status-badge.pending {
+  background: rgba(179, 37, 51, 0.15);
+  color: var(--red);
+}
+
+.status-badge.deducted {
+  background: rgba(39, 174, 96, 0.15);
+  color: var(--green);
+}
+
+/* ═══════════════════════════════════════
+   ADD BUTTON
+═══════════════════════════════════════ */
+.add-btn {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--red);
+  color: white;
+  border: none;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(179, 37, 51, 0.4);
+  z-index: 100;
+  transition: all 0.2s;
+}
+
+.add-btn:active {
+  transform: scale(0.9);
+  box-shadow: 0 3px 10px rgba(179, 37, 51, 0.3);
+}
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal.active { display: flex }
+
+.modal-content {
+  background: var(--bg);
+  border-radius: 20px;
+  box-shadow: var(--neu-out);
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--bg);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--neu-in);
+  padding: 12px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--red);
+  color: white;
+  box-shadow: 0 4px 12px rgba(179, 37, 51, 0.3);
+}
+
+.btn-primary:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(179, 37, 51, 0.2);
+}
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: var(--neu-out);
+}
+
+.btn-secondary:active {
+  box-shadow: var(--neu-in);
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border-radius: 14px;
+  box-shadow: var(--neu-out);
+  border-left: 3px solid var(--red);
+  padding: 13px 22px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  z-index: 300;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.toast.show { opacity: 1 }
+
+/* ═══════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════
+   LOADING
+═══════════════════════════════════════ */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--text3);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg) }
+}
+
+/* ═══════════════════════════════════════
+   DETAIL VIEW
+═══════════════════════════════════════ */
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--shadow-d);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-left">
+    <button class="tb-back" onclick="location.href='index.html'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="tb-title">Employees</div>
+    <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
+  </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="page-wrap" id="page-wrap">
+  
+  <!-- ADMIN SECTION: ADVANCES CALENDAR -->
+  <div id="admin-section" style="display:none">
+    
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="filter-row">
+        <select class="filter-select" id="filter-employee" onchange="filterAdvances()">
+          <option value="">All Employees</option>
+        </select>
+        <select class="filter-select" id="filter-status" onchange="filterAdvances()">
+          <option value="">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Deducted">Deducted</option>
+        </select>
+      </div>
+      <div class="filter-row">
+        <input type="month" class="filter-input" id="filter-month" onchange="loadCalendar()">
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="calendar-container">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="prevMonth()">‹</button>
+        <div class="cal-month-year" id="cal-month-year">May 2025</div>
+        <button class="cal-nav-btn" onclick="nextMonth()">›</button>
+      </div>
+
+      <div class="cal-weekdays">
+        <div class="cal-weekday">Sun</div>
+        <div class="cal-weekday">Mon</div>
+        <div class="cal-weekday">Tue</div>
+        <div class="cal-weekday">Wed</div>
+        <div class="cal-weekday">Thu</div>
+        <div class="cal-weekday">Fri</div>
+        <div class="cal-weekday">Sat</div>
+      </div>
+
+      <div class="cal-days" id="cal-days">
+        <!-- Generated by JS -->
+      </div>
+    </div>
+
+    <!-- ADVANCES LIST -->
+    <div id="advances-list-container">
+      <div class="loading" id="advances-loading">
+        <div class="spinner"></div>
+      </div>
+      <div class="advances-list" id="advances-list"></div>
+      <div class="empty-state" id="advances-empty" style="display:none">
+        <div class="empty-icon">📋</div>
+        <div class="empty-text">No advances found for selected filters</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EMPLOYEE SECTION: OWN DATA ONLY -->
+  <div id="employee-section" style="display:none">
+    <p style="color:var(--text2); text-align:center; padding:40px 20px;">
+      Employee view coming soon...<br>
+      You'll see your own advances and payroll history here.
+    </p>
+  </div>
+
+</div>
+
+<!-- ADD ADVANCE BUTTON (Admin only) -->
+<button class="add-btn" id="add-btn" style="display:none" onclick="showAddAdvanceModal()">+</button>
+
+<!-- ADD ADVANCE MODAL -->
+<div class="modal" id="add-advance-modal">
+  <div class="modal-content">
+    <div class="modal-header">Add New Advance</div>
+    
+    <div class="form-group">
+      <label class="form-label">Employee</label>
+      <select class="form-select" id="advance-employee">
+        <option value="">Select Employee</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-input" id="advance-date">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Amount (₱)</label>
+      <input type="number" class="form-input" id="advance-amount" placeholder="0.00" step="0.01">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAddAdvanceModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAdvance()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW ADVANCE DETAIL MODAL -->
+<div class="modal" id="view-advance-modal">
+  <div class="modal-content">
+    <div class="modal-header">Advance Details</div>
+    
+    <div class="detail-section">
+      <div class="detail-row">
+        <span class="detail-label">ID</span>
+        <span class="detail-value" id="detail-id">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Employee</span>
+        <span class="detail-value" id="detail-name">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Date</span>
+        <span class="detail-value" id="detail-date">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Amount</span>
+        <span class="detail-value" id="detail-amount">—</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="detail-value" id="detail-status">—</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeViewAdvanceModal()">Close</button>
+      <button class="btn btn-primary" id="mark-deducted-btn" onclick="markAsDeducted()">Mark as Deducted</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════
+const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
+
+let token = localStorage.getItem('pedroex-token');
+let userEmail = localStorage.getItem('pedroex-email');
+let isAdmin = ADMIN_EMAILS.includes(userEmail);
+
+let currentYear = new Date().getFullYear();
+let currentMonth = new Date().getMonth(); // 0-11
+
+let allAdvances = [];
+let allEmployees = [];
+let selectedAdvanceId = null;
+
+// ═══════════════════════════════════════════════════════
+// INITIALIZATION
+// ═══════════════════════════════════════════════════════
+async function init() {
+  // Check auth
+  if (!token) {
+    location.href = 'index.html';
+    return;
+  }
+
+  // Show admin/employee section
+  if (isAdmin) {
+    document.getElementById('admin-badge').style.display = 'inline-block';
+    document.getElementById('admin-section').style.display = 'block';
+    document.getElementById('add-btn').style.display = 'flex';
+    
+    // Set default month filter to current month
+    const now = new Date();
+    const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    document.getElementById('filter-month').value = monthStr;
+    
+    await loadEmployees();
+    await loadAdvances();
+    loadCalendar();
+  } else {
+    document.getElementById('employee-section').style.display = 'block';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// LOAD EMPLOYEES
+// ═══════════════════════════════════════════════════════
+async function loadEmployees() {
+  try {
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:D`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    
+    const data = await response.json();
+    const rows = data.values || [];
+    
+    allEmployees = rows
+      .filter(r => r[3] === 'Employee') // Only employees, not admins
+      .map(r => ({
+        email: r[0],
+        firstName: r[1],
+        lastName: r[2],
+        fullName: `${r[1]} ${r[2]}`
+      }));
+    
+    // Populate filter dropdown
+    const filterSelect = document.getElementById('filter-employee');
+    allEmployees.forEach(emp => {
+      const option = document.createElement('option');
+      option.value = emp.fullName;
+      option.textContent = emp.fullName;
+      filterSelect.appendChild(option);
+    });
+    
+    // Populate add advance dropdown
+    const advanceSelect = document.getElementById('advance-employee');
+    allEmployees.forEach(emp => {
+      const option = document.createElement('option');
+      option.value = emp.fullName;
+      option.textContent = emp.fullName;
+      advanceSelect.appendChild(option);
+    });
+    
+  } catch (err) {
+    console.error('Error loading employees:', err);
+    showToast('Error loading employees');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// LOAD ADVANCES
+// ═══════════════════════════════════════════════════════
+async function loadAdvances() {
+  try {
+    document.getElementById('advances-loading').style.display = 'flex';
+    document.getElementById('advances-list').innerHTML = '';
+    document.getElementById('advances-empty').style.display = 'none';
+    
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!A2:D`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    
+    const data = await response.json();
+    const rows = data.values || [];
+    
+    allAdvances = rows.map((r, idx) => ({
+      rowIndex: idx + 2, // Sheet row number
+      id: r[0] || '',
+      date: r[1] || '',
+      name: r[2] || '',
+      amount: parseFloat(r[3]) || 0,
+      status: r[4] || 'Pending' // Add status column if not exists
+    }));
+    
+    document.getElementById('advances-loading').style.display = 'none';
+    
+    filterAdvances();
+    
+  } catch (err) {
+    console.error('Error loading advances:', err);
+    document.getElementById('advances-loading').style.display = 'none';
+    showToast('Error loading advances');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// FILTER ADVANCES
+// ═══════════════════════════════════════════════════════
+function filterAdvances() {
+  const employeeFilter = document.getElementById('filter-employee').value;
+  const statusFilter = document.getElementById('filter-status').value;
+  const monthFilter = document.getElementById('filter-month').value;
+  
+  let filtered = allAdvances;
+  
+  // Filter by employee
+  if (employeeFilter) {
+    filtered = filtered.filter(a => a.name === employeeFilter);
+  }
+  
+  // Filter by status
+  if (statusFilter) {
+    filtered = filtered.filter(a => a.status === statusFilter);
+  }
+  
+  // Filter by month
+  if (monthFilter) {
+    const [year, month] = monthFilter.split('-');
+    filtered = filtered.filter(a => {
+      const advDate = new Date(a.date);
+      return advDate.getFullYear() == year && (advDate.getMonth() + 1) == month;
+    });
+  }
+  
+  // Sort by date (newest first)
+  filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  renderAdvancesList(filtered);
+  loadCalendar(); // Refresh calendar with filtered data
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER ADVANCES LIST
+// ═══════════════════════════════════════════════════════
+function renderAdvancesList(advances) {
+  const container = document.getElementById('advances-list');
+  container.innerHTML = '';
+  
+  if (advances.length === 0) {
+    document.getElementById('advances-empty').style.display = 'block';
+    return;
+  }
+  
+  document.getElementById('advances-empty').style.display = 'none';
+  
+  advances.forEach(adv => {
+    const card = document.createElement('div');
+    card.className = 'advance-card';
+    card.onclick = () => viewAdvanceDetail(adv);
+    
+    const statusClass = adv.status === 'Deducted' ? 'deducted' : 'pending';
+    
+    card.innerHTML = `
+      <div class="advance-header">
+        <div class="advance-name">${adv.name}</div>
+        <div class="advance-amount">₱${adv.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+      </div>
+      <div class="advance-meta">
+        <div class="advance-date">
+          <span>📅</span>
+          <span>${formatDate(adv.date)}</span>
+        </div>
+        <div class="status-badge ${statusClass}">${adv.status}</div>
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════════════════════
+function loadCalendar() {
+  const year = currentYear;
+  const month = currentMonth;
+  
+  // Update header
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+  document.getElementById('cal-month-year').textContent = `${monthNames[month]} ${year}`;
+  
+  // Get first day of month and total days
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  // Get today
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+  const todayDate = today.getDate();
+  
+  // Filter advances for this month
+  const monthAdvances = allAdvances.filter(a => {
+    const advDate = new Date(a.date);
+    return advDate.getFullYear() === year && advDate.getMonth() === month;
+  });
+  
+  // Apply employee filter
+  const employeeFilter = document.getElementById('filter-employee').value;
+  const filteredAdvances = employeeFilter
+    ? monthAdvances.filter(a => a.name === employeeFilter)
+    : monthAdvances;
+  
+  // Build calendar
+  const container = document.getElementById('cal-days');
+  container.innerHTML = '';
+  
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    container.appendChild(empty);
+  }
+  
+  // Days
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayEl = document.createElement('div');
+    dayEl.className = 'cal-day';
+    
+    if (isCurrentMonth && day === todayDate) {
+      dayEl.classList.add('today');
+    }
+    
+    // Check if this day has advances
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dayAdvances = filteredAdvances.filter(a => a.date === dateStr);
+    
+    const numEl = document.createElement('div');
+    numEl.className = 'cal-day-num';
+    numEl.textContent = day;
+    dayEl.appendChild(numEl);
+    
+    if (dayAdvances.length > 0) {
+      const dotsEl = document.createElement('div');
+      dotsEl.className = 'cal-day-dots';
+      
+      const pendingCount = dayAdvances.filter(a => a.status === 'Pending').length;
+      const deductedCount = dayAdvances.filter(a => a.status === 'Deducted').length;
+      
+      if (pendingCount > 0) {
+        const dot = document.createElement('div');
+        dot.className = 'cal-dot pending';
+        dotsEl.appendChild(dot);
+      }
+      
+      if (deductedCount > 0) {
+        const dot = document.createElement('div');
+        dot.className = 'cal-dot deducted';
+        dotsEl.appendChild(dot);
+      }
+      
+      dayEl.appendChild(dotsEl);
+    }
+    
+    dayEl.onclick = () => showDayAdvances(dateStr);
+    
+    container.appendChild(dayEl);
+  }
+}
+
+function prevMonth() {
+  currentMonth--;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+  loadCalendar();
+}
+
+function nextMonth() {
+  currentMonth++;
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+  loadCalendar();
+}
+
+function showDayAdvances(dateStr) {
+  const employeeFilter = document.getElementById('filter-employee').value;
+  
+  let dayAdvances = allAdvances.filter(a => a.date === dateStr);
+  
+  if (employeeFilter) {
+    dayAdvances = dayAdvances.filter(a => a.name === employeeFilter);
+  }
+  
+  if (dayAdvances.length === 0) {
+    showToast('No advances on this date');
+    return;
+  }
+  
+  renderAdvancesList(dayAdvances);
+  
+  // Scroll to list
+  document.getElementById('advances-list-container').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════
+// ADD ADVANCE
+// ═══════════════════════════════════════════════════════
+function showAddAdvanceModal() {
+  document.getElementById('advance-employee').value = '';
+  document.getElementById('advance-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('advance-amount').value = '';
+  document.getElementById('add-advance-modal').classList.add('active');
+}
+
+function closeAddAdvanceModal() {
+  document.getElementById('add-advance-modal').classList.remove('active');
+}
+
+async function saveAdvance() {
+  const employee = document.getElementById('advance-employee').value;
+  const date = document.getElementById('advance-date').value;
+  const amount = parseFloat(document.getElementById('advance-amount').value);
+  
+  if (!employee || !date || !amount || amount <= 0) {
+    showToast('Please fill all fields');
+    return;
+  }
+  
+  try {
+    // Generate ID
+    const id = `ADV-${Date.now()}`;
+    
+    // Append to sheet
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!A:D:append?valueInputOption=USER_ENTERED`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          values: [[id, date, employee, amount]]
+        })
+      }
+    );
+    
+    if (response.ok) {
+      showToast('✅ Advance added successfully');
+      closeAddAdvanceModal();
+      await loadAdvances();
+    } else {
+      showToast('❌ Error saving advance');
+    }
+    
+  } catch (err) {
+    console.error('Error saving advance:', err);
+    showToast('❌ Error saving advance');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// VIEW ADVANCE DETAIL
+// ═══════════════════════════════════════════════════════
+function viewAdvanceDetail(advance) {
+  selectedAdvanceId = advance.id;
+  
+  document.getElementById('detail-id').textContent = advance.id;
+  document.getElementById('detail-name').textContent = advance.name;
+  document.getElementById('detail-date').textContent = formatDate(advance.date);
+  document.getElementById('detail-amount').textContent = '₱' + advance.amount.toLocaleString('en-PH', {minimumFractionDigits: 2});
+  document.getElementById('detail-status').textContent = advance.status;
+  
+  // Show/hide "Mark as Deducted" button
+  if (advance.status === 'Pending') {
+    document.getElementById('mark-deducted-btn').style.display = 'block';
+  } else {
+    document.getElementById('mark-deducted-btn').style.display = 'none';
+  }
+  
+  document.getElementById('view-advance-modal').classList.add('active');
+}
+
+function closeViewAdvanceModal() {
+  document.getElementById('view-advance-modal').classList.remove('active');
+}
+
+async function markAsDeducted() {
+  if (!selectedAdvanceId) return;
+  
+  const advance = allAdvances.find(a => a.id === selectedAdvanceId);
+  if (!advance) return;
+  
+  try {
+    // Update status in sheet
+    const response = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!E${advance.rowIndex}?valueInputOption=USER_ENTERED`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          values: [['Deducted']]
+        })
+      }
+    );
+    
+    if (response.ok) {
+      showToast('✅ Marked as deducted');
+      closeViewAdvanceModal();
+      await loadAdvances();
+    } else {
+      showToast('❌ Error updating status');
+    }
+    
+  } catch (err) {
+    console.error('Error updating status:', err);
+    showToast('❌ Error updating status');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════════
+init();
+</script>
+
+</body>
+</html>
