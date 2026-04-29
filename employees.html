@@ -592,6 +592,9 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   color: var(--text2);
 }
 
+
+
+
 /* ═══════════════════════════════════════
    PAYROLL CALCULATOR CARD
 ═══════════════════════════════════════ */
@@ -749,6 +752,29 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   
   <!-- ADMIN SECTION: ADVANCES CALENDAR -->
   <div id="admin-section" style="display:none">
+
+      <!-- PAYROLL HISTORY SECTION -->
+      <div class="section-divider"></div>
+      <div class="section-header">
+        <h3 class="section-title">Payroll History</h3>
+        <p class="section-subtitle">Saved payroll records</p>
+      </div>
+
+      <div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px">
+        <div style="display:flex;gap:10px;margin-bottom:14px">
+          <select class="filter-select" id="hist-filter-emp" onchange="loadHistory()" style="flex:1">
+            <option value="">All Employees</option>
+          </select>
+          <input type="month" class="filter-input" id="hist-filter-month" onchange="loadHistory()" style="flex:1">
+        </div>
+        <div id="history-loading" class="loading" style="display:none"><div class="spinner"></div></div>
+        <div id="history-list"></div>
+        <div id="history-empty" class="empty-state" style="display:none">
+          <div class="empty-icon">📄</div>
+          <div class="empty-text">No payroll history found.</div>
+        </div>
+      </div>
+
     
       <!-- FILTER BAR -->
     <div class="filter-bar">
@@ -762,7 +788,7 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
       <div class="filter-row">
         <input type="month" class="filter-input" id="filter-month" onchange="loadCalendar()">
       </div>
-    </div>
+  
 
     <!-- CALENDAR -->
     <div class="calendar-container">
@@ -994,10 +1020,17 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 
   <!-- EMPLOYEE SECTION: OWN DATA ONLY -->
   <div id="employee-section" style="display:none">
-    <p style="color:var(--text2); text-align:center; padding:40px 20px;">
-      Employee view coming soon...<br>
-      You'll see your own advances and payroll history here.
-    </p>
+    <div class="section-header">
+      <h3 class="section-title">My Advances</h3>
+    </div>
+    <div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px">
+      <div id="emp-history-loading" class="loading"><div class="spinner"></div></div>
+      <div id="emp-history-list"></div>
+      <div id="emp-history-empty" class="empty-state" style="display:none">
+        <div class="empty-icon">📄</div>
+        <div class="empty-text">No payroll history yet.</div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1394,6 +1427,23 @@ async function init() {
     await loadEmployees();
     await loadAdvances();
     loadCalendar();
+
+        // Populate history employee filter
+    const histEmpSel = document.getElementById('hist-filter-emp');
+    if (histEmpSel) {
+      allEmployees.forEach(emp => {
+        const o = document.createElement('option');
+        o.value = emp.fullName; o.textContent = emp.fullName;
+        histEmpSel.appendChild(o);
+      });
+    }
+
+    // Set default month for history filter
+    const histMonth = document.getElementById('hist-filter-month');
+    if (histMonth) histMonth.value = monthStr;
+
+    // Load history
+    loadHistory();
     
     // Populate payroll employee dropdown (Add this)
     const payrollSelect = document.getElementById('payroll-employee');
@@ -1405,7 +1455,65 @@ async function init() {
     });
     
   } else {
-    document.getElementById('employee-section').style.display = 'block';
+  document.getElementById('employee-section').style.display = 'block';
+  // Load employee's own history
+  loadEmployeeHistory();
+}
+}
+
+
+async function loadEmployeeHistory() {
+  try {
+    var res  = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:U',
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    var data = await res.json();
+    var rows = (data.values || []).filter(function(r) {
+      // Match by email lookup — need to get fullName from email
+      return true; // will filter below
+    });
+
+    // Get my full name from Employees sheet
+    var empRes  = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D',
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    var empData = await empRes.json();
+    var myRow   = (empData.values || []).find(function(r){ return (r[0]||'').toLowerCase() === userEmail.toLowerCase(); });
+    var myName  = myRow ? ((myRow[1]||'') + ' ' + (myRow[2]||'')).trim() : '';
+
+    rows = rows.filter(function(r){ return (r[1]||'') === myName; });
+    rows.sort(function(a,b){ return (b[0]||'').localeCompare(a[0]||''); });
+
+    document.getElementById('emp-history-loading').style.display = 'none';
+
+    if (!rows.length) {
+      document.getElementById('emp-history-empty').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('emp-history-list').innerHTML = rows.map(function(r) {
+      var period = r[2]  || '—';
+      var gross  = parseFloat(r[18]||0).toFixed(2);
+      var net    = parseFloat(r[20]||0).toFixed(2);
+      var ded    = parseFloat(r[19]||0).toFixed(2);
+
+      return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showHistoryDetail(' + JSON.stringify(r).replace(/'/g,"&#39;") + ')">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        + '<div style="font-size:13px;font-weight:600;color:var(--text2)">' + period + '</div>'
+        + '<div style="font-size:16px;font-weight:700;color:var(--red)">₱' + net + '</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:12px">'
+        + '<span style="font-size:11px;color:var(--text3)">Gross: <b style="color:var(--text)">₱' + gross + '</b></span>'
+        + '<span style="font-size:11px;color:var(--text3)">Deductions: <b style="color:var(--text)">₱' + ded + '</b></span>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+
+  } catch(err) {
+    document.getElementById('emp-history-loading').style.display = 'none';
+    showToast('❌ Failed to load history.');
   }
 }
 // ═══════════════════════════════════════════════════════
@@ -1600,41 +1708,40 @@ function loadCalendar() {
     container.appendChild(empty);
   }
   
-  // Days
+    // Days
   for (let day = 1; day <= daysInMonth; day++) {
     const dayEl = document.createElement('div');
     dayEl.className = 'cal-day';
-    
+    dayEl.style.cssText = 'aspect-ratio:unset;min-height:56px;padding:4px 3px;justify-content:flex-start;align-items:center;flex-direction:column;';
+
     if (isCurrentMonth && day === todayDate) {
       dayEl.classList.add('today');
     }
-    
-    // Check if this day has advances
+
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const dayAdvances = filteredAdvances.filter(a => a.date === dateStr);
-    
+
     const numEl = document.createElement('div');
     numEl.className = 'cal-day-num';
     numEl.textContent = day;
     dayEl.appendChild(numEl);
-    
+
     if (dayAdvances.length > 0) {
-      const dotsEl = document.createElement('div');
-      dotsEl.className = 'cal-day-dots';
-      
-      // Show one dot per advance (max 3 dots visible)
-      const dotsToShow = Math.min(dayAdvances.length, 3);
-      for (let i = 0; i < dotsToShow; i++) {
-        const dot = document.createElement('div');
-        dot.className = 'cal-dot pending'; // All advances use red dot
-        dotsEl.appendChild(dot);
+      dayAdvances.slice(0, 2).forEach(function(adv) {
+        var nameEl = document.createElement('div');
+        nameEl.style.cssText = 'font-size:8px;font-weight:700;color:#fff;background:var(--red);border-radius:4px;padding:1px 4px;margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;width:100%;text-align:center';
+        nameEl.textContent = adv.name.split(' ')[0]; // First name lang
+        dayEl.appendChild(nameEl);
+      });
+      if (dayAdvances.length > 2) {
+        var moreEl = document.createElement('div');
+        moreEl.style.cssText = 'font-size:8px;color:var(--text3);margin-top:1px;text-align:center';
+        moreEl.textContent = '+' + (dayAdvances.length - 2);
+        dayEl.appendChild(moreEl);
       }
-      
-      dayEl.appendChild(dotsEl);
     }
-    
+
     dayEl.onclick = () => showDayAdvances(dateStr);
-    
     container.appendChild(dayEl);
   }
 }
@@ -1659,22 +1766,38 @@ function nextMonth() {
 
 function showDayAdvances(dateStr) {
   const employeeFilter = document.getElementById('filter-employee').value;
-  
   let dayAdvances = allAdvances.filter(a => a.date === dateStr);
-  
-  if (employeeFilter) {
+
+  // Employee — sarili lang
+  if (!isAdmin) {
+    const myName = allEmployees.find(e => e.email === userEmail);
+    const myFullName = myName ? myName.fullName : '';
+    dayAdvances = dayAdvances.filter(a => a.name === myFullName);
+  } else if (employeeFilter) {
     dayAdvances = dayAdvances.filter(a => a.name === employeeFilter);
   }
-  
+
   if (dayAdvances.length === 0) {
     showToast('No advances on this date');
     return;
   }
-  
-  renderAdvancesList(dayAdvances);
-  
-  // Scroll to list
-  document.getElementById('advances-list-container').scrollIntoView({ behavior: 'smooth' });
+
+  // Show in modal
+  const d = new Date(dateStr + 'T00:00:00');
+  const label = d.toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  document.getElementById('day-modal-title').textContent = label;
+  document.getElementById('day-modal-list').innerHTML = dayAdvances.map(function(adv) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.06)">'
+      + '<div>'
+      + '<div style="font-size:14px;font-weight:600;color:var(--text)">' + adv.name + '</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-top:2px">ID: ' + adv.id + '</div>'
+      + '</div>'
+      + '<div style="font-size:16px;font-weight:700;color:var(--red)">₱' + adv.amount.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('day-advance-modal').classList.add('active');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1746,7 +1869,6 @@ function viewAdvanceDetail(advance) {
   document.getElementById('detail-amount').textContent = '₱' + advance.amount.toLocaleString('en-PH', {minimumFractionDigits: 2});
   
   // Hide "Mark as Deducted" button since we removed status tracking
-  document.getElementById('mark-deducted-btn').style.display = 'none';
   
   document.getElementById('view-advance-modal').classList.add('active');
 }
@@ -1774,6 +1896,122 @@ function showToast(msg) {
 // START
 // ═══════════════════════════════════════════════════════
 init();
+
+async function loadHistory() {
+  document.getElementById('history-loading').style.display = 'flex';
+  document.getElementById('history-list').innerHTML = '';
+  document.getElementById('history-empty').style.display = 'none';
+
+  try {
+    var res  = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:U',
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    var data = await res.json();
+    var rows = data.values || [];
+
+    var empFilter   = document.getElementById('hist-filter-emp') ? document.getElementById('hist-filter-emp').value : '';
+    var monthFilter = document.getElementById('hist-filter-month') ? document.getElementById('hist-filter-month').value : '';
+
+    // Employee — sarili lang
+    if (!isAdmin) {
+      var myEmp = allEmployees.find(function(e){ return e.email === userEmail; });
+      var myName = myEmp ? myEmp.fullName : '';
+      rows = rows.filter(function(r){ return (r[1]||'') === myName; });
+    } else {
+      if (empFilter) rows = rows.filter(function(r){ return (r[1]||'') === empFilter; });
+    }
+
+    if (monthFilter) {
+      rows = rows.filter(function(r){
+        return (r[2]||'').includes(monthFilter.replace('-', '-').slice(0,7));
+      });
+    }
+
+    // Sort newest first
+    rows.sort(function(a,b){ return (b[0]||'').localeCompare(a[0]||''); });
+
+    document.getElementById('history-loading').style.display = 'none';
+
+    if (!rows.length) {
+      document.getElementById('history-empty').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('history-list').innerHTML = rows.map(function(r) {
+      var id       = r[0]  || '—';
+      var name     = r[1]  || '—';
+      var period   = r[2]  || '—';
+      var gross    = parseFloat(r[18]||0).toFixed(2);
+      var net      = parseFloat(r[20]||0).toFixed(2);
+      var ded      = parseFloat(r[19]||0).toFixed(2);
+
+      return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showHistoryDetail(' + JSON.stringify(r).replace(/'/g,"&#39;") + ')">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        + '<div style="font-size:14px;font-weight:700;color:var(--text)">' + name + '</div>'
+        + '<div style="font-size:16px;font-weight:700;color:var(--red)">₱' + net + '</div>'
+        + '</div>'
+        + '<div style="font-size:11px;color:var(--text2);margin-bottom:6px">' + period + '</div>'
+        + '<div style="display:flex;gap:12px">'
+        + '<span style="font-size:11px;color:var(--text3)">Gross: <b style="color:var(--text)">₱' + gross + '</b></span>'
+        + '<span style="font-size:11px;color:var(--text3)">Deductions: <b style="color:var(--text)">₱' + ded + '</b></span>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+
+  } catch(err) {
+    document.getElementById('history-loading').style.display = 'none';
+    showToast('❌ Failed to load history.');
+    console.error(err);
+  }
+}
+
+function showHistoryDetail(r) {
+  var labels = ['ID','Name','Period','Days','Period Advances','Existing Advances',
+    'Total Advances','Deducted Advance','Remaining Advance','SSS','Pag-IBIG','PhilHealth',
+    'Total Contributions','2-Man Days','2-Man Pay','Savings Plan','Base Pay',
+    'Meal Allowance','Gross Pay','Total Deductions','Net Pay'];
+
+  document.getElementById('hist-detail-body').innerHTML = labels.map(function(lbl, i) {
+    var val = r[i] || '—';
+    var isPeso = i >= 4;
+    if (isPeso && !isNaN(parseFloat(val))) val = '₱' + parseFloat(val).toFixed(2);
+    return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05)">'
+      + '<span style="font-size:13px;color:var(--text2)">' + lbl + '</span>'
+      + '<span style="font-size:13px;font-weight:600;color:var(--text);text-align:right;max-width:55%">' + val + '</span>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('history-detail-modal').classList.add('active');
+}
+
+
+
 </script>
+
+<!-- DAY ADVANCE MODAL -->
+<div class="modal" id="day-advance-modal">
+  <div class="modal-content">
+    <div class="modal-header" id="day-modal-title">Advances</div>
+    <div id="day-modal-list"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="document.getElementById('day-advance-modal').classList.remove('active')">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- HISTORY DETAIL MODAL -->
+<div class="modal" id="history-detail-modal">
+  <div class="modal-content">
+    <div class="modal-header">Payroll Detail</div>
+    <div id="hist-detail-body"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn btn-secondary" onclick="document.getElementById('history-detail-modal').classList.remove('active')">Close</button>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>
