@@ -130,6 +130,13 @@ body.dark .dt-row{border-bottom-color:rgba(255,255,255,0.04)}
 .dt-label{font-size:11px;color:var(--text3);font-weight:600}
 .dt-val{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:65%}
 
+/* RATE CALCULATOR */
+.rate-calc-box{background:var(--bg2);border-radius:14px;padding:14px;margin-top:10px;border-left:3px solid var(--blue)}
+.rate-calc-title{font-size:11px;font-weight:700;color:var(--blue);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
+.rate-calc-info{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px}
+.rate-display{font-size:18px;font-weight:700;color:var(--text);margin-top:8px}
+.rate-base{font-size:11px;color:var(--text3);margin-top:4px}
+
 /* CONFIRM */
 .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:center;justify-content:center;padding:20px}
 .confirm-overlay.open{display:flex}
@@ -205,6 +212,33 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
   transition: transform 0.2s ease;
 }
 
+/* RATE SETTINGS PANEL */
+.rate-settings-btn{
+  background:var(--blue);color:#fff;
+  padding:10px 16px;border-radius:12px;
+  font-size:13px;font-weight:600;
+  border:none;cursor:pointer;
+  box-shadow:4px 4px 12px rgba(37,99,235,0.4);
+  font-family:'Inter',sans-serif;
+  margin-bottom:14px;width:100%;
+}
+.rate-settings-btn:active{transform:scale(0.98)}
+
+.rate-adj-input{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);border-radius:12px;
+  box-shadow:var(--neu-in);padding:12px 14px;
+}
+.rate-adj-input input{
+  flex:1;background:none;border:none;
+  color:var(--text);font-size:16px;font-weight:700;
+  font-family:'Inter',sans-serif;outline:none;
+  text-align:center;
+}
+.rate-adj-input span{
+  font-size:14px;color:var(--text2);font-weight:600;
+}
+
 </style>
 </head>
 <body>
@@ -229,6 +263,30 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
     <!-- LOADING -->
     <div id="wrap-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading trips...</div>
+
+    <!-- RATE SETTINGS (Admin Only) -->
+    <div id="rate-settings-panel" style="display:none">
+      <button class="rate-settings-btn" onclick="toggleRateSettings()">
+        ⚙️ Rate Settings
+      </button>
+      <div class="neu-card" id="rate-settings-card" style="display:none;padding:16px">
+        <div class="card-title">Adjust All Rates</div>
+        <div class="fg">
+          <label class="fl">Percentage Change</label>
+          <div class="rate-adj-input">
+            <button onclick="adjustRatePercent(-1)" style="background:none;border:none;color:var(--red);font-size:20px;cursor:pointer;font-weight:700">−</button>
+            <input type="number" id="rate-adjustment" value="0" step="0.1" oninput="updateRatePreview()">
+            <span>%</span>
+            <button onclick="adjustRatePercent(1)" style="background:none;border:none;color:var(--green);font-size:20px;cursor:pointer;font-weight:700">+</button>
+          </div>
+        </div>
+        <div id="rate-preview" style="margin-top:14px;font-size:12px;color:var(--text2)"></div>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn btn-ghost" onclick="toggleRateSettings()">Cancel</button>
+          <button class="btn btn-red" onclick="applyRateAdjustment()">Apply Changes</button>
+        </div>
+      </div>
+    </div>
 
     <!-- FILTER BAR -->
     <div id="filter-bar" class="neu-card" style="padding:14px;margin-bottom:14px;display:none">
@@ -360,14 +418,28 @@ const TAB_TRIPS      = 'Trips';
 const TAB_TRUCKS     = 'Truck Roster';
 const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
 
-// ✅ ROUTE OPTIONS
+// ✅ ROUTE OPTIONS (UPDATED)
 const ROUTES = [
   'Daraga/Legazpi/Albay/Camalig',
-  'Sorsogon/Pioduran/Pilar/Donsol',
+  'Sorsogon/Pioduran/Polangui/Donsol/Pilar',
   'Nabua/Iriga/Pili/Bula',
   'Tabaco',
-  'Ligao'
+  'Ligao',
+  'Masbate'
 ];
+
+// ✅ BASE RATES (DEFAULT)
+const BASE_RATES = {
+  'Daraga/Legazpi/Albay/Camalig': 8429,
+  'Sorsogon/Pioduran/Polangui/Donsol/Pilar': 9833,
+  'Nabua/Iriga/Pili/Bula': 6235,
+  'Tabaco': 8472,
+  'Ligao': 6235,
+  'Masbate': 0 // Set default for new route
+};
+
+// Current rates (will be adjusted)
+var currentRates = Object.assign({}, BASE_RATES);
 
 // ═══ STATE ════════════════════════════════════════════
 var token        = '';
@@ -384,16 +456,16 @@ var filteredTrips = [];
 
 // ═══ TRUCK COLORS (red gradient) ══════════════════════
 var TRUCK_COLORS = [
-  { bg:'#B32533', text:'#fff' },  // Main red
-  { bg:'#D94452', text:'#fff' },  // Light red
-  { bg:'#8B1E28', text:'#fff' },  // Dark red
-  { bg:'#E85D6B', text:'#fff' },  // Pink-red
-  { bg:'#6B1720', text:'#fff' },  // Deep red
-  { bg:'#F07A85', text:'#fff' },  // Salmon red
-  { bg:'#A02030', text:'#fff' },  // Crimson
-  { bg:'#C83848', text:'#fff' },  // Rose red
-  { bg:'#7A1825', text:'#fff' },  // Wine red
-  { bg:'#EB6B7A', text:'#fff' },  // Coral red
+  { bg:'#B32533', text:'#fff' },
+  { bg:'#D94452', text:'#fff' },
+  { bg:'#8B1E28', text:'#fff' },
+  { bg:'#E85D6B', text:'#fff' },
+  { bg:'#6B1720', text:'#fff' },
+  { bg:'#F07A85', text:'#fff' },
+  { bg:'#A02030', text:'#fff' },
+  { bg:'#C83848', text:'#fff' },
+  { bg:'#7A1825', text:'#fff' },
+  { bg:'#EB6B7A', text:'#fff' },
 ];
 
 var truckColorMap = {};
@@ -431,6 +503,87 @@ function renderLegend() {
   }).join('');
 }
 
+// ═══ RATE CALCULATOR ══════════════════════════════════
+function calculateRate(route, adjustment) {
+  var baseRate = BASE_RATES[route] || 0;
+  if (!baseRate) return 0;
+  var multiplier = 1 + (adjustment / 100);
+  return Math.round(baseRate * multiplier);
+}
+
+function getDefaultRate(route) {
+  return currentRates[route] || BASE_RATES[route] || 0;
+}
+
+function formatCurrency(amount) {
+  return '₱' + parseFloat(amount).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function toggleRateSettings() {
+  var card = document.getElementById('rate-settings-card');
+  card.style.display = card.style.display === 'none' ? 'block' : 'none';
+  if (card.style.display === 'block') {
+    document.getElementById('rate-adjustment').value = '0';
+    updateRatePreview();
+  }
+}
+
+function adjustRatePercent(delta) {
+  var input = document.getElementById('rate-adjustment');
+  var current = parseFloat(input.value) || 0;
+  input.value = (current + delta).toFixed(1);
+  updateRatePreview();
+}
+
+function updateRatePreview() {
+  var adjustment = parseFloat(document.getElementById('rate-adjustment').value) || 0;
+  var preview = document.getElementById('rate-preview');
+  
+  var html = '<div style="background:var(--bg);border-radius:12px;padding:12px;box-shadow:var(--neu-in)">';
+  html += '<div style="font-weight:700;color:var(--text);margin-bottom:8px">Preview New Rates:</div>';
+  
+  ROUTES.forEach(function(route) {
+    var oldRate = BASE_RATES[route] || 0;
+    var newRate = calculateRate(route, adjustment);
+    var diff = newRate - oldRate;
+    var diffColor = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--text3)';
+    var diffText = diff > 0 ? '+' + formatCurrency(diff) : formatCurrency(diff);
+    
+    html += '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)">';
+    html += '<div style="font-size:11px;color:var(--text2)">' + route + '</div>';
+    html += '<div style="text-align:right">';
+    html += '<div style="font-size:13px;font-weight:600;color:var(--text)">' + formatCurrency(newRate) + '</div>';
+    html += '<div style="font-size:10px;color:' + diffColor + '">' + diffText + '</div>';
+    html += '</div></div>';
+  });
+  
+  html += '</div>';
+  preview.innerHTML = html;
+}
+
+function applyRateAdjustment() {
+  var adjustment = parseFloat(document.getElementById('rate-adjustment').value) || 0;
+  
+  if (adjustment === 0) {
+    showToast('⚠️ No adjustment specified');
+    return;
+  }
+  
+  document.getElementById('confirm-title').textContent = 'Apply Rate Adjustment?';
+  document.getElementById('confirm-msg').innerHTML = 
+    'Apply <strong>' + (adjustment > 0 ? '+' : '') + adjustment + '%</strong> adjustment to all route rates?<br><br>' +
+    'This will update the default rates for new trips.';
+  document.getElementById('confirm-ok').onclick = function() {
+    ROUTES.forEach(function(route) {
+      currentRates[route] = calculateRate(route, adjustment);
+    });
+    closeConfirm();
+    toggleRateSettings();
+    showToast('✅ Rates updated! New trips will use adjusted rates.');
+  };
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
 // ═══ INIT ═════════════════════════════════════════════
 (function init() {
   document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
@@ -449,11 +602,13 @@ function renderLegend() {
   var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
   isAdmin   = (email === ADMIN_EMAIL.toLowerCase());
 
-  if (isAdmin) document.getElementById('fab').style.display = 'flex';
+  if (isAdmin) {
+    document.getElementById('fab').style.display = 'flex';
+    document.getElementById('rate-settings-panel').style.display = 'block';
+  }
 
   loadAll();
 
-  // ✅ INIT PULL TO REFRESH
   initPullToRefresh(
     document.querySelector('.page-wrap'),
     function(done) {
@@ -462,7 +617,6 @@ function renderLegend() {
     }
   );
 
-  // ✅ INIT AUTO REFRESH (every 5 minutes)
   initAutoRefresh(function(done) {
     loadAll();
     done();
@@ -478,25 +632,26 @@ function loadAll() {
     var truckRows = res[0].values || [];
     var tripRows  = res[1].values || [];
 
-    // Build trucks list
     allTrucks = truckRows.filter(function(r){ return r[0]; }).map(function(r){ return r[0]; });
 
-    // Build trips with row index
-    // Columns: ID, Delivery Date, Trucks, Shipment Date, Fresh/Frozen, Shipment Number, Billed?, Route, Rate
-    allTrips = tripRows.map(function(r, i) {
-      return {
-        rowIndex: i + 2,
-        id: r[0]||'',
-        deliveryDate: r[1]||'',
-        truck: r[2]||'',
-        shipmentDate: r[3]||'',
-        type: r[4]||'',
-        shipmentNumber: r[5]||'',
-        billed: r[6]||'',
-        route: r[7]||'',
-        rate: r[8]||''
-      };
-    }).filter(function(r){ return r.deliveryDate; });
+    // ✅ FIX: Filter out empty rows BEFORE mapping
+    allTrips = tripRows.filter(function(r){ return r[1]; }) // Must have delivery date
+      .map(function(r, i) {
+        // Find actual row index in sheet
+        var actualRowIndex = tripRows.indexOf(r) + 2;
+        return {
+          rowIndex: actualRowIndex,
+          id: r[0]||'',
+          deliveryDate: r[1]||'',
+          truck: r[2]||'',
+          shipmentDate: r[3]||'',
+          type: r[4]||'',
+          shipmentNumber: r[5]||'',
+          billed: r[6]||'',
+          route: r[7]||'',
+          rate: r[8]||''
+        };
+      });
 
     buildColorMap();
     renderLegend();
@@ -518,7 +673,6 @@ function loadAll() {
 
 // ═══ FILTER ═══════════════════════════════════════════
 function buildFilterDropdowns() {
-  // Trucks
   var truckSel = document.getElementById('filter-truck');
   while (truckSel.options.length > 1) truckSel.remove(1);
   allTrucks.forEach(function(t) {
@@ -527,7 +681,6 @@ function buildFilterDropdowns() {
     truckSel.appendChild(o);
   });
 
-  // ✅ Routes - from predefined list
   var routeSel = document.getElementById('filter-route');
   while (routeSel.options.length > 1) routeSel.remove(1);
   ROUTES.forEach(function(r) {
@@ -613,7 +766,6 @@ function renderCalendar() {
 
   var source = hasActiveFilter() ? filteredTrips : allTrips;
 
-  // Map: day -> [{truck, color}]
   var dayMap = {};
   source.forEach(function(r) {
     if (!r.deliveryDate || !r.truck) return;
@@ -716,7 +868,7 @@ function openTripDetail(rowIndex) {
   var body = document.getElementById('trip-sheet-body');
 
   if (isAdmin) {
-    // ADMIN: Full edit form (all fields)
+    // ADMIN: Full edit form
     body.innerHTML = '<div class="fg"><label class="fl">Delivery Date</label><input class="fi" id="edit-delivery" type="date" value="'+trip.deliveryDate+'"></div>'
       + '<div class="fg"><label class="fl">Truck</label><select class="fi" id="edit-truck">'
       + '<option value="">— Select Truck —</option>'
@@ -735,8 +887,7 @@ function openTripDetail(rowIndex) {
       + '<button class="tg-btn'+(trip.billed!=='Yes'?' active-no':'')+'" id="edit-billed-no" onclick="setEditBilled(\'No\')">No</button>'
       + '<button class="tg-btn'+(trip.billed==='Yes'?' active-yes':'')+'" id="edit-billed-yes" onclick="setEditBilled(\'Yes\')">Yes</button>'
       + '</div></div>'
-      // ✅ ROUTE DROPDOWN
-      + '<div class="fg"><label class="fl">Route</label><select class="fi" id="edit-route">'
+      + '<div class="fg"><label class="fl">Route</label><select class="fi" id="edit-route" onchange="updateEditRate()">'
       + '<option value="">— Select Route —</option>'
       + ROUTES.map(function(r){
           return '<option value="'+r+'"'+(trip.route===r?' selected':'')+'>'+r+'</option>';
@@ -749,7 +900,7 @@ function openTripDetail(rowIndex) {
       + '</div>'
       + '<button onclick="promptDeleteTrip()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Delete Trip</button>';
   } else {
-    // USER: View + edit only Shipment Date & Shipment Number
+    // USER: View + edit Shipment Date & Number only
     body.innerHTML = [
       ['Delivery Date', trip.deliveryDate],
       ['Truck', trip.truck],
@@ -772,6 +923,14 @@ function openTripDetail(rowIndex) {
   sheet.classList.add('open');
 }
 
+function updateEditRate() {
+  var route = document.getElementById('edit-route').value;
+  var rateInput = document.getElementById('edit-rate');
+  if (route && rateInput) {
+    rateInput.value = getDefaultRate(route);
+  }
+}
+
 var editBilledVal = 'No';
 function setEditBilled(v) {
   editBilledVal = v;
@@ -779,7 +938,6 @@ function setEditBilled(v) {
   document.getElementById('edit-billed-yes').className = 'tg-btn'+(v==='Yes'?' active-yes':'');
 }
 
-// ADMIN: Save all fields
 function saveEditTrip() {
   if (!selectedTrip || !isAdmin) return;
 
@@ -788,7 +946,7 @@ function saveEditTrip() {
   var shipDate = document.getElementById('edit-shipment-date').value.trim();
   var type     = document.getElementById('edit-type').value;
   var shipNum  = document.getElementById('edit-shipment-num').value.trim();
-  var route    = document.getElementById('edit-route').value; // ✅ Now from dropdown
+  var route    = document.getElementById('edit-route').value;
   var rate     = document.getElementById('edit-rate').value.trim();
 
   if (!delivery || !truck) { showToast('❌ Delivery Date and Truck required!'); return; }
@@ -812,7 +970,6 @@ function saveEditTrip() {
     }).catch(function(err){ hideSaving(); showToast('❌ Update failed.'); console.error(err); });
 }
 
-// USER: Save only Shipment Date & Shipment Number
 function saveUserEdit() {
   if (!selectedTrip) return;
 
@@ -893,18 +1050,43 @@ function openAddTrip() {
     + '<button class="tg-btn active-no" id="add-billed-no" onclick="setAddBilled(\'No\')">No</button>'
     + '<button class="tg-btn" id="add-billed-yes" onclick="setAddBilled(\'Yes\')">Yes</button>'
     + '</div></div>'
-    // ✅ ROUTE DROPDOWN
-    + '<div class="fg"><label class="fl">Route</label><select class="fi" id="add-route">'
+    + '<div class="fg"><label class="fl">Route</label><select class="fi" id="add-route" onchange="updateAddRate()">'
     + '<option value="">— Select Route —</option>'
     + ROUTES.map(function(r){ return '<option value="'+r+'">'+r+'</option>'; }).join('')
     + '</select></div>'
-    + '<div class="fg"><label class="fl">Rate</label><input class="fi" id="add-rate" type="number"></div>'
+    + '<div class="fg">'
+    + '<label class="fl">Rate</label>'
+    + '<input class="fi" id="add-rate" type="number" placeholder="Auto-filled based on route">'
+    + '<div class="rate-calc-box" id="add-rate-info" style="display:none">'
+    + '<div class="rate-calc-title">💰 Default Rate</div>'
+    + '<div class="rate-calc-info" id="add-rate-text"></div>'
+    + '</div>'
+    + '</div>'
     + '<div class="btn-row">'
     + '<button class="btn btn-ghost" onclick="closeTripSheet()">Cancel</button>'
     + '<button class="btn btn-red" onclick="saveAddTrip()">Add Trip</button>'
     + '</div>';
 
   sheet.classList.add('open');
+}
+
+function updateAddRate() {
+  var route = document.getElementById('add-route').value;
+  var rateInput = document.getElementById('add-rate');
+  var rateInfo = document.getElementById('add-rate-info');
+  var rateText = document.getElementById('add-rate-text');
+  
+  if (route) {
+    var defaultRate = getDefaultRate(route);
+    rateInput.value = defaultRate;
+    rateInfo.style.display = 'block';
+    rateText.innerHTML = 'Base rate for <strong>' + route + '</strong>:<br>'
+      + '<div class="rate-display">' + formatCurrency(defaultRate) + '</div>'
+      + '<div class="rate-base">From base rate: ' + formatCurrency(BASE_RATES[route] || 0) + '</div>';
+  } else {
+    rateInput.value = '';
+    rateInfo.style.display = 'none';
+  }
 }
 
 var addBilledVal = 'No';
@@ -922,31 +1104,23 @@ function saveAddTrip() {
   var shipDate = document.getElementById('add-shipment-date').value.trim();
   var type     = document.getElementById('add-type').value;
   var shipNum  = document.getElementById('add-shipment-num').value.trim();
-  var route    = document.getElementById('add-route').value; // ✅ Now from dropdown
+  var route    = document.getElementById('add-route').value;
   var rate     = document.getElementById('add-rate').value.trim();
 
   if (!delivery || !truck) { showToast('❌ Delivery Date and Truck required!'); return; }
 
-  var id  = 'TRIP-' + delivery.replace(/-/g,'') + '-' + pad(allTrips.length+1);
+  // ✅ FIX: Generate ID using timestamp to ensure uniqueness
+  var id  = 'TRIP-' + Date.now();
   var row = [id, delivery, truck, shipDate, type, shipNum, addBilledVal, route, rate];
 
   showSaving('Adding trip...');
   apiAppend(TAB_TRIPS+'!A:I', [row])
     .then(function() {
       hideSaving();
-      var newTrip = {
-        rowIndex: allTrips.length+2, id:id, deliveryDate:delivery, truck:truck,
-        shipmentDate:shipDate, type:type, shipmentNumber:shipNum,
-        billed:addBilledVal, route:route, rate:rate
-      };
-      allTrips.push(newTrip);
-      filteredTrips = allTrips.slice();
-      buildColorMap();
-      renderLegend();
       closeTripSheet();
-      renderCalendar();
+      loadAll(); // Reload to get correct row indices
       showToast('✅ Trip added!');
-    }).catch(function(err){ hideSaving(); showToast('❌ Add failed.'); console.error(err); });
+    }).catch(function(err){ hideSaving(); showToast('❌ Add failed: ' + err.message); console.error(err); });
 }
 
 // ═══ API ══════════════════════════════════════════════
@@ -961,14 +1135,30 @@ function apiAppend(range, values) {
     '/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
     { method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
       body:JSON.stringify({values:values}) })
-    .then(function(r){ if(!r.ok) throw new Error('Append failed '+r.status); return r.json(); });
+    .then(function(r){ 
+      if(!r.ok) {
+        return r.json().then(function(err){
+          console.error('API Append Error:', err);
+          throw new Error(err.error?.message || 'Append failed');
+        });
+      }
+      return r.json(); 
+    });
 }
 function apiUpdate(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
     '/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
     { method:'PUT', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
       body:JSON.stringify({values:values}) })
-    .then(function(r){ if(!r.ok) throw new Error('Update failed '+r.status); return r.json(); });
+    .then(function(r){ 
+      if(!r.ok) {
+        return r.json().then(function(err){
+          console.error('API Update Error:', err);
+          throw new Error(err.error?.message || 'Update failed');
+        });
+      }
+      return r.json(); 
+    });
 }
 
 // ═══ PULL TO REFRESH ══════════════════════════════════
@@ -1009,10 +1199,8 @@ function initPullToRefresh(scrollEl, onRefresh) {
 
     var dist = e.changedTouches[0].clientY - startY;
     if (dist >= threshold) {
-      // Trigger refresh
       indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
       onRefresh(function() {
-        // Done callback
         indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
         indicator.classList.remove('visible');
       });
@@ -1022,14 +1210,13 @@ function initPullToRefresh(scrollEl, onRefresh) {
   });
 }
 
-// ═══ AUTO REFRESH (every 5 minutes) ══════════════════
 function initAutoRefresh(onRefresh) {
   setInterval(function() {
     var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    if (!token || Date.now() >= expiry) return; // skip if not logged in
+    if (!token || Date.now() >= expiry) return;
     console.log('🔄 Auto-refresh triggered');
-    onRefresh(function() {}); // silent refresh
-  }, 5 * 60 * 1000); // 5 minutes
+    onRefresh(function() {});
+  }, 5 * 60 * 1000);
 }
 
 // ═══ HELPERS ══════════════════════════════════════════
@@ -1045,7 +1232,6 @@ function showToast(m) {
   clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },3000);
 }
 
-// Close overlays on backdrop tap
 ['trip-sheet','confirm-overlay'].forEach(function(id){
   var el=document.getElementById(id);
   if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
