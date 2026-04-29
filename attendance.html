@@ -670,6 +670,14 @@ function loadAll() {
   var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
   isAdmin   = (email === ADMIN_EMAIL.toLowerCase());
 
+  // Reset dropdowns bago mag-load para hindi mag-duplicate
+  var fTruck = document.getElementById('f-truck');
+  var mTruck = document.getElementById('manual-truck');
+  var mEmp   = document.getElementById('manual-emp');
+  while (fTruck.options.length > 1) fTruck.remove(1);
+  if (mTruck) while (mTruck.options.length > 1) mTruck.remove(1);
+  if (mEmp)   while (mEmp.options.length > 1)   mEmp.remove(1);
+
   Promise.all([
     apiGet(TAB_EMPLOYEES  + '!A2:D'),
     apiGet(TAB_TRUCKS     + '!A2:B'),
@@ -679,40 +687,30 @@ function loadAll() {
     var truckRows = res[1].values || [];
     var attRows   = res[2].values || [];
 
-    // Build trucks list
     allTrucks = truckRows.filter(function(r){ return r[1]; }).map(function(r){ return r[1]; });
-    
-    // Populate check-in truck dropdown
-    var sel = document.getElementById('f-truck');
+
+    // Populate truck dropdowns
     allTrucks.forEach(function(p) {
-      var o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o);
+      var o1 = document.createElement('option'); o1.value = p; o1.textContent = p;
+      fTruck.appendChild(o1);
+      if (mTruck) {
+        var o2 = document.createElement('option'); o2.value = p; o2.textContent = p;
+        mTruck.appendChild(o2);
+      }
     });
 
-    // Populate manual attendance truck dropdown
-    var manualTruckSel = document.getElementById('manual-truck');
-    if (manualTruckSel) {
-      allTrucks.forEach(function(p) {
-        var o = document.createElement('option'); o.value = p; o.textContent = p;
-        manualTruckSel.appendChild(o);
-      });
-    }
-
-    // Populate manual attendance employee dropdown
-    var manualEmpSel = document.getElementById('manual-emp');
-    if (manualEmpSel) {
+    // Populate manual employee dropdown
+    if (mEmp) {
       allEmployees.forEach(function(r) {
-        var firstName = r[1] || '';
-        var lastName  = r[2] || '';
-        var fullName  = (firstName + ' ' + lastName).trim();
+        var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
         if (!fullName) return;
         var o = document.createElement('option');
-        o.value = fullName;
-        o.textContent = fullName;
-        manualEmpSel.appendChild(o);
+        o.value = fullName; o.textContent = fullName;
+        mEmp.appendChild(o);
       });
     }
 
-    // Build attendance records with row index
+    // Build attendance records
     allAttendance = attRows.map(function(r, i) {
       return {
         rowIndex: i + 2,
@@ -723,15 +721,14 @@ function loadAll() {
       };
     }).filter(function(r){ return r.date; });
 
-    // After allAttendance is built:
     buildColorMap();
     renderLegend();
     buildFilterDropdowns();
-    filteredAttendance = allAttendance.slice(); // init
+    filteredAttendance = allAttendance.slice();
 
     // Find current user
     var empRow = allEmployees.find(function(r){
-      return (r[0]||'').toLowerCase() === (localStorage.getItem('pedroex-email')||'').toLowerCase();
+      return (r[0]||'').toLowerCase() === email;
     });
 
     if (!empRow) {
@@ -751,15 +748,13 @@ function loadAll() {
     document.getElementById('emp-name').textContent = currentUser.fullName;
     document.getElementById('emp-role').textContent = currentUser.role;
 
-    // My records
     myRecords = allAttendance.filter(function(r){
       return r.name.toLowerCase() === currentUser.fullName.toLowerCase();
     });
 
-    // Admin tab
+    // Admin tab — ipakita at i-render ang employee list
     if (isAdmin) {
       document.getElementById('tab-admin').style.display = '';
-      // RENDER EMPLOYEE LIST - ADD THIS LINE
       renderEmployeeList();
     }
 
@@ -769,8 +764,8 @@ function loadAll() {
       showDoneState(todayRec);
     } else {
       document.getElementById('wrap-form').style.display = 'block';
-      document.getElementById('status-pill').textContent  = 'Not checked in';
-      document.getElementById('status-pill').className    = 'status-pill pill-pending';
+      document.getElementById('status-pill').textContent = 'Not checked in';
+      document.getElementById('status-pill').className   = 'status-pill pill-pending';
       getLocation();
     }
 
@@ -785,6 +780,8 @@ function loadAll() {
     console.error(err);
   });
 }
+
+
 
 // ═══ TABS ═════════════════════════════════════════════
 function switchTab(name) {
