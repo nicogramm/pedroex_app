@@ -626,6 +626,7 @@ var todayStr     = '';
 var teamValue    = 'No';
 var selectedAtt  = null; // for edit
 var confirmCb    = null;
+var firstLoad    = true;
 
 // ═══ INIT ═════════════════════════════════════════════
 (function init() {
@@ -674,7 +675,6 @@ function loadAll() {
   var fTruck = document.getElementById('f-truck');
   var mTruck = document.getElementById('manual-truck');
   var mEmp   = document.getElementById('manual-emp');
-  var firstLoad = true;
   while (fTruck.options.length > 1) fTruck.remove(1);
   if (mTruck) while (mTruck.options.length > 1) mTruck.remove(1);
   if (mEmp)   while (mEmp.options.length > 1)   mEmp.remove(1);
@@ -864,26 +864,56 @@ function getLocation() {
 function submitAttendance() {
   if (!currentUser) { showToast('No user loaded.'); return; }
 
-  // Double-check sa Sheets mismo bago mag-save
+  // Local check muna — mabilis
+  var localExists = myRecords.find(function(r){ return r.date === todayStr; });
+  if (localExists) {
+    showToast('⚠️ Naka-attendance ka na ngayon!');
+    showDoneState(localExists);
+    document.getElementById('wrap-form').style.display = 'none';
+    document.getElementById('wrap-done').style.display = 'block';
+    return;
+  }
+
   showSaving('Checking attendance...');
 
-  apiGet(TAB_ATTENDANCE + '!B2:C').then(function(res) {
+  // Server-side double check
+  apiGet(TAB_ATTENDANCE + '!A2:K').then(function(res) {
     var rows = res.values || [];
-    var alreadyExists = rows.find(function(r) {
-      return r[0] === todayStr &&
-             (r[1]||'').toLowerCase() === currentUser.fullName.toLowerCase();
+
+    // Rebuild allAttendance mula sa fresh data
+    allAttendance = rows.map(function(r, i) {
+      return {
+        rowIndex: i + 2,
+        id: r[0]||'', date: r[1]||'', name: r[2]||'',
+        team: r[3]||'', crates: r[4]||'', meal: r[5]||'',
+        truck: r[6]||'', location: r[7]||'',
+        lat: r[8]||'', lng: r[9]||'', time: r[10]||''
+      };
+    }).filter(function(r){ return r.date; });
+
+    // Rebuild myRecords
+    myRecords = allAttendance.filter(function(r){
+      return r.name.toLowerCase() === currentUser.fullName.toLowerCase();
     });
 
-    if (alreadyExists) {
+    // Check muli mula sa fresh data
+    var serverExists = myRecords.find(function(r){ return r.date === todayStr; });
+
+    if (serverExists) {
       hideSaving();
-      showToast('⚠️ You already checked in today!');
-      // Show done state
-      var rec = myRecords.find(function(r){ return r.date === todayStr; });
-      if (rec) showDoneState(rec);
+      // Show existing record details at mag-offer na i-edit/delete
+      showDoneState(serverExists);
+      document.getElementById('wrap-form').style.display = 'none';
+      document.getElementById('wrap-done').style.display = 'block';
+      document.getElementById('status-pill').textContent = 'Present ✓';
+      document.getElementById('status-pill').className   = 'status-pill pill-present';
+
+      // Show notification na may record na
+      showAttExistsNotif(serverExists);
       return;
     }
 
-    // Proceed with save
+    // Walang existing — proceed save
     var crates = document.getElementById('f-crates').value.trim() || '0';
     var meal   = document.getElementById('f-meal').value;
     var truck  = document.getElementById('f-truck').value;
@@ -899,9 +929,14 @@ function submitAttendance() {
 
     apiAppend(TAB_ATTENDANCE + '!A:K', [row]).then(function() {
       hideSaving();
-      var rec = { rowIndex: allAttendance.length+2, id:id, date:todayStr,
-        name:currentUser.fullName, team:teamValue, crates:crates, meal:meal,
-        truck:truck, location:loc.address, lat:String(loc.lat), lng:String(loc.lng), time:time };
+      var rec = {
+        rowIndex: allAttendance.length + 2,
+        id: id, date: todayStr,
+        name: currentUser.fullName, team: teamValue,
+        crates: crates, meal: meal, truck: truck,
+        location: loc.address,
+        lat: String(loc.lat), lng: String(loc.lng), time: time
+      };
       allAttendance.push(rec);
       myRecords.push(rec);
       filteredAttendance = allAttendance.slice();
@@ -911,12 +946,40 @@ function submitAttendance() {
       renderCalendar();
       showToast('✅ Attendance recorded!');
     }).catch(function(err) {
-      hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err);
+      hideSaving();
+      showToast('❌ Save failed. Try again.');
+      console.error(err);
     });
 
   }).catch(function(err) {
-    hideSaving(); showToast('❌ Connection error. Try again.'); console.error(err);
+    hideSaving();
+    showToast('❌ Connection error. Try again.');
+    console.error(err);
   });
+}
+
+// Notification kapag may existing attendance na
+function showAttExistsNotif(rec) {
+  // I-show ang confirm dialog
+  document.getElementById('confirm-title').textContent = '⚠️ Already Checked In';
+  document.getElementById('confirm-msg').innerHTML =
+    'Mayroon ka nang attendance ngayon.<br><br>'
+    + '<strong>' + rec.date + ' · ' + (rec.time||'') + '</strong><br>'
+    + 'Truck: ' + (rec.truck||'—') + '<br>'
+    + 'Location: ' + (rec.location||'—') + '<br><br>'
+    + 'Gusto mo bang i-edit o i-delete ang record na ito?';
+
+  document.getElementById('confirm-ok').textContent = 'View Record';
+  document.getElementById('confirm-ok').onclick = function() {
+    closeConfirm();
+    // Reset button text
+    document.getElementById('confirm-ok').textContent = 'Confirm';
+    // Open detail sheet para sa record
+    openAttDetail(rec.rowIndex);
+  };
+
+  // Override cancel button text
+  document.getElementById('confirm-overlay').classList.add('open');
 }
 
 // ═══ EMPLOYEE COLORS (red-adjacent gradients) ═════════
