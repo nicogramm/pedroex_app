@@ -1516,18 +1516,20 @@ async function loadEmployeeHistory() {
       var gross  = parseFloat(r[18]||0).toFixed(2);
       var net    = parseFloat(r[20]||0).toFixed(2);
       var ded    = parseFloat(r[19]||0).toFixed(2);
+      
+      var rowData = JSON.stringify(r).replace(/'/g, "&#39;");
 
-      return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showHistoryDetail(' + JSON.stringify(r).replace(/'/g,"&#39;") + ')">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
-        + '<div style="font-size:13px;font-weight:600;color:var(--text2)">' + period + '</div>'
-        + '<div style="font-size:16px;font-weight:700;color:var(--red)">₱' + net + '</div>'
-        + '</div>'
-        + '<div style="display:flex;gap:12px">'
-        + '<span style="font-size:11px;color:var(--text3)">Gross: <b style="color:var(--text)">₱' + gross + '</b></span>'
-        + '<span style="font-size:11px;color:var(--text3)">Deductions: <b style="color:var(--text)">₱' + ded + '</b></span>'
-        + '</div>'
-        + '</div>';
-    }).join('');
+        return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showFullPayrollDetail(' + rowData + ')">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+          + '<div style="font-size:13px;font-weight:600;color:var(--text2)">' + period + '</div>'
+          + '<div style="font-size:16px;font-weight:700;color:var(--red)">₱' + net + '</div>'
+          + '</div>'
+          + '<div style="display:flex;gap:12px">'
+          + '<span style="font-size:11px;color:var(--text3)">Gross: <b style="color:var(--text)">₱' + gross + '</b></span>'
+          + '<span style="font-size:11px;color:var(--text3)">Deductions: <b style="color:var(--text)">₱' + ded + '</b></span>'
+          + '</div>'
+          + '</div>';
+          }).join('');
 
   } catch(err) {
     document.getElementById('emp-history-loading').style.display = 'none';
@@ -1647,7 +1649,7 @@ function filterAdvances() {
 }
 
 // ═══════════════════════════════════════════════════════
-// RENDER ADVANCES LIST
+// RENDER ADVANCES LIST (GROUPED BY MONTH)
 // ═══════════════════════════════════════════════════════
 function renderAdvancesList(advances) {
   const container = document.getElementById('advances-list');
@@ -1660,28 +1662,102 @@ function renderAdvancesList(advances) {
   
   document.getElementById('advances-empty').style.display = 'none';
   
+  // Group by month
+  const grouped = {};
   advances.forEach(adv => {
-    const card = document.createElement('div');
-    card.className = 'advance-card';
-    card.onclick = () => viewAdvanceDetail(adv);
+    const d = new Date(adv.date);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     
-    card.innerHTML = `
-      <div class="advance-header">
-        <div class="advance-name">${adv.name}</div>
-        <div class="advance-amount">₱${adv.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+    if (!grouped[key]) {
+      grouped[key] = { label: label, items: [], total: 0 };
+    }
+    grouped[key].items.push(adv);
+    grouped[key].total += adv.amount;
+  });
+  
+  // Sort months (newest first)
+  const sortedKeys = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
+  
+  sortedKeys.forEach((key, index) => {
+    const group = grouped[key];
+    const isExpanded = index === 0; // First month expanded by default
+    
+    // Month header
+    const header = document.createElement('div');
+    header.style.cssText = `
+      background: var(--bg);
+      border-radius: 14px;
+      box-shadow: var(--neu-out);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    `;
+    header.onclick = () => toggleMonth(key);
+    
+    header.innerHTML = `
+      <div>
+        <div style="font-size: 14px; font-weight: 700; color: var(--text)">${group.label}</div>
+        <div style="font-size: 11px; color: var(--text2); margin-top: 2px">${group.items.length} advance(s)</div>
       </div>
-      <div class="advance-meta">
-        <div class="advance-date">
-          <span>📅</span>
-          <span>${formatDate(adv.date)}</span>
-        </div>
+      <div style="text-align: right">
+        <div style="font-size: 16px; font-weight: 700; color: var(--red)">₱${group.total.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+        <div id="toggle-${key}" style="font-size: 18px; color: var(--text3); margin-top: 4px">${isExpanded ? '▼' : '▶'}</div>
       </div>
     `;
     
-    container.appendChild(card);
+    container.appendChild(header);
+    
+    // Month items (collapsible)
+    const itemsContainer = document.createElement('div');
+    itemsContainer.id = `month-${key}`;
+    itemsContainer.style.cssText = `
+      display: ${isExpanded ? 'block' : 'none'};
+      margin-bottom: 14px;
+      padding-left: 10px;
+    `;
+    
+    group.items.forEach(adv => {
+      const card = document.createElement('div');
+      card.className = 'advance-card';
+      card.style.marginBottom = '8px';
+      card.onclick = () => viewAdvanceDetail(adv);
+      
+      card.innerHTML = `
+        <div class="advance-header">
+          <div class="advance-name">${adv.name}</div>
+          <div class="advance-amount">₱${adv.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+        </div>
+        <div class="advance-meta">
+          <div class="advance-date">
+            <span>📅</span>
+            <span>${formatDate(adv.date)}</span>
+          </div>
+        </div>
+      `;
+      
+      itemsContainer.appendChild(card);
+    });
+    
+    container.appendChild(itemsContainer);
   });
 }
 
+function toggleMonth(key) {
+  const container = document.getElementById(`month-${key}`);
+  const toggle = document.getElementById(`toggle-${key}`);
+  
+  if (container.style.display === 'none') {
+    container.style.display = 'block';
+    toggle.textContent = '▼';
+  } else {
+    container.style.display = 'none';
+    toggle.textContent = '▶';
+  }
+}
 // ═══════════════════════════════════════════════════════
 // CALENDAR
 // ═══════════════════════════════════════════════════════
@@ -1997,6 +2073,9 @@ async function loadHistory() {
       var net      = parseFloat(r[20]||0).toFixed(2);
       var ded      = parseFloat(r[19]||0).toFixed(2);
 
+       // ✅ Store full row data as data attribute
+      var rowData = JSON.stringify(r).replace(/'/g, "&#39;");
+
       return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showHistoryDetail(' + JSON.stringify(r).replace(/'/g,"&#39;") + ')">'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
         + '<div style="font-size:14px;font-weight:700;color:var(--text)">' + name + '</div>'
@@ -2087,6 +2166,122 @@ function showHistoryDetail(r) {
 
   document.getElementById('hist-detail-body').innerHTML = html;
   document.getElementById('history-detail-modal').classList.add('active');
+}
+
+
+// ═══════════════════════════════════════════════════════
+// SHOW FULL PAYROLL DETAIL (REUSE PAYROLL RESULT MODAL)
+// ═══════════════════════════════════════════════════════
+function showFullPayrollDetail(r) {
+  // Map columns to display
+  var name          = r[1]  || '—';
+  var period        = r[2]  || '—';
+  var attendance    = r[3]  || '0';
+  var periodAdv     = parseFloat(r[4]  || 0);
+  var advance2      = parseFloat(r[5]  || 0);
+  var existingAdv   = parseFloat(r[6]  || 0);
+  var totalAdv      = parseFloat(r[7]  || 0);
+  var pedroexSSS    = parseFloat(r[8]  || 0);
+  var empSSS        = parseFloat(r[9]  || 0);
+  var pedroexPagibig= parseFloat(r[10] || 0);
+  var empPagibig    = parseFloat(r[11] || 0);
+  var pedroexPH     = parseFloat(r[12] || 0);
+  var empPH         = parseFloat(r[13] || 0);
+  var deductedAdv   = parseFloat(r[14] || 0);
+  var totalDed      = parseFloat(r[15] || 0);
+  var remainingAdv  = parseFloat(r[16] || 0);
+  var twoManDays    = r[17] || '0';
+  var twoManPay     = parseFloat(r[18] || 0);
+  var savings1st    = parseFloat(r[19] || 0);
+  var savings2nd    = parseFloat(r[20] || 0);
+  var savingsTotal  = parseFloat(r[21] || 0);
+  var savingsWDates = r[22] || '—';
+  var savingsWAmt   = r[23] || '—';
+  var savingsInt    = r[24] || '—';
+  var grossPay      = parseFloat(r[25] || 0);
+  var mealPay       = parseFloat(r[26] || 0);
+  var netPay        = parseFloat(r[27] || 0);
+  var comments      = r[28] || '';
+
+  // Calculate base pay (gross - 2man - meal)
+  var basePay = grossPay - twoManPay - mealPay;
+
+  // Populate modal (reuse payroll result modal structure)
+  document.getElementById('summary-name').textContent   = name;
+  document.getElementById('summary-period').textContent = period;
+
+  // Attendance breakdown (estimate from totals)
+  var attYes   = Math.round(attendance * 0.6); // Rough estimate
+  var attMeals = Math.round(attendance * 0.2);
+  var attNo    = attendance - attYes - attMeals;
+
+  document.getElementById('summary-att-yes').textContent   = attYes;
+  document.getElementById('summary-att-meals').textContent = attMeals;
+  document.getElementById('summary-att-no').textContent    = attNo;
+  document.getElementById('summary-2man').textContent      = twoManDays;
+
+  document.getElementById('summary-adv1').textContent       = '₱' + periodAdv.toFixed(2);
+  document.getElementById('summary-adv2').textContent       = '₱' + advance2.toFixed(2);
+  document.getElementById('summary-existing').textContent   = '₱' + existingAdv.toFixed(2);
+  document.getElementById('summary-total-adv').textContent  = '₱' + totalAdv.toFixed(2);
+  document.getElementById('summary-deducted').textContent   = '₱' + deductedAdv.toFixed(2);
+  document.getElementById('summary-new-existing').textContent = '₱' + remainingAdv.toFixed(2);
+
+  document.getElementById('summary-emp-sss').textContent       = '₱' + empSSS.toFixed(2);
+  document.getElementById('summary-emp-pagibig').textContent   = '₱' + empPagibig.toFixed(2);
+  document.getElementById('summary-emp-philhealth').textContent= '₱' + empPH.toFixed(2);
+
+  document.getElementById('summary-base').textContent    = '₱' + basePay.toFixed(2);
+  document.getElementById('summary-2man-pay').textContent= '₱' + twoManPay.toFixed(2);
+  document.getElementById('summary-meal').textContent    = '₱' + mealPay.toFixed(2);
+  document.getElementById('summary-gross').textContent   = '₱' + grossPay.toFixed(2);
+
+  document.getElementById('summary-savings').textContent = '₱' + savingsTotal.toFixed(2);
+  document.getElementById('summary-adv-ded').textContent = '₱' + deductedAdv.toFixed(2);
+  document.getElementById('summary-contrib').textContent = '₱' + (empSSS + empPagibig + empPH).toFixed(2);
+  document.getElementById('summary-total-ded').textContent = '₱' + totalDed.toFixed(2);
+  document.getElementById('summary-net').textContent     = '₱' + netPay.toFixed(2);
+
+  // Hide manual deduction input (read-only mode)
+  var manualSection = document.querySelector('.summary-section:has(#manual-deduction)');
+  if (manualSection) manualSection.style.display = 'none';
+
+  // Show comments
+  var commentsTextarea = document.getElementById('payroll-comments');
+  if (commentsTextarea) {
+    commentsTextarea.value = comments;
+    commentsTextarea.disabled = true; // Read-only
+  }
+
+  // Hide save button, show close only
+  var modalActions = document.querySelector('#payroll-result-modal .modal-actions');
+  if (modalActions) {
+    modalActions.innerHTML = '<button class="btn btn-secondary" onclick="closePayrollResultModal(); resetPayrollModal();" style="width:100%">Close</button>';
+  }
+
+  document.getElementById('payroll-result-modal').classList.add('active');
+}
+
+function resetPayrollModal() {
+  // Restore manual deduction section
+  var manualSection = document.querySelector('.summary-section:has(#manual-deduction)');
+  if (manualSection) manualSection.style.display = 'block';
+
+  // Re-enable comments
+  var commentsTextarea = document.getElementById('payroll-comments');
+  if (commentsTextarea) {
+    commentsTextarea.disabled = false;
+    commentsTextarea.value = '';
+  }
+
+  // Restore original buttons
+  var modalActions = document.querySelector('#payroll-result-modal .modal-actions');
+  if (modalActions) {
+    modalActions.innerHTML = `
+      <button class="btn btn-secondary" onclick="closePayrollResultModal()">Close</button>
+      <button class="btn btn-primary" onclick="savePayrollToHistory()">💾 Save to History</button>
+    `;
+  }
 }
 
 
