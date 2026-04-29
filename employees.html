@@ -965,6 +965,17 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
             </div>
           </div>
 
+          <!-- MANUAL ADVANCE DEDUCTION INPUT -->
+          <div class="summary-section">
+            <div class="summary-label">ADVANCE DEDUCTION (MANUAL)</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+              <span style="font-size:13px;color:var(--text2);white-space:nowrap">Ibabawas na advance:</span>
+              <input type="number" id="manual-deduction" 
+                style="flex:1;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-in);padding:10px 14px;font-size:15px;font-weight:600;color:var(--text);font-family:Inter,sans-serif;outline:none"
+                placeholder="0.00" min="0" step="0.01" oninput="recalcNetPay()">
+            </div>
+          </div>
+
           <div class="summary-net">
             <span>NET PAY</span>
             <strong id="summary-net">₱0.00</strong>
@@ -1096,285 +1107,201 @@ function selectPeriod(period) {
 }
 
 async function calculatePayroll() {
-  const month = document.getElementById('payroll-month').value;
-  const employeeName = document.getElementById('payroll-employee').value;
-  
-  if (!month || !employeeName) {
-    showToast('Please select month and employee');
-    return;
-  }
-  
-  showToast('Calculating payroll...');
-  
+  var month       = document.getElementById('payroll-month').value;
+  var empName     = document.getElementById('payroll-employee').value;
+
+  if (!month || !empName) { showToast('Select month and employee.'); return; }
+
+  showToast('Calculating...');
+
   try {
-    // Parse month
-    const [year, monthNum] = month.split('-');
-    const monthInt = parseInt(monthNum);
-    
-    // Determine date range
-    let startDate, endDate;
+    var parts    = month.split('-');
+    var year     = parts[0];
+    var monthNum = parseInt(parts[1]);
+
+    // Date range
+    var startDate, endDate;
     if (selectedPeriod === '1st') {
-      startDate = `${year}-${String(monthInt).padStart(2, '0')}-01`;
-      endDate = `${year}-${String(monthInt).padStart(2, '0')}-15`;
+      startDate = year + '-' + String(monthNum).padStart(2,'0') + '-01';
+      endDate   = year + '-' + String(monthNum).padStart(2,'0') + '-15';
     } else {
-      startDate = `${year}-${String(monthInt).padStart(2, '0')}-16`;
-      const lastDay = new Date(year, monthInt, 0).getDate();
-      endDate = `${year}-${String(monthInt).padStart(2, '0')}-${lastDay}`;
+      startDate = year + '-' + String(monthNum).padStart(2,'0') + '-16';
+      var lastDay = new Date(year, monthNum, 0).getDate();
+      endDate   = year + '-' + String(monthNum).padStart(2,'0') + '-' + lastDay;
     }
-    
-    // Get employee info
-    const employee = allEmployees.find(e => e.fullName === employeeName);
-    if (!employee) {
-      showToast('Employee not found');
-      return;
-    }
-    
-    // Get employee position (Driver or Helper)
-    const empResponse = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:E`,
+
+    // Get employee position from Employees sheet (column E)
+    var empRes  = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:E',
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
-    const empData = await empResponse.json();
-    const empRow = (empData.values || []).find(r => `${r[1]} ${r[2]}` === employeeName);
-    const position = empRow ? (empRow[4] || 'Helper') : 'Helper'; // Column E = Position
-    
-    // Rates
-    const baseRate = position === 'Driver' ? 500 : 350;
-    const twoManRate = 280;
-    const mealRate = 210;
-    
-    // STEP 1: Get Attendance
-    const attResponse = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Attendance!A2:F`,
+    var empData = await empRes.json();
+    var empRow  = (empData.values || []).find(function(r) {
+      return ((r[1]||'') + ' ' + (r[2]||'')).trim() === empName;
+    });
+    var position = empRow ? (empRow[4] || 'Helper') : 'Helper';
+    var baseRate = position === 'Driver' ? 500 : 350;
+
+    // Get Attendance
+    var attRes  = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:K',
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
-    const attData = await attResponse.json();
-    const attRows = attData.values || [];
-    
+    var attData = await attRes.json();
+    var attRows = attData.values || [];
+
     // Filter attendance for this employee and period
-    const attendance = attRows.filter(r => {
-      const name = r[1]; // Column B = Name
-      const date = r[0]; // Column A = Date
-      return name === employeeName && date >= startDate && date <= endDate;
+    // Columns: A=ID, B=Date, C=Name, D=Team, E=Crates, F=Meal, G=Truck...
+    var myAtt = attRows.filter(function(r) {
+      return (r[2]||'') === empName && (r[1]||'') >= startDate && (r[1]||'') <= endDate;
     });
-    
-    // Count attendance types
-    let attYes = 0;    // Yes = Base Pay + Meal Allowance
-    let attMeals = 0;  // Meals Only = Meal Allowance only
-    let attNo = 0;     // No = Base Pay only
-    let twoManDays = 0;
-    
-    attendance.forEach(r => {
-      const mealAllowance = r[4]; // Column E = Meal Allowance
-      const twoMan = r[5];        // Column F = 2-Man Team
-      
-      if (mealAllowance === 'Yes') {
-        attYes++;
-      } else if (mealAllowance === 'Meals Only') {
-        attMeals++;
-      } else if (mealAllowance === 'No') {
-        attNo++;
-      }
-      
-      if (twoMan === 'Yes') {
-        twoManDays++;
-      }
+
+    var attYes   = 0; // base + meal
+    var attMeals = 0; // meal only
+    var attNo    = 0; // base only
+    var twoMan   = 0;
+
+    myAtt.forEach(function(r) {
+      var meal = r[5] || ''; // Column F = Meal Allowance
+      var team = r[3] || ''; // Column D = 2-Man Team
+      if (meal === 'Yes')              attYes++;
+      else if (meal === 'Meals Only')  attMeals++;
+      else                             attNo++;
+      if (team === 'Yes')              twoMan++;
     });
-    
-    // STEP 2: Calculate Base Pay
-    // Base Pay = (attYes + attNo) * baseRate
-    const basePay = (attYes + attNo) * baseRate;
-    
-    // STEP 3: Calculate 2-Man Team Bonus
-    const twoManPay = twoManDays * twoManRate;
-    
-    // STEP 4: Calculate Meal Allowance
-    // Meal Allowance = (attYes + attMeals) * mealRate
-    const mealAllowance = (attYes + attMeals) * mealRate;
-    
-    // STEP 5: Calculate Gross Pay
-    const grossPay = basePay + twoManPay + mealAllowance;
-    
-    // STEP 6: Get Advances
-    const advResponse = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!A2:D`,
+
+    // Earnings
+    var basePay      = (attYes + attNo) * baseRate;
+    var twoManPay    = twoMan * 280;
+    var mealPay      = (attYes + attMeals) * 210;
+    var grossPay     = basePay + twoManPay + mealPay;
+
+    // Savings Plan = 5% of gross
+    var savingsPlan  = grossPay * 0.05;
+
+    // Gov contributions
+    var empSSS       = selectedPeriod === '1st' ? 225 : 0;
+    var empPagibig   = selectedPeriod === '1st' ? 200 : 0;
+    var empPhilHealth= selectedPeriod === '2nd' ? 250 : 0;
+    var totalContrib = empSSS + empPagibig + empPhilHealth;
+
+    // Get existing advances from last payroll history
+    var histRes  = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:Z',
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
-    const advData = await advResponse.json();
-    const advRows = advData.values || [];
-    
-    // Filter advances for this employee and period
-    const advances = advRows
-      .filter(r => r[2] === employeeName && r[1] >= startDate && r[1] <= endDate)
-      .map(r => ({
-        date: r[1],
-        amount: parseFloat(r[3]) || 0
-      }));
-    
-    // Split advances into Week 1 and Week 2
-    let advance1 = 0;
-    let advance2 = 0;
-    
-    if (selectedPeriod === '1st') {
-      // Week 1 = Day 1-7, Week 2 = Day 8-15
-      advances.forEach(a => {
-        const day = parseInt(a.date.split('-')[2]);
-        if (day <= 7) {
-          advance1 += a.amount;
-        } else {
-          advance2 += a.amount;
-        }
-      });
-    } else {
-      // Week 3 = Day 16-23, Week 4 = Day 24-End
-      advances.forEach(a => {
-        const day = parseInt(a.date.split('-')[2]);
-        if (day <= 23) {
-          advance1 += a.amount;
-        } else {
-          advance2 += a.amount;
-        }
-      });
-    }
-    
-    // STEP 7: Get Existing Advances from Previous Payroll
-    const histResponse = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:Z`,
+    var histData = await histRes.json();
+    var histRows = histData.values || [];
+    var lastPayroll = histRows
+      .filter(function(r){ return (r[1]||'') === empName; })
+      .sort(function(a,b){ return new Date(b[2]) - new Date(a,2); })
+      .slice(0,1)[0];
+    var existingAdv = lastPayroll ? (parseFloat(lastPayroll[16])||0) : 0;
+
+    // Get advances this period
+    var advRes  = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Advances!A2:D',
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
-    const histData = await histResponse.json();
-    const histRows = histData.values || [];
-    
-    // Get last payroll for this employee
-    const lastPayroll = histRows
-      .filter(r => r[1] === employeeName) // Column B = Name
-      .sort((a, b) => new Date(b[2]) - new Date(a[2])) // Sort by date desc
-      [0];
-    
-    const existingAdvances = lastPayroll ? (parseFloat(lastPayroll[16]) || 0) : 0; // Column Q = New Existing Advances
-    
-    // STEP 8: Calculate Total Advances
-    const totalAdvances = existingAdvances + advance1 + advance2;
-    
-    // STEP 9: Calculate Deduction from Salary (max 40% of gross pay)
-    const maxDeduction = grossPay * 0.40;
-    const deductedAdvances = Math.min(totalAdvances, maxDeduction);
-    
-    // STEP 10: Calculate New Existing Advances
-    const newExistingAdvances = totalAdvances - deductedAdvances;
-    
-    // STEP 11: Calculate Government Contributions
-    let empSSS = 0;
-    let empPagibig = 0;
-    let empPhilHealth = 0;
-    
-    if (selectedPeriod === '1st') {
-      // 1st Kinsenas: SSS + Pag-IBIG
-      empSSS = 225;
-      empPagibig = 200;
-      empPhilHealth = 0;
-    } else {
-      // 2nd Kinsenas: PhilHealth only
-      empSSS = 0;
-      empPagibig = 0;
-      empPhilHealth = 250;
-    }
-    
-    const totalContributions = empSSS + empPagibig + empPhilHealth;
-    
-    // STEP 12: Calculate Savings Plan (5% of base pay + 2-man bonus)
-    const savingsBase = (attYes + attNo) * (position === 'Driver' ? 560 : 350);
-    const savingsPlan = savingsBase * 0.05;
-    
-    // STEP 13: Calculate Total Deductions
-    const totalDeductions = deductedAdvances + totalContributions + savingsPlan;
-    
-    // STEP 14: Calculate Net Pay
-    const netPay = grossPay - totalDeductions;
-    
-    // Store payroll data
+    var advData = await advRes.json();
+    var advRows = advData.values || [];
+    var periodAdv = advRows
+      .filter(function(r){ return (r[2]||'') === empName && (r[1]||'') >= startDate && (r[1]||'') <= endDate; })
+      .reduce(function(sum, r){ return sum + (parseFloat(r[3])||0); }, 0);
+
+    var totalAdv = existingAdv + periodAdv;
+
+    // Store data
     currentPayrollData = {
-      name: employeeName,
-      period: `${startDate} to ${endDate}`,
-      attYes,
-      attMeals,
-      attNo,
-      twoManDays,
-      advance1,
-      advance2,
-      existingAdvances,
-      totalAdvances,
-      deductedAdvances,
-      newExistingAdvances,
-      empSSS,
-      empPagibig,
-      empPhilHealth,
-      totalContributions,
-      basePay,
-      twoManPay,
-      mealAllowance,
-      grossPay,
-      savingsPlan,
-      totalDeductions,
-      netPay,
-      // For Payroll History sheet
-      pedroexSSS: 475,
-      pedroexPagibig: 200,
-      pedroexPhilHealth: 250
+      name:          empName,
+      period:        startDate + ' to ' + endDate,
+      position:      position,
+      attYes:        attYes,
+      attMeals:      attMeals,
+      attNo:         attNo,
+      twoManDays:    twoMan,
+      periodAdv:     periodAdv,
+      existingAdv:   existingAdv,
+      totalAdv:      totalAdv,
+      empSSS:        empSSS,
+      empPagibig:    empPagibig,
+      empPhilHealth: empPhilHealth,
+      totalContrib:  totalContrib,
+      basePay:       basePay,
+      twoManPay:     twoManPay,
+      mealPay:       mealPay,
+      grossPay:      grossPay,
+      savingsPlan:   savingsPlan,
     };
-    
-    // Show result modal
+
     showPayrollResult();
-    
-  } catch (err) {
-    console.error('Error calculating payroll:', err);
-    showToast('❌ Error calculating payroll');
+
+  } catch(err) {
+    console.error(err);
+    showToast('❌ Error calculating payroll.');
   }
 }
 
+function recalcNetPay() {
+  if (!currentPayrollData) return;
+  var d = currentPayrollData;
+
+  var manualDed = parseFloat(document.getElementById('manual-deduction').value) || 0;
+
+  // Remaining advances after this deduction
+  var remainingAdv = Math.max(0, d.totalAdv - manualDed);
+
+  var totalDed = manualDed + d.totalContrib + d.savingsPlan;
+  var netPay   = d.grossPay - totalDed;
+
+  document.getElementById('summary-deducted').textContent     = '₱' + manualDed.toFixed(2);
+  document.getElementById('summary-new-existing').textContent = '₱' + remainingAdv.toFixed(2);
+  document.getElementById('summary-adv-ded').textContent      = '₱' + manualDed.toFixed(2);
+  document.getElementById('summary-total-ded').textContent    = '₱' + totalDed.toFixed(2);
+  document.getElementById('summary-net').textContent          = '₱' + netPay.toFixed(2);
+
+  // Save to currentPayrollData para sa history
+  currentPayrollData.deductedAdv    = manualDed;
+  currentPayrollData.remainingAdv   = remainingAdv;
+  currentPayrollData.totalDed       = totalDed;
+  currentPayrollData.netPay         = netPay;
+}
+
 function showPayrollResult() {
-  const data = currentPayrollData;
-  
-  // Employee info
-  document.getElementById('summary-name').textContent = data.name;
-  document.getElementById('summary-period').textContent = data.period;
-  
-  // Attendance
-  document.getElementById('summary-att-yes').textContent = data.attYes;
-  document.getElementById('summary-att-meals').textContent = data.attMeals;
-  document.getElementById('summary-att-no').textContent = data.attNo;
-  document.getElementById('summary-2man').textContent = data.twoManDays;
-  
-  // Advances
-  document.getElementById('summary-adv1').textContent = '₱' + data.advance1.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-adv2').textContent = '₱' + data.advance2.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-existing').textContent = '₱' + data.existingAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-total-adv').textContent = '₱' + data.totalAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-deducted').textContent = '₱' + data.deductedAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-new-existing').textContent = '₱' + data.newExistingAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  
-  // Contributions
-  document.getElementById('summary-emp-sss').textContent = '₱' + data.empSSS.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-emp-pagibig').textContent = '₱' + data.empPagibig.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-emp-philhealth').textContent = '₱' + data.empPhilHealth.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  
-  // Earnings
-  document.getElementById('summary-base').textContent = '₱' + data.basePay.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-2man-pay').textContent = '₱' + data.twoManPay.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-meal').textContent = '₱' + data.mealAllowance.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-gross').textContent = '₱' + data.grossPay.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  
-  // Deductions
-  document.getElementById('summary-savings').textContent = '₱' + data.savingsPlan.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-adv-ded').textContent = '₱' + data.deductedAdvances.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-contrib').textContent = '₱' + data.totalContributions.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  document.getElementById('summary-total-ded').textContent = '₱' + data.totalDeductions.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  
-  // Net Pay
-  document.getElementById('summary-net').textContent = '₱' + data.netPay.toLocaleString('en-PH', {minimumFractionDigits: 2});
-  
+  var d = currentPayrollData;
+
+  document.getElementById('summary-name').textContent   = d.name + ' (' + d.position + ')';
+  document.getElementById('summary-period').textContent = d.period;
+
+  document.getElementById('summary-att-yes').textContent   = d.attYes;
+  document.getElementById('summary-att-meals').textContent = d.attMeals;
+  document.getElementById('summary-att-no').textContent    = d.attNo;
+  document.getElementById('summary-2man').textContent      = d.twoManDays;
+
+  document.getElementById('summary-adv1').textContent       = '₱' + d.periodAdv.toFixed(2);
+  document.getElementById('summary-adv2').textContent       = '—';
+  document.getElementById('summary-existing').textContent   = '₱' + d.existingAdv.toFixed(2);
+  document.getElementById('summary-total-adv').textContent  = '₱' + d.totalAdv.toFixed(2);
+
+  document.getElementById('summary-emp-sss').textContent       = '₱' + d.empSSS.toFixed(2);
+  document.getElementById('summary-emp-pagibig').textContent   = '₱' + d.empPagibig.toFixed(2);
+  document.getElementById('summary-emp-philhealth').textContent= '₱' + d.empPhilHealth.toFixed(2);
+
+  document.getElementById('summary-base').textContent    = '₱' + d.basePay.toFixed(2);
+  document.getElementById('summary-2man-pay').textContent= '₱' + d.twoManPay.toFixed(2);
+  document.getElementById('summary-meal').textContent    = '₱' + d.mealPay.toFixed(2);
+  document.getElementById('summary-gross').textContent   = '₱' + d.grossPay.toFixed(2);
+
+  document.getElementById('summary-savings').textContent = '₱' + d.savingsPlan.toFixed(2);
+  document.getElementById('summary-contrib').textContent = '₱' + d.totalContrib.toFixed(2);
+
+  // Reset manual deduction
+  document.getElementById('manual-deduction').value = '';
+  recalcNetPay();
+
   document.getElementById('payroll-result-modal').classList.add('active');
 }
+
 
 function closePayrollResultModal() {
   document.getElementById('payroll-result-modal').classList.remove('active');
@@ -1386,40 +1313,31 @@ async function savePayrollToHistory() {
   const data = currentPayrollData;
   
   try {
-    // Generate ID
-    const id = `PAY-${Date.now()}`;
-    
-    // Prepare row data matching your Payroll History columns
-    const row = [
-      id,                           // A: ID
-      data.name,                    // B: Name
-      data.period,                  // C: Payroll Period
-      data.attYes + data.attNo,     // D: Attendance (base pay days)
-      data.advance1,                // E: Advance 1
-      data.advance2,                // F: Advance 2
-      data.existingAdvances,        // G: Existing Advances
-      data.totalAdvances,           // H: Total Advances
-      data.pedroexSSS,              // I: PEDROEX SSS
-      data.empSSS,                  // J: Employee SSS
-      data.pedroexPagibig,          // K: PEDROEX Pag-IBIG
-      data.empPagibig,              // L: Employee Pag-IBIG
-      data.pedroexPhilHealth,       // M: PEDROEX PhilHealth
-      data.empPhilHealth,           // N: Employee PhilHealth
-      data.deductedAdvances,        // O: Deduction from Salary Advances
-      data.totalDeductions,         // P: Total Deductions
-      data.newExistingAdvances,     // Q: New Existing Advances
-      data.twoManDays,              // R: 2-Man Team Attendance
-      data.twoManPay,               // S: Total Additional Pay (2-Man Team)
-      selectedPeriod === '1st' ? data.savingsPlan : 0,  // T: Savings Plan (1st)
-      selectedPeriod === '2nd' ? data.savingsPlan : 0,  // U: Savings Plan (2nd)
-      data.savingsPlan,             // V: Savings Plan Total
-      '',                           // W: Savings Plan Withdrawals Dates
-      '',                           // X: Savings Plan Withdrawals Amounts
-      '',                           // Y: Savings Plan Interest Accrued
-      data.grossPay,                // Z: Gross Base Pay
-      data.mealAllowance,           // AA: Total Meal Allowance
-      data.netPay,                  // AB: Total Net Pay
-      ''                            // AC: Comments
+        // Generate ID
+        const id = `PAY-${Date.now()}`;
+        
+        const row = [
+      'PAY-' + Date.now(),
+      data.name,
+      data.period,
+      data.attYes + data.attMeals + data.attNo,
+      data.periodAdv,
+      data.existingAdv,
+      data.totalAdv,
+      data.deductedAdv,
+      data.remainingAdv,
+      data.empSSS,
+      data.empPagibig,
+      data.empPhilHealth,
+      data.totalContrib,
+      data.twoManDays,
+      data.twoManPay,
+      data.savingsPlan,
+      data.basePay,
+      data.mealPay,
+      data.grossPay,
+      data.totalDed,
+      data.netPay,
     ];
     
     // Append to Payroll History
