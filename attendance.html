@@ -679,6 +679,7 @@ var confirmCb    = null;
 })();
 
 // ═══ LOAD ALL ═════════════════════════════════════════
+// ═══ LOAD ALL ═════════════════════════════════════════
 function loadAll() {
   var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
   isAdmin   = (email === ADMIN_EMAIL.toLowerCase());
@@ -694,39 +695,36 @@ function loadAll() {
 
     // Build trucks list
     allTrucks = truckRows.filter(function(r){ return r[1]; }).map(function(r){ return r[1]; });
-    var sel = document.getElementById('f-truck');
-    allTrucks.forEach(function(p) {
-      var o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o);
-    });
-
-        // Build trucks list
-    allTrucks = truckRows.filter(function(r){ return r[1]; }).map(function(r){ return r[1]; });
-
+    
     // Populate check-in truck dropdown
     var sel = document.getElementById('f-truck');
     allTrucks.forEach(function(p) {
       var o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o);
     });
 
-    // Populate manual attendance truck dropdown (ADD THIS)
+    // Populate manual attendance truck dropdown
     var manualTruckSel = document.getElementById('manual-truck');
-    allTrucks.forEach(function(p) {
-      var o = document.createElement('option'); o.value = p; o.textContent = p;
-      manualTruckSel.appendChild(o);
-    });
+    if (manualTruckSel) {
+      allTrucks.forEach(function(p) {
+        var o = document.createElement('option'); o.value = p; o.textContent = p;
+        manualTruckSel.appendChild(o);
+      });
+    }
 
-    // Populate manual attendance employee dropdown (ADD THIS)
+    // Populate manual attendance employee dropdown
     var manualEmpSel = document.getElementById('manual-emp');
-    allEmployees.forEach(function(r) {
-      var firstName = r[1] || '';
-      var lastName  = r[2] || '';
-      var fullName  = (firstName + ' ' + lastName).trim();
-      if (!fullName) return;
-      var o = document.createElement('option');
-      o.value = fullName;
-      o.textContent = fullName;
-      manualEmpSel.appendChild(o);
-    });
+    if (manualEmpSel) {
+      allEmployees.forEach(function(r) {
+        var firstName = r[1] || '';
+        var lastName  = r[2] || '';
+        var fullName  = (firstName + ' ' + lastName).trim();
+        if (!fullName) return;
+        var o = document.createElement('option');
+        o.value = fullName;
+        o.textContent = fullName;
+        manualEmpSel.appendChild(o);
+      });
+    }
 
     // Build attendance records with row index
     allAttendance = attRows.map(function(r, i) {
@@ -740,10 +738,10 @@ function loadAll() {
     }).filter(function(r){ return r.date; });
 
     // After allAttendance is built:
-      buildColorMap();
-      renderLegend();
-      buildFilterDropdowns();
-      filteredAttendance = allAttendance.slice(); // init
+    buildColorMap();
+    renderLegend();
+    buildFilterDropdowns();
+    filteredAttendance = allAttendance.slice(); // init
 
     // Find current user
     var empRow = allEmployees.find(function(r){
@@ -773,7 +771,11 @@ function loadAll() {
     });
 
     // Admin tab
-    if (isAdmin) document.getElementById('tab-admin').style.display = '';
+    if (isAdmin) {
+      document.getElementById('tab-admin').style.display = '';
+      // RENDER EMPLOYEE LIST - ADD THIS LINE
+      renderEmployeeList();
+    }
 
     // Check today
     var todayRec = myRecords.find(function(r){ return r.date === todayStr; });
@@ -787,7 +789,6 @@ function loadAll() {
     }
 
     renderCalendar();
-    if (isAdmin) renderEmployeeList();
 
     document.getElementById('wrap-loading').style.display = 'none';
     switchTab('checkin');
@@ -1401,37 +1402,45 @@ function addManualAttendance() {
 }
 
 
+// ═══ ADMIN: EMPLOYEE MANAGEMENT ══════════════════════
 function renderEmployeeList() {
   var wrap = document.getElementById('emp-list-wrap');
+  
   if (!allEmployees.length) {
-    wrap.innerHTML = '<div class="empty-hint">No employees yet.</div>'; return;
+    wrap.innerHTML = '<div class="empty-hint">No employees yet.</div>';
+    return;
   }
+  
   wrap.innerHTML = allEmployees.map(function(r, i) {
     var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
     return '<div class="emp-list-item">'
       + '<div class="eli-info">'
-      + '<div class="eli-name">'+fullName+'</div>'
-      + '<div class="eli-email">'+r[0]+'  ·  '+(r[3]||'Employee')+'</div>'
+      + '<div class="eli-name">' + fullName + '</div>'
+      + '<div class="eli-email">' + r[0] + '  ·  ' + (r[3]||'Employee') + '</div>'
       + '</div>'
-      + '<button class="eli-del" onclick="promptDeleteEmp('+i+')" title="Remove">×</button>'
+      + '<button class="eli-del" onclick="promptDeleteEmp(' + i + ')" title="Remove">×</button>'
       + '</div>';
   }).join('');
 
-  // Repopulate manual attendance employee dropdown (ADD THIS)
+  // Repopulate manual attendance employee dropdown
   var manualEmpSel = document.getElementById('manual-emp');
-  var currentValue = manualEmpSel.value;
-  while (manualEmpSel.options.length > 1) manualEmpSel.remove(1);
-  allEmployees.forEach(function(r) {
-    var firstName = r[1] || '';
-    var lastName  = r[2] || '';
-    var fullName  = (firstName + ' ' + lastName).trim();
-    if (!fullName) return;
-    var o = document.createElement('option');
-    o.value = fullName;
-    o.textContent = fullName;
-    manualEmpSel.appendChild(o);
-  });
-  manualEmpSel.value = currentValue;
+  if (manualEmpSel) {
+    var currentValue = manualEmpSel.value;
+    while (manualEmpSel.options.length > 1) manualEmpSel.remove(1);
+    
+    allEmployees.forEach(function(r) {
+      var firstName = r[1] || '';
+      var lastName  = r[2] || '';
+      var fullName  = (firstName + ' ' + lastName).trim();
+      if (!fullName) return;
+      var o = document.createElement('option');
+      o.value = fullName;
+      o.textContent = fullName;
+      manualEmpSel.appendChild(o);
+    });
+    
+    manualEmpSel.value = currentValue;
+  }
 }
 
 function addEmployee() {
