@@ -423,51 +423,23 @@ let hasNewPhoto = false;  // flag: user picked a new photo
   const av = document.getElementById('user-avatar');
   if (av && picture) av.src = picture;
 
-  // Verify employee is registered in Employees sheet
-  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D', {
-    headers: { Authorization: 'Bearer ' + token }
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(res) {
-    var rows = res.values || [];
-    var empRow = rows.find(function(r) {
-      return (r[0] || '').toLowerCase() === email.toLowerCase();
-    });
-
-  if (!empRow) {
-    // Pang-debug: ipakita ang lahat ng emails na nakita
-    var found = rows.map(function(r){ return r[0] || 'empty'; }).join(', ');
-    showToast('Not found. Emails in sheet: ' + found);
-    // Huwag muna i-redirect
-    // setTimeout(function() { location.href = 'index.html'; }, 2000);
-    
-    // Hayaan na mag-proceed kahit walang empRow para makita ang page
-    if (isAdmin) document.getElementById('fab').style.display = 'flex';
-    loadTrucks();
-    return;
+  if (isAdmin) {
+    document.getElementById('fab').style.display = 'flex';
+  } else {
+    document.getElementById('empty-msg').innerHTML = 
+      'No trucks.<br><span style="color:var(--text3)">Read-only mode.</span>';
   }
 
-    // Registered — proceed
-    if (isAdmin) {
-      document.getElementById('fab').style.display = 'flex';
-    } else {
-      document.getElementById('empty-msg').innerHTML = 'No trucks.<br><span style="color:var(--text3)">Read-only mode.</span>';
-    }
+  loadTrucks();
 
-    loadTrucks();
-
-    initPullToRefresh(
-      document.querySelector('.page-wrap'),
-      function(done) { loadTrucks(); setTimeout(done, 1500); }
-    );
-    initAutoRefresh(function(done) { loadTrucks(); done(); });
-  })
-  .catch(function(err) {
-    console.error(err);
-    showToast('Failed to verify access.');
-    setTimeout(function() { location.href = 'index.html'; }, 2000);
-  });
+  initPullToRefresh(
+    document.querySelector('.page-wrap'),
+    function(done) { loadTrucks(); setTimeout(done, 1500); }
+  );
+  initAutoRefresh(function(done) { loadTrucks(); done(); });
 })();
+
+
 
 // ═══ SHEETS API ════════════════════════════════════════
 function apiGet(range) {
