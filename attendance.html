@@ -457,11 +457,70 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
 </div>
 
-    <!-- ══ TAB: ADMIN MANAGE ══ -->
+        <!-- ══ TAB: ADMIN MANAGE ══ -->
     <div id="tab-content-admin" style="display:none">
 
+      <!-- Manual Attendance Entry -->
+      <div class="section-label">Add Attendance for Employee</div>
+      <div class="add-emp-form">
+        <div class="fg">
+          <label class="fl">Select Employee</label>
+          <select class="fi" id="manual-emp">
+            <option value="">— Select Employee —</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Date</label>
+          <input class="fi" id="manual-date" type="date">
+        </div>
+
+        <div class="fg">
+          <label class="fl">Time</label>
+          <input class="fi" id="manual-time" type="time" value="08:00">
+        </div>
+
+        <div class="fg">
+          <label class="fl">2-Man Team</label>
+          <div class="toggle-group">
+            <button class="tg-btn active-no" id="manual-team-no" onclick="setManualTeam('No')">No</button>
+            <button class="tg-btn" id="manual-team-yes" onclick="setManualTeam('Yes')">Yes</button>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Crates</label>
+          <input class="fi" id="manual-crates" type="number" placeholder="0" min="0" value="0">
+        </div>
+
+        <div class="fg">
+          <label class="fl">Meal Allowance</label>
+          <select class="fi" id="manual-meal">
+            <option value="Yes" selected>Yes — Full Allowance</option>
+            <option value="Meals Only">Meals Only</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Assigned Truck</label>
+          <select class="fi" id="manual-truck">
+            <option value="">— Select Truck —</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label class="fl">Location (Optional)</label>
+          <input class="fi" id="manual-location" placeholder="e.g., Warehouse, Client Site">
+        </div>
+
+        <button class="checkin-btn" onclick="addManualAttendance()" style="margin-top:0">
+          ➕ Add Attendance
+        </button>
+      </div>
+
       <!-- Add Employee -->
-      <div class="section-label">Add Employee</div>
+      <div class="section-label" style="margin-top:24px">Add Employee</div>
       <div class="add-emp-form">
         <div class="fg"><label class="fl">Email</label><input class="fi" id="ae-email" type="email" placeholder="employee@gmail.com"></div>
         <div class="row2">
@@ -476,6 +535,21 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         </div>
         <button class="checkin-btn" onclick="addEmployee()" style="margin-top:0">Add Employee</button>
       </div>
+
+      <!-- Employee List -->
+      <div class="section-label" style="margin-top:24px">Registered Employees</div>
+      <div id="emp-list-wrap">
+        <div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
+      </div>
+
+      <!-- Admin: Edit Attendance -->
+      <div class="section-label" style="margin-top:20px">Edit Attendance Record</div>
+      <div class="neu-card" style="padding:16px">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Select a date from the Calendar tab, then tap an attendance record to edit it.</div>
+        <button class="icon-btn" onclick="switchTab('calendar')">Go to Calendar →</button>
+      </div>
+
+    </div><!-- end admin tab -->
 
       <!-- Employee List -->
       <div class="section-label">Registered Employees</div>
@@ -623,6 +697,35 @@ function loadAll() {
     var sel = document.getElementById('f-truck');
     allTrucks.forEach(function(p) {
       var o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o);
+    });
+
+        // Build trucks list
+    allTrucks = truckRows.filter(function(r){ return r[1]; }).map(function(r){ return r[1]; });
+
+    // Populate check-in truck dropdown
+    var sel = document.getElementById('f-truck');
+    allTrucks.forEach(function(p) {
+      var o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o);
+    });
+
+    // Populate manual attendance truck dropdown (ADD THIS)
+    var manualTruckSel = document.getElementById('manual-truck');
+    allTrucks.forEach(function(p) {
+      var o = document.createElement('option'); o.value = p; o.textContent = p;
+      manualTruckSel.appendChild(o);
+    });
+
+    // Populate manual attendance employee dropdown (ADD THIS)
+    var manualEmpSel = document.getElementById('manual-emp');
+    allEmployees.forEach(function(r) {
+      var firstName = r[1] || '';
+      var lastName  = r[2] || '';
+      var fullName  = (firstName + ' ' + lastName).trim();
+      if (!fullName) return;
+      var o = document.createElement('option');
+      o.value = fullName;
+      o.textContent = fullName;
+      manualEmpSel.appendChild(o);
     });
 
     // Build attendance records with row index
@@ -1194,7 +1297,110 @@ function doDeleteAtt() {
 
 function closeAttSheet() { document.getElementById('att-sheet').classList.remove('open'); }
 
-// ═══ ADMIN: EMPLOYEE MANAGEMENT ══════════════════════
+// ═══ MANUAL ATTENDANCE (ADMIN) ════════════════════════
+var manualTeamValue = 'No';
+
+function setManualTeam(val) {
+  manualTeamValue = val;
+  document.getElementById('manual-team-no').className  = 'tg-btn' + (val==='No'  ? ' active-no'  : '');
+  document.getElementById('manual-team-yes').className = 'tg-btn' + (val==='Yes' ? ' active-yes' : '');
+}
+
+function addManualAttendance() {
+  if (!isAdmin) { showToast('Admin only.'); return; }
+
+  var empName  = document.getElementById('manual-emp').value;
+  var date     = document.getElementById('manual-date').value;
+  var time     = document.getElementById('manual-time').value;
+  var crates   = document.getElementById('manual-crates').value.trim() || '0';
+  var meal     = document.getElementById('manual-meal').value;
+  var truck    = document.getElementById('manual-truck').value;
+  var location = document.getElementById('manual-location').value.trim() || 'Added by admin';
+
+  if (!empName || !date) {
+    showToast('Select employee and date.');
+    return;
+  }
+
+  // Check if attendance already exists
+  var exists = allAttendance.find(function(r) {
+    return r.date === date && r.name.toLowerCase() === empName.toLowerCase();
+  });
+
+  if (exists) {
+    showToast('⚠️ Attendance already exists for this employee on ' + date);
+    return;
+  }
+
+  // Format time to 12-hour AM/PM
+  var timeFormatted = time;
+  if (time) {
+    var parts = time.split(':');
+    var h = parseInt(parts[0]);
+    var m = parts[1];
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    timeFormatted = h + ':' + m + ' ' + ampm;
+  }
+
+  showSaving('Adding attendance...');
+
+  var id  = 'ATT-' + date.replace(/-/g,'') + '-' + pad(allAttendance.length+1);
+  var row = [id, date, empName, manualTeamValue, crates, meal,
+             truck, location, '', '', timeFormatted];
+
+  apiAppend(TAB_ATTENDANCE + '!A:K', [row]).then(function() {
+    hideSaving();
+
+    var rec = {
+      rowIndex: allAttendance.length + 2,
+      id: id,
+      date: date,
+      name: empName,
+      team: manualTeamValue,
+      crates: crates,
+      meal: meal,
+      truck: truck,
+      location: location,
+      lat: '',
+      lng: '',
+      time: timeFormatted
+    };
+
+    allAttendance.push(rec);
+    filteredAttendance = allAttendance.slice();
+    buildColorMap();
+    renderLegend();
+    renderCalendar();
+
+    // Reset form
+    document.getElementById('manual-emp').value      = '';
+    document.getElementById('manual-date').value     = '';
+    document.getElementById('manual-time').value     = '08:00';
+    document.getElementById('manual-crates').value   = '0';
+    document.getElementById('manual-meal').value     = 'Yes';
+    document.getElementById('manual-truck').value    = '';
+    document.getElementById('manual-location').value = '';
+    setManualTeam('No');
+
+    showToast('✅ Attendance added for ' + empName + '!');
+
+    // Auto-switch to calendar to show result
+    switchTab('calendar');
+    
+    // Auto-select the date
+    setTimeout(function() {
+      selectDay(date);
+    }, 300);
+
+  }).catch(function(err) {
+    hideSaving();
+    showToast('❌ Failed to add attendance.');
+    console.error(err);
+  });
+}
+
+
 function renderEmployeeList() {
   var wrap = document.getElementById('emp-list-wrap');
   if (!allEmployees.length) {
@@ -1210,6 +1416,22 @@ function renderEmployeeList() {
       + '<button class="eli-del" onclick="promptDeleteEmp('+i+')" title="Remove">×</button>'
       + '</div>';
   }).join('');
+
+  // Repopulate manual attendance employee dropdown (ADD THIS)
+  var manualEmpSel = document.getElementById('manual-emp');
+  var currentValue = manualEmpSel.value;
+  while (manualEmpSel.options.length > 1) manualEmpSel.remove(1);
+  allEmployees.forEach(function(r) {
+    var firstName = r[1] || '';
+    var lastName  = r[2] || '';
+    var fullName  = (firstName + ' ' + lastName).trim();
+    if (!fullName) return;
+    var o = document.createElement('option');
+    o.value = fullName;
+    o.textContent = fullName;
+    manualEmpSel.appendChild(o);
+  });
+  manualEmpSel.value = currentValue;
 }
 
 function addEmployee() {
