@@ -205,7 +205,6 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 
 .cal-day {
-  aspect-ratio: 1;
   border-radius: 12px;
   background: var(--bg);
   display: flex;
@@ -1728,10 +1727,22 @@ function loadCalendar() {
   }
   
     // Days
+  // Days
   for (let day = 1; day <= daysInMonth; day++) {
     const dayEl = document.createElement('div');
     dayEl.className = 'cal-day';
-    dayEl.style.cssText = 'aspect-ratio:unset;min-height:56px;padding:4px 3px;justify-content:flex-start;align-items:center;flex-direction:column;';
+    
+    // ✅ FIXED: Uniform height, controlled overflow
+    dayEl.style.cssText = `
+      min-height: 70px;
+      max-height: 70px;
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+    `;
 
     if (isCurrentMonth && day === todayDate) {
       dayEl.classList.add('today');
@@ -1742,19 +1753,40 @@ function loadCalendar() {
 
     const numEl = document.createElement('div');
     numEl.className = 'cal-day-num';
+    numEl.style.cssText = 'margin-bottom: 4px;'; // ✅ Spacing
     numEl.textContent = day;
     dayEl.appendChild(numEl);
 
     if (dayAdvances.length > 0) {
+      // ✅ Show max 2 names, then "+X more"
       dayAdvances.slice(0, 2).forEach(function(adv) {
         var nameEl = document.createElement('div');
-        nameEl.style.cssText = 'font-size:8px;font-weight:700;color:#fff;background:var(--red);border-radius:4px;padding:1px 4px;margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;width:100%;text-align:center';
-        nameEl.textContent = adv.name.split(' ')[0]; // First name lang
+        nameEl.style.cssText = `
+          font-size: 8px;
+          font-weight: 700;
+          color: #fff;
+          background: var(--red);
+          border-radius: 4px;
+          padding: 2px 4px;
+          margin-top: 2px;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          line-height: 1.3;
+        `;
+        nameEl.textContent = adv.name.split(' ')[0]; // First name only
         dayEl.appendChild(nameEl);
       });
+      
       if (dayAdvances.length > 2) {
         var moreEl = document.createElement('div');
-        moreEl.style.cssText = 'font-size:8px;color:var(--text3);margin-top:1px;text-align:center';
+        moreEl.style.cssText = `
+          font-size: 8px;
+          color: var(--text3);
+          margin-top: 2px;
+          font-weight: 600;
+        `;
         moreEl.textContent = '+' + (dayAdvances.length - 2);
         dayEl.appendChild(moreEl);
       }
