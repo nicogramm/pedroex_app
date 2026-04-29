@@ -434,12 +434,18 @@ let hasNewPhoto = false;  // flag: user picked a new photo
       return (r[0] || '').toLowerCase() === email.toLowerCase();
     });
 
-    if (!empRow) {
-      // Email not in Employees sheet — redirect to index
-      showToast('Access denied. Contact your administrator.');
-      setTimeout(function() { location.href = 'index.html'; }, 2000);
-      return;
-    }
+  if (!empRow) {
+    // Pang-debug: ipakita ang lahat ng emails na nakita
+    var found = rows.map(function(r){ return r[0] || 'empty'; }).join(', ');
+    showToast('Not found. Emails in sheet: ' + found);
+    // Huwag muna i-redirect
+    // setTimeout(function() { location.href = 'index.html'; }, 2000);
+    
+    // Hayaan na mag-proceed kahit walang empRow para makita ang page
+    if (isAdmin) document.getElementById('fab').style.display = 'flex';
+    loadTrucks();
+    return;
+  }
 
     // Registered — proceed
     if (isAdmin) {
