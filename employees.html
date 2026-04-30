@@ -358,7 +358,7 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 
 /* ═══════════════════════════════════════
-   MODAL
+   MODAL - ✅ FULL SCREEN VERSION
 ═══════════════════════════════════════ */
 .modal {
   display: none;
@@ -368,27 +368,50 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   z-index: 200;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0; /* ✅ Remove padding for full screen */
 }
 
 .modal.active { display: flex }
 
 .modal-content {
   background: var(--bg);
-  border-radius: 20px;
-  box-shadow: var(--neu-out);
-  padding: 24px;
-  max-width: 400px;
-  width: 100%;
-  max-height: 80vh;
+  border-radius: 0; /* ✅ No rounded corners for full screen */
+  box-shadow: none; /* ✅ Remove shadow */
+  padding: 20px;
+  width: 100vw; /* ✅ Full width */
+  height: 100vh; /* ✅ Full height */
+  max-width: none; /* ✅ Remove width limit */
+  max-height: none; /* ✅ Remove height limit */
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ✅ Make modal header sticky */
 .modal-header {
   font-size: 20px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--shadow-d);
+}
+
+/* ✅ Make modal actions sticky at bottom */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto; /* ✅ Push to bottom */
+  padding-top: 20px;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  z-index: 10;
+  border-top: 2px solid var(--shadow-d);
 }
 
 .form-group {
@@ -426,12 +449,6 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 .form-input:focus, .form-select:focus, .form-textarea:focus {
   outline: 2px solid var(--red);
   outline-offset: 2px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 24px;
 }
 
 .btn {
@@ -639,8 +656,8 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
    PAYROLL SUMMARY MODAL
 ═══════════════════════════════════════ */
 .payroll-summary {
-  max-height: 70vh;
-  overflow-y: auto;
+  max-height: none; /* ✅ Remove height limit */
+  overflow-y: visible; /* ✅ Let modal-content handle scroll */
 }
 
 .summary-employee {
@@ -725,10 +742,6 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   font-size: 24px;
   font-weight: 700;
 }
-
-
-
-
 </style>
 </head>
 <body>
@@ -1232,7 +1245,7 @@ async function calculatePayroll() {
       endDate   = year + '-' + String(monthNum).padStart(2,'0') + '-' + lastDay;
     }
 
-    // Get employee position from Employees sheet (column E)
+    // ✅ FIX: Get employee position (check if column E exists)
     var empRes  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:E',
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -1241,7 +1254,13 @@ async function calculatePayroll() {
     var empRow  = (empData.values || []).find(function(r) {
       return ((r[1]||'') + ' ' + (r[2]||'')).trim() === empName;
     });
-    var position = empRow ? (empRow[4] || 'Helper') : 'Helper';
+    
+    // ✅ FIX: Default to Helper if position column missing
+    var position = 'Helper'; // Default
+    if (empRow && empRow[4]) {
+      position = empRow[4]; // Column E = Position
+    }
+    
     var baseRate = position === 'Driver' ? 500 : 350;
 
     // Get Attendance
@@ -1253,15 +1272,15 @@ async function calculatePayroll() {
     var attRows = attData.values || [];
 
     // Filter attendance for this employee and period
-var myAtt = attRows.filter(function(r) {
-  return (r[2]||'') === empName && (r[1]||'') >= startDate && (r[1]||'') <= endDate;
-});
+    var myAtt = attRows.filter(function(r) {
+      return (r[2]||'') === empName && (r[1]||'') >= startDate && (r[1]||'') <= endDate;
+    });
 
-var attYes   = 0; // base + meal
-var attMeals = 0; // meal only
-var attNo    = 0; // base only
-var twoMan   = 0;
-var twoManDates = []; // ✅ Store 2-Man Team dates
+    var attYes   = 0; // base + meal
+    var attMeals = 0; // meal only
+    var attNo    = 0; // base only
+    var twoMan   = 0;
+    var twoManDates = []; // ✅ Store 2-Man Team dates
 
     myAtt.forEach(function(r) {
       var meal = r[5] || ''; // Column F = Meal Allowance
@@ -1283,23 +1302,6 @@ var twoManDates = []; // ✅ Store 2-Man Team dates
           return new Date(d + 'T00:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric'});
         }).join(', ')
       : '';
-    // Store in currentPayrollData
-    currentPayrollData.twoManDates = twoManComment;
-
-
-    var attYes   = 0; // base + meal
-    var attMeals = 0; // meal only
-    var attNo    = 0; // base only
-    var twoMan   = 0;
-
-    myAtt.forEach(function(r) {
-      var meal = r[5] || ''; // Column F = Meal Allowance
-      var team = r[3] || ''; // Column D = 2-Man Team
-      if (meal === 'Yes')              attYes++;
-      else if (meal === 'Meals Only')  attMeals++;
-      else                             attNo++;
-      if (team === 'Yes')              twoMan++;
-    });
 
     // Earnings
     var basePay      = (attYes + attNo) * baseRate;
@@ -1325,7 +1327,7 @@ var twoManDates = []; // ✅ Store 2-Man Team dates
     var histRows = histData.values || [];
     var lastPayroll = histRows
       .filter(function(r){ return (r[1]||'') === empName; })
-      .sort(function(a,b){ return new Date(b[2]) - new Date(a,2); })
+      .sort(function(a,b){ return new Date(b[2]) - new Date(a[2]); })
       .slice(0,1)[0];
     var existingAdv = lastPayroll ? (parseFloat(lastPayroll[16])||0) : 0;
 
@@ -1370,9 +1372,11 @@ var twoManDates = []; // ✅ Store 2-Man Team dates
 
   } catch(err) {
     console.error(err);
-    showToast('❌ Error calculating payroll.');
+    showToast('❌ Error calculating payroll: ' + err.message);
   }
 }
+
+
 
 function recalcNetPay() {
   if (!currentPayrollData) return;
