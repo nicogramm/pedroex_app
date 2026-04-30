@@ -1184,29 +1184,54 @@ const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleus
 const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
 
+// ✅ SHEET IDs (get from URL: gid=XXXXXX)
+const SHEET_IDS = {
+  EMPLOYEES: 0,
+  ATTENDANCE: 1234567890, // Replace with actual gid
+  ADVANCES: 1234567891,   // Replace with actual gid
+  PAYROLL_HISTORY: 194589997, // ✅ REPLACE THIS!
+  TRUCK_ROSTER: 1234567893
+};
+
 let token = localStorage.getItem('pedroex-token');
 let userEmail = localStorage.getItem('pedroex-email');
 let isAdmin = ADMIN_EMAILS.includes(userEmail);
 
-// ✅ ADMIN CALENDAR STATE
 let currentYear = new Date().getFullYear();
-let currentMonth = new Date().getMonth(); // 0-11
+let currentMonth = new Date().getMonth();
 
 let allAdvances = [];
 let allEmployees = [];
 let selectedAdvanceId = null;
 
-// ✅ EMPLOYEE CALENDAR STATE (ADD THIS!)
 let empCurrentYear = new Date().getFullYear();
 let empCurrentMonth = new Date().getMonth();
-let empAdvances = []; // Store employee's own advances
+let empAdvances = [];
+
+let selectedPeriod = '1st';
+let currentPayrollData = null;
+
+// ═══════════════════════════════════════════════════════
+// ✅ GET SHEET ID HELPER
+// ═══════════════════════════════════════════════════════
+async function getPayrollHistorySheetId() {
+  try {
+    const res = await fetch(
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=sheets(properties(sheetId,title))`,
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    const data = await res.json();
+    const sheet = data.sheets.find(s => s.properties.title === 'Payroll History');
+    return sheet ? sheet.properties.sheetId : null;
+  } catch(err) {
+    console.error('Error getting sheet ID:', err);
+    return null;
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // PAYROLL CALCULATOR
 // ═══════════════════════════════════════════════════════
-
-let selectedPeriod = '1st'; // '1st' or '2nd'
-let currentPayrollData = null;
 
 function selectPeriod(period) {
   selectedPeriod = period;
@@ -1234,7 +1259,6 @@ async function calculatePayroll() {
     var year     = parts[0];
     var monthNum = parseInt(parts[1]);
 
-    // Date range
     var startDate, endDate;
     if (selectedPeriod === '1st') {
       startDate = year + '-' + String(monthNum).padStart(2,'0') + '-01';
@@ -1245,7 +1269,6 @@ async function calculatePayroll() {
       endDate   = year + '-' + String(monthNum).padStart(2,'0') + '-' + lastDay;
     }
 
-    // ✅ FIX: Get employee position (check if column E exists)
     var empRes  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:E',
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -1255,15 +1278,13 @@ async function calculatePayroll() {
       return ((r[1]||'') + ' ' + (r[2]||'')).trim() === empName;
     });
     
-    // ✅ FIX: Default to Helper if position column missing
-    var position = 'Helper'; // Default
+    var position = 'Helper';
     if (empRow && empRow[4]) {
-      position = empRow[4]; // Column E = Position
+      position = empRow[4];
     }
     
     var baseRate = position === 'Driver' ? 500 : 350;
 
-    // Get Attendance
     var attRes  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:K',
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -1271,20 +1292,19 @@ async function calculatePayroll() {
     var attData = await attRes.json();
     var attRows = attData.values || [];
 
-    // Filter attendance for this employee and period
     var myAtt = attRows.filter(function(r) {
       return (r[2]||'') === empName && (r[1]||'') >= startDate && (r[1]||'') <= endDate;
     });
 
-    var attYes   = 0; // base + meal
-    var attMeals = 0; // meal only
-    var attNo    = 0; // base only
+    var attYes   = 0;
+    var attMeals = 0;
+    var attNo    = 0;
     var twoMan   = 0;
-    var twoManDates = []; // ✅ Store 2-Man Team dates
+    var twoManDates = [];
 
     myAtt.forEach(function(r) {
-      var meal = r[5] || ''; // Column F = Meal Allowance
-      var team = r[3] || ''; // Column D = 2-Man Team
+      var meal = r[5] || '';
+      var team = r[3] || '';
       
       if (meal === 'Yes')              attYes++;
       else if (meal === 'Meals Only')  attMeals++;
@@ -1292,35 +1312,30 @@ async function calculatePayroll() {
       
       if (team === 'Yes') {
         twoMan++;
-        twoManDates.push(r[1]); // ✅ Column B = Date
+        twoManDates.push(r[1]);
       }
     });
 
-    // ✅ Format dates for comment
     var twoManComment = twoManDates.length > 0 
       ? '2-Man Team: ' + twoManDates.map(function(d) {
           return new Date(d + 'T00:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric'});
         }).join(', ')
       : '';
 
-    // Earnings
     var basePay      = (attYes + attNo) * baseRate;
     var twoManPay    = twoMan * 280;
     var mealPay      = (attYes + attMeals) * 210;
     var grossPay     = basePay + twoManPay + mealPay;
 
-    // Savings Plan = 5% of gross
     var savingsPlan  = grossPay * 0.05;
 
-    // Gov contributions
     var empSSS       = selectedPeriod === '1st' ? 225 : 0;
     var empPagibig   = selectedPeriod === '1st' ? 200 : 0;
     var empPhilHealth= selectedPeriod === '2nd' ? 250 : 0;
     var totalContrib = empSSS + empPagibig + empPhilHealth;
 
-    // Get existing advances from last payroll history
     var histRes  = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:Z',
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC',
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
     var histData = await histRes.json();
@@ -1331,7 +1346,6 @@ async function calculatePayroll() {
       .slice(0,1)[0];
     var existingAdv = lastPayroll ? (parseFloat(lastPayroll[16])||0) : 0;
 
-    // Get advances this period
     var advRes  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Advances!A2:D',
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -1344,7 +1358,6 @@ async function calculatePayroll() {
 
     var totalAdv = existingAdv + periodAdv;
 
-    // Store data
     currentPayrollData = {
       name:          empName,
       period:        startDate + ' to ' + endDate,
@@ -1353,7 +1366,7 @@ async function calculatePayroll() {
       attMeals:      attMeals,
       attNo:         attNo,
       twoManDays:    twoMan,
-      twoManDates:   twoManComment, // ✅ Add this line
+      twoManDates:   twoManComment,
       periodAdv:     periodAdv,
       existingAdv:   existingAdv,
       totalAdv:      totalAdv,
@@ -1376,15 +1389,12 @@ async function calculatePayroll() {
   }
 }
 
-
-
 function recalcNetPay() {
   if (!currentPayrollData) return;
   var d = currentPayrollData;
 
   var manualDed = parseFloat(document.getElementById('manual-deduction').value) || 0;
 
-  // Remaining advances after this deduction
   var remainingAdv = Math.max(0, d.totalAdv - manualDed);
 
   var totalDed = manualDed + d.totalContrib + d.savingsPlan;
@@ -1396,7 +1406,6 @@ function recalcNetPay() {
   document.getElementById('summary-total-ded').textContent    = '₱' + totalDed.toFixed(2);
   document.getElementById('summary-net').textContent          = '₱' + netPay.toFixed(2);
 
-  // Save to currentPayrollData para sa history
   currentPayrollData.deductedAdv    = manualDed;
   currentPayrollData.remainingAdv   = remainingAdv;
   currentPayrollData.totalDed       = totalDed;
@@ -1430,16 +1439,14 @@ function showPayrollResult() {
 
   document.getElementById('summary-savings').textContent = '₱' + d.savingsPlan.toFixed(2);
   document.getElementById('summary-contrib').textContent = '₱' + d.totalContrib.toFixed(2);
-   // ✅ Auto-fill 2-Man Team dates in comments
+
   document.getElementById('payroll-comments').value = d.twoManDates || '';
 
-  // Reset manual deduction
   document.getElementById('manual-deduction').value = '';
   recalcNetPay();
 
   document.getElementById('payroll-result-modal').classList.add('active');
 }
-
 
 function closePayrollResultModal() {
   document.getElementById('payroll-result-modal').classList.remove('active');
@@ -1460,35 +1467,35 @@ async function savePayrollToHistory() {
 
   try {
     var row = [
-      'PAY-' + Date.now(),   // A: ID
-      data.name,              // B: Name
-      data.period,            // C: Payroll Period
-      data.attYes + data.attMeals + data.attNo, // D: Attendance
-      data.periodAdv,         // E: Advance 1 (period advances)
-      0,                      // F: Advance 2 (reserved)
-      data.existingAdv,       // G: Existing Advances
-      data.totalAdv,          // H: Total Advances
-      475,                    // I: PEDROEX SSS
-      data.empSSS,            // J: Employee SSS
-      200,                    // K: PEDROEX Pag-IBIG
-      data.empPagibig,        // L: Employee Pag-IBIG
-      250,                    // M: PEDROEX PhilHealth
-      data.empPhilHealth,     // N: Employee PhilHealth
-      data.deductedAdv,       // O: Deduction from Salary Advances
-      data.totalDed,          // P: Total Deductions
-      data.remainingAdv,      // Q: New Existing Advances after Deductions
-      data.twoManDays,        // R: 2-Man Team Attendance
-      data.twoManPay,         // S: Total Additional Pay (2-Man Team)
-      selectedPeriod === '1st' ? data.savingsPlan : 0, // T: Savings Plan 1st
-      selectedPeriod === '2nd' ? data.savingsPlan : 0, // U: Savings Plan 2nd
-      data.savingsPlan,       // V: Savings Plan Total
-      '',                     // W: Savings Plan Withdrawals Dates
-      '',                     // X: Savings Plan Withdrawals Amounts
-      '',                     // Y: Savings Plan Interest Accrued
-      data.grossPay,          // Z: Gross Base Pay
-      data.mealPay,           // AA: Total Meal Allowance
-      data.netPay,            // AB: Total Net Pay
-      comments,               // AC: Comments (2-Man Team Dates)
+      'PAY-' + Date.now(),
+      data.name,
+      data.period,
+      data.attYes + data.attMeals + data.attNo,
+      data.periodAdv,
+      0,
+      data.existingAdv,
+      data.totalAdv,
+      475,
+      data.empSSS,
+      200,
+      data.empPagibig,
+      250,
+      data.empPhilHealth,
+      data.deductedAdv,
+      data.totalDed,
+      data.remainingAdv,
+      data.twoManDays,
+      data.twoManPay,
+      selectedPeriod === '1st' ? data.savingsPlan : 0,
+      selectedPeriod === '2nd' ? data.savingsPlan : 0,
+      data.savingsPlan,
+      '',
+      '',
+      '',
+      data.grossPay,
+      data.mealPay,
+      data.netPay,
+      comments,
     ];
 
     var response = await fetch(
@@ -1519,32 +1526,83 @@ async function savePayrollToHistory() {
 }
 
 // ═══════════════════════════════════════════════════════
+// ✅ YTD CALCULATOR
+// ═══════════════════════════════════════════════════════
+async function calculateYTD(empName) {
+  try {
+    const currentYear = new Date().getFullYear();
+    
+    const res = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC',
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    const data = await res.json();
+    const rows = (data.values || []).filter(r => {
+      const rowYear = r[2] ? new Date(r[2].split(' to ')[0]).getFullYear() : 0;
+      return (r[1]||'') === empName && rowYear === currentYear;
+    });
+
+    let ytdGross = 0;
+    let ytdPedroexSSS = 0;
+    let ytdPedroexPagibig = 0;
+    let ytdPedroexPhilHealth = 0;
+    let ytdEmpSSS = 0;
+    let ytdEmpPagibig = 0;
+    let ytdEmpPhilHealth = 0;
+    let ytdSavings = 0;
+
+    rows.forEach(r => {
+      ytdGross            += parseFloat(r[25] || 0);
+      ytdPedroexSSS       += parseFloat(r[8]  || 0);
+      ytdPedroexPagibig   += parseFloat(r[10] || 0);
+      ytdPedroexPhilHealth+= parseFloat(r[12] || 0);
+      ytdEmpSSS           += parseFloat(r[9]  || 0);
+      ytdEmpPagibig       += parseFloat(r[11] || 0);
+      ytdEmpPhilHealth    += parseFloat(r[13] || 0);
+      ytdSavings          += parseFloat(r[21] || 0);
+    });
+
+    return {
+      gross: ytdGross,
+      pedroexSSS: ytdPedroexSSS,
+      pedroexPagibig: ytdPedroexPagibig,
+      pedroexPhilHealth: ytdPedroexPhilHealth,
+      empSSS: ytdEmpSSS,
+      empPagibig: ytdEmpPagibig,
+      empPhilHealth: ytdEmpPhilHealth,
+      savings: ytdSavings,
+      totalPedroex: ytdPedroexSSS + ytdPedroexPagibig + ytdPedroexPhilHealth,
+      totalEmp: ytdEmpSSS + ytdEmpPagibig + ytdEmpPhilHealth
+    };
+  } catch(err) {
+    console.error('YTD calculation error:', err);
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════
 async function init() {
-  // Check auth
   if (!token) {
     location.href = 'index.html';
     return;
   }
 
-  // Show admin/employee section
   if (isAdmin) {
     document.getElementById('admin-badge').style.display = 'inline-block';
     document.getElementById('admin-section').style.display = 'block';
     document.getElementById('add-btn').style.display = 'flex';
     
-    // Set default month filter to current month
     const now = new Date();
     const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     document.getElementById('filter-month').value = monthStr;
-    document.getElementById('payroll-month').value = monthStr; // Add this line
+    document.getElementById('payroll-month').value = monthStr;
     
     await loadEmployees();
     await loadAdvances();
     loadCalendar();
 
-        // Populate history employee filter
     const histEmpSel = document.getElementById('hist-filter-emp');
     if (histEmpSel) {
       allEmployees.forEach(emp => {
@@ -1554,14 +1612,11 @@ async function init() {
       });
     }
 
-    // Set default month for history filter
     const histMonth = document.getElementById('hist-filter-month');
     if (histMonth) histMonth.value = monthStr;
 
-    // Load history
     loadHistory();
     
-    // Populate payroll employee dropdown (Add this)
     const payrollSelect = document.getElementById('payroll-employee');
     allEmployees.forEach(emp => {
       const option = document.createElement('option');
@@ -1571,19 +1626,16 @@ async function init() {
     });
     
   } else {
-   // ✅ EMPLOYEE SECTION
     document.getElementById('employee-section').style.display = 'block';
     
-    // Set default month filter
     const now = new Date();
     const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     document.getElementById('emp-filter-month').value = monthStr;
     
-    // Load employee's own data
     await loadEmployeeAdvances();
     loadEmployeeCalendar();
     loadEmployeeHistory();
-}
+  }
 }
 
 async function loadEmployeeAdvances() {
@@ -1592,7 +1644,6 @@ async function loadEmployeeAdvances() {
     document.getElementById('emp-advances-list').innerHTML = '';
     document.getElementById('emp-advances-empty').style.display = 'none';
     
-    // Get my full name from Employees sheet
     const empRes = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:D`,
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -1607,7 +1658,6 @@ async function loadEmployeeAdvances() {
       return;
     }
 
-    // Get all advances
     const response = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!A2:D`,
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -1616,7 +1666,6 @@ async function loadEmployeeAdvances() {
     const data = await response.json();
     const rows = data.values || [];
     
-    // Filter only my advances
     empAdvances = rows
       .filter(r => (r[2]||'') === myName)
       .map((r, idx) => ({
@@ -1638,13 +1687,11 @@ async function loadEmployeeAdvances() {
   }
 }
 
-
 function filterEmployeeAdvances() {
   const monthFilter = document.getElementById('emp-filter-month').value;
   
   let filtered = empAdvances;
   
-  // Filter by month
   if (monthFilter) {
     const [year, month] = monthFilter.split('-');
     filtered = filtered.filter(a => {
@@ -1653,11 +1700,10 @@ function filterEmployeeAdvances() {
     });
   }
   
-  // Sort by date (newest first)
   filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
   
   renderEmployeeAdvancesList(filtered);
-  loadEmployeeCalendar(); // Refresh calendar
+  loadEmployeeCalendar();
 }
 
 function renderEmployeeAdvancesList(advances) {
@@ -1671,7 +1717,6 @@ function renderEmployeeAdvancesList(advances) {
   
   document.getElementById('emp-advances-empty').style.display = 'none';
   
-  // Group by month
   const grouped = {};
   advances.forEach(adv => {
     const d = new Date(adv.date);
@@ -1685,14 +1730,12 @@ function renderEmployeeAdvancesList(advances) {
     grouped[key].total += adv.amount;
   });
   
-  // Sort months (newest first)
   const sortedKeys = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
   
   sortedKeys.forEach((key, index) => {
     const group = grouped[key];
     const isExpanded = index === 0;
     
-    // Month header
     const header = document.createElement('div');
     header.style.cssText = `
       background: var(--bg);
@@ -1720,7 +1763,6 @@ function renderEmployeeAdvancesList(advances) {
     
     container.appendChild(header);
     
-    // Month items
     const itemsContainer = document.createElement('div');
     itemsContainer.id = `emp-month-${key}`;
     itemsContainer.style.cssText = `
@@ -1772,38 +1814,31 @@ function loadEmployeeCalendar() {
   const year = empCurrentYear;
   const month = empCurrentMonth;
   
-  // Update header
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December'];
   document.getElementById('emp-cal-month-year').textContent = `${monthNames[month]} ${year}`;
   
-  // Get first day of month and total days
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   
-  // Get today
   const today = new Date();
   const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
   const todayDate = today.getDate();
   
-  // Filter advances for this month
   const monthAdvances = empAdvances.filter(a => {
     const advDate = new Date(a.date);
     return advDate.getFullYear() === year && advDate.getMonth() === month;
   });
   
-  // Build calendar
   const container = document.getElementById('emp-cal-days');
   container.innerHTML = '';
   
-  // Empty cells before first day
   for (let i = 0; i < firstDay; i++) {
     const empty = document.createElement('div');
     empty.className = 'cal-day empty';
     container.appendChild(empty);
   }
   
-  // Days
   for (let day = 1; day <= daysInMonth; day++) {
     const dayEl = document.createElement('div');
     dayEl.className = 'cal-day';
@@ -1889,7 +1924,6 @@ function empNextMonth() {
   loadEmployeeCalendar();
 }
 
-
 function showEmpDayAdvances(dateStr) {
   const dayAdvances = empAdvances.filter(a => a.date === dateStr);
 
@@ -1924,7 +1958,6 @@ function viewEmployeeAdvanceDetail(advance) {
   document.getElementById('view-advance-modal').classList.add('active');
 }
 
-
 async function loadEmployeeHistory() {
   try {
     var res  = await fetch(
@@ -1933,7 +1966,6 @@ async function loadEmployeeHistory() {
     );
     var data = await res.json();
 
-    // Get my full name from Employees sheet
     var empRes  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D',
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -1952,13 +1984,28 @@ async function loadEmployeeHistory() {
       return;
     }
 
-    document.getElementById('emp-history-list').innerHTML = rows.map(function(r) {
+    // ✅ Calculate YTD
+    const ytd = await calculateYTD(myName);
+
+    // ✅ Add YTD summary card
+    let html = '';
+    if (ytd) {
+      html += '<div style="background:linear-gradient(135deg,var(--red),#8f1e29);border-radius:14px;padding:16px;margin-bottom:16px;color:white">'
+        + '<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.9;margin-bottom:12px">Year-to-Date ' + new Date().getFullYear() + '</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+        + '<div><div style="font-size:10px;opacity:0.8">Gross Salary</div><div style="font-size:16px;font-weight:700">₱' + ytd.gross.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '<div><div style="font-size:10px;opacity:0.8">Savings Plan</div><div style="font-size:16px;font-weight:700">₱' + ytd.savings.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '<div><div style="font-size:10px;opacity:0.8">My Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalEmp.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '<div><div style="font-size:10px;opacity:0.8">PEDROEX Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalPedroex.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '</div></div>';
+    }
+
+    html += rows.map(function(r) {
       var period = r[2]  || '—';
       var gross  = parseFloat(r[25]||0).toFixed(2);
       var net    = parseFloat(r[27]||0).toFixed(2);
       var ded    = parseFloat(r[15]||0).toFixed(2);
       
-      // ✅ FIXED: Proper escaping
       var rowData = JSON.stringify(r);
 
       return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick=\'showHistoryDetail(' + rowData + ')\'>'
@@ -1973,15 +2020,14 @@ async function loadEmployeeHistory() {
         + '</div>';
     }).join('');
 
+    document.getElementById('emp-history-list').innerHTML = html;
+
   } catch(err) {
     document.getElementById('emp-history-loading').style.display = 'none';
     showToast('❌ Failed to load history.');
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// LOAD EMPLOYEES
-// ═══════════════════════════════════════════════════════
 async function loadEmployees() {
   try {
     const response = await fetch(
@@ -1993,7 +2039,7 @@ async function loadEmployees() {
     const rows = data.values || [];
     
     allEmployees = rows
-      .filter(r => r[3] === 'Employee') // Only employees, not admins
+      .filter(r => r[3] === 'Employee')
       .map(r => ({
         email: r[0],
         firstName: r[1],
@@ -2001,7 +2047,6 @@ async function loadEmployees() {
         fullName: `${r[1]} ${r[2]}`
       }));
     
-    // Populate filter dropdown
     const filterSelect = document.getElementById('filter-employee');
     allEmployees.forEach(emp => {
       const option = document.createElement('option');
@@ -2010,7 +2055,6 @@ async function loadEmployees() {
       filterSelect.appendChild(option);
     });
     
-    // Populate add advance dropdown
     const advanceSelect = document.getElementById('advance-employee');
     allEmployees.forEach(emp => {
       const option = document.createElement('option');
@@ -2025,9 +2069,6 @@ async function loadEmployees() {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// LOAD ADVANCES
-// ═══════════════════════════════════════════════════════
 async function loadAdvances() {
   try {
     document.getElementById('advances-loading').style.display = 'flex';
@@ -2043,7 +2084,7 @@ async function loadAdvances() {
     const rows = data.values || [];
     
     allAdvances = rows.map((r, idx) => ({
-      rowIndex: idx + 2, // Sheet row number
+      rowIndex: idx + 2,
       id: r[0] || '',
       date: r[1] || '',
       name: r[2] || '',
@@ -2061,21 +2102,16 @@ async function loadAdvances() {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// FILTER ADVANCES
-// ═══════════════════════════════════════════════════════
 function filterAdvances() {
   const employeeFilter = document.getElementById('filter-employee').value;
   const monthFilter = document.getElementById('filter-month').value;
   
   let filtered = allAdvances;
   
-  // Filter by employee
   if (employeeFilter) {
     filtered = filtered.filter(a => a.name === employeeFilter);
   }
   
-  // Filter by month
   if (monthFilter) {
     const [year, month] = monthFilter.split('-');
     filtered = filtered.filter(a => {
@@ -2084,16 +2120,12 @@ function filterAdvances() {
     });
   }
   
-  // Sort by date (newest first)
   filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
   
   renderAdvancesList(filtered);
-  loadCalendar(); // Refresh calendar with filtered data
+  loadCalendar();
 }
 
-// ═══════════════════════════════════════════════════════
-// RENDER ADVANCES LIST (GROUPED BY MONTH)
-// ═══════════════════════════════════════════════════════
 function renderAdvancesList(advances) {
   const container = document.getElementById('advances-list');
   container.innerHTML = '';
@@ -2105,7 +2137,6 @@ function renderAdvancesList(advances) {
   
   document.getElementById('advances-empty').style.display = 'none';
   
-  // Group by month
   const grouped = {};
   advances.forEach(adv => {
     const d = new Date(adv.date);
@@ -2119,14 +2150,12 @@ function renderAdvancesList(advances) {
     grouped[key].total += adv.amount;
   });
   
-  // Sort months (newest first)
   const sortedKeys = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
   
   sortedKeys.forEach((key, index) => {
     const group = grouped[key];
-    const isExpanded = index === 0; // First month expanded by default
+    const isExpanded = index === 0;
     
-    // Month header
     const header = document.createElement('div');
     header.style.cssText = `
       background: var(--bg);
@@ -2154,7 +2183,6 @@ function renderAdvancesList(advances) {
     
     container.appendChild(header);
     
-    // Month items (collapsible)
     const itemsContainer = document.createElement('div');
     itemsContainer.id = `month-${key}`;
     itemsContainer.style.cssText = `
@@ -2201,57 +2229,45 @@ function toggleMonth(key) {
     toggle.textContent = '▶';
   }
 }
-// ═══════════════════════════════════════════════════════
-// CALENDAR
-// ═══════════════════════════════════════════════════════
+
 function loadCalendar() {
   const year = currentYear;
   const month = currentMonth;
   
-  // Update header
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December'];
   document.getElementById('cal-month-year').textContent = `${monthNames[month]} ${year}`;
   
-  // Get first day of month and total days
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   
-  // Get today
   const today = new Date();
   const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
   const todayDate = today.getDate();
   
-  // Filter advances for this month
   const monthAdvances = allAdvances.filter(a => {
     const advDate = new Date(a.date);
     return advDate.getFullYear() === year && advDate.getMonth() === month;
   });
   
-  // Apply employee filter
   const employeeFilter = document.getElementById('filter-employee').value;
   const filteredAdvances = employeeFilter
     ? monthAdvances.filter(a => a.name === employeeFilter)
     : monthAdvances;
   
-  // Build calendar
   const container = document.getElementById('cal-days');
   container.innerHTML = '';
   
-  // Empty cells before first day
   for (let i = 0; i < firstDay; i++) {
     const empty = document.createElement('div');
     empty.className = 'cal-day empty';
     container.appendChild(empty);
   }
   
-    // Days
-  // Days
   for (let day = 1; day <= daysInMonth; day++) {
     const dayEl = document.createElement('div');
     dayEl.className = 'cal-day';
     
-    // ✅ FIXED: Uniform height, controlled overflow
     dayEl.style.cssText = `
       min-height: 70px;
       max-height: 70px;
@@ -2272,12 +2288,11 @@ function loadCalendar() {
 
     const numEl = document.createElement('div');
     numEl.className = 'cal-day-num';
-    numEl.style.cssText = 'margin-bottom: 4px;'; // ✅ Spacing
+    numEl.style.cssText = 'margin-bottom: 4px;';
     numEl.textContent = day;
     dayEl.appendChild(numEl);
 
     if (dayAdvances.length > 0) {
-      // ✅ Show max 2 names, then "+X more"
       dayAdvances.slice(0, 2).forEach(function(adv) {
         var nameEl = document.createElement('div');
         nameEl.style.cssText = `
@@ -2294,7 +2309,7 @@ function loadCalendar() {
           white-space: nowrap;
           line-height: 1.3;
         `;
-        nameEl.textContent = adv.name.split(' ')[0]; // First name only
+        nameEl.textContent = adv.name.split(' ')[0];
         dayEl.appendChild(nameEl);
       });
       
@@ -2338,7 +2353,6 @@ function showDayAdvances(dateStr) {
   const employeeFilter = document.getElementById('filter-employee').value;
   let dayAdvances = allAdvances.filter(a => a.date === dateStr);
 
-  // Employee — sarili lang
   if (!isAdmin) {
     const myName = allEmployees.find(e => e.email === userEmail);
     const myFullName = myName ? myName.fullName : '';
@@ -2352,7 +2366,6 @@ function showDayAdvances(dateStr) {
     return;
   }
 
-  // Show in modal
   const d = new Date(dateStr + 'T00:00:00');
   const label = d.toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
 
@@ -2370,9 +2383,6 @@ function showDayAdvances(dateStr) {
   document.getElementById('day-advance-modal').classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════
-// ADD ADVANCE
-// ═══════════════════════════════════════════════════════
 function showAddAdvanceModal() {
   document.getElementById('advance-employee').value = '';
   document.getElementById('advance-date').value = new Date().toISOString().split('T')[0];
@@ -2395,10 +2405,8 @@ async function saveAdvance() {
   }
   
   try {
-    // Generate ID
     const id = `ADV-${Date.now()}`;
     
-    // Append to sheet
     const response = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!A:D:append?valueInputOption=USER_ENTERED`,
       {
@@ -2427,9 +2435,6 @@ async function saveAdvance() {
   }
 }
 
-// ═══════════════════════════════════════════════════════
-// VIEW ADVANCE DETAIL
-// ═══════════════════════════════════════════════════════
 function viewAdvanceDetail(advance) {
   selectedAdvanceId = advance.id;
   
@@ -2438,8 +2443,6 @@ function viewAdvanceDetail(advance) {
   document.getElementById('detail-date').textContent = formatDate(advance.date);
   document.getElementById('detail-amount').textContent = '₱' + advance.amount.toLocaleString('en-PH', {minimumFractionDigits: 2});
   
-  // Hide "Mark as Deducted" button since we removed status tracking
-  
   document.getElementById('view-advance-modal').classList.add('active');
 }
 
@@ -2447,9 +2450,6 @@ function closeViewAdvanceModal() {
   document.getElementById('view-advance-modal').classList.remove('active');
 }
 
-// ═══════════════════════════════════════════════════════
-// UTILITIES
-// ═══════════════════════════════════════════════════════
 function formatDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -2462,9 +2462,6 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ═══════════════════════════════════════════════════════
-// START
-// ═══════════════════════════════════════════════════════
 init();
 
 async function loadHistory() {
@@ -2491,7 +2488,6 @@ async function loadHistory() {
       });
     }
 
-    // Sort newest first
     rows.sort(function(a,b){ return (b[0]||'').localeCompare(a[0]||''); });
 
     document.getElementById('history-loading').style.display = 'none';
@@ -2501,16 +2497,30 @@ async function loadHistory() {
       return;
     }
 
-    document.getElementById('history-list').innerHTML = rows.map(function(r) {
+    // ✅ Add YTD summary for admin (when employee selected)
+    let html = '';
+    if (empFilter) {
+      const ytd = await calculateYTD(empFilter);
+      if (ytd) {
+        html += '<div style="background:linear-gradient(135deg,var(--red),#8f1e29);border-radius:14px;padding:16px;margin-bottom:16px;color:white">'
+          + '<div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.9;margin-bottom:12px">' + empFilter + ' — YTD ' + new Date().getFullYear() + '</div>'
+          + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+          + '<div><div style="font-size:10px;opacity:0.8">Gross Salary</div><div style="font-size:16px;font-weight:700">₱' + ytd.gross.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '<div><div style="font-size:10px;opacity:0.8">Savings Plan</div><div style="font-size:16px;font-weight:700">₱' + ytd.savings.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '<div><div style="font-size:10px;opacity:0.8">Employee Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalEmp.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '<div><div style="font-size:10px;opacity:0.8">PEDROEX Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalPedroex.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '</div></div>';
+      }
+    }
+
+    html += rows.map(function(r) {
       var name     = r[1]  || '—';
       var period   = r[2]  || '—';
       var gross    = parseFloat(r[25]||0).toFixed(2);
       var net      = parseFloat(r[27]||0).toFixed(2);
       var ded      = parseFloat(r[15]||0).toFixed(2);
 
-      // ✅ FIXED: Escape quotes properly for onclick
       var rowData = JSON.stringify(r);
-      var escapedData = rowData.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
       return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick=\'showHistoryDetail(' + rowData + ')\'>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
@@ -2525,13 +2535,14 @@ async function loadHistory() {
         + '</div>';
     }).join('');
 
+    document.getElementById('history-list').innerHTML = html;
+
   } catch(err) {
     document.getElementById('history-loading').style.display = 'none';
     showToast('❌ Failed to load history.');
     console.error(err);
   }
 }
-
 
 function showHistoryDetail(r) {
   var labels = [
@@ -2601,10 +2612,8 @@ function showHistoryDetail(r) {
 
   document.getElementById('hist-detail-body').innerHTML = html;
   
-  // ✅ Store row data for edit/delete
   window.currentHistoryRow = r;
   
-  // ✅ ADMIN-ONLY: Show Edit/Delete buttons
   var modalActions = document.querySelector('#history-detail-modal .modal-actions');
   if (isAdmin) {
     modalActions.innerHTML = `
@@ -2613,7 +2622,6 @@ function showHistoryDetail(r) {
       <button class="btn btn-primary" onclick="deletePayrollHistory()">🗑️ Delete</button>
     `;
   } else {
-    // ✅ EMPLOYEE: Close button only
     modalActions.innerHTML = `
       <button class="btn btn-secondary" onclick="document.getElementById('history-detail-modal').classList.remove('active')" style="width:100%">Close</button>
     `;
@@ -2626,7 +2634,6 @@ function editPayrollHistory() {
   var r = window.currentHistoryRow;
   if (!r) return;
 
-  // Pre-fill payroll result modal with existing data
   currentPayrollData = {
     name:          r[1],
     period:        r[2],
@@ -2651,15 +2658,13 @@ function editPayrollHistory() {
     totalDed:      parseFloat(r[15] || 0),
     netPay:        parseFloat(r[27] || 0),
     twoManDates:   r[28] || '',
-    payrollId:     r[0] // Store ID for update
+    payrollId:     r[0]
   };
 
-  // Show modal in edit mode
   showPayrollResult();
   document.getElementById('manual-deduction').value = currentPayrollData.deductedAdv;
   document.getElementById('payroll-comments').value = currentPayrollData.twoManDates;
   
-  // Change save button to update
   var modalActions = document.querySelector('#payroll-result-modal .modal-actions');
   modalActions.innerHTML = `
     <button class="btn btn-secondary" onclick="closePayrollResultModal()">Cancel</button>
@@ -2676,7 +2681,6 @@ async function updatePayrollHistory() {
   var comments = document.getElementById('payroll-comments').value.trim();
 
   try {
-    // Find row number in sheet
     var res  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A:A',
       { headers: { 'Authorization': 'Bearer ' + token } }
@@ -2690,35 +2694,35 @@ async function updatePayrollHistory() {
     }
 
     var row = [
-      data.payrollId,     // A: ID (unchanged)
-      data.name,          // B: Name
-      data.period,        // C: Payroll Period
-      data.attYes + data.attMeals + data.attNo, // D: Attendance
-      data.periodAdv,     // E: Advance 1
-      0,                  // F: Advance 2
-      data.existingAdv,   // G: Existing Advances
-      data.totalAdv,      // H: Total Advances
-      475,                // I: PEDROEX SSS
-      data.empSSS,        // J: Employee SSS
-      200,                // K: PEDROEX Pag-IBIG
-      data.empPagibig,    // L: Employee Pag-IBIG
-      250,                // M: PEDROEX PhilHealth
-      data.empPhilHealth, // N: Employee PhilHealth
-      data.deductedAdv,   // O: Deduction
-      data.totalDed,      // P: Total Deductions
-      data.remainingAdv,  // Q: Remaining Advances
-      data.twoManDays,    // R: 2-Man Days
-      data.twoManPay,     // S: 2-Man Pay
-      selectedPeriod === '1st' ? data.savingsPlan : 0, // T: Savings 1st
-      selectedPeriod === '2nd' ? data.savingsPlan : 0, // U: Savings 2nd
-      data.savingsPlan,   // V: Savings Total
-      '',                 // W: Savings Withdrawal Dates
-      '',                 // X: Savings Withdrawal Amounts
-      '',                 // Y: Savings Interest
-      data.grossPay,      // Z: Gross
-      data.mealPay,       // AA: Meal Allowance
-      data.netPay,        // AB: Net Pay
-      comments,           // AC: Comments (2-Man Dates)
+      data.payrollId,
+      data.name,
+      data.period,
+      data.attYes + data.attMeals + data.attNo,
+      data.periodAdv,
+      0,
+      data.existingAdv,
+      data.totalAdv,
+      475,
+      data.empSSS,
+      200,
+      data.empPagibig,
+      250,
+      data.empPhilHealth,
+      data.deductedAdv,
+      data.totalDed,
+      data.remainingAdv,
+      data.twoManDays,
+      data.twoManPay,
+      selectedPeriod === '1st' ? data.savingsPlan : 0,
+      selectedPeriod === '2nd' ? data.savingsPlan : 0,
+      data.savingsPlan,
+      '',
+      '',
+      '',
+      data.grossPay,
+      data.mealPay,
+      data.netPay,
+      comments,
     ];
 
     var response = await fetch(
@@ -2748,7 +2752,7 @@ async function updatePayrollHistory() {
   }
 }
 
-
+// ✅ FIXED DELETE FUNCTION
 async function deletePayrollHistory() {
   var r = window.currentHistoryRow;
   if (!r || !r[0]) return;
@@ -2756,6 +2760,14 @@ async function deletePayrollHistory() {
   if (!confirm('Delete this payroll record?\n\n' + r[1] + ' — ' + r[2])) return;
 
   try {
+    // ✅ Get correct sheet ID
+    const payrollSheetId = await getPayrollHistorySheetId();
+    
+    if (!payrollSheetId) {
+      showToast('❌ Cannot find Payroll History sheet');
+      return;
+    }
+
     // Find row number
     var res  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A:A',
@@ -2769,7 +2781,7 @@ async function deletePayrollHistory() {
       return;
     }
 
-    // Delete row using batchUpdate
+    // ✅ Delete row using correct sheet ID
     var response = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + ':batchUpdate',
       {
@@ -2782,7 +2794,7 @@ async function deletePayrollHistory() {
           requests: [{
             deleteDimension: {
               range: {
-                sheetId: 0, // ⚠️ Get actual sheet ID from sheet properties
+                sheetId: payrollSheetId, // ✅ CORRECT SHEET ID
                 dimension: 'ROWS',
                 startIndex: rowNum - 1,
                 endIndex: rowNum
@@ -2798,6 +2810,8 @@ async function deletePayrollHistory() {
       document.getElementById('history-detail-modal').classList.remove('active');
       loadHistory();
     } else {
+      const errorData = await response.json();
+      console.error('Delete error:', errorData);
       showToast('❌ Error deleting payroll');
     }
   } catch(err) {
@@ -2805,11 +2819,8 @@ async function deletePayrollHistory() {
     showToast('❌ Error deleting payroll');
   }
 }
-// ═══════════════════════════════════════════════════════
-// SHOW FULL PAYROLL DETAIL (REUSE PAYROLL RESULT MODAL)
-// ═══════════════════════════════════════════════════════
+
 function showFullPayrollDetail(r) {
-  // Map columns to display
   var name          = r[1]  || '—';
   var period        = r[2]  || '—';
   var attendance    = r[3]  || '0';
@@ -2839,15 +2850,12 @@ function showFullPayrollDetail(r) {
   var netPay        = parseFloat(r[27] || 0);
   var comments      = r[28] || '';
 
-  // Calculate base pay (gross - 2man - meal)
   var basePay = grossPay - twoManPay - mealPay;
 
-  // Populate modal (reuse payroll result modal structure)
   document.getElementById('summary-name').textContent   = name;
   document.getElementById('summary-period').textContent = period;
 
-  // Attendance breakdown (estimate from totals)
-  var attYes   = Math.round(attendance * 0.6); // Rough estimate
+  var attYes   = Math.round(attendance * 0.6);
   var attMeals = Math.round(attendance * 0.2);
   var attNo    = attendance - attYes - attMeals;
 
@@ -2878,18 +2886,15 @@ function showFullPayrollDetail(r) {
   document.getElementById('summary-total-ded').textContent = '₱' + totalDed.toFixed(2);
   document.getElementById('summary-net').textContent     = '₱' + netPay.toFixed(2);
 
-  // Hide manual deduction input (read-only mode)
   var manualSection = document.querySelector('.summary-section:has(#manual-deduction)');
   if (manualSection) manualSection.style.display = 'none';
 
-  // Show comments
   var commentsTextarea = document.getElementById('payroll-comments');
   if (commentsTextarea) {
     commentsTextarea.value = comments;
-    commentsTextarea.disabled = true; // Read-only
+    commentsTextarea.disabled = true;
   }
 
-  // Hide save button, show close only
   var modalActions = document.querySelector('#payroll-result-modal .modal-actions');
   if (modalActions) {
     modalActions.innerHTML = '<button class="btn btn-secondary" onclick="closePayrollResultModal(); resetPayrollModal();" style="width:100%">Close</button>';
@@ -2899,18 +2904,15 @@ function showFullPayrollDetail(r) {
 }
 
 function resetPayrollModal() {
-  // Restore manual deduction section
   var manualSection = document.querySelector('.summary-section:has(#manual-deduction)');
   if (manualSection) manualSection.style.display = 'block';
 
-  // Re-enable comments
   var commentsTextarea = document.getElementById('payroll-comments');
   if (commentsTextarea) {
     commentsTextarea.disabled = false;
     commentsTextarea.value = '';
   }
 
-  // Restore original buttons
   var modalActions = document.querySelector('#payroll-result-modal .modal-actions');
   if (modalActions) {
     modalActions.innerHTML = `
@@ -2919,10 +2921,7 @@ function resetPayrollModal() {
     `;
   }
 }
-
-
 </script>
-
 <!-- DAY ADVANCE MODAL -->
 <div class="modal" id="day-advance-modal">
   <div class="modal-content">
