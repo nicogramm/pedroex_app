@@ -375,23 +375,24 @@ function applyTheme(dark) {
 }
 applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
-// ✅ FIXED: Proper initialization order
 (function init() {
-  // PWA
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 
-  // Try auto-login
   const savedToken = localStorage.getItem('pedroex-token');
   const expiry = localStorage.getItem('pedroex-token-expiry');
   
-  if (savedToken && expiry && Date.now() < parseInt(expiry)) {
-    // Valid token exists — auto-login
+  // ✅ Add 5-minute buffer para ma-refresh bago mag-expire
+  const bufferMs = 5 * 60 * 1000;
+  
+  if (savedToken && expiry && Date.now() < (parseInt(expiry) - bufferMs)) {
     token = savedToken;
     loadUser();
   } else {
-    // No valid token — show login screen
+    // ✅ Clear expired token
+    localStorage.removeItem('pedroex-token');
+    localStorage.removeItem('pedroex-token-expiry');
     document.getElementById('s-login').classList.add('active');
     document.getElementById('s-app').classList.remove('active');
   }
@@ -423,6 +424,35 @@ function signIn() {
       loadUser();
     }
   }).requestAccessToken({ prompt: '' });
+}
+
+function initAutoRefresh(onRefresh) {
+  setInterval(function() {
+    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    var bufferMs = 10 * 60 * 1000; // 10 min before expiry
+    
+    // If token expires in less than 10 minutes, re-authenticate silently
+    if (token && Date.now() >= (expiry - bufferMs)) {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: function(res) {
+            if (!res.error) {
+              token = res.access_token;
+              const expiresAt = Date.now() + (res.expires_in * 1000);
+              localStorage.setItem('pedroex-token', token);
+              localStorage.setItem('pedroex-token-expiry', expiresAt);
+            }
+          }
+        }).requestAccessToken({ prompt: '' });
+      }
+      return;
+    }
+    
+    if (!token || Date.now() >= expiry) return;
+    onRefresh(function() {});
+  }, 5 * 60 * 1000);
 }
 
 function loadUser() {
