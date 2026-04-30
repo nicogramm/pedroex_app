@@ -299,6 +299,12 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         </select>
       </div>
 
+          <!-- ✅ DAGDAG ITO -->
+    <div class="fg" style="margin-bottom:10px">
+      <label class="fl">Shipment Number</label>
+      <input class="fi" id="filter-shipment" type="text" placeholder="e.g. 12345" oninput="applyFilters()">
+    </div>
+
       <div class="row2" style="margin-bottom:10px">
         <div>
           <label class="fl">Fresh/Frozen</label>
@@ -451,7 +457,7 @@ var calYear, calMonth;
 var todayStr     = '';
 var selectedTrip = null;
 var selectedDay  = null;
-var activeFilters = { truck:'', type:'', billed:'', route:'' };
+var activeFilters = { truck:'', type:'', billed:'', route:'', shipment:'' };
 var filteredTrips = [];
 
 // ═══ TRUCK COLORS (red gradient) ══════════════════════
@@ -695,12 +701,15 @@ function applyFilters() {
   activeFilters.type   = document.getElementById('filter-type').value;
   activeFilters.billed = document.getElementById('filter-billed').value;
   activeFilters.route  = document.getElementById('filter-route').value;
+  activeFilters.shipment = document.getElementById('filter-shipment').value.trim(); // ✅ DAGDAG
 
   filteredTrips = allTrips.filter(function(r) {
     if (activeFilters.truck  && r.truck  !== activeFilters.truck)  return false;
     if (activeFilters.type   && r.type   !== activeFilters.type)   return false;
     if (activeFilters.billed && r.billed !== activeFilters.billed) return false;
     if (activeFilters.route  && r.route  !== activeFilters.route)  return false;
+    if (activeFilters.shipment && !(r.shipmentNumber||'').toLowerCase()
+        .includes(activeFilters.shipment.toLowerCase())) return false;
     return true;
   });
 
@@ -718,6 +727,8 @@ function renderFilterTags() {
   if (activeFilters.type)   active.push({ label: activeFilters.type,           key:'type'   });
   if (activeFilters.billed) active.push({ label: 'Billed: ' + activeFilters.billed, key:'billed' });
   if (activeFilters.route)  active.push({ label: '📍 ' + activeFilters.route,  key:'route'  });
+  if (activeFilters.shipment) active.push({ label: '🔢 ' + activeFilters.shipment, key:'shipment' });
+  
 
   clearB.style.display = active.length ? '' : 'none';
 
@@ -733,11 +744,13 @@ function removeFilter(key) {
   if (key === 'type')   document.getElementById('filter-type').value   = '';
   if (key === 'billed') document.getElementById('filter-billed').value = '';
   if (key === 'route')  document.getElementById('filter-route').value  = '';
+  if (key === 'shipment') document.getElementById('filter-shipment').value = '';
   applyFilters();
 }
 
 function clearFilters() {
-  activeFilters = { truck:'', type:'', billed:'', route:'' };
+  activeFilters = { truck:'', type:'', billed:'', route:'', shipment:'' };
+  document.getElementById('filter-shipment').value = '';
   document.getElementById('filter-truck').value  = '';
   document.getElementById('filter-type').value   = '';
   document.getElementById('filter-billed').value = '';
