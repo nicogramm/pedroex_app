@@ -1924,7 +1924,7 @@ function viewEmployeeAdvanceDetail(advance) {
 async function loadEmployeeHistory() {
   try {
     var res  = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC', // ✅ Include all columns
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC',
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
     var data = await res.json();
@@ -1950,13 +1950,14 @@ async function loadEmployeeHistory() {
 
     document.getElementById('emp-history-list').innerHTML = rows.map(function(r) {
       var period = r[2]  || '—';
-      var gross  = parseFloat(r[25]||0).toFixed(2); // ✅ Column Z = Gross Pay
-      var net    = parseFloat(r[27]||0).toFixed(2); // ✅ Column AB = Net Pay
-      var ded    = parseFloat(r[15]||0).toFixed(2); // ✅ Column P = Total Deductions
+      var gross  = parseFloat(r[25]||0).toFixed(2);
+      var net    = parseFloat(r[27]||0).toFixed(2);
+      var ded    = parseFloat(r[15]||0).toFixed(2);
       
-      var rowData = JSON.stringify(r).replace(/'/g, "&#39;");
+      // ✅ FIXED: Proper escaping
+      var rowData = JSON.stringify(r);
 
-      return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showHistoryDetail(' + rowData + ')">'
+      return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick=\'showHistoryDetail(' + rowData + ')\'>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
         + '<div style="font-size:13px;font-weight:600;color:var(--text2)">' + period + '</div>'
         + '<div style="font-size:16px;font-weight:700;color:var(--red)">₱' + net + '</div>'
@@ -1973,7 +1974,6 @@ async function loadEmployeeHistory() {
     showToast('❌ Failed to load history.');
   }
 }
-
 
 // ═══════════════════════════════════════════════════════
 // LOAD EMPLOYEES
@@ -2500,11 +2500,15 @@ async function loadHistory() {
     document.getElementById('history-list').innerHTML = rows.map(function(r) {
       var name     = r[1]  || '—';
       var period   = r[2]  || '—';
-      var gross    = parseFloat(r[25]||0).toFixed(2); // ✅ Column Z
-      var net      = parseFloat(r[27]||0).toFixed(2); // ✅ Column AB
-      var ded      = parseFloat(r[15]||0).toFixed(2); // ✅ Column P
+      var gross    = parseFloat(r[25]||0).toFixed(2);
+      var net      = parseFloat(r[27]||0).toFixed(2);
+      var ded      = parseFloat(r[15]||0).toFixed(2);
 
-      return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick="showHistoryDetail(' + JSON.stringify(r).replace(/'/g,"&#39;") + ')">'
+      // ✅ FIXED: Escape quotes properly for onclick
+      var rowData = JSON.stringify(r);
+      var escapedData = rowData.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+      return '<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick=\'showHistoryDetail(' + rowData + ')\'>'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
         + '<div style="font-size:14px;font-weight:700;color:var(--text)">' + name + '</div>'
         + '<div style="font-size:16px;font-weight:700;color:var(--red)">₱' + net + '</div>'
@@ -2523,7 +2527,6 @@ async function loadHistory() {
     console.error(err);
   }
 }
-
 
 
 function showHistoryDetail(r) {
