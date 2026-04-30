@@ -1342,7 +1342,7 @@ async function calculatePayroll() {
     var totalContrib = empSSS + empPagibig + empPhilHealth;
 
     var histRes  = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC',
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AF',
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
     var histData = await histRes.json();
@@ -1564,7 +1564,7 @@ async function calculateYTD(empName) {
     const currentYear = new Date().getFullYear();
     
     const res = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC',
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AF', // ✅ FIXED
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
     const data = await res.json();
@@ -1998,7 +1998,7 @@ function viewEmployeeAdvanceDetail(advance) {
 async function loadEmployeeHistory() {
   try {
     var res  = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC',
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AF', // ✅ FIXED
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
     var data = await res.json();
@@ -2694,7 +2694,7 @@ async function loadHistory() {
 
   try {
     var res  = await fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AC',
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AF', // ✅ FIXED
       { headers: { 'Authorization': 'Bearer ' + token } }
     );
     var data = await res.json();
