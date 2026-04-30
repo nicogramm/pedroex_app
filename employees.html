@@ -42,6 +42,12 @@ body.dark {
   --card:     #2a2a2f;
   --green:    #2ecc71;
   --orange:   #f1c40f;
+
+  /* ✅ DAGDAG ITO — kulang dati */
+  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
@@ -1618,6 +1624,8 @@ async function init() {
   // ✅ Apply dark mode
   document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
   
+  
+
   if (!token) {
     location.href = 'index.html';
     return;
