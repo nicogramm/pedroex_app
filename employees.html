@@ -1955,6 +1955,12 @@ function viewEmployeeAdvanceDetail(advance) {
   document.getElementById('detail-date').textContent = formatDate(advance.date);
   document.getElementById('detail-amount').textContent = '₱' + advance.amount.toLocaleString('en-PH', {minimumFractionDigits: 2});
   
+  // ✅ Employees get Close button only
+  var modalActions = document.querySelector('#view-advance-modal .modal-actions');
+  modalActions.innerHTML = `
+    <button class="btn btn-secondary" onclick="closeViewAdvanceModal()" style="width:100%">Close</button>
+  `;
+  
   document.getElementById('view-advance-modal').classList.add('active');
 }
 
@@ -2392,6 +2398,7 @@ function showAddAdvanceModal() {
 
 function closeAddAdvanceModal() {
   document.getElementById('add-advance-modal').classList.remove('active');
+  resetAddAdvanceModal(); // ✅ Always reset when closing
 }
 
 async function saveAdvance() {
@@ -2437,13 +2444,198 @@ async function saveAdvance() {
 
 function viewAdvanceDetail(advance) {
   selectedAdvanceId = advance.id;
+  window.currentAdvanceRow = advance; // ✅ Store for edit/delete
   
   document.getElementById('detail-id').textContent = advance.id;
   document.getElementById('detail-name').textContent = advance.name;
   document.getElementById('detail-date').textContent = formatDate(advance.date);
   document.getElementById('detail-amount').textContent = '₱' + advance.amount.toLocaleString('en-PH', {minimumFractionDigits: 2});
   
+  // ✅ Dynamic modal actions based on user role
+  var modalActions = document.querySelector('#view-advance-modal .modal-actions');
+  if (isAdmin) {
+    modalActions.innerHTML = `
+      <button class="btn btn-secondary" onclick="closeViewAdvanceModal()">Close</button>
+      <button class="btn btn-primary" onclick="editAdvance()" style="background:var(--orange)">✏️ Edit</button>
+      <button class="btn btn-primary" onclick="deleteAdvance()">🗑️ Delete</button>
+    `;
+  } else {
+    modalActions.innerHTML = `
+      <button class="btn btn-secondary" onclick="closeViewAdvanceModal()" style="width:100%">Close</button>
+    `;
+  }
+  
   document.getElementById('view-advance-modal').classList.add('active');
+}
+
+function editAdvance() {
+  var adv = window.currentAdvanceRow;
+  if (!adv) return;
+
+  // ✅ Pre-fill form with existing data
+  document.getElementById('advance-employee').value = adv.name;
+  document.getElementById('advance-date').value = adv.date;
+  document.getElementById('advance-amount').value = adv.amount;
+
+  // ✅ Change modal title
+  document.getElementById('add-advance-modal').querySelector('.modal-header').textContent = 'Edit Advance';
+
+  // ✅ Change Save button to Update
+  var modalActions = document.querySelector('#add-advance-modal .modal-actions');
+  modalActions.innerHTML = `
+    <button class="btn btn-secondary" onclick="closeAddAdvanceModal(); resetAddAdvanceModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="updateAdvance()">💾 Update</button>
+  `;
+
+  // ✅ Close detail modal and open edit modal
+  closeViewAdvanceModal();
+  document.getElementById('add-advance-modal').classList.add('active');
+}
+
+async function updateAdvance() {
+  var adv = window.currentAdvanceRow;
+  if (!adv) return;
+
+  var employee = document.getElementById('advance-employee').value;
+  var date = document.getElementById('advance-date').value;
+  var amount = parseFloat(document.getElementById('advance-amount').value);
+
+  if (!employee || !date || !amount || amount <= 0) {
+    showToast('Please fill all fields');
+    return;
+  }
+
+  try {
+    // ✅ Find row number
+    var res = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Advances!A:A',
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    var idData = await res.json();
+    var rowNum = (idData.values || []).findIndex(r => r[0] === adv.id) + 1;
+
+    if (rowNum < 2) {
+      showToast('❌ Record not found');
+      return;
+    }
+
+    // ✅ Update row
+    var response = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+      '/values/Employee%20Advances!A' + rowNum + ':D' + rowNum + '?valueInputOption=USER_ENTERED',
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          values: [[adv.id, date, employee, amount]]
+        })
+      }
+    );
+
+    if (response.ok) {
+      showToast('✅ Advance updated!');
+      closeAddAdvanceModal();
+      resetAddAdvanceModal();
+      await loadAdvances();
+    } else {
+      showToast('❌ Error updating advance');
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast('❌ Error updating advance');
+  }
+}
+
+async function deleteAdvance() {
+  var adv = window.currentAdvanceRow;
+  if (!adv) return;
+
+  if (!confirm('Delete this advance?\n\n' + adv.name + ' — ₱' + adv.amount.toFixed(2) + '\n' + formatDate(adv.date))) {
+    return;
+  }
+
+  try {
+    // ✅ Get sheet ID for Employee Advances
+    var sheetRes = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '?fields=sheets(properties(sheetId,title))',
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    var sheetData = await sheetRes.json();
+    var advSheet = sheetData.sheets.find(s => s.properties.title === 'Employee Advances');
+    
+    if (!advSheet) {
+      showToast('❌ Cannot find Employee Advances sheet');
+      return;
+    }
+
+    var advSheetId = advSheet.properties.sheetId;
+
+    // ✅ Find row number
+    var res = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Advances!A:A',
+      { headers: { 'Authorization': 'Bearer ' + token } }
+    );
+    var idData = await res.json();
+    var rowNum = (idData.values || []).findIndex(r => r[0] === adv.id) + 1;
+
+    if (rowNum < 2) {
+      showToast('❌ Record not found');
+      return;
+    }
+
+    // ✅ Delete row
+    var response = await fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + ':batchUpdate',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          requests: [{
+            deleteDimension: {
+              range: {
+                sheetId: advSheetId,
+                dimension: 'ROWS',
+                startIndex: rowNum - 1,
+                endIndex: rowNum
+              }
+            }
+          }]
+        })
+      }
+    );
+
+    if (response.ok) {
+      showToast('✅ Advance deleted');
+      closeViewAdvanceModal();
+      await loadAdvances();
+    } else {
+      var errorData = await response.json();
+      console.error('Delete error:', errorData);
+      showToast('❌ Error deleting advance');
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast('❌ Error deleting advance');
+  }
+}
+
+function resetAddAdvanceModal() {
+  // ✅ Reset modal to "Add" mode
+  document.getElementById('add-advance-modal').querySelector('.modal-header').textContent = 'Add New Advance';
+  
+  var modalActions = document.querySelector('#add-advance-modal .modal-actions');
+  modalActions.innerHTML = `
+    <button class="btn btn-secondary" onclick="closeAddAdvanceModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveAdvance()">Save</button>
+  `;
 }
 
 function closeViewAdvanceModal() {
