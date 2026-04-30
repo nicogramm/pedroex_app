@@ -405,6 +405,9 @@ function signIn() {
     setTimeout(signIn, 800);
     return;
   }
+
+  // Check if this is a first-time login
+  var hasGranted = localStorage.getItem('pedroex-scope-granted');
   
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
@@ -416,14 +419,16 @@ function signIn() {
       }
       
       token = res.access_token;
-      
       const expiresAt = Date.now() + (res.expires_in * 1000);
       localStorage.setItem('pedroex-token', token);
       localStorage.setItem('pedroex-token-expiry', expiresAt);
+      localStorage.setItem('pedroex-scope-granted', 'true'); // ✅ Mark as granted
       
       loadUser();
     }
-  }).requestAccessToken({ prompt: '' });
+  }).requestAccessToken({ 
+    prompt: hasGranted ? '' : 'consent' // ✅ Consent only on first login
+  });
 }
 
 function initAutoRefresh(onRefresh) {
