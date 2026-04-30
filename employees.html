@@ -2752,9 +2752,9 @@ function showHistoryDetail(r) {
     { label: 'Name',                        idx: 1,  peso: false },
     { label: 'Payroll Period',              idx: 2,  peso: false },
     { label: 'Total Attendance (Days)',     idx: 3,  peso: false },
-    { label: '├─ With Meal Allowance (Yes)', idx: 28, peso: false }, // ✅ NEW (AD)
-    { label: '├─ Meals Only',               idx: 29, peso: false }, // ✅ NEW (AE)
-    { label: '└─ No Meal Allowance',        idx: 30, peso: false }, // ✅ NEW (AF)
+    { label: '├─ With Meal Allowance (Yes)', idx: 29, peso: false }, // ✅ FIXED — AD column
+    { label: '├─ Meals Only',               idx: 30, peso: false }, // ✅ FIXED — AE column
+    { label: '└─ No Meal Allowance',        idx: 31, peso: false }, // ✅ FIXED — AF column
     { label: 'Advance 1',                   idx: 4,  peso: true  },
     { label: 'Advance 2',                   idx: 5,  peso: true  },
     { label: 'Existing Advances',           idx: 6,  peso: true  },
@@ -2779,17 +2779,17 @@ function showHistoryDetail(r) {
     { label: 'Gross Pay',                   idx: 25, peso: true  },
     { label: 'Meal Allowance',              idx: 26, peso: true  },
     { label: 'Net Pay',                     idx: 27, peso: true  },
-    { label: '2-Man Team Dates',            idx: 28, peso: false },
+    { label: '2-Man Team Dates',            idx: 28, peso: false }, // ✅ FIXED — AC column (Comments)
   ];
 
   var sections = [
     { title: 'BASIC INFO',         rows: [0,1,2] },
-    { title: 'ATTENDANCE BREAKDOWN', rows: [3,4,5,6] }, // ✅ NEW SECTION
+    { title: 'ATTENDANCE BREAKDOWN', rows: [3,4,5,6] }, // ✅ indices 3,4,5,6 = Total, Yes, Meals Only, No
     { title: 'ADVANCES',           rows: [7,8,9,10,17,18,19] },
     { title: 'CONTRIBUTIONS',      rows: [11,12,13,14,15,16] },
-    { title: '2-MAN TEAM',         rows: [20,21,31] },
+    { title: '2-MAN TEAM',         rows: [20,21,30] }, // ✅ index 30 = 2-Man Team Dates
     { title: 'SAVINGS PLAN',       rows: [22,23,24,25,26,27] },
-    { title: 'EARNINGS & NET PAY', rows: [28,29,30] },
+    { title: 'EARNINGS & NET PAY', rows: [28,29] }, // ✅ index 28,29 = Gross Pay, Net Pay
   ];
 
   var html = '';
@@ -2802,8 +2802,8 @@ function showHistoryDetail(r) {
       var item = labels[i];
       var val  = r[item.idx] || '—';
       
-      // ✅ Handle undefined values for new columns
-      if (item.idx >= 28 && item.idx <= 30 && val === '—') {
+      // ✅ Handle undefined values for new columns (AD, AE, AF)
+      if (item.idx >= 29 && item.idx <= 31 && val === '—') {
         val = '0'; // Default to 0 for attendance breakdown if not saved yet
       }
       
@@ -2844,6 +2844,8 @@ function showHistoryDetail(r) {
   document.getElementById('history-detail-modal').classList.add('active');
 }
 
+
+
 function editPayrollHistory() {
   var r = window.currentHistoryRow;
   if (!r) return;
@@ -2851,9 +2853,9 @@ function editPayrollHistory() {
   currentPayrollData = {
     name:          r[1],
     period:        r[2],
-    attYes:        parseInt(r[28] || 0), // ✅ Load from AD
-    attMeals:      parseInt(r[29] || 0), // ✅ Load from AE
-    attNo:         parseInt(r[30] || 0), // ✅ Load from AF
+    attYes:        parseInt(r[29] || 0), // ✅ FIXED — AD column
+    attMeals:      parseInt(r[30] || 0), // ✅ FIXED — AE column
+    attNo:         parseInt(r[31] || 0), // ✅ FIXED — AF column
     twoManDays:    r[17] || 0,
     periodAdv:     parseFloat(r[4] || 0),
     existingAdv:   parseFloat(r[6] || 0),
@@ -2871,7 +2873,7 @@ function editPayrollHistory() {
     remainingAdv:  parseFloat(r[16] || 0),
     totalDed:      parseFloat(r[15] || 0),
     netPay:        parseFloat(r[27] || 0),
-    twoManDates:   r[28] || '',
+    twoManDates:   r[28] || '', // ✅ FIXED — AC column (Comments)
     payrollId:     r[0]
   };
 
@@ -2887,6 +2889,8 @@ function editPayrollHistory() {
   
   document.getElementById('history-detail-modal').classList.remove('active');
 }
+
+
 
 async function updatePayrollHistory() {
   if (!currentPayrollData || !currentPayrollData.payrollId) return;
