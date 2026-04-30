@@ -1425,26 +1425,47 @@ function showPayrollResult() {
   document.getElementById('summary-name').textContent   = d.name + ' (' + d.position + ')';
   document.getElementById('summary-period').textContent = d.period;
 
+  // ✅ ATTENDANCE with totals
   document.getElementById('summary-att-yes').textContent   = d.attYes;
   document.getElementById('summary-att-meals').textContent = d.attMeals;
   document.getElementById('summary-att-no').textContent    = d.attNo;
   document.getElementById('summary-2man').textContent      = d.twoManDays;
 
+  // ✅ ADVANCES
   document.getElementById('summary-adv1').textContent       = '₱' + d.periodAdv.toFixed(2);
   document.getElementById('summary-adv2').textContent       = '—';
   document.getElementById('summary-existing').textContent   = '₱' + d.existingAdv.toFixed(2);
   document.getElementById('summary-total-adv').textContent  = '₱' + d.totalAdv.toFixed(2);
 
+  // ✅ CONTRIBUTIONS
   document.getElementById('summary-emp-sss').textContent       = '₱' + d.empSSS.toFixed(2);
   document.getElementById('summary-emp-pagibig').textContent   = '₱' + d.empPagibig.toFixed(2);
   document.getElementById('summary-emp-philhealth').textContent= '₱' + d.empPhilHealth.toFixed(2);
 
-  document.getElementById('summary-base').textContent    = '₱' + d.basePay.toFixed(2);
-  document.getElementById('summary-2man-pay').textContent= '₱' + d.twoManPay.toFixed(2);
-  document.getElementById('summary-meal').textContent    = '₱' + d.mealPay.toFixed(2);
-  document.getElementById('summary-gross').textContent   = '₱' + d.grossPay.toFixed(2);
+  // ✅ EARNINGS with formulas
+  var baseRate = d.position === 'Driver' ? 500 : 350;
+  var baseDays = d.attYes + d.attNo;
+  var mealDays = d.attYes + d.attMeals;
+  
+  document.getElementById('summary-base').innerHTML = 
+    '₱' + d.basePay.toFixed(2) + 
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">(' + baseDays + ' days × ₱' + baseRate + ')</div>';
+  
+  document.getElementById('summary-2man-pay').innerHTML = 
+    '₱' + d.twoManPay.toFixed(2) + 
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">(' + d.twoManDays + ' days × ₱280)</div>';
+  
+  document.getElementById('summary-meal').innerHTML = 
+    '₱' + d.mealPay.toFixed(2) + 
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">(' + mealDays + ' days × ₱210)</div>';
+  
+  document.getElementById('summary-gross').textContent = '₱' + d.grossPay.toFixed(2);
 
-  document.getElementById('summary-savings').textContent = '₱' + d.savingsPlan.toFixed(2);
+  // ✅ DEDUCTIONS
+  document.getElementById('summary-savings').innerHTML = 
+    '₱' + d.savingsPlan.toFixed(2) + 
+    '<div style="font-size:10px;color:var(--text3);margin-top:2px">(5% of Gross Pay)</div>';
+  
   document.getElementById('summary-contrib').textContent = '₱' + d.totalContrib.toFixed(2);
 
   document.getElementById('payroll-comments').value = d.twoManDates || '';
@@ -2752,9 +2773,9 @@ function showHistoryDetail(r) {
     { label: 'Name',                        idx: 1,  peso: false },
     { label: 'Payroll Period',              idx: 2,  peso: false },
     { label: 'Total Attendance (Days)',     idx: 3,  peso: false },
-    { label: '├─ With Meal Allowance (Yes)', idx: 29, peso: false }, // ✅ FIXED — AD column
-    { label: '├─ Meals Only',               idx: 30, peso: false }, // ✅ FIXED — AE column
-    { label: '└─ No Meal Allowance',        idx: 31, peso: false }, // ✅ FIXED — AF column
+    { label: '├─ With Meal Allowance (Yes)', idx: 29, peso: false }, // ✅ AD
+    { label: '├─ Meals Only',               idx: 30, peso: false }, // ✅ AE
+    { label: '└─ No Meal Allowance',        idx: 31, peso: false }, // ✅ AF
     { label: 'Advance 1',                   idx: 4,  peso: true  },
     { label: 'Advance 2',                   idx: 5,  peso: true  },
     { label: 'Existing Advances',           idx: 6,  peso: true  },
@@ -2769,28 +2790,42 @@ function showHistoryDetail(r) {
     { label: 'Total Deductions',            idx: 15, peso: true  },
     { label: 'Remaining Advances',          idx: 16, peso: true  },
     { label: '2-Man Team Days',             idx: 17, peso: false },
-    { label: '2-Man Team Pay',              idx: 18, peso: true  },
+    { label: '2-Man Team Pay',              idx: 18, peso: true, formula: true  }, // ✅ with formula
     { label: 'Savings Plan (1st)',          idx: 19, peso: true  },
     { label: 'Savings Plan (2nd)',          idx: 20, peso: true  },
-    { label: 'Savings Plan Total',          idx: 21, peso: true  },
+    { label: 'Savings Plan Total',          idx: 21, peso: true, formula: true  }, // ✅ with formula
     { label: 'Savings Withdrawal Dates',    idx: 22, peso: false },
     { label: 'Savings Withdrawal Amounts',  idx: 23, peso: true  },
     { label: 'Savings Interest Accrued',    idx: 24, peso: true  },
     { label: 'Gross Pay',                   idx: 25, peso: true  },
-    { label: 'Meal Allowance',              idx: 26, peso: true  },
+    { label: 'Meal Allowance',              idx: 26, peso: true, formula: true  }, // ✅ with formula
     { label: 'Net Pay',                     idx: 27, peso: true  },
-    { label: '2-Man Team Dates',            idx: 28, peso: false }, // ✅ FIXED — AC column (Comments)
+    { label: '2-Man Team Dates',            idx: 28, peso: false }, // ✅ AC (Comments)
+    { label: 'Base Pay',                    idx: -1, peso: true, formula: true  }, // ✅ calculated field
   ];
 
   var sections = [
     { title: 'BASIC INFO',         rows: [0,1,2] },
-    { title: 'ATTENDANCE BREAKDOWN', rows: [3,4,5,6] }, // ✅ indices 3,4,5,6 = Total, Yes, Meals Only, No
+    { title: 'ATTENDANCE BREAKDOWN', rows: [3,4,5,6] },
     { title: 'ADVANCES',           rows: [7,8,9,10,17,18,19] },
     { title: 'CONTRIBUTIONS',      rows: [11,12,13,14,15,16] },
-    { title: '2-MAN TEAM',         rows: [20,21,30] }, // ✅ index 30 = 2-Man Team Dates
+    { title: '2-MAN TEAM',         rows: [20,21,30] },
     { title: 'SAVINGS PLAN',       rows: [22,23,24,25,26,27] },
-    { title: 'EARNINGS & NET PAY', rows: [28,29] }, // ✅ index 28,29 = Gross Pay, Net Pay
+    { title: 'EARNINGS & NET PAY', rows: [31,28,29,21,30] }, // ✅ Base Pay, Gross, Meal, Savings, Net
   ];
+
+  // ✅ Calculate derived values
+  var attYes   = parseInt(r[29] || 0);
+  var attMeals = parseInt(r[30] || 0);
+  var attNo    = parseInt(r[31] || 0);
+  var baseDays = attYes + attNo;
+  var mealDays = attYes + attMeals;
+  var grossPay = parseFloat(r[25] || 0);
+  var twoManPay = parseFloat(r[18] || 0);
+  var mealPay = parseFloat(r[26] || 0);
+  var basePay = grossPay - twoManPay - mealPay;
+  var twoManDays = parseInt(r[17] || 0);
+  var savingsPlan = parseFloat(r[21] || 0);
 
   var html = '';
   sections.forEach(function(sec) {
@@ -2800,24 +2835,46 @@ function showHistoryDetail(r) {
 
     sec.rows.forEach(function(i) {
       var item = labels[i];
-      var val  = r[item.idx] || '—';
-      
-      // ✅ Handle undefined values for new columns (AD, AE, AF)
-      if (item.idx >= 29 && item.idx <= 31 && val === '—') {
-        val = '0'; // Default to 0 for attendance breakdown if not saved yet
+      var val  = '';
+      var formula = '';
+
+      // ✅ Handle special calculated field (Base Pay)
+      if (item.idx === -1) {
+        val = '₱' + basePay.toFixed(2);
+        var baseRate = basePay / baseDays || 0;
+        formula = '(' + baseDays + ' days × ₱' + baseRate.toFixed(0) + ')';
+      } else {
+        val = r[item.idx] || '—';
+        
+        // ✅ Handle undefined values for new columns
+        if (item.idx >= 29 && item.idx <= 31 && val === '—') {
+          val = '0';
+        }
+        
+        if (item.peso && val !== '—' && !isNaN(parseFloat(val))) {
+          val = '₱' + parseFloat(val).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+        }
+
+        // ✅ Add formulas for specific fields
+        if (item.formula && item.label === '2-Man Team Pay') {
+          formula = '(' + twoManDays + ' days × ₱280)';
+        } else if (item.formula && item.label === 'Meal Allowance') {
+          formula = '(' + mealDays + ' days × ₱210)';
+        } else if (item.formula && item.label === 'Savings Plan Total') {
+          formula = '(5% of Gross Pay)';
+        }
       }
-      
-      if (item.peso && val !== '—' && !isNaN(parseFloat(val))) {
-        val = '₱' + parseFloat(val).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-      }
+
       var isNet   = item.label === 'Net Pay';
       var isGross = item.label === 'Gross Pay';
-      var isSubItem = item.label.startsWith('├─') || item.label.startsWith('└─'); // ✅ Indent sub-items
+      var isSubItem = item.label.startsWith('├─') || item.label.startsWith('└─');
       
       html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.04);' + (isSubItem ? 'padding-left:16px' : '') + '">'
         + '<span style="font-size:12px;color:var(--text2);flex:1">' + item.label + '</span>'
         + '<span style="font-size:' + (isNet ? '15px' : '13px') + ';font-weight:' + (isNet || isGross ? '700' : '600') + ';color:' + (isNet ? 'var(--red)' : 'var(--text)') + ';text-align:right;max-width:55%;word-break:break-word">'
-        + val + '</span>'
+        + val
+        + (formula ? '<div style="font-size:10px;color:var(--text3);margin-top:2px;font-weight:400">' + formula + '</div>' : '')
+        + '</span>'
         + '</div>';
     });
 
