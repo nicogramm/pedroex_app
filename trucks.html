@@ -448,9 +448,21 @@ function apiGet(range) {
     { headers: { Authorization: 'Bearer ' + token } }
   ).then(function(r) {
     if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+    if (r.status === 403) { 
+      showToast('❌ Access denied. Token may have expired.');
+      setTimeout(function(){ location.href = 'index.html'; }, 2000);
+      throw new Error('Forbidden'); 
+    }
     return r.json();
+  }).then(function(data) {
+    if (data.error) {
+      showToast('❌ API Error: ' + data.error.message);
+      throw new Error(data.error.message);
+    }
+    return data;
   });
 }
+
 
 function apiUpdate(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
@@ -558,11 +570,14 @@ function loadTrucks() {
   document.getElementById('trucks-loading').style.display = 'flex';
   document.getElementById('trucks-list').innerHTML = '';
   document.getElementById('trucks-empty').style.display = 'none';
-  var s = document.getElementById('truck-search');
-  if (s) s.value = '';
 
   apiGet(SHEET_TAB + '!A2:G').then(function(res) {
-    allTrucks = (res.values || []).map(function(r, i) {
+    var rows = res.values || [];
+    
+    // ← Debug toast — tanggalin pagkatapos ma-fix
+    showToast('Rows found: ' + rows.length);
+    
+    allTrucks = rows.map(function(r, i) {
       return {
         rowIndex: i + 2,
         id:    r[0] || '',
@@ -580,10 +595,11 @@ function loadTrucks() {
     document.getElementById('trucks-loading').style.display = 'none';
   }).catch(function(err) {
     document.getElementById('trucks-loading').style.display = 'none';
-    showToast('Cannot load data.');
+    showToast('Cannot load data: ' + err.message);
     console.error(err);
   });
 }
+
 
 // ═══ NMIS EXPIRY CHECK ════════════════════════════════
 function checkNMIS() {
