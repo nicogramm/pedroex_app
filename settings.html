@@ -587,7 +587,7 @@ function init() {
   const name = localStorage.getItem('pedroex-name') || 'User';
   const email = localStorage.getItem('pedroex-email') || '';
   const picture = localStorage.getItem('pedroex-picture') || '';
-  const isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+ const isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
 
   document.getElementById('profile-name').textContent = name;
   document.getElementById('profile-email').textContent = email;
