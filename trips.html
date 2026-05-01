@@ -606,7 +606,7 @@ function applyRateAdjustment() {
   if (pic) document.getElementById('user-avatar').src = pic;
 
   var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
-  isAdmin   = (email === ADMIN_EMAIL.toLowerCase());
+  isAdmin   = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
 
   if (isAdmin) {
     document.getElementById('fab').style.display = 'flex';
