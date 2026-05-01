@@ -170,8 +170,13 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 
 .page-wrap {
-  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
-  padding:16px; padding-bottom:90px;
+  flex:1; 
+  overflow-y:auto; 
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:16px; 
+  padding-bottom:90px;
+  height: calc(100vh - 70px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
 }
 
 .tabs {
@@ -293,8 +298,9 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 
 .modal.fullscreen .modal-content {
   border-radius:24px;
-  max-width:900px;
+  max-width:1200px;
   max-height:95vh;
+  width:95%;
   animation:zoomIn 0.3s cubic-bezier(0.16,1,0.3,1);
 }
 
@@ -454,7 +460,7 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   letter-spacing:0.5px;
 }
 .cal-day {
-  min-height:70px;
+  min-height:75px;
   border-radius:10px;
   background:var(--bg); box-shadow:var(--neu-sm);
   display:flex; flex-direction:column; 
@@ -471,17 +477,18 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 
 .cal-day-number {
-  margin-bottom:4px;
+  margin-bottom:6px;
+  font-size:15px;
 }
 
 .cal-day-entries {
-  display:flex; flex-direction:column; gap:2px;
+  display:flex; flex-direction:column; gap:3px;
   width:100%;
   align-items:center;
 }
 .cal-entry {
-  font-size:7px; font-weight:700;
-  padding:2px 4px; border-radius:3px;
+  font-size:8px; font-weight:700;
+  padding:3px 5px; border-radius:4px;
   text-align:center; 
   white-space:nowrap;
   overflow:hidden;
@@ -515,7 +522,7 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 
 .report-stats-grid {
   display:grid; 
-  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
   gap:16px; 
   margin-bottom:24px;
 }
@@ -537,82 +544,207 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 .stat-sub { font-size:12px; color:var(--text2) }
 
+.report-columns {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(400px, 1fr));
+  gap:24px;
+  margin-bottom:24px;
+}
+
+.report-column {
+  background:var(--bg); border-radius:16px;
+  box-shadow:var(--neu-out); padding:20px;
+}
+
+.report-column-header {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:16px;
+  padding-bottom:16px;
+  border-bottom:2px solid var(--bg2);
+}
+
+.report-column-icon {
+  width:48px; height:48px;
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+}
+.report-column-icon.pod { background:rgba(52,152,219,0.2); color:var(--blue) }
+.report-column-icon.crates { background:rgba(39,174,96,0.2); color:var(--green) }
+
+.report-column-title {
+  flex:1;
+}
+.report-column-name {
+  font-size:18px; font-weight:700; color:var(--text);
+}
+.report-column-count {
+  font-size:12px; color:var(--text2);
+}
+
 .report-list {
   display:flex; flex-direction:column; gap:16px;
 }
 
 .report-employee-card {
-  background:var(--bg); border-radius:16px;
-  box-shadow:var(--neu-out); padding:16px;
+  background:var(--bg2); border-radius:12px;
+  padding:14px;
 }
 
 .report-emp-header {
   display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:12px;
-  padding-bottom:12px;
-  border-bottom:2px solid var(--bg2);
+  margin-bottom:8px;
 }
 
 .report-emp-name {
-  font-size:16px; font-weight:700; color:var(--text);
-}
-
-.report-emp-stats {
-  display:flex; gap:12px; align-items:center;
+  font-size:14px; font-weight:700; color:var(--text);
 }
 
 .report-emp-badge {
-  padding:6px 12px; border-radius:8px;
+  padding:4px 10px; border-radius:6px;
   font-size:11px; font-weight:700;
-  background:rgba(46,204,113,0.2); color:var(--green);
+}
+.report-emp-badge.good { background:rgba(46,204,113,0.2); color:var(--green) }
+.report-emp-badge.warning { background:rgba(230,126,34,0.2); color:var(--orange) }
+.report-emp-badge.bad { background:rgba(231,76,60,0.2); color:var(--red) }
+
+.report-emp-details {
+  font-size:12px; color:var(--text2);
+  display:flex; flex-direction:column; gap:4px;
 }
 
-.report-entries {
-  display:flex; flex-direction:column; gap:8px;
+.performance-section {
+  margin-top:24px;
+  padding-top:24px;
+  border-top:2px solid var(--bg2);
 }
 
-.report-entry-row {
-  display:flex; align-items:center; gap:12px;
-  padding:10px; border-radius:10px;
-  background:var(--bg2);
+.performance-title {
+  font-size:16px; font-weight:700; color:var(--text);
+  margin-bottom:16px;
+}
+
+.performance-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+  gap:12px;
+}
+
+.performance-card {
+  background:var(--bg2); border-radius:12px;
+  padding:14px;
   cursor:pointer;
   transition:all 0.2s;
-  font-size:12px; color:var(--text2);
 }
-.report-entry-row:hover {
-  background:var(--bg);
+.performance-card:hover {
   box-shadow:var(--neu-sm);
 }
 
-.report-entry-icon {
-  width:32px; height:32px;
-  border-radius:8px;
+.perf-emp-name {
+  font-size:13px; font-weight:700; color:var(--text);
+  margin-bottom:8px;
+}
+
+.perf-stats {
+  display:flex; flex-direction:column; gap:6px;
+  font-size:11px; color:var(--text2);
+}
+
+.perf-stat-row {
+  display:flex; justify-content:space-between; align-items:center;
+}
+
+.perf-stat-label {
+  display:flex; align-items:center; gap:6px;
+}
+
+.perf-stat-value {
+  font-weight:700;
+}
+.perf-stat-value.good { color:var(--green) }
+.perf-stat-value.warning { color:var(--orange) }
+.perf-stat-value.bad { color:var(--red) }
+
+.detail-section {
+  margin-bottom:20px;
+}
+.detail-label {
+  font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--text3); margin-bottom:8px;
+}
+.detail-value {
+  font-size:14px; color:var(--text);
+  padding:12px; border-radius:10px;
+  background:var(--bg2);
+}
+
+.notif-modal {
+  position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,0.7);
+  display:none; align-items:center; justify-content:center;
+  animation:fadeIn 0.2s;
+}
+.notif-modal.active { display:flex }
+
+.notif-content {
+  background:var(--bg); 
+  border-radius:20px;
+  padding:24px;
+  max-width:500px;
+  width:90%;
+  max-height:80vh;
+  overflow-y:auto;
+  box-shadow:var(--neu-out);
+  animation:zoomIn 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+
+.notif-header {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:2px solid var(--bg2);
+}
+
+.notif-icon {
+  width:48px; height:48px;
+  border-radius:50%;
+  background:rgba(179,37,51,0.2);
   display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+}
+
+.notif-title {
+  font-size:20px; font-weight:700; color:var(--text);
+}
+
+.notif-list {
+  display:flex; flex-direction:column; gap:12px;
+  margin-bottom:20px;
+}
+
+.notif-item {
+  background:var(--bg2); border-radius:12px;
+  padding:14px;
+  display:flex; align-items:flex-start; gap:12px;
+}
+
+.notif-item-icon {
+  font-size:20px;
   flex-shrink:0;
 }
-.report-entry-icon.pod { background:rgba(52,152,219,0.2); color:var(--blue) }
-.report-entry-icon.crates { background:rgba(39,174,96,0.2); color:var(--green) }
-.report-entry-icon.others { background:rgba(155,89,182,0.2); color:var(--purple) }
 
-.report-entry-details {
+.notif-item-content {
   flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
 }
 
-.report-entry-title {
-  font-weight:600;
-  color:var(--text);
+.notif-item-text {
+  font-size:13px; color:var(--text);
+  margin-bottom:4px;
 }
 
-.report-entry-meta {
-  font-size:11px;
-  color:var(--text3);
-}
-
-.report-entry-status {
-  font-size:18px;
+.notif-item-meta {
+  font-size:11px; color:var(--text3);
 }
 
 .toast {
@@ -673,20 +805,6 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
 }
 .bnav:not(.active) .bnav-icon { box-shadow:var(--neu-sm) }
 .bnav.active .bnav-icon { box-shadow:var(--neu-in) }
-
-.detail-section {
-  margin-bottom:20px;
-}
-.detail-label {
-  font-size:11px; font-weight:600;
-  text-transform:uppercase; letter-spacing:1px;
-  color:var(--text3); margin-bottom:8px;
-}
-.detail-value {
-  font-size:14px; color:var(--text);
-  padding:12px; border-radius:10px;
-  background:var(--bg2);
-}
 
 </style>
 </head>
@@ -878,7 +996,7 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
 <div class="modal fullscreen" id="report-modal">
   <div class="modal-content">
     <div class="modal-header">
-      <div class="modal-title">📊 Reports</div>
+      <div class="modal-title">📊 Reports & Performance</div>
       <button class="modal-close" onclick="closeModal('report-modal')">✕</button>
     </div>
     
@@ -910,7 +1028,24 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
       </div>
     </div>
 
-    <div class="report-list" id="report-list"></div>
+    <div class="report-columns" id="report-columns"></div>
+
+    <div class="performance-section">
+      <div class="performance-title">📈 Employee Performance</div>
+      <div class="performance-grid" id="performance-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION MODAL -->
+<div class="notif-modal" id="notif-modal">
+  <div class="notif-content">
+    <div class="notif-header">
+      <div class="notif-icon">🔔</div>
+      <div class="notif-title">REMINDERS</div>
+    </div>
+    <div class="notif-list" id="notif-list"></div>
+    <button class="btn btn-primary" onclick="closeModal('notif-modal')">Close</button>
   </div>
 </div>
 
@@ -1006,7 +1141,9 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
   document.getElementById(`tab-${tab}`).style.display = 'block';
   
-  if (tab === 'calendar') renderCalendar();
+  if (tab === 'calendar') {
+    setTimeout(() => renderCalendar(), 100);
+  }
 }
 
 function changeReportPeriod(period) {
@@ -1729,54 +1866,133 @@ function loadReport() {
   document.getElementById('report-liquidated').textContent = liquidated;
   document.getElementById('report-pending').textContent = pending;
   
-  const byEmployee = {};
-  periodRecords.forEach(r => {
-    if (!byEmployee[r.empName]) byEmployee[r.empName] = [];
-    byEmployee[r.empName].push(r);
+  const podRecords = periodRecords.filter(r => r.docType === 'Proof of Deliveries');
+  const cratesRecords = periodRecords.filter(r => r.docType === 'Crates');
+  
+  const podByEmployee = {};
+  podRecords.forEach(r => {
+    if (!podByEmployee[r.empName]) podByEmployee[r.empName] = [];
+    podByEmployee[r.empName].push(r);
   });
   
-  const list = document.getElementById('report-list');
+  const cratesByEmployee = {};
+  cratesRecords.forEach(r => {
+    if (!cratesByEmployee[r.empName]) cratesByEmployee[r.empName] = [];
+    cratesByEmployee[r.empName].push(r);
+  });
   
-  if (Object.keys(byEmployee).length === 0) {
-    list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:40px 0">No records for this period</p>';
-    return;
-  }
+  const columnsHTML = `
+    <div class="report-column">
+      <div class="report-column-header">
+        <div class="report-column-icon pod">📄</div>
+        <div class="report-column-title">
+          <div class="report-column-name">Proof of Deliveries</div>
+          <div class="report-column-count">${podRecords.length} records</div>
+        </div>
+      </div>
+      <div class="report-list">
+        ${Object.keys(podByEmployee).map(emp => {
+          const empRecords = podByEmployee[emp];
+          const empLiq = empRecords.filter(r => r.liquidated === 'Yes').length;
+          const percentage = Math.round((empLiq / empRecords.length) * 100);
+          
+          let badgeClass = 'good';
+          if (percentage < 50) badgeClass = 'bad';
+          else if (percentage < 80) badgeClass = 'warning';
+          
+          return `
+            <div class="report-employee-card">
+              <div class="report-emp-header">
+                <div class="report-emp-name">${emp}</div>
+                <div class="report-emp-badge ${badgeClass}">${empLiq}/${empRecords.length}</div>
+              </div>
+              <div class="report-emp-details">
+                <div>Performance: ${percentage}%</div>
+                <div>Liquidated: ${empLiq} | Pending: ${empRecords.length - empLiq}</div>
+              </div>
+            </div>
+          `;
+        }).join('') || '<p style="text-align:center;color:var(--text2);padding:20px 0">No POD records</p>'}
+      </div>
+    </div>
+    
+    <div class="report-column">
+      <div class="report-column-header">
+        <div class="report-column-icon crates">📦</div>
+        <div class="report-column-title">
+          <div class="report-column-name">Crates</div>
+          <div class="report-column-count">${cratesRecords.length} records</div>
+        </div>
+      </div>
+      <div class="report-list">
+        ${Object.keys(cratesByEmployee).map(emp => {
+          const empRecords = cratesByEmployee[emp];
+          const empLiq = empRecords.filter(r => r.liquidated === 'Yes').length;
+          const percentage = Math.round((empLiq / empRecords.length) * 100);
+          
+          let badgeClass = 'good';
+          if (percentage < 50) badgeClass = 'bad';
+          else if (percentage < 80) badgeClass = 'warning';
+          
+          return `
+            <div class="report-employee-card">
+              <div class="report-emp-header">
+                <div class="report-emp-name">${emp}</div>
+                <div class="report-emp-badge ${badgeClass}">${empLiq}/${empRecords.length}</div>
+              </div>
+              <div class="report-emp-details">
+                <div>Performance: ${percentage}%</div>
+                <div>Liquidated: ${empLiq} | Pending: ${empRecords.length - empLiq}</div>
+              </div>
+            </div>
+          `;
+        }).join('') || '<p style="text-align:center;color:var(--text2);padding:20px 0">No Crates records</p>'}
+      </div>
+    </div>
+  `;
   
-  list.innerHTML = Object.keys(byEmployee).map(emp => {
-    const empRecords = byEmployee[emp];
-    const empLiq = empRecords.filter(r => r.liquidated === 'Yes').length;
+  document.getElementById('report-columns').innerHTML = columnsHTML;
+  
+  const allEmployees = new Set([...Object.keys(podByEmployee), ...Object.keys(cratesByEmployee)]);
+  
+  const performanceHTML = Array.from(allEmployees).map(emp => {
+    const podRecs = podByEmployee[emp] || [];
+    const cratesRecs = cratesByEmployee[emp] || [];
+    
+    const podLiq = podRecs.filter(r => r.liquidated === 'Yes').length;
+    const cratesLiq = cratesRecs.filter(r => r.liquidated === 'Yes').length;
+    
+    const podPerf = podRecs.length > 0 ? Math.round((podLiq / podRecs.length) * 100) : 0;
+    const cratesPerf = cratesRecs.length > 0 ? Math.round((cratesLiq / cratesRecs.length) * 100) : 0;
+    
+    function getPerfClass(perf) {
+      if (perf >= 80) return 'good';
+      if (perf >= 50) return 'warning';
+      return 'bad';
+    }
     
     return `
-      <div class="report-employee-card">
-        <div class="report-emp-header">
-          <div class="report-emp-name">${emp}</div>
-          <div class="report-emp-stats">
-            <div class="report-emp-badge">${empLiq}/${empRecords.length}</div>
+      <div class="performance-card">
+        <div class="perf-emp-name">${emp}</div>
+        <div class="perf-stats">
+          <div class="perf-stat-row">
+            <div class="perf-stat-label">
+              <span>📄 POD:</span>
+            </div>
+            <div class="perf-stat-value ${getPerfClass(podPerf)}">${podLiq}/${podRecs.length} (${podPerf}%)</div>
           </div>
-        </div>
-        <div class="report-entries">
-          ${empRecords.map(r => {
-            let iconClass = 'pod';
-            if (r.docType === 'Crates') iconClass = 'crates';
-            if (r.docType === 'Others') iconClass = 'others';
-            
-            return `
-              <div class="report-entry-row" onclick="viewRecordDetail(${r.id})">
-                <div class="report-entry-icon ${iconClass}">
-                  ${r.docType === 'Proof of Deliveries' ? '📄' : r.docType === 'Crates' ? '📦' : '📋'}
-                </div>
-                <div class="report-entry-details">
-                  <div class="report-entry-title">${r.docType}${r.number ? ' #' + r.number : ''}</div>
-                  <div class="report-entry-meta">${r.date} • ${r.truck}</div>
-                </div>
-                <div class="report-entry-status">${r.liquidated === 'Yes' ? '✅' : '⏳'}</div>
-              </div>
-            `;
-          }).join('')}
+          <div class="perf-stat-row">
+            <div class="perf-stat-label">
+              <span>📦 Crates:</span>
+            </div>
+            <div class="perf-stat-value ${getPerfClass(cratesPerf)}">${cratesLiq}/${cratesRecs.length} (${cratesPerf}%)</div>
+          </div>
         </div>
       </div>
     `;
   }).join('');
+  
+  document.getElementById('performance-grid').innerHTML = performanceHTML || '<p style="text-align:center;color:var(--text2);padding:20px 0">No performance data</p>';
 }
 
 function updateNotifications() {
@@ -1785,9 +2001,6 @@ function updateNotifications() {
 
 function checkReminders() {
   const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(now.getDate() + 1);
-  
   const pending = records.filter(r => r.liquidated === 'No');
   
   let podCount = 0;
@@ -1845,23 +2058,43 @@ function showNotifications() {
       
       if (dueDate <= now) {
         const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
-        messages.push(`📄 POD${r.number ? ' #' + r.number : ''} (${r.empName}) - ${daysOverdue === 0 ? 'Due today' : 'Overdue ' + daysOverdue + ' days'}`);
+        messages.push({
+          icon: '📄',
+          text: `POD${r.number ? ' #' + r.number : ''} (${r.empName})`,
+          meta: daysOverdue === 0 ? 'Due today' : `Overdue ${daysOverdue} days`
+        });
       }
     }
     
     if (r.docType === 'Crates') {
       const daysSince = Math.floor((now - recDate) / (1000 * 60 * 60 * 24));
       if (daysSince >= 7) {
-        messages.push(`📦 Crates${r.number ? ' #' + r.number : ''} (${r.empName}) - Overdue ${daysSince} days`);
+        messages.push({
+          icon: '📦',
+          text: `Crates${r.number ? ' #' + r.number : ''} (${r.empName})`,
+          meta: `Overdue ${daysSince} days`
+        });
       }
     }
   });
   
   if (messages.length === 0) {
     showToast('✓ No pending reminders');
-  } else {
-    alert('🔔 Reminders:\n\n' + messages.join('\n'));
+    return;
   }
+  
+  const listHTML = messages.map(m => `
+    <div class="notif-item">
+      <div class="notif-item-icon">${m.icon}</div>
+      <div class="notif-item-content">
+        <div class="notif-item-text">${m.text}</div>
+        <div class="notif-item-meta">${m.meta}</div>
+      </div>
+    </div>
+  `).join('');
+  
+  document.getElementById('notif-list').innerHTML = listHTML;
+  document.getElementById('notif-modal').classList.add('active');
 }
 
 let toastTimer;
