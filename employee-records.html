@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#e0e0e5">
+<title>Employee Records - PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ═══════════════════════════════════════
+   NEUMORPHIC THEME VARIABLES
+═══════════════════════════════════════ */
+:root {
+  --bg:       #e0e0e5;
+  --bg2:      #e8e8ed;
+  --shadow-d: #b8b9be;
+  --shadow-l: #ffffff;
+  --text:     #2a2a2e;
+  --text2:    #777;
+  --text3:    #aaa;
+  --red:      #B32533;
+  --red-d:    #8f1e29;
+  --card:     #e0e0e5;
+  --green:    #27ae60;
+  --blue:     #3498db;
+  --orange:   #e67e22;
+
+  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+}
+
+body.dark {
+  --bg:       #2a2a2f;
+  --bg2:      #313137;
+  --shadow-d: #16161a;
+  --shadow-l: #3e3e46;
+  --text:     #e8e8ec;
+  --text2:    #888;
+  --text3:    #555;
+  --card:     #2a2a2f;
+  --green:    #2ecc71;
+  --blue:     #5dade2;
+  --orange:   #f39c12;
+}
+
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
+
+/* ═══════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════ */
+.topbar {
+  background: var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
+  flex-shrink:0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+  position:sticky; top:0; z-index:50;
+}
+body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
+
+.tb-left { display:flex; align-items:center; gap:12px }
+.tb-back {
+  width:36px; height:36px; border-radius:12px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none; color:var(--text);
+}
+.tb-back:active { box-shadow:var(--neu-in) }
+
+.tb-title { font-size:16px; font-weight:700; color:var(--text) }
+
+.tb-right { display:flex; align-items:center; gap:12px }
+.tb-icon-btn {
+  width:36px; height:36px; border-radius:12px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none; color:var(--text);
+  position:relative;
+}
+.tb-icon-btn:active { box-shadow:var(--neu-in) }
+.tb-icon-btn svg { width:18px; height:18px }
+
+.notif-badge {
+  position:absolute; top:-4px; right:-4px;
+  background:var(--red); color:#fff;
+  font-size:9px; font-weight:700;
+  width:16px; height:16px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* ═══════════════════════════════════════
+   PAGE WRAP
+═══════════════════════════════════════ */
+.page-wrap {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:16px; padding-bottom:90px;
+}
+
+/* ═══════════════════════════════════════
+   TABS
+═══════════════════════════════════════ */
+.tabs {
+  display:flex; gap:8px; margin-bottom:16px;
+  background:var(--bg); border-radius:16px;
+  padding:6px; box-shadow:var(--neu-in);
+}
+.tab {
+  flex:1; padding:10px 16px; border-radius:12px;
+  font-size:13px; font-weight:600; text-align:center;
+  cursor:pointer; border:none; background:transparent;
+  color:var(--text2); font-family:'Inter',sans-serif;
+  transition:all 0.2s;
+}
+.tab.active {
+  background:var(--bg); color:var(--red);
+  box-shadow:var(--neu-sm);
+}
+
+/* ═══════════════════════════════════════
+   FILTER BAR
+═══════════════════════════════════════ */
+.filter-bar {
+  display:flex; gap:8px; margin-bottom:16px;
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  padding-bottom:4px;
+}
+.filter-bar::-webkit-scrollbar { display:none }
+
+.filter-chip {
+  padding:8px 16px; border-radius:12px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  font-size:12px; font-weight:600; color:var(--text2);
+  white-space:nowrap; cursor:pointer; border:none;
+  font-family:'Inter',sans-serif;
+}
+.filter-chip.active {
+  box-shadow:var(--neu-in); color:var(--red);
+}
+
+/* ═══════════════════════════════════════
+   RECORDS LIST
+═══════════════════════════════════════ */
+.records-list { display:flex; flex-direction:column; gap:12px }
+
+.record-card {
+  background:var(--bg); border-radius:16px;
+  box-shadow:var(--neu-out); padding:14px;
+  cursor:pointer; transition:all 0.15s;
+  border-left:4px solid transparent;
+}
+.record-card:active { box-shadow:var(--neu-in); transform:scale(0.98) }
+
+.record-card.pod-liquidated { border-left-color:var(--blue) }
+.record-card.pod-pending { border-left-color:var(--orange) }
+.record-card.crates-liquidated { border-left-color:var(--green) }
+.record-card.crates-pending { border-left-color:var(--red) }
+
+.record-header {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  margin-bottom:10px;
+}
+.record-title { font-size:14px; font-weight:700; color:var(--text) }
+.record-badge {
+  padding:4px 10px; border-radius:8px;
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.badge-liquidated { background:rgba(46,204,113,0.2); color:var(--green) }
+.badge-pending { background:rgba(231,76,60,0.2); color:var(--red) }
+
+.record-meta {
+  display:flex; flex-direction:column; gap:6px;
+  font-size:12px; color:var(--text2);
+}
+.record-meta-row {
+  display:flex; align-items:center; gap:8px;
+}
+.record-meta-row svg { width:14px; height:14px; flex-shrink:0 }
+
+/* ═══════════════════════════════════════
+   FAB
+═══════════════════════════════════════ */
+.fab {
+  position:fixed;
+  bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  right:20px;
+  width:56px; height:56px; border-radius:50%;
+  background:var(--red); color:#fff;
+  box-shadow:0 6px 20px rgba(179,37,51,0.4);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none; z-index:45;
+  transition:all 0.2s;
+}
+.fab:active { transform:scale(0.92) }
+.fab svg { width:24px; height:24px }
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.modal {
+  position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,0.5);
+  display:none; align-items:flex-end;
+  animation:fadeIn 0.2s;
+}
+.modal.active { display:flex }
+
+@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+
+.modal-content {
+  background:var(--bg); width:100%;
+  border-radius:24px 24px 0 0;
+  padding:24px; padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+  max-height:90vh; overflow-y:auto;
+  animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes slideUp { from { transform:translateY(100%) } to { transform:translateY(0) } }
+
+.modal-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:20px;
+}
+.modal-title { font-size:18px; font-weight:700; color:var(--text) }
+.modal-close {
+  width:32px; height:32px; border-radius:50%;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none; color:var(--text);
+}
+.modal-close:active { box-shadow:var(--neu-in) }
+
+/* ═══════════════════════════════════════
+   FORM
+═══════════════════════════════════════ */
+.form-group { margin-bottom:18px }
+.form-label {
+  display:block; font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:1px;
+  color:var(--text3); margin-bottom:8px;
+}
+.form-input, .form-select, .form-textarea {
+  width:100%; padding:14px 16px; border-radius:12px;
+  background:var(--bg); box-shadow:var(--neu-in);
+  border:none; font-size:14px; color:var(--text);
+  font-family:'Inter',sans-serif;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline:2px solid var(--red); outline-offset:2px;
+}
+.form-textarea { resize:vertical; min-height:80px }
+
+.radio-group {
+  display:flex; gap:12px;
+}
+.radio-btn {
+  flex:1; padding:12px; border-radius:12px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  text-align:center; font-size:13px; font-weight:600;
+  color:var(--text2); cursor:pointer; border:none;
+  font-family:'Inter',sans-serif; transition:all 0.2s;
+}
+.radio-btn.active {
+  box-shadow:var(--neu-in); color:var(--red);
+}
+
+/* ═══════════════════════════════════════
+   SIGNATURE PAD
+═══════════════════════════════════════ */
+.sig-container {
+  background:var(--bg2); border-radius:12px;
+  box-shadow:var(--neu-in); padding:12px;
+  margin-bottom:18px;
+}
+.sig-canvas {
+  width:100%; height:150px; border-radius:8px;
+  background:#fff; cursor:crosshair;
+  touch-action:none;
+}
+.sig-actions {
+  display:flex; gap:8px; margin-top:8px;
+}
+.sig-btn {
+  flex:1; padding:8px; border-radius:8px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  font-size:12px; font-weight:600; color:var(--text2);
+  border:none; cursor:pointer; font-family:'Inter',sans-serif;
+}
+.sig-btn:active { box-shadow:var(--neu-in) }
+
+/* ═══════════════════════════════════════
+   IMAGE UPLOAD
+═══════════════════════════════════════ */
+.img-upload-box {
+  background:var(--bg); border-radius:12px;
+  box-shadow:var(--neu-in); padding:20px;
+  text-align:center; cursor:pointer;
+  border:2px dashed var(--text3);
+  transition:all 0.2s;
+}
+.img-upload-box:hover { border-color:var(--red) }
+.img-upload-box svg { width:32px; height:32px; color:var(--text3); margin-bottom:8px }
+.img-upload-box p { font-size:12px; color:var(--text2) }
+
+.img-preview {
+  margin-top:12px; border-radius:12px; overflow:hidden;
+  box-shadow:var(--neu-sm); position:relative;
+}
+.img-preview img { width:100%; display:block }
+.img-remove {
+  position:absolute; top:8px; right:8px;
+  width:28px; height:28px; border-radius:50%;
+  background:var(--red); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:16px; font-weight:700;
+}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.btn {
+  width:100%; padding:16px; border-radius:12px;
+  font-size:15px; font-weight:700; text-align:center;
+  cursor:pointer; border:none; font-family:'Inter',sans-serif;
+  transition:all 0.15s;
+}
+.btn-primary {
+  background:var(--red); color:#fff;
+  box-shadow:0 4px 12px rgba(179,37,51,0.3);
+}
+.btn-primary:active { transform:scale(0.97) }
+
+.btn-secondary {
+  background:var(--bg); color:var(--text);
+  box-shadow:var(--neu-sm);
+}
+.btn-secondary:active { box-shadow:var(--neu-in) }
+
+/* ═══════════════════════════════════════
+   CALENDAR VIEW
+═══════════════════════════════════════ */
+.calendar {
+  background:var(--bg); border-radius:16px;
+  box-shadow:var(--neu-out); padding:16px;
+  margin-bottom:16px;
+}
+.cal-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:16px;
+}
+.cal-month { font-size:16px; font-weight:700; color:var(--text) }
+.cal-nav {
+  display:flex; gap:8px;
+}
+.cal-nav-btn {
+  width:32px; height:32px; border-radius:8px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none; color:var(--text);
+}
+.cal-nav-btn:active { box-shadow:var(--neu-in) }
+
+.cal-grid {
+  display:grid; grid-template-columns:repeat(7,1fr);
+  gap:8px;
+}
+.cal-day-label {
+  text-align:center; font-size:10px; font-weight:600;
+  color:var(--text3); text-transform:uppercase;
+  padding:8px 0;
+}
+.cal-day {
+  aspect-ratio:1; border-radius:8px;
+  background:var(--bg); box-shadow:var(--neu-sm);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600; color:var(--text2);
+  cursor:pointer; position:relative;
+}
+.cal-day.today { color:var(--red); box-shadow:var(--neu-in) }
+.cal-day.has-record::after {
+  content:''; position:absolute; bottom:4px;
+  width:4px; height:4px; border-radius:50%;
+  background:var(--red);
+}
+
+/* ═══════════════════════════════════════
+   REPORT VIEW
+═══════════════════════════════════════ */
+.report-header {
+  background:var(--bg); border-radius:16px;
+  box-shadow:var(--neu-out); padding:16px;
+  margin-bottom:16px;
+}
+.report-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:4px }
+.report-subtitle { font-size:12px; color:var(--text2) }
+
+.report-stats {
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:12px; margin-bottom:16px;
+}
+.stat-card {
+  background:var(--bg); border-radius:12px;
+  box-shadow:var(--neu-out); padding:14px;
+}
+.stat-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text3); margin-bottom:6px }
+.stat-value { font-size:24px; font-weight:700; color:var(--red); line-height:1 }
+.stat-sub { font-size:10px; color:var(--text2); margin-top:4px }
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+.toast {
+  position:fixed;
+  bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  left:50%; transform:translateX(-50%);
+  background:var(--bg); border-radius:14px;
+  box-shadow:var(--neu-out);
+  border-left:3px solid var(--red);
+  padding:13px 22px; font-size:13px; font-weight:500; color:var(--text);
+  z-index:300; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity 0.25s;
+}
+.toast.show { opacity:1 }
+
+/* ═══════════════════════════════════════
+   PTR INDICATOR
+═══════════════════════════════════════ */
+.ptr-indicator {
+  position:fixed;
+  top:calc(env(safe-area-inset-top,0px) + 60px);
+  left:50%; transform:translateX(-50%) translateY(-80px);
+  background:var(--bg); border-radius:50%;
+  width:40px; height:40px; box-shadow:var(--neu-out);
+  display:flex; align-items:center; justify-content:center;
+  z-index:200; transition:transform 0.2s; pointer-events:none;
+}
+.ptr-indicator.visible { transform:translateX(-50%) translateY(0) }
+.ptr-spinner {
+  width:18px; height:18px;
+  border:2px solid var(--text3);
+  border-top-color:var(--red);
+  border-radius:50%;
+}
+.ptr-spinner.spinning { animation:spin 0.7s linear infinite }
+@keyframes spin { to { transform:rotate(360deg) } }
+
+/* ═══════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════ */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--bg);
+  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex; align-items:center; justify-content:space-around;
+  box-shadow:0 -3px 14px rgba(0,0,0,0.07);
+  z-index:40;
+}
+body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
+
+.bnav {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+  color:var(--text3); cursor:pointer; border:none; background:none;
+  font-family:'Inter',sans-serif;
+}
+.bnav.active { color:var(--red) }
+
+.bnav-icon {
+  width:42px; height:42px; border-radius:14px;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  transition:box-shadow 0.2s;
+}
+.bnav:not(.active) .bnav-icon { box-shadow:var(--neu-sm) }
+.bnav.active .bnav-icon { box-shadow:var(--neu-in) }
+
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+  <div class="tb-left">
+    <button class="tb-back" onclick="location.href='index.html'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="tb-title">Employee Records</span>
+  </div>
+  <div class="tb-right">
+    <button class="tb-icon-btn" id="notif-btn" onclick="showNotifications()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="notif-badge" id="notif-count" style="display:none">0</span>
+    </button>
+    <button class="tb-icon-btn" onclick="toggleTheme()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" id="theme-icon">
+        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══ PAGE WRAP ═══ -->
+<div class="page-wrap" id="page-wrap">
+  
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" data-tab="list" onclick="switchTab('list')">Records</button>
+    <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">Calendar</button>
+    <button class="tab" data-tab="report" onclick="switchTab('report')">Report</button>
+  </div>
+
+  <!-- TAB: LIST -->
+  <div id="tab-list" class="tab-content">
+    <div class="filter-bar">
+      <button class="filter-chip active" data-filter="all" onclick="filterRecords('all')">All</button>
+      <button class="filter-chip" data-filter="pod" onclick="filterRecords('pod')">POD</button>
+      <button class="filter-chip" data-filter="crates" onclick="filterRecords('crates')">Crates</button>
+      <button class="filter-chip" data-filter="others" onclick="filterRecords('others')">Others</button>
+      <button class="filter-chip" data-filter="pending" onclick="filterRecords('pending')">Pending</button>
+      <button class="filter-chip" data-filter="liquidated" onclick="filterRecords('liquidated')">Liquidated</button>
+    </div>
+    <div class="records-list" id="records-list"></div>
+  </div>
+
+  <!-- TAB: CALENDAR -->
+  <div id="tab-calendar" class="tab-content" style="display:none">
+    <div class="calendar">
+      <div class="cal-header">
+        <div class="cal-month" id="cal-month">January 2025</div>
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+          <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="records-list" id="cal-records-list"></div>
+  </div>
+
+  <!-- TAB: REPORT -->
+  <div id="tab-report" class="tab-content" style="display:none">
+    <div class="report-header">
+      <div class="report-title">Weekly Report</div>
+      <div class="report-subtitle" id="report-week">Week of Jan 13-19, 2025</div>
+    </div>
+    <div class="report-stats">
+      <div class="stat-card">
+        <div class="stat-label">Total Records</div>
+        <div class="stat-value" id="report-total">0</div>
+        <div class="stat-sub">This week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Liquidated</div>
+        <div class="stat-value" id="report-liquidated">0</div>
+        <div class="stat-sub">Completed</div>
+      </div>
+    </div>
+    <div class="records-list" id="report-list"></div>
+  </div>
+
+</div>
+
+<!-- ═══ FAB ═══ -->
+<button class="fab" onclick="openAddModal()">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</button>
+
+<!-- ═══ ADD/EDIT MODAL ═══ -->
+<div class="modal" id="record-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Add Record</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <form id="record-form">
+      <input type="hidden" id="edit-id">
+
+      <div class="form-group">
+        <label class="form-label">Employee Name</label>
+        <input type="text" class="form-input" id="emp-name" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="rec-date" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Truck</label>
+        <select class="form-select" id="rec-truck" required>
+          <option value="">Select truck...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Document Type</label>
+        <select class="form-select" id="doc-type" required>
+          <option value="">Select type...</option>
+          <option value="Proof of Deliveries">Proof of Deliveries</option>
+          <option value="Crates">Crates</option>
+          <option value="Others">Others</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Number</label>
+        <input type="text" class="form-input" id="doc-number" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Liquidated/Returned</label>
+        <div class="radio-group">
+          <button type="button" class="radio-btn" data-value="No" onclick="selectRadio(this, 'liquidated')">No</button>
+          <button type="button" class="radio-btn active" data-value="Yes" onclick="selectRadio(this, 'liquidated')">Yes</button>
+        </div>
+        <input type="hidden" id="liquidated" value="Yes">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Acknowledged By</label>
+        <input type="text" class="form-input" id="ack-by" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Signature</label>
+        <div class="sig-container">
+          <canvas class="sig-canvas" id="sig-canvas"></canvas>
+          <div class="sig-actions">
+            <button type="button" class="sig-btn" onclick="clearSignature()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Picture</label>
+        <input type="file" id="pic-input" accept="image/*" capture="environment" style="display:none" onchange="handleImageUpload(event)">
+        <div class="img-upload-box" onclick="document.getElementById('pic-input').click()">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+            <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>Tap to capture/upload</p>
+        </div>
+        <div class="img-preview" id="img-preview" style="display:none">
+          <img id="preview-img" src="" alt="">
+          <div class="img-remove" onclick="removeImage()">✕</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Comments</label>
+        <textarea class="form-textarea" id="comments" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save Record</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<div class="bottom-nav">
+  <button class="bnav" onclick="location.href='index.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
+    Home
+  </button>
+  <button class="bnav" onclick="location.href='trucks.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
+    Trucks
+  </button>
+  <button class="bnav" onclick="location.href='trips.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
+    Trips
+  </button>
+  <button class="bnav" onclick="location.href='billing.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    Billing
+  </button>
+  <button class="bnav active">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2"/></svg></div>
+    Records
+  </button>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══ PTR INDICATOR ═══ -->
+<div class="ptr-indicator">
+  <div class="ptr-spinner" id="ptr-spinner"></div>
+</div>
+
+<script>
+const CLIENT_ID = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SHEET_ID  = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const SCOPES    = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+
+let token = null;
+let records = [];
+let trucks = [];
+let currentFilter = 'all';
+let currentMonth = new Date();
+let sigCanvas, sigCtx;
+let uploadedImage = null;
+
+// ═══ INIT ═══
+(function init() {
+  const savedToken = localStorage.getItem('pedroex-token');
+  const expiry = localStorage.getItem('pedroex-token-expiry');
+  
+  if (!savedToken || !expiry || Date.now() >= parseInt(expiry)) {
+    location.href = 'index.html';
+    return;
+  }
+  
+  token = savedToken;
+  
+  // Theme
+  applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
+  
+  // Signature canvas
+  sigCanvas = document.getElementById('sig-canvas');
+  sigCtx = sigCanvas.getContext('2d');
+  setupSignaturePad();
+  
+  // Load data
+  loadTrucks();
+  loadRecords();
+  
+  // Pull to refresh
+  initPullToRefresh(document.getElementById('page-wrap'), function(done) {
+    loadRecords();
+    setTimeout(done, 1000);
+  });
+  
+  // Check reminders
+  checkReminders();
+  setInterval(checkReminders, 60000); // Every minute
+})();
+
+// ═══ THEME ═══
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('pedroex-theme', isDark ? 'dark' : 'light');
+}
+
+function applyTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+}
+
+// ═══ TABS ═══
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  
+  document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+  document.getElementById(`tab-${tab}`).style.display = 'block';
+  
+  if (tab === 'calendar') renderCalendar();
+  if (tab === 'report') loadReport();
+}
+
+// ═══ LOAD DATA ═══
+function loadTrucks() {
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Truck%20Roster!A2:A`, {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    trucks = (res.values || []).map(r => r[0]);
+    const sel = document.getElementById('rec-truck');
+    sel.innerHTML = '<option value="">Select truck...</option>' + 
+      trucks.map(t => `<option value="${t}">${t}</option>`).join('');
+  });
+}
+
+function loadRecords() {
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Records!A2:K`, {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    records = (res.values || []).map((r, i) => ({
+      id: i + 2,
+      empName: r[1] || '',
+      date: r[2] || '',
+      truck: r[3] || '',
+      docType: r[4] || '',
+      number: r[5] || '',
+      liquidated: r[6] || 'No',
+      ackBy: r[7] || '',
+      signature: r[8] || '',
+      picture: r[9] || '',
+      comments: r[10] || ''
+    }));
+    renderRecords();
+  });
+}
+
+// ═══ RENDER RECORDS ═══
+function renderRecords() {
+  const list = document.getElementById('records-list');
+  let filtered = records;
+  
+  if (currentFilter === 'pod') filtered = records.filter(r => r.docType === 'Proof of Deliveries');
+  else if (currentFilter === 'crates') filtered = records.filter(r => r.docType === 'Crates');
+  else if (currentFilter === 'others') filtered = records.filter(r => r.docType === 'Others');
+  else if (currentFilter === 'pending') filtered = records.filter(r => r.liquidated === 'No');
+  else if (currentFilter === 'liquidated') filtered = records.filter(r => r.liquidated === 'Yes');
+  
+  if (filtered.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:40px 0">No records found</p>';
+    return;
+  }
+  
+  list.innerHTML = filtered.map(r => {
+    const isPOD = r.docType === 'Proof of Deliveries';
+    const isCrates = r.docType === 'Crates';
+    const isLiq = r.liquidated === 'Yes';
+    
+    let cardClass = 'record-card';
+    if (isPOD && isLiq) cardClass += ' pod-liquidated';
+    else if (isPOD && !isLiq) cardClass += ' pod-pending';
+    else if (isCrates && isLiq) cardClass += ' crates-liquidated';
+    else if (isCrates && !isLiq) cardClass += ' crates-pending';
+    
+    return `
+      <div class="${cardClass}" onclick="viewRecord(${r.id})">
+        <div class="record-header">
+          <div class="record-title">${r.empName}</div>
+          <div class="record-badge ${isLiq ? 'badge-liquidated' : 'badge-pending'}">
+            ${isLiq ? 'Liquidated' : 'Pending'}
+          </div>
+        </div>
+        <div class="record-meta">
+          <div class="record-meta-row">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2"/></svg>
+            ${r.date}
+          </div>
+          <div class="record-meta-row">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/></svg>
+            ${r.truck}
+          </div>
+          <div class="record-meta-row">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h5" stroke="currentColor" stroke-width="2"/></svg>
+            ${r.docType} #${r.number}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterRecords(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+  renderRecords();
+}
+
+// ═══ MODAL ═══
+function openAddModal() {
+  document.getElementById('modal-title').textContent = 'Add Record';
+  document.getElementById('record-form').reset();
+  document.getElementById('edit-id').value = '';
+  clearSignature();
+  removeImage();
+  document.getElementById('rec-date').valueAsDate = new Date();
+  document.getElementById('record-modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('record-modal').classList.remove('active');
+}
+
+function viewRecord(id) {
+  const rec = records.find(r => r.id === id);
+  if (!rec) return;
+  
+  document.getElementById('modal-title').textContent = 'Edit Record';
+  document.getElementById('edit-id').value = rec.id;
+  document.getElementById('emp-name').value = rec.empName;
+  document.getElementById('rec-date').value = rec.date;
+  document.getElementById('rec-truck').value = rec.truck;
+  document.getElementById('doc-type').value = rec.docType;
+  document.getElementById('doc-number').value = rec.number;
+  document.getElementById('liquidated').value = rec.liquidated;
+  document.getElementById('ack-by').value = rec.ackBy;
+  document.getElementById('comments').value = rec.comments;
+  
+  // Radio buttons
+  document.querySelectorAll('.radio-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.value === rec.liquidated);
+  });
+  
+  // Signature
+  if (rec.signature) {
+    const img = new Image();
+    img.onload = () => sigCtx.drawImage(img, 0, 0);
+    img.src = rec.signature;
+  }
+  
+  // Picture
+  if (rec.picture) {
+    document.getElementById('preview-img').src = rec.picture;
+    document.getElementById('img-preview').style.display = 'block';
+    uploadedImage = rec.picture;
+  }
+  
+  document.getElementById('record-modal').classList.add('active');
+}
+
+// ═══ FORM SUBMIT ═══
+document.getElementById('record-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const id = document.getElementById('edit-id').value;
+  const empName = document.getElementById('emp-name').value;
+  const date = document.getElementById('rec-date').value;
+  const truck = document.getElementById('rec-truck').value;
+  const docType = document.getElementById('doc-type').value;
+  const number = document.getElementById('doc-number').value;
+  const liquidated = document.getElementById('liquidated').value;
+  const ackBy = document.getElementById('ack-by').value;
+  const comments = document.getElementById('comments').value;
+  
+  // Get signature
+  const signature = sigCanvas.toDataURL();
+  
+  // Get picture
+  const picture = uploadedImage || '';
+  
+  const row = [
+    id || records.length + 2,
+    empName,
+    date,
+    truck,
+    docType,
+    number,
+    liquidated,
+    ackBy,
+    signature,
+    picture,
+    comments
+  ];
+  
+  const range = id ? `Records!A${id}:K${id}` : 'Records!A:K';
+  const method = id ? 'PUT' : 'POST';
+  const url = id 
+    ? `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW`
+    : `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}:append?valueInputOption=RAW`;
+  
+  fetch(url, {
+    method: method,
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ values: [row] })
+  })
+  .then(r => r.json())
+  .then(() => {
+    showToast(id ? '✓ Record updated' : '✓ Record added');
+    closeModal();
+    loadRecords();
+  })
+  .catch(() => showToast('❌ Error saving record'));
+});
+
+// ═══ RADIO BUTTONS ═══
+function selectRadio(btn, inputId) {
+  btn.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(inputId).value = btn.dataset.value;
+}
+
+// ═══ SIGNATURE PAD ═══
+function setupSignaturePad() {
+  let drawing = false;
+  
+  sigCanvas.width = sigCanvas.offsetWidth;
+  sigCanvas.height = sigCanvas.offsetHeight;
+  
+  sigCanvas.addEventListener('mousedown', startDrawing);
+  sigCanvas.addEventListener('mousemove', draw);
+  sigCanvas.addEventListener('mouseup', stopDrawing);
+  sigCanvas.addEventListener('touchstart', startDrawing);
+  sigCanvas.addEventListener('touchmove', draw);
+  sigCanvas.addEventListener('touchend', stopDrawing);
+  
+  function startDrawing(e) {
+    drawing = true;
+    const pos = getPos(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(pos.x, pos.y);
+  }
+  
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    sigCtx.lineTo(pos.x, pos.y);
+    sigCtx.strokeStyle = '#000';
+    sigCtx.lineWidth = 2;
+    sigCtx.stroke();
+  }
+  
+  function stopDrawing() {
+    drawing = false;
+  }
+  
+  function getPos(e) {
+    const rect = sigCanvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  }
+}
+
+function clearSignature() {
+  sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+}
+
+// ═══ IMAGE UPLOAD ═══
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    uploadedImage = event.target.result;
+    document.getElementById('preview-img').src = uploadedImage;
+    document.getElementById('img-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage() {
+  uploadedImage = null;
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('pic-input').value = '';
+}
+
+// ═══ CALENDAR ═══
+function renderCalendar() {
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+  
+  document.getElementById('cal-month').textContent = 
+    currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+    .map(d => `<div class="cal-day-label">${d}</div>`).join('');
+  
+  for (let i = 0; i < firstDay; i++) {
+    grid.innerHTML += '<div></div>';
+  }
+  
+  const today = new Date();
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const hasRecord = records.some(r => r.date === date);
+    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    
+    grid.innerHTML += `
+      <div class="cal-day ${isToday ? 'today' : ''} ${hasRecord ? 'has-record' : ''}" 
+           onclick="showDayRecords('${date}')">
+        ${day}
+      </div>
+    `;
+  }
+}
+
+function changeMonth(delta) {
+  currentMonth.setMonth(currentMonth.getMonth() + delta);
+  renderCalendar();
+}
+
+function showDayRecords(date) {
+  const dayRecords = records.filter(r => r.date === date);
+  const list = document.getElementById('cal-records-list');
+  
+  if (dayRecords.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px 0">No records for this date</p>';
+    return;
+  }
+  
+  list.innerHTML = dayRecords.map(r => {
+    const isPOD = r.docType === 'Proof of Deliveries';
+    const isCrates = r.docType === 'Crates';
+    const isLiq = r.liquidated === 'Yes';
+    
+    let cardClass = 'record-card';
+    if (isPOD && isLiq) cardClass += ' pod-liquidated';
+    else if (isPOD && !isLiq) cardClass += ' pod-pending';
+    else if (isCrates && isLiq) cardClass += ' crates-liquidated';
+    else if (isCrates && !isLiq) cardClass += ' crates-pending';
+    
+    return `
+      <div class="${cardClass}" onclick="viewRecord(${r.id})">
+        <div class="record-header">
+          <div class="record-title">${r.empName}</div>
+          <div class="record-badge ${isLiq ? 'badge-liquidated' : 'badge-pending'}">
+            ${isLiq ? 'Liquidated' : 'Pending'}
+          </div>
+        </div>
+        <div class="record-meta">
+          <div class="record-meta-row">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+            ${r.truck}
+          </div>
+          <div class="record-meta-row">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+            ${r.docType} #${r.number}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══ REPORT ═══
+function loadReport() {
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  
+  document.getElementById('report-week').textContent = 
+    `Week of ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  
+  const weekRecords = records.filter(r => {
+    const d = new Date(r.date);
+    return d >= weekStart && d <= weekEnd;
+  });
+  
+  const liquidated = weekRecords.filter(r => r.liquidated === 'Yes').length;
+  
+  document.getElementById('report-total').textContent = weekRecords.length;
+  document.getElementById('report-liquidated').textContent = liquidated;
+  
+  // Group by employee
+  const byEmployee = {};
+  weekRecords.forEach(r => {
+    if (!byEmployee[r.empName]) byEmployee[r.empName] = [];
+    byEmployee[r.empName].push(r);
+  });
+  
+  const list = document.getElementById('report-list');
+  list.innerHTML = Object.keys(byEmployee).map(emp => {
+    const empRecords = byEmployee[emp];
+    const empLiq = empRecords.filter(r => r.liquidated === 'Yes').length;
+    
+    return `
+      <div class="record-card">
+        <div class="record-header">
+          <div class="record-title">${emp}</div>
+          <div class="record-badge ${empLiq === empRecords.length ? 'badge-liquidated' : 'badge-pending'}">
+            ${empLiq}/${empRecords.length}
+          </div>
+        </div>
+        <div class="record-meta">
+          ${empRecords.map(r => `
+            <div class="record-meta-row">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+              ${r.date} - ${r.truck} - ${r.docType} #${r.number} - ${r.liquidated === 'Yes' ? '✓' : '✗'}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══ REMINDERS ═══
+function checkReminders() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  
+  const pending = records.filter(r => r.liquidated === 'No');
+  
+  let podCount = 0;
+  let cratesCount = 0;
+  
+  pending.forEach(r => {
+    const recDate = new Date(r.date);
+    
+    // POD: remind next day (or Monday if weekend)
+    if (r.docType === 'Proof of Deliveries') {
+      let dueDate = new Date(recDate);
+      dueDate.setDate(recDate.getDate() + 1);
+      
+      // If due date is weekend, move to Monday
+      if (dueDate.getDay() === 0) dueDate.setDate(dueDate.getDate() + 1);
+      if (dueDate.getDay() === 6) dueDate.setDate(dueDate.getDate() + 2);
+      
+      if (dueDate.toDateString() === tomorrow.toDateString()) {
+        podCount++;
+      }
+    }
+    
+    // Crates: remind weekly (7 days after)
+    if (r.docType === 'Crates') {
+      const daysSince = Math.floor((now - recDate) / (1000 * 60 * 60 * 24));
+      if (daysSince >= 7) {
+        cratesCount++;
+      }
+    }
+  });
+  
+  const totalNotif = podCount + cratesCount;
+  const badge = document.getElementById('notif-count');
+  
+  if (totalNotif > 0) {
+    badge.textContent = totalNotif;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function showNotifications() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  
+  const pending = records.filter(r => r.liquidated === 'No');
+  
+  let messages = [];
+  
+  pending.forEach(r => {
+    const recDate = new Date(r.date);
+    
+    if (r.docType === 'Proof of Deliveries') {
+      let dueDate = new Date(recDate);
+      dueDate.setDate(recDate.getDate() + 1);
+      
+      if (dueDate.getDay() === 0) dueDate.setDate(dueDate.getDate() + 1);
+      if (dueDate.getDay() === 6) dueDate.setDate(dueDate.getDate() + 2);
+      
+      if (dueDate.toDateString() === tomorrow.toDateString()) {
+        messages.push(`📄 POD #${r.number} (${r.empName}) - Due tomorrow`);
+      }
+    }
+    
+    if (r.docType === 'Crates') {
+      const daysSince = Math.floor((now - recDate) / (1000 * 60 * 60 * 24));
+      if (daysSince >= 7) {
+        messages.push(`📦 Crates #${r.number} (${r.empName}) - Overdue ${daysSince} days`);
+      }
+    }
+  });
+  
+  if (messages.length === 0) {
+    showToast('✓ No pending reminders');
+  } else {
+    alert('🔔 Reminders:\n\n' + messages.join('\n'));
+  }
+}
+
+// ═══ TOAST ═══
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══ PULL TO REFRESH ═══
+function initPullToRefresh(el, onRefresh) {
+  let startY = 0;
+  let pulling = false;
+  const threshold = 70;
+  const indicator = document.querySelector('.ptr-indicator');
+  const spinner = document.getElementById('ptr-spinner');
+  
+  el.addEventListener('touchstart', function(e) {
+    if (el.scrollTop === 0) {
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+  
+  el.addEventListener('touchmove', function(e) {
+    if (!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if (dist < 0) { pulling = false; return; }
+    
+    const progress = Math.min(dist / threshold, 1);
+    indicator.classList.add('visible');
+    spinner.style.transform = `rotate(${progress * 360}deg)`;
+  }, { passive: true });
+  
+  el.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    pulling = false;
+    
+    const dist = e.changedTouches[0].clientY - startY;
+    if (dist >= threshold) {
+      spinner.classList.add('spinning');
+      onRefresh(function() {
+        spinner.classList.remove('spinning');
+        indicator.classList.remove('visible');
+      });
+    } else {
+      indicator.classList.remove('visible');
+    }
+  });
+}
+
+</script>
+</body>
+</html>
