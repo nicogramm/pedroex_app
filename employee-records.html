@@ -360,9 +360,14 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   margin-bottom:18px;
 }
 .sig-canvas {
-  width:100%; height:150px; border-radius:8px;
-  background:#fff; cursor:crosshair;
+  width:100%; 
+  height:150px; 
+  border-radius:8px;
+  background:#fff; 
+  cursor:crosshair;
   touch-action:none;
+  display:block; /* ✅ Added */
+  border:1px solid #ddd; /* ✅ Added for visibility */
 }
 .sig-actions {
   display:flex; gap:8px; margin-top:8px;
@@ -374,6 +379,13 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   border:none; cursor:pointer; font-family:'Inter',sans-serif;
 }
 .sig-btn:active { box-shadow:var(--neu-in) }
+
+/* ✅ Dark mode fix for signature canvas */
+body.dark .sig-canvas {
+  background:#ffffff; /* Keep white for signature visibility */
+  border:1px solid #3a3a42;
+}
+
 
 /* ═══════════════════════════════════════
    IMAGE UPLOAD
@@ -990,14 +1002,20 @@ function filterRecords(filter) {
 }
 
 // ═══ MODAL ═══
+// ═══ MODAL ═══
 function openAddModal() {
   document.getElementById('modal-title').textContent = 'Add Record';
   document.getElementById('record-form').reset();
   document.getElementById('edit-id').value = '';
-  clearSignature();
   removeImage();
   document.getElementById('rec-date').valueAsDate = new Date();
   document.getElementById('record-modal').classList.add('active');
+  
+  // ✅ Initialize signature canvas after modal opens
+  setTimeout(function() {
+    setupSignaturePad();
+    clearSignature();
+  }, 100);
 }
 
 function closeModal() {
@@ -1108,37 +1126,89 @@ function selectRadio(btn, inputId) {
 // ═══ SIGNATURE PAD ═══
 function setupSignaturePad() {
   let drawing = false;
+  let lastX = 0;
+  let lastY = 0;
   
-  sigCanvas.width = sigCanvas.offsetWidth;
-  sigCanvas.height = sigCanvas.offsetHeight;
-  
-  sigCanvas.addEventListener('mousedown', startDrawing);
-  sigCanvas.addEventListener('mousemove', draw);
-  sigCanvas.addEventListener('mouseup', stopDrawing);
-  sigCanvas.addEventListener('touchstart', startDrawing);
-  sigCanvas.addEventListener('touchmove', draw);
-  sigCanvas.addEventListener('touchend', stopDrawing);
-  
-  function startDrawing(e) {
-    drawing = true;
-    const pos = getPos(e);
-    sigCtx.beginPath();
-    sigCtx.moveTo(pos.x, pos.y);
+  // ✅ Set canvas size properly
+  function resizeCanvas() {
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    sigCanvas.width = sigCanvas.offsetWidth * ratio;
+    sigCanvas.height = sigCanvas.offsetHeight * ratio;
+    sigCanvas.getContext('2d').scale(ratio, ratio);
+    
+    // Set white background
+    sigCtx.fillStyle = '#ffffff';
+    sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
   }
   
-  function draw(e) {
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  
+  // ✅ Mouse events
+  sigCanvas.addEventListener('mousedown', function(e) {
+    drawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+  });
+  
+  sigCanvas.addEventListener('mousemove', function(e) {
     if (!drawing) return;
     e.preventDefault();
     const pos = getPos(e);
+    
+    sigCtx.beginPath();
+    sigCtx.moveTo(lastX, lastY);
     sigCtx.lineTo(pos.x, pos.y);
-    sigCtx.strokeStyle = '#000';
+    sigCtx.strokeStyle = '#000000';
     sigCtx.lineWidth = 2;
+    sigCtx.lineCap = 'round';
+    sigCtx.lineJoin = 'round';
     sigCtx.stroke();
-  }
+    
+    lastX = pos.x;
+    lastY = pos.y;
+  });
   
-  function stopDrawing() {
+  sigCanvas.addEventListener('mouseup', function() {
     drawing = false;
-  }
+  });
+  
+  sigCanvas.addEventListener('mouseleave', function() {
+    drawing = false;
+  });
+  
+  // ✅ Touch events
+  sigCanvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    drawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+  }, { passive: false });
+  
+  sigCanvas.addEventListener('touchmove', function(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    
+    sigCtx.beginPath();
+    sigCtx.moveTo(lastX, lastY);
+    sigCtx.lineTo(pos.x, pos.y);
+    sigCtx.strokeStyle = '#000000';
+    sigCtx.lineWidth = 2;
+    sigCtx.lineCap = 'round';
+    sigCtx.lineJoin = 'round';
+    sigCtx.stroke();
+    
+    lastX = pos.x;
+    lastY = pos.y;
+  }, { passive: false });
+  
+  sigCanvas.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    drawing = false;
+  }, { passive: false });
   
   function getPos(e) {
     const rect = sigCanvas.getBoundingClientRect();
@@ -1150,6 +1220,11 @@ function setupSignaturePad() {
   }
 }
 
+function clearSignature() {
+  const ratio = Math.max(window.devicePixelRatio || 1, 1);
+  sigCtx.fillStyle = '#ffffff';
+  sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+}
 function clearSignature() {
   sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
 }
