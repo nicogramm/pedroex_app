@@ -418,7 +418,7 @@ let hasNewPhoto = false;  // flag: user picked a new photo
 
   const email   = localStorage.getItem('pedroex-email') || '';
   const picture = localStorage.getItem('pedroex-picture') || '';
-  isAdmin = email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
 
   const av = document.getElementById('user-avatar');
   if (av && picture) av.src = picture;
