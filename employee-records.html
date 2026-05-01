@@ -10,9 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-/* ═══════════════════════════════════════
-   NEUMORPHIC THEME VARIABLES
-═══════════════════════════════════════ */
 :root {
   --bg:       #e0e0e5;
   --bg2:      #e8e8ed;
@@ -27,6 +24,7 @@
   --green:    #27ae60;
   --blue:     #3498db;
   --orange:   #e67e22;
+  --purple:   #9b59b6;
 
   --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
   --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
@@ -46,6 +44,7 @@ body.dark {
   --green:    #2ecc71;
   --blue:     #5dade2;
   --orange:   #f39c12;
+  --purple:   #b19cd9;
 
   --neu-out:  6px 6px 16px var(--shadow-d), -2px -2px 8px var(--shadow-l);
   --neu-in:   inset 5px 5px 12px var(--shadow-d), inset -2px -2px 8px var(--shadow-l);
@@ -247,6 +246,17 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 .record-meta-row svg { width:14px; height:14px; flex-shrink:0 }
 
+/* ✅ DELETE BUTTON */
+.btn-delete {
+  width:100%; padding:14px; border-radius:12px;
+  font-size:14px; font-weight:700; text-align:center;
+  cursor:pointer; border:none; font-family:'Inter',sans-serif;
+  background:var(--red); color:#fff;
+  box-shadow:0 4px 12px rgba(179,37,51,0.3);
+  margin-top:12px;
+}
+.btn-delete:active { transform:scale(0.97) }
+
 .fab {
   position:fixed;
   bottom:calc(80px + env(safe-area-inset-bottom,0px));
@@ -425,16 +435,26 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 .cal-day {
   aspect-ratio:1; border-radius:8px;
   background:var(--bg); box-shadow:var(--neu-sm);
-  display:flex; align-items:center; justify-content:center;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
   font-size:13px; font-weight:600; color:var(--text2);
   cursor:pointer; position:relative;
+  padding:4px;
 }
 .cal-day.today { color:var(--red); box-shadow:var(--neu-in) }
-.cal-day.has-record::after {
-  content:''; position:absolute; bottom:4px;
-  width:4px; height:4px; border-radius:50%;
-  background:var(--red);
+
+/* ✅ CALENDAR ENTRIES */
+.cal-day-entries {
+  display:flex; flex-direction:column; gap:2px;
+  margin-top:4px; width:100%;
 }
+.cal-entry {
+  font-size:8px; font-weight:600;
+  padding:2px 4px; border-radius:4px;
+  text-align:center; overflow:hidden;
+  text-overflow:ellipsis; white-space:nowrap;
+}
+.cal-entry.pod { background:rgba(52,152,219,0.3); color:var(--blue) }
+.cal-entry.crates { background:rgba(39,174,96,0.3); color:var(--green) }
 
 .report-header {
   background:var(--bg); border-radius:16px;
@@ -564,7 +584,13 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
     <div class="records-list" id="records-list"></div>
   </div>
 
+  <!-- ✅ CALENDAR WITH POD/CRATES FILTER -->
   <div id="tab-calendar" class="tab-content" style="display:none">
+    <div class="filter-bar" style="margin-bottom:16px">
+      <button class="filter-chip active" data-cal-filter="pod" onclick="filterCalendar('pod')">POD</button>
+      <button class="filter-chip" data-cal-filter="crates" onclick="filterCalendar('crates')">Crates</button>
+    </div>
+    
     <div class="calendar">
       <div class="cal-header">
         <div class="cal-month" id="cal-month">January 2025</div>
@@ -578,7 +604,6 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
     <div class="records-list" id="cal-records-list"></div>
   </div>
 
-  <!-- ✅ FIXED: Single report header with period selector -->
   <div id="tab-report" class="tab-content" style="display:none">
     <div class="report-header">
       <div class="report-title">Reports</div>
@@ -637,7 +662,7 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
       </div>
 
       <div class="form-group">
-        <label class="form-label">Truck</label>
+        <label class="form-label">Truck Plate</label>
         <select class="form-select" id="rec-truck" required>
           <option value="">Select truck...</option>
         </select>
@@ -685,7 +710,7 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
       <div class="form-group">
         <label class="form-label">Picture</label>
         <input type="file" id="pic-input" accept="image/*" capture="environment" style="display:none" onchange="handleImageUpload(event)">
-        <div class="img-upload-box" onclick="document.getElementById('pic-input').click()">
+        <div class="img-upload-box" id="upload-box" onclick="document.getElementById('pic-input').click()">
           <svg viewBox="0 0 24 24" fill="none">
             <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
             <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
@@ -705,6 +730,7 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
       </div>
 
       <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
+      <button type="button" class="btn-delete" id="delete-btn" style="display:none" onclick="deleteRecord()">Delete Record</button>
     </form>
   </div>
 </div>
@@ -751,6 +777,8 @@ let currentMonth = new Date();
 let sigCanvas, sigCtx;
 let uploadedImage = null;
 let reportPeriod = 'weekly';
+let calendarFilter = 'pod'; // ✅ POD or Crates
+let currentSignature = null; // ✅ Store signature data
 
 (function init() {
   const savedToken = localStorage.getItem('pedroex-token');
@@ -807,6 +835,15 @@ function changeReportPeriod(period) {
   loadReport();
 }
 
+// ✅ CALENDAR FILTER
+function filterCalendar(type) {
+  calendarFilter = type;
+  document.querySelectorAll('[data-cal-filter]').forEach(c => c.classList.remove('active'));
+  document.querySelector(`[data-cal-filter="${type}"]`).classList.add('active');
+  renderCalendar();
+}
+
+// ✅ LOAD EMPLOYEES (NAME ONLY)
 function loadEmployees() {
   fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:E`, {
     headers: {'Authorization': 'Bearer ' + token}
@@ -825,12 +862,13 @@ function loadEmployees() {
     sel.innerHTML = '<option value="">Select employee...</option>' + 
       employees.map(e => {
         const fullName = `${e.firstName} ${e.lastName}`;
-        return `<option value="${fullName}">${fullName} (${e.position})</option>`;
+        return `<option value="${fullName}">${fullName}</option>`;
       }).join('');
   })
   .catch(() => showToast('❌ Error loading employees'));
 }
 
+// ✅ LOAD TRUCKS (PLATE ONLY)
 function loadTrucks() {
   fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Truck%20Roster!A2:D`, {
     headers: {'Authorization': 'Bearer ' + token}
@@ -846,7 +884,7 @@ function loadTrucks() {
     
     const sel = document.getElementById('rec-truck');
     sel.innerHTML = '<option value="">Select truck...</option>' + 
-      trucks.map(t => `<option value="${t.plate}">${t.rowId} - ${t.plate}</option>`).join('');
+      trucks.map(t => `<option value="${t.plate}">${t.plate}</option>`).join('');
   })
   .catch(() => showToast('❌ Error loading trucks'));
 }
@@ -939,9 +977,10 @@ function openAddModal() {
   document.getElementById('record-form').reset();
   document.getElementById('edit-id').value = '';
   removeImage();
+  currentSignature = null; // ✅ Reset signature
   document.getElementById('rec-date').valueAsDate = new Date();
+  document.getElementById('delete-btn').style.display = 'none';
   
-  // ✅ Re-enable all form fields
   document.querySelectorAll('#record-form input, #record-form select, #record-form textarea, .radio-btn').forEach(el => {
     el.disabled = false;
   });
@@ -950,18 +989,7 @@ function openAddModal() {
   document.getElementById('record-modal').classList.add('active');
   
   setTimeout(function() {
-    const canvas = document.getElementById('sig-canvas');
-    const ctx = canvas.getContext('2d');
-    
-    const ratio = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    ctx.scale(ratio, ratio);
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    setupSignaturePad();
+    initSignatureCanvas();
   }, 150);
 }
 
@@ -969,18 +997,11 @@ function closeModal() {
   document.getElementById('record-modal').classList.remove('active');
 }
 
-function getCurrentUserRole() {
-  return 'admin'; // For testing — all users can edit
-}
-
 function viewRecord(id) {
   const rec = records.find(r => r.id === id);
   if (!rec) return;
   
-  const userRole = getCurrentUserRole();
-  const canEdit = (userRole === 'admin' || userRole === 'Admin');
-  
-  document.getElementById('modal-title').textContent = canEdit ? 'Edit Record' : 'View Record';
+  document.getElementById('modal-title').textContent = 'Edit Record';
   document.getElementById('edit-id').value = rec.id;
   document.getElementById('emp-name').value = rec.empName;
   document.getElementById('rec-date').value = rec.date;
@@ -993,58 +1014,18 @@ function viewRecord(id) {
   
   document.querySelectorAll('.radio-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.value === rec.liquidated);
-    if (!canEdit) btn.disabled = true;
   });
   
-  if (!canEdit) {
-    document.querySelectorAll('#record-form input, #record-form select, #record-form textarea').forEach(el => {
-      el.disabled = true;
-    });
-    document.getElementById('save-btn').style.display = 'none';
-  } else {
-    document.querySelectorAll('#record-form input, #record-form select, #record-form textarea').forEach(el => {
-      el.disabled = false;
-    });
-    document.getElementById('save-btn').style.display = 'block';
-  }
+  document.querySelectorAll('#record-form input, #record-form select, #record-form textarea').forEach(el => {
+    el.disabled = false;
+  });
+  document.getElementById('save-btn').style.display = 'block';
+  document.getElementById('delete-btn').style.display = 'block'; // ✅ Show delete button
   
-  if (rec.signature) {
-    setTimeout(function() {
-      const canvas = document.getElementById('sig-canvas');
-      const ctx = canvas.getContext('2d');
-      
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width = canvas.offsetWidth * ratio;
-      canvas.height = canvas.offsetHeight * ratio;
-      ctx.scale(ratio, ratio);
-      
-      const img = new Image();
-      img.onload = () => {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
-      };
-      img.src = rec.signature;
-      
-      setupSignaturePad();
-    }, 150);
-  } else {
-    setTimeout(function() {
-      const canvas = document.getElementById('sig-canvas');
-      const ctx = canvas.getContext('2d');
-      
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width = canvas.offsetWidth * ratio;
-      canvas.height = canvas.offsetHeight * ratio;
-      ctx.scale(ratio, ratio);
-      
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      setupSignaturePad();
-    }, 150);
-  }
+  // ✅ SIGNATURE: Store and display
+  currentSignature = rec.signature;
   
+  // ✅ PICTURE: Display if exists
   if (rec.picture) {
     document.getElementById('preview-img').src = rec.picture;
     document.getElementById('img-preview').style.display = 'block';
@@ -1052,6 +1033,33 @@ function viewRecord(id) {
   }
   
   document.getElementById('record-modal').classList.add('active');
+  
+  setTimeout(function() {
+    initSignatureCanvas();
+    if (rec.signature) {
+      const img = new Image();
+      img.onload = () => {
+        sigCtx.drawImage(img, 0, 0, sigCanvas.offsetWidth, sigCanvas.offsetHeight);
+      };
+      img.src = rec.signature;
+    }
+  }, 150);
+}
+
+// ✅ SIGNATURE CANVAS INITIALIZATION
+function initSignatureCanvas() {
+  const canvas = document.getElementById('sig-canvas');
+  const ctx = canvas.getContext('2d');
+  
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = canvas.offsetHeight * ratio;
+  ctx.scale(ratio, ratio);
+  
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  setupSignaturePad();
 }
 
 document.getElementById('record-form').addEventListener('submit', async function(e) {
@@ -1067,7 +1075,10 @@ document.getElementById('record-form').addEventListener('submit', async function
   const ackBy = document.getElementById('ack-by').value;
   const comments = document.getElementById('comments').value;
   
-  const signature = sigCanvas.toDataURL();
+  // ✅ GET SIGNATURE: Use stored signature if not modified
+  const signature = currentSignature || sigCanvas.toDataURL();
+  
+  // ✅ GET PICTURE
   const picture = uploadedImage || '';
   
   const row = [
@@ -1107,6 +1118,30 @@ document.getElementById('record-form').addEventListener('submit', async function
   .catch(() => showToast('❌ Error saving record'));
 });
 
+// ✅ DELETE RECORD
+function deleteRecord() {
+  const id = document.getElementById('edit-id').value;
+  if (!id) return;
+  
+  if (!confirm('Are you sure you want to delete this record?')) return;
+  
+  // ✅ Clear the row in Google Sheets
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Records!A${id}:K${id}:clear`, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(r => r.json())
+  .then(() => {
+    showToast('✓ Record deleted');
+    closeModal();
+    loadRecords();
+  })
+  .catch(() => showToast('❌ Error deleting record'));
+}
+
 function selectRadio(btn, inputId) {
   btn.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -1118,17 +1153,25 @@ function setupSignaturePad() {
   let lastX = 0;
   let lastY = 0;
   
-  // ✅ Remove old listeners to prevent duplicates
   const newCanvas = sigCanvas.cloneNode(true);
   sigCanvas.parentNode.replaceChild(newCanvas, sigCanvas);
   sigCanvas = newCanvas;
   sigCtx = sigCanvas.getContext('2d');
+  
+  // ✅ Redraw white background after clone
+  const ratio = window.devicePixelRatio || 1;
+  sigCanvas.width = sigCanvas.offsetWidth * ratio;
+  sigCanvas.height = sigCanvas.offsetHeight * ratio;
+  sigCtx.scale(ratio, ratio);
+  sigCtx.fillStyle = '#ffffff';
+  sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
   
   sigCanvas.addEventListener('mousedown', function(e) {
     drawing = true;
     const pos = getPos(e);
     lastX = pos.x;
     lastY = pos.y;
+    currentSignature = null; // ✅ Mark as modified
   });
   
   sigCanvas.addEventListener('mousemove', function(e) {
@@ -1163,6 +1206,7 @@ function setupSignaturePad() {
     const pos = getPos(e);
     lastX = pos.x;
     lastY = pos.y;
+    currentSignature = null; // ✅ Mark as modified
   }, { passive: false });
   
   sigCanvas.addEventListener('touchmove', function(e) {
@@ -1198,13 +1242,14 @@ function setupSignaturePad() {
   }
 }
 
-// ✅ FIXED: Single clearSignature function with white background
 function clearSignature() {
   const ratio = window.devicePixelRatio || 1;
   sigCtx.fillStyle = '#ffffff';
   sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+  currentSignature = null; // ✅ Clear stored signature
 }
 
+// ✅ IMAGE UPLOAD WITH AUTO-DISPLAY
 function handleImageUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -1214,6 +1259,7 @@ function handleImageUpload(e) {
     uploadedImage = event.target.result;
     document.getElementById('preview-img').src = uploadedImage;
     document.getElementById('img-preview').style.display = 'block';
+    document.getElementById('upload-box').style.display = 'none'; // ✅ Hide upload box
   };
   reader.readAsDataURL(file);
 }
@@ -1221,9 +1267,11 @@ function handleImageUpload(e) {
 function removeImage() {
   uploadedImage = null;
   document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('upload-box').style.display = 'block'; // ✅ Show upload box
   document.getElementById('pic-input').value = '';
 }
 
+// ✅ CALENDAR WITH EMPLOYEE NAMES & COLOR CODING
 function renderCalendar() {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
@@ -1245,13 +1293,31 @@ function renderCalendar() {
   const today = new Date();
   for (let day = 1; day <= daysInMonth; day++) {
     const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const hasRecord = records.some(r => r.date === date);
+    
+    // ✅ FILTER RECORDS BY CALENDAR FILTER (POD or Crates)
+    const dayRecords = records.filter(r => {
+      if (calendarFilter === 'pod') return r.date === date && r.docType === 'Proof of Deliveries';
+      if (calendarFilter === 'crates') return r.date === date && r.docType === 'Crates';
+      return false;
+    });
+    
     const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
     
+    const entriesHTML = dayRecords.slice(0, 2).map(r => {
+      const firstName = r.empName.split(' ')[0];
+      const entryClass = calendarFilter === 'pod' ? 'pod' : 'crates';
+      return `<div class="cal-entry ${entryClass}">${firstName}</div>`;
+    }).join('');
+    
+    const moreCount = dayRecords.length > 2 ? `<div class="cal-entry" style="background:var(--text3);color:#fff">+${dayRecords.length - 2}</div>` : '';
+    
     grid.innerHTML += `
-      <div class="cal-day ${isToday ? 'today' : ''} ${hasRecord ? 'has-record' : ''}" 
-           onclick="showDayRecords('${date}')">
+      <div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayRecords('${date}')">
         ${day}
+        <div class="cal-day-entries">
+          ${entriesHTML}
+          ${moreCount}
+        </div>
       </div>
     `;
   }
@@ -1354,6 +1420,12 @@ function loadReport() {
   });
   
   const list = document.getElementById('report-list');
+  
+  if (Object.keys(byEmployee).length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:40px 0">No records for this period</p>';
+    return;
+  }
+  
   list.innerHTML = Object.keys(byEmployee).map(emp => {
     const empRecords = byEmployee[emp];
     const empLiq = empRecords.filter(r => r.liquidated === 'Yes').length;
