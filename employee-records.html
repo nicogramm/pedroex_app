@@ -672,7 +672,9 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
 
       <div class="form-group">
         <label class="form-label">Employee Name</label>
-        <input type="text" class="form-input" id="emp-name" required>
+        <select class="form-select" id="emp-name" required>
+          <option value="">Select employee...</option>
+        </select>
       </div>
 
       <div class="form-group">
@@ -799,6 +801,7 @@ let sigCanvas, sigCtx;
 let uploadedImage = null;
 
 // ═══ INIT ═══
+// ═══ INIT ═══
 (function init() {
   const savedToken = localStorage.getItem('pedroex-token');
   const expiry = localStorage.getItem('pedroex-token-expiry');
@@ -818,7 +821,8 @@ let uploadedImage = null;
   sigCtx = sigCanvas.getContext('2d');
   setupSignaturePad();
   
-  // Load data
+  // ✅ Load employees AND trucks
+  loadEmployees();
   loadTrucks();
   loadRecords();
   
@@ -832,6 +836,7 @@ let uploadedImage = null;
   checkReminders();
   setInterval(checkReminders, 60000); // Every minute
 })();
+
 
 // ═══ THEME ═══
 function toggleTheme() {
@@ -856,17 +861,48 @@ function switchTab(tab) {
 }
 
 // ═══ LOAD DATA ═══
-function loadTrucks() {
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Truck%20Roster!A2:A`, {
+function loadEmployees() {
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:E`, {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
   .then(res => {
-    trucks = (res.values || []).map(r => r[0]);
+    const employees = (res.values || []).map(r => ({
+      email: r[0] || '',
+      firstName: r[1] || '',
+      lastName: r[2] || '',
+      role: r[3] || '',
+      position: r[4] || ''
+    }));
+    
+    const sel = document.getElementById('emp-name');
+    sel.innerHTML = '<option value="">Select employee...</option>' + 
+      employees.map(e => {
+        const fullName = `${e.firstName} ${e.lastName}`;
+        return `<option value="${fullName}">${fullName} (${e.position})</option>`;
+      }).join('');
+  })
+  .catch(() => showToast('❌ Error loading employees'));
+}
+
+function loadTrucks() {
+  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Truck%20Roster!A2:D`, {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    trucks = (res.values || []).map(r => ({
+      rowId: r[0] || '',
+      plate: r[1] || '',
+      lto: r[2] || '',
+      nmis: r[3] || ''
+    }));
+    
     const sel = document.getElementById('rec-truck');
     sel.innerHTML = '<option value="">Select truck...</option>' + 
-      trucks.map(t => `<option value="${t}">${t}</option>`).join('');
-  });
+      trucks.map(t => `<option value="${t.plate}">${t.rowId} - ${t.plate}</option>`).join('');
+  })
+  .catch(() => showToast('❌ Error loading trucks'));
 }
 
 function loadRecords() {
