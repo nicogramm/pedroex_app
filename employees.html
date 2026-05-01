@@ -51,7 +51,15 @@ body.dark {
 }
 
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
+html,body { 
+  height:100%; 
+  overflow:hidden; /* ✅ Panatilihin ito */
+  background:var(--bg); 
+  color:var(--text); 
+  font-family:'Inter',sans-serif; 
+  -webkit-font-smoothing:antialiased; 
+  transition:background 0.4s,color 0.4s 
+}
 
 /* ═══════════════════════════════════════
    LAYOUT
@@ -81,8 +89,9 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 16px;
-  padding-bottom: 24px;
+  padding-bottom: 100px; /* ✅ Dagdag para may space sa baba */
 }
+
 
 /* ═══════════════════════════════════════
    ADMIN BADGE
