@@ -1232,6 +1232,15 @@ function loadRecords() {
       picture: r[9] || '',
       comments: r[10] || ''
     }));
+    
+    console.log('Records loaded:', records.length);
+    records.forEach((r, i) => {
+      if (r.signature) {
+        console.log(`Record ${i} signature length:`, r.signature.length);
+        console.log(`Record ${i} signature starts with:`, r.signature.substring(0, 50));
+      }
+    });
+    
     renderRecords();
     updateNotifications();
   })
@@ -1307,6 +1316,10 @@ function viewRecordDetail(id) {
   
   currentEditId = id;
   
+  console.log('Viewing record:', rec);
+  console.log('Signature exists:', !!rec.signature);
+  console.log('Signature length:', rec.signature ? rec.signature.length : 0);
+  
   let html = `
     <div class="detail-section">
       <div class="detail-label">Employee</div>
@@ -1343,17 +1356,27 @@ function viewRecordDetail(id) {
     `;
   }
   
-  if (rec.signature) {
+  if (rec.signature && rec.signature.trim() !== '') {
+    console.log('Adding signature to view');
     html += `
       <div class="detail-section">
         <div class="detail-label">Signature</div>
-        <img src="${rec.signature}" class="sig-display" alt="Signature" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-        <div style="display:none; padding:20px; text-align:center; color:var(--text3)">Signature not available</div>
+        <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd;">
+          <img src="${rec.signature}" 
+               class="sig-display" 
+               alt="Signature"
+               style="width:100%; height:auto; max-height:120px; object-fit:contain; display:block;"
+               onload="console.log('Signature loaded successfully')"
+               onerror="console.error('Signature failed to load'); this.style.display='none'; this.nextElementSibling.style.display='block'">
+          <div style="display:none; padding:20px; text-align:center; color:var(--text3); font-size:12px;">
+            ⚠️ Signature could not be displayed
+          </div>
+        </div>
       </div>
     `;
   }
   
-  if (rec.picture) {
+  if (rec.picture && rec.picture.trim() !== '') {
     html += `
       <div class="detail-section">
         <div class="detail-label">Picture</div>
@@ -1442,9 +1465,10 @@ function viewRecord(id) {
   
   setTimeout(function() {
     initSignatureCanvas();
-    if (rec.signature) {
+    if (rec.signature && rec.signature.trim() !== '') {
       const img = new Image();
       img.onload = () => {
+        console.log('Signature image loaded in edit mode');
         const canvas = document.getElementById('sig-canvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1457,7 +1481,7 @@ function viewRecord(id) {
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
       };
       img.onerror = () => {
-        console.error('Failed to load signature image');
+        console.error('Failed to load signature in edit mode');
       };
       img.src = rec.signature;
     }
@@ -1504,9 +1528,13 @@ document.getElementById('record-form').addEventListener('submit', async function
   const ackBy = document.getElementById('ack-by').value;
   const comments = document.getElementById('comments').value;
   
-  let signature = currentSignature || '';
+  let signature = '';
   if (isDrawing) {
-    signature = compressImage(sigCanvas.toDataURL('image/png'), 50);
+    signature = sigCanvas.toDataURL('image/png');
+    console.log('New signature created, length:', signature.length);
+  } else if (currentSignature && currentSignature.trim() !== '') {
+    signature = currentSignature;
+    console.log('Using existing signature, length:', signature.length);
   }
   
   let picture = uploadedImage || '';
@@ -1524,6 +1552,8 @@ document.getElementById('record-form').addEventListener('submit', async function
     picture,
     comments
   ];
+  
+  console.log('Saving record with signature:', !!signature);
   
   const range = id ? `Records!A${id}:K${id}` : 'Records!A:K';
   const method = id ? 'PUT' : 'POST';
