@@ -668,9 +668,9 @@ var firstLoad    = true;
 // ═══ LOAD ALL ═════════════════════════════════════════
 // ═══ LOAD ALL ═════════════════════════════════════════
 function loadAll() {
-  var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
-  isAdmin   = (email === ADMIN_EMAIL.toLowerCase());
 
+  var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+  isAdmin   = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
   // Reset dropdowns bago mag-load para hindi mag-duplicate
   var fTruck = document.getElementById('f-truck');
   var mTruck = document.getElementById('manual-truck');
