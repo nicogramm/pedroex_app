@@ -345,7 +345,7 @@ const ALL_MODULES = [
   {id:'trucks',      icon:'truck',     label:'Trucks',       stat:'sv-trucks',   sub:'Fleet roster',    link:'trucks.html'},
   {id:'trips',       icon:'location',  label:'Trips',        stat:'sv-trips',    sub:'On the road',     link:'trips.html'},
   {id:'manpower',    icon:'roster',    label:'Manpower',     stat:'sv-manpower', sub:'Duty roster',     link:'manpower-roster.html'},
-  {id:'scheduler',   icon:'sched',     label:'Scheduler',    stat:'sv-sched',    sub:'Trip planning',   link:'scheduler.html'},
+  //{id:'scheduler',   icon:'sched',     label:'Scheduler',    stat:'sv-sched',    sub:'Trip planning',   link:'scheduler.html'},
   
   // PEOPLE MANAGEMENT (2x2 grid)
   {id:'employees',   icon:'users',     label:'Employees',    stat:'sv-emp',      sub:'Total staff',     link:'employees.html'},
@@ -370,7 +370,7 @@ const ICONS = {
   doc:      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
   chart:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   roster:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="4" rx="1" stroke="var(--red)" stroke-width="2"/><path d="M6 4h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="var(--red)" stroke-width="2"/><path d="M9 12l2 2 4-4M9 17h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  sched:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><rect x="7" y="13" width="3" height="3" rx="0.5" fill="var(--red)"/><rect x="13" y="13" width="3" height="3" rx="0.5" fill="var(--red)"/></svg>',
+  //sched:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><rect x="7" y="13" width="3" height="3" rx="0.5" fill="var(--red)"/><rect x="13" y="13" width="3" height="3" rx="0.5" fill="var(--red)"/></svg>',
   settings: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
 };
 
@@ -574,19 +574,7 @@ function buildDashboard() {
 function loadDashboardStats() {
   if (!token) return;
   
-  // Load truck count
-  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Truck%20Roster!A2:A', {
-    headers: {'Authorization': 'Bearer ' + token}
-  })
-  .then(r => r.json())
-  .then(res => {
-    const count = (res.values || []).length;
-    const el = document.getElementById('sv-trucks');
-    if (el) el.textContent = count;
-  })
-  .catch(() => {});
-
-  // Load employee records count
+  // Employee Records
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Records!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -594,11 +582,14 @@ function loadDashboardStats() {
   .then(res => {
     const count = (res.values || []).length;
     const el = document.getElementById('sv-records');
-    if (el) el.textContent = count;
+    if (el) el.textContent = count > 0 ? count : '—';  // ← Show dash if empty
   })
-  .catch(() => {});
+  .catch(() => {
+    const el = document.getElementById('sv-records');
+    if (el) el.textContent = '—';  // ← Show dash on error
+  });
 
-  // ✅ BAGONG STAT: Manpower Roster count (active duty assignments today)
+  // Manpower Roster
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Manpower%20Roster!A2:D', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -606,14 +597,15 @@ function loadDashboardStats() {
   .then(res => {
     const today = new Date().toISOString().split('T')[0];
     const rows = res.values || [];
-    
-    // Count rows where date matches today
     const activeToday = rows.filter(row => row[0] === today).length;
     
     const el = document.getElementById('sv-manpower');
-    if (el) el.textContent = activeToday;
+    if (el) el.textContent = activeToday > 0 ? activeToday : '—';  // ← Show dash if none today
   })
-  .catch(() => {});
+  .catch(() => {
+    const el = document.getElementById('sv-manpower');
+    if (el) el.textContent = '—';  // ← Show dash on error
+  });
 }
 
 // TOAST
