@@ -1210,7 +1210,7 @@ const SHEET_IDS = {
 
 let token = localStorage.getItem('pedroex-token');
 let userEmail = localStorage.getItem('pedroex-email');
-let isAdmin = ADMIN_EMAILS.includes(userEmail);
+let isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
 
 let currentYear = new Date().getFullYear();
 let currentMonth = new Date().getMonth();
