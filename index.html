@@ -74,7 +74,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
   z-index:0; pointer-events:none;
 }
 
-.truck-stage { position:absolute; top:0; left:0; right:0; height:56%; overflow:hidden; z-index:1 }
+.truck-stage { position:absolute; top:0; left:0; right:0; height:48%; overflow:hidden; z-index:1 }
 .road-base { position:absolute; bottom:0; left:0; right:0; height:6px; background:rgba(0,0,0,0.2) }
 .road-marks { position:absolute; bottom:6px; left:0; right:0; height:3px; background:repeating-linear-gradient(90deg,rgba(255,255,255,0.3) 0,rgba(255,255,255,0.3) 30px,transparent 30px,transparent 60px); animation:roadScroll 0.35s linear infinite }
 @keyframes roadScroll { to { background-position:-60px 0 } }
@@ -82,7 +82,6 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
 .truck-wrap { position:absolute; bottom:9px; left:-350px; animation:truckIn 2.2s cubic-bezier(0.16,1,0.3,1) forwards; animation-delay:0.3s; width:210px }
 @keyframes truckIn { 0%{left:-350px} 70%{left:calc(50% - 105px)} 80%{left:calc(50% - 100px)} 90%{left:calc(50% - 103px)} 100%{left:calc(50% - 102px)} }
 .truck-wrap img { width:100%; height:auto; display:block }
-
 .login-card {
   position:relative; z-index:3; width:100%;
   background: #e0e0e5;
@@ -91,6 +90,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
   opacity:0; transform:translateY(50px);
   animation:cardUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
   animation-delay:2.5s;
+  margin-bottom: 60px; /* ✅ DAGDAG ITO — i-adjust ang value */
 }
 @keyframes cardUp { to { opacity:1; transform:translateY(0) } }
 
