@@ -341,17 +341,24 @@ const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.goo
 const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
 
 const ALL_MODULES = [
-  {id:'trucks',     icon:'truck',     label:'Trucks',       stat:'sv-trucks',  sub:'Fleet roster', link:'trucks.html'},
-  {id:'attendance', icon:'calendar',  label:'Attendance',   stat:'sv-attend',  sub:'Daily logs', link:'attendance.html'},
-  {id:'trips',      icon:'location',  label:'Trips',        stat:'sv-trips',   sub:'On the road', link:'trips.html'},
-  {id:'employees',  icon:'users',     label:'Employees',    stat:'sv-emp',     sub:'Total staff', link:'employees.html'},
-  {id:'emp-records', icon:'folder',   label:'Emp Records',  stat:'sv-records', sub:'201 files', link:'employee-records.html'},
-  {id:'expenses',   icon:'card',      label:'Expenses',     stat:'sv-exp',     sub:'Cost tracking', link:'expenses.html'},
-  {id:'billing',    icon:'doc',       label:'Billing',      stat:'sv-billing', sub:'Invoices', link:'billing.html'},
-  {id:'matrix',     icon:'chart',     label:'Matrix',       stat:'sv-matrix',  sub:'Performance', link:'matrix.html'},
-  {id:'manpower',   icon:'roster',    label:'Manpower',     stat:'sv-manpower', sub:'Duty roster', wide:true, link:'manpower-roster.html'},
-  {id:'scheduler',  icon:'sched',     label:'Scheduler',    stat:'sv-sched',   sub:'Trip planning', wide:true, link:'scheduler.html'},
-  {id:'settings',   icon:'settings',  label:'Settings',     stat:'sv-set',     sub:'App settings', wide:true, link:'settings.html'},
+  // CORE OPERATIONS (2x2 grid)
+  {id:'trucks',      icon:'truck',     label:'Trucks',       stat:'sv-trucks',   sub:'Fleet roster',    link:'trucks.html'},
+  {id:'trips',       icon:'location',  label:'Trips',        stat:'sv-trips',    sub:'On the road',     link:'trips.html'},
+  {id:'manpower',    icon:'roster',    label:'Manpower',     stat:'sv-manpower', sub:'Duty roster',     link:'manpower-roster.html'},
+  {id:'scheduler',   icon:'sched',     label:'Scheduler',    stat:'sv-sched',    sub:'Trip planning',   link:'scheduler.html'},
+  
+  // PEOPLE MANAGEMENT (2x2 grid)
+  {id:'employees',   icon:'users',     label:'Employees',    stat:'sv-emp',      sub:'Total staff',     link:'employees.html'},
+  {id:'attendance',  icon:'calendar',  label:'Attendance',   stat:'sv-attend',   sub:'Daily logs',      link:'attendance.html'},
+  {id:'emp-records', icon:'folder',    label:'Emp Records',  stat:'sv-records',  sub:'201 files',       link:'employee-records.html'},
+  {id:'matrix',      icon:'chart',     label:'Matrix',       stat:'sv-matrix',   sub:'Performance',     link:'matrix.html'},
+  
+  // FINANCE (wide cards)
+  {id:'expenses',    icon:'card',      label:'Expenses',     stat:'sv-exp',      sub:'Cost tracking',   wide:true, link:'expenses.html'},
+  {id:'billing',     icon:'doc',       label:'Billing',      stat:'sv-billing',  sub:'Invoices',        wide:true, link:'billing.html'},
+  
+  // SYSTEM (wide card)
+  {id:'settings',    icon:'settings',  label:'Settings',     stat:'sv-set',      sub:'App settings',    wide:true, link:'settings.html'},
 ];
 
 const ICONS = {
