@@ -1121,6 +1121,16 @@ let currentEditId = null;
   token = savedToken;
   applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
   
+  // ✅ Role-based access — mula sa localStorage na na-save ng index.html
+  const role = (localStorage.getItem('pedroex-role') || '').toLowerCase();
+  const isAdmin = role === 'admin';
+  
+  // ✅ Kung hindi admin, itago ang FAB (add button) at delete button
+  if (!isAdmin) {
+    const fab = document.querySelector('.fab');
+    if (fab) fab.style.display = 'none';
+  }
+  
   sigCanvas = document.getElementById('sig-canvas');
   sigCtx = sigCanvas.getContext('2d');
   
@@ -1395,6 +1405,11 @@ function viewRecordDetail(id) {
       </div>
     `;
   }
+
+    // ✅ Show/hide edit button base sa role
+  const isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
+  const editBtn = document.querySelector('#detail-modal .btn-primary');
+  if (editBtn) editBtn.style.display = isAdmin ? 'block' : 'none';
   
   document.getElementById('detail-content').innerHTML = html;
   document.getElementById('detail-modal').classList.add('active');
@@ -1406,6 +1421,10 @@ function editFromDetail() {
 }
 
 function openAddModal() {
+    // ✅ Admin check
+  const isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
+  if (!isAdmin) { showToast('❌ Admin only.'); return; }
+
   document.getElementById('modal-title').textContent = 'Add Record';
   document.getElementById('record-form').reset();
   document.getElementById('edit-id').value = '';
@@ -1579,6 +1598,10 @@ document.getElementById('record-form').addEventListener('submit', async function
 });
 
 function deleteRecord() {
+    // ✅ Admin check
+  const isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
+  if (!isAdmin) { showToast('❌ Admin only.'); return; }
+
   const id = document.getElementById('edit-id').value;
   if (!id) return;
   
