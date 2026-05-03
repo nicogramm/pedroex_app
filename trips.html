@@ -640,23 +640,24 @@ function loadAll() {
 
     allTrucks = truckRows.filter(function(r){ return r[0]; }).map(function(r){ return r[0]; });
 
-    // ✅ FIX: Better empty row detection + correct row indexing
+    // ✅ FIX: Convert Excel serial numbers to YYYY-MM-DD
     allTrips = [];
     tripRows.forEach(function(r, i) {
-      // Skip if BOTH id AND delivery date are empty
-      if (!r[0] && !r[1]) return;
+      if (!r[0] && !r[1]) return; // Skip completely empty rows
+      if (!r[1]) return; // Skip if no delivery date
       
-      // Skip if delivery date is missing (critical field)
-      if (!r[1]) return;
+      var actualRowIndex = i + 2;
       
-      var actualRowIndex = i + 2; // Actual Google Sheets row number
+      // ✅ Convert Excel serial number to YYYY-MM-DD
+      var deliveryDate = convertExcelDate(r[1]);
+      var shipmentDate = r[3] ? convertExcelDate(r[3]) : '';
       
       allTrips.push({
         rowIndex: actualRowIndex,
         id: r[0] || '',
-        deliveryDate: r[1] || '',
+        deliveryDate: deliveryDate,
         truck: r[2] || '',
-        shipmentDate: r[3] || '',
+        shipmentDate: shipmentDate,
         type: r[4] || '',
         shipmentNumber: r[5] || '',
         billed: r[6] || '',
@@ -665,10 +666,8 @@ function loadAll() {
       });
     });
 
-    // ✅ DEBUG: I-log ang loaded trips
     console.log('📦 Loaded trips:', allTrips.length);
-    console.log('📅 Today:', todayStr);
-    console.log('🚛 Sample trip:', allTrips[0]);
+    console.log('📅 Sample dates:', allTrips.slice(0, 3).map(t => t.deliveryDate));
 
     buildColorMap();
     renderLegend();
@@ -686,6 +685,38 @@ function loadAll() {
     showToast('Failed to load. Check connection.');
     console.error('❌ Load error:', err);
   });
+}
+
+// ✅ NEW FUNCTION: Convert Excel serial number to YYYY-MM-DD
+function convertExcelDate(value) {
+  // If already in YYYY-MM-DD format, return as is
+  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return value;
+  }
+  
+  // If it's an Excel serial number
+  var num = parseFloat(value);
+  if (!isNaN(num) && num > 1000) {
+    // Excel epoch: January 1, 1900 (but Excel incorrectly treats 1900 as leap year)
+    var excelEpoch = new Date(1899, 11, 30); // Dec 30, 1899
+    var date = new Date(excelEpoch.getTime() + num * 86400000);
+    
+    var year = date.getFullYear();
+    var month = pad(date.getMonth() + 1);
+    var day = pad(date.getDate());
+    
+    return year + '-' + month + '-' + day;
+  }
+  
+  // If it's already a date string in other format, try to parse
+  if (typeof value === 'string') {
+    var d = new Date(value);
+    if (!isNaN(d.getTime())) {
+      return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    }
+  }
+  
+  return ''; // Return empty if can't parse
 }
 
 // ═══ FILTER ═══════════════════════════════════════════
