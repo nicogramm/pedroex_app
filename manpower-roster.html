@@ -12,6 +12,7 @@
 :root {
   --bg: #e0e0e5; --bg2: #e8e8ed; --shadow-d: #b8b9be; --shadow-l: #ffffff;
   --text: #2a2a2e; --text2: #777; --text3: #aaa; --red: #B32533; --red-d: #8f1e29;
+  --green: #2d7a3e; --blue: #2563eb; --orange: #ea580c;
   --neu-out: 6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
   --neu-in: inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
   --neu-sm: 4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
@@ -20,6 +21,7 @@
 body.dark {
   --bg: #2a2a2f; --bg2: #313137; --shadow-d: #16161a; --shadow-l: #3e3e46;
   --text: #e8e8ec; --text2: #888; --text3: #555;
+  --green: #34d399; --blue: #60a5fa; --orange: #fb923c;
   --neu-out: 5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
   --neu-in: inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
   --neu-sm: 4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
@@ -141,6 +143,7 @@ body.dark .topbar { box-shadow:0 3px 10px rgba(0,0,0,0.3) }
   width:100%;
 }
 
+/* ✅ CALENDAR - RED FONT FOR TRUCKS AND NAMES */
 .cal-helper-list {
   width:100%; display:flex; flex-direction:column; gap:4px; align-items:flex-start;
 }
@@ -154,11 +157,11 @@ body.dark .topbar { box-shadow:0 3px 10px rgba(0,0,0,0.3) }
   min-width:30px; text-align:left;
 }
 .cal-name { 
-  font-weight:600; color:var(--text); 
+  font-weight:600; color:var(--red); 
   text-align:right; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 
-/* ✅ TRUCK VIEW - SINGLE RED COLOR */
+/* ✅ TRUCK VIEW - RED ICONS ONLY */
 .truck-view { display:none }
 .truck-view.active { display:block }
 
@@ -208,7 +211,7 @@ body.dark .topbar { box-shadow:0 3px 10px rgba(0,0,0,0.3) }
 }
 .crew-name { font-size:15px; font-weight:600; color:var(--text) }
 
-/* LIST VIEW */
+/* ✅ LIST VIEW - ORIGINAL DESIGN WITH COLORS */
 .list-view { display:none }
 .list-view.active { display:block }
 
@@ -238,8 +241,12 @@ body.dark .topbar { box-shadow:0 3px 10px rgba(0,0,0,0.3) }
 }
 .roster-table .name-col { color:var(--text); font-weight:500 }
 
-/* ✅ SINGLE RED COLOR FOR ALL TRUCKS */
-.roster-table .truck-col { color:var(--red) !important; font-weight:600 }
+/* ✅ LIST VIEW - KEEP ORIGINAL TRUCK COLORS */
+.roster-table .truck-CAH { color:var(--red) !important; font-weight:600 }
+.roster-table .truck-CBQ { color:var(--blue) !important; font-weight:600 }
+.roster-table .truck-CAN { color:var(--green) !important; font-weight:600 }
+.roster-table .truck-NHE { color:var(--orange) !important; font-weight:600 }
+.roster-table .truck-CBJ { color:var(--text) !important; font-weight:600 }
 
 /* TOAST */
 .toast {
@@ -553,7 +560,6 @@ function renderCalendar(week) {
   
   let html = '';
   
-  // Generate ALL 7 days of the week
   for (let i = 0; i < 7; i++) {
     const d = new Date(week.startDate);
     d.setDate(d.getDate() + i);
@@ -623,7 +629,7 @@ function renderListView(week) {
   
   let html = `<thead><tr>
     <th class="date-col">Date</th>
-    ${Object.keys(TRUCK_MAPPING).map(t => `<th class="truck-col">${t}</th>`).join('')}
+    ${Object.keys(TRUCK_MAPPING).map(t => `<th>${t}</th>`).join('')}
   </tr></thead><tbody>`;
   
   for (let i = 0; i < 7; i++) {
@@ -634,7 +640,7 @@ function renderListView(week) {
       <td class="date-col">${d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}</td>
       ${Object.keys(TRUCK_MAPPING).map(truck => {
         const helper = getHelperForTruck(truck, d, week.helpers, week.rotationOffset);
-        return `<td class="name-col">${helper}</td>`;
+        return `<td class="name-col truck-${truck}">${helper}</td>`;
       }).join('')}
     </tr>`;
   }
