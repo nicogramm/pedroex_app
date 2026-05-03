@@ -286,24 +286,44 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
 const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 let token = localStorage.getItem('pedroex-token');
 
-// REFERENCE DATA - Week 74 starts Aug 17, 2026
+// ✅ REFERENCE DATA - Week starts May 5, 2025
 const REFERENCE_WEEK = {
-  number: 74,
-  startDate: new Date('2026-08-17')
+  number: 1,  // Week 1 of the roster
+  startDate: new Date('2025-05-05')
 };
 
-// TRUCK-HELPER MAPPING
+// ✅ TRUCK-HELPER MAPPING (column positions)
 const TRUCK_MAPPING = {
-  'CAH': 0,  // Column index in rotation
-  'CBQ': 1,
-  'CAN': 2,
-  'NHE': 3,
-  'CBJ': 4
+  'CAH': 0,  // First column
+  'CBQ': 1,  // Second column
+  'CAN': 2,  // Third column
+  'NHE': 3,  // Fourth column
+  'CBJ': 4   // Fifth column
 };
 
-let helpers = [];  // Will load from Employees sheet
+// ✅ HELPER ROTATION PATTERNS (changes over time)
+const ROTATION_PHASES = [
+  {
+    startWeek: 1,   // May 5, 2025
+    endWeek: 23,    // Oct 12, 2025
+    helpers: ['Mike', 'Richard', 'Ronald', 'Anewlesis', 'Michael']  // ← Adrian replaced
+  },
+  {
+    startWeek: 24,  // Oct 13, 2025 - transition week
+    endWeek: 24,
+    helpers: ['Anewlesis', 'Joey', 'Richard', 'Mike', 'Jessie']  // ← Adrian replaced
+  },
+  {
+    startWeek: 25,  // Oct 20, 2025 onwards
+    endWeek: 999,   // Indefinite
+    helpers: ['Joey', 'Richard', 'Mike', 'Jessie', 'Anewlesis']  // ← Adrian replaced
+  }
+];
+
+let currentHelpers = [];
 let currentWeekOffset = 0;
 let currentView = 'calendar';
+let employeeHelpers = [];  // From Employees sheet
 
 // THEME
 (function() {
@@ -314,10 +334,16 @@ let currentView = 'calendar';
 // INIT
 (function init() {
   if (!token) { location.href = 'index.html'; return; }
+  
+  // Calculate current week offset
+  const today = new Date();
+  const daysDiff = Math.floor((today - REFERENCE_WEEK.startDate) / (1000 * 60 * 60 * 24));
+  currentWeekOffset = Math.floor(daysDiff / 7);
+  
   loadHelpers();
 })();
 
-// LOAD HELPERS FROM EMPLOYEES SHEET
+// ✅ LOAD HELPERS FROM EMPLOYEES SHEET
 function loadHelpers() {
   document.getElementById('loading').style.display = 'block';
   
@@ -329,28 +355,45 @@ function loadHelpers() {
     const rows = res.values || [];
     
     // Filter only helpers (role = "Helper")
-    helpers = rows
+    employeeHelpers = rows
       .filter(r => (r[2] || '').toLowerCase() === 'helper')
       .map(r => r[1])  // Get firstName (column B)
       .filter(Boolean);
-    
-    if (helpers.length === 0) {
-      showToast('⚠️ No helpers found in Employees sheet');
-      helpers = ['Joey', 'Richard', 'Mike', 'Jessie', 'Adrian'];  // Fallback
-    }
     
     document.getElementById('loading').style.display = 'none';
     renderCurrentView();
   })
   .catch(() => {
-    showToast('❌ Failed to load helpers');
-    helpers = ['Joey', 'Richard', 'Mike', 'Jessie', 'Adrian'];  // Fallback
+    showToast('⚠️ Using default helper list');
+    employeeHelpers = [];
     document.getElementById('loading').style.display = 'none';
     renderCurrentView();
   });
 }
 
-// CALCULATE WEEK DATA
+// ✅ GET HELPERS FOR SPECIFIC WEEK
+function getHelpersForWeek(weekNumber) {
+  // Find the correct rotation phase
+  const phase = ROTATION_PHASES.find(p => weekNumber >= p.startWeek && weekNumber <= p.endWeek);
+  
+  if (!phase) {
+    // Default to last phase if beyond defined range
+    return ROTATION_PHASES[ROTATION_PHASES.length - 1].helpers;
+  }
+  
+  // If we have employee data, try to match names
+  if (employeeHelpers.length > 0) {
+    return phase.helpers.map(name => {
+      // Check if this helper exists in Employee sheet
+      const match = employeeHelpers.find(h => h.toLowerCase() === name.toLowerCase());
+      return match || name;  // Use employee name if found, otherwise use pattern name
+    });
+  }
+  
+  return phase.helpers;
+}
+
+// ✅ CALCULATE WEEK DATA
 function getWeekData(offset = 0) {
   const weekNumber = REFERENCE_WEEK.number + offset;
   const startDate = new Date(REFERENCE_WEEK.startDate);
@@ -359,19 +402,25 @@ function getWeekData(offset = 0) {
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + 6);
   
-  // Calculate rotation offset (each week shifts by 1)
-  const rotationOffset = offset % helpers.length;
+  // Get helpers for this week
+  const helpers = getHelpersForWeek(weekNumber);
+  
+  // Calculate rotation offset within the current helper set
+  const phase = ROTATION_PHASES.find(p => weekNumber >= p.startWeek && weekNumber <= p.endWeek);
+  const weeksIntoPhase = weekNumber - (phase ? phase.startWeek : 1);
+  const rotationOffset = weeksIntoPhase % helpers.length;
   
   return {
     weekNumber,
     startDate,
     endDate,
+    helpers,
     rotationOffset
   };
 }
 
-// GET HELPER FOR TRUCK ON SPECIFIC DATE
-function getHelperForTruck(truck, date, rotationOffset) {
+// ✅ GET HELPER FOR TRUCK ON SPECIFIC DATE
+function getHelperForTruck(truck, date, helpers, rotationOffset) {
   const truckIndex = TRUCK_MAPPING[truck];
   if (truckIndex === undefined) return '—';
   
@@ -416,7 +465,7 @@ function renderCurrentView() {
   document.getElementById('week-label').textContent = `WEEK ${week.weekNumber}`;
   document.getElementById('week-range').textContent = 
     `${week.startDate.toLocaleDateString('en-US', {month:'short', day:'numeric'})} – ${week.endDate.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}`;
-  document.getElementById('week-meta').textContent = `${helpers.length} helpers on rotation`;
+  document.getElementById('week-meta').textContent = `${week.helpers.length} helpers on rotation`;
   
   // Render active view
   if (currentView === 'calendar') renderCalendar(week);
@@ -453,11 +502,11 @@ function renderCalendar(week) {
     
     // Show all 5 helpers for each day
     const helpersHtml = Object.keys(TRUCK_MAPPING).map(truck => {
-      const helper = getHelperForTruck(truck, d, week.rotationOffset);
+      const helper = getHelperForTruck(truck, d, week.helpers, week.rotationOffset);
       return `<div style="font-size:8px;color:var(--text3);margin-top:2px">${truck}: ${helper}</div>`;
     }).join('');
     
-    html += `<div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayDetails('${d.toISOString()}', ${week.rotationOffset})">
+    html += `<div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayDetails('${d.toISOString()}', ${JSON.stringify(week.helpers)}, ${week.rotationOffset})">
       <div class="cal-date">${d.getDate()}</div>
       ${helpersHtml}
     </div>`;
@@ -483,7 +532,7 @@ function renderTruckView(week) {
   const view = document.getElementById('truck-view');
   
   const html = Object.keys(TRUCK_MAPPING).map(truck => {
-    const helper = getHelperForTruck(truck, week.startDate, week.rotationOffset);
+    const helper = getHelperForTruck(truck, week.startDate, week.helpers, week.rotationOffset);
     
     return `<div class="truck-card">
       <div class="truck-header">
@@ -526,7 +575,7 @@ function renderListView(week) {
     html += `<tr>
       <td class="name-col">${d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}</td>
       ${Object.keys(TRUCK_MAPPING).map(truck => {
-        const helper = getHelperForTruck(truck, d, week.rotationOffset);
+        const helper = getHelperForTruck(truck, d, week.helpers, week.rotationOffset);
         return `<td class="name-col">${helper}</td>`;
       }).join('')}
     </tr>`;
@@ -536,23 +585,25 @@ function renderListView(week) {
   table.innerHTML = html;
 }
 
-// SHOW DAY DETAILS (MODAL/TOAST)
-function showDayDetails(dateStr, rotationOffset) {
+// SHOW DAY DETAILS
+function showDayDetails(dateStr, helpersJson, rotationOffset) {
   const d = new Date(dateStr);
+  const helpers = JSON.parse(helpersJson);
   const dayName = d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
   
   const assignments = Object.keys(TRUCK_MAPPING).map(truck => {
-    const helper = getHelperForTruck(truck, d, rotationOffset);
+    const helper = getHelperForTruck(truck, d, helpers, rotationOffset);
     return `${truck}: ${helper}`;
-  }).join(' • ');
+  }).join('\n');
   
-  showToast(`${dayName}\n${assignments}`);
+  showToast(`${dayName}\n\n${assignments}`);
 }
 
 // TOAST
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
+  t.style.whiteSpace = 'pre-line';  // Allow line breaks
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
