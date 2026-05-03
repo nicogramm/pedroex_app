@@ -38,12 +38,12 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
 }
 body.dark .topbar { box-shadow:0 3px 10px rgba(0,0,0,0.3) }
 
-/* ✅ BACK BUTTON - NEUMORPHIC STYLE */
+/* ✅ CLOSE BUTTON - X ICON */
 .tb-back { 
   background:var(--bg); border:none; border-radius:12px; box-shadow:var(--neu-sm);
-  width:40px; height:40px; color:var(--red); font-size:20px; font-weight:700;
+  width:40px; height:40px; color:var(--red); font-size:22px; font-weight:400;
   cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:all 0.15s;
+  transition:all 0.15s; line-height:1;
 }
 .tb-back:active { box-shadow:var(--neu-in); transform:scale(0.95) }
 
@@ -299,7 +299,7 @@ body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
 <body>
 
 <div class="topbar">
-  <button class="tb-back" onclick="location.href='index.html'">←</button>
+  <button class="tb-back" onclick="location.href='index.html'">✕</button>
   <span class="tb-title">Manpower Roster</span>
   <div class="tb-action">
     <button class="tb-btn" onclick="changeWeek(-1)">‹</button>
