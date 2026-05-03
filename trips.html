@@ -640,24 +640,35 @@ function loadAll() {
 
     allTrucks = truckRows.filter(function(r){ return r[0]; }).map(function(r){ return r[0]; });
 
-    // ✅ FIX: Filter out empty rows BEFORE mapping
-    allTrips = tripRows.filter(function(r){ return r[1]; }) // Must have delivery date
-      .map(function(r, i) {
-        // Find actual row index in sheet
-        var actualRowIndex = tripRows.indexOf(r) + 2;
-        return {
-          rowIndex: actualRowIndex,
-          id: r[0]||'',
-          deliveryDate: r[1]||'',
-          truck: r[2]||'',
-          shipmentDate: r[3]||'',
-          type: r[4]||'',
-          shipmentNumber: r[5]||'',
-          billed: r[6]||'',
-          route: r[7]||'',
-          rate: r[8]||''
-        };
+    // ✅ FIX: Better empty row detection + correct row indexing
+    allTrips = [];
+    tripRows.forEach(function(r, i) {
+      // Skip if BOTH id AND delivery date are empty
+      if (!r[0] && !r[1]) return;
+      
+      // Skip if delivery date is missing (critical field)
+      if (!r[1]) return;
+      
+      var actualRowIndex = i + 2; // Actual Google Sheets row number
+      
+      allTrips.push({
+        rowIndex: actualRowIndex,
+        id: r[0] || '',
+        deliveryDate: r[1] || '',
+        truck: r[2] || '',
+        shipmentDate: r[3] || '',
+        type: r[4] || '',
+        shipmentNumber: r[5] || '',
+        billed: r[6] || '',
+        route: r[7] || '',
+        rate: r[8] || ''
       });
+    });
+
+    // ✅ DEBUG: I-log ang loaded trips
+    console.log('📦 Loaded trips:', allTrips.length);
+    console.log('📅 Today:', todayStr);
+    console.log('🚛 Sample trip:', allTrips[0]);
 
     buildColorMap();
     renderLegend();
@@ -673,7 +684,7 @@ function loadAll() {
   }).catch(function(err) {
     document.getElementById('wrap-loading').style.display = 'none';
     showToast('Failed to load. Check connection.');
-    console.error(err);
+    console.error('❌ Load error:', err);
   });
 }
 
