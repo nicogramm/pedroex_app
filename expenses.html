@@ -49,13 +49,43 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .summary-amount{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-0.5px;margin-bottom:6px}
 .summary-meta{font-size:12px;color:var(--text2)}
 
+/* VIEW TOGGLE */
+.view-toggle{display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px;margin-bottom:16px}
+.view-btn{flex:1;padding:10px;background:transparent;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text3);cursor:pointer;transition:all 0.2s}
+.view-btn.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
+
 /* FILTERS */
 .filters{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .filter-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
 .filter-btn.active{box-shadow:var(--neu-in);color:var(--red)}
 .filter-btn:active{transform:scale(0.98)}
 
-/* EXPENSE CARDS */
+/* ═══ CALENDAR VIEW ═══ */
+.calendar-view{display:none}
+.calendar-view.active{display:block}
+.calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-nav{display:flex;gap:8px}
+.cal-nav-btn{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);padding:8px 16px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.cal-nav-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
+.cal-month{font-size:18px;font-weight:700;color:var(--text)}
+
+.calendar-grid{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px}
+.cal-weekday{text-align:center;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 0}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day{background:var(--bg);border-radius:10px;box-shadow:var(--neu-sm);padding:8px 4px;text-align:center;min-height:70px;cursor:pointer;transition:box-shadow 0.15s;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+.cal-day:active{box-shadow:var(--neu-in);transform:scale(0.98)}
+.cal-day.today{box-shadow:var(--neu-in);border:2px solid var(--red)}
+.cal-day.other-month{opacity:0.3;pointer-events:none}
+.cal-date{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
+.cal-expenses{width:100%;display:flex;flex-direction:column;gap:2px}
+.cal-expense-dot{font-size:9px;display:flex;align-items:center;gap:2px;justify-content:center}
+.cal-expense-dot .icon{font-size:10px}
+.cal-expense-dot .amount{font-size:9px;font-weight:600}
+
+/* ═══ LIST VIEW ═══ */
+.list-view{display:none}
+.list-view.active{display:block}
 .expense-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:12px;cursor:pointer;transition:transform 0.12s;position:relative}
 .expense-card:active{transform:scale(0.98)}
 .expense-card.diesel{border-left:4px solid var(--diesel)}
@@ -71,6 +101,41 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .ec-subcategory{font-size:12px;color:var(--text2);margin-bottom:6px}
 .ec-notes{font-size:12px;color:var(--text2);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid var(--shadow-d)}
 .ec-receipt{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);margin-top:6px}
+
+/* ═══ REPORTS VIEW ═══ */
+.reports-view{display:none}
+.reports-view.active{display:block}
+.report-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
+.report-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.report-title .icon{font-size:20px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.stat-card{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-xs);padding:14px;text-align:center}
+.stat-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:700;color:var(--text)}
+.stat-change{font-size:11px;color:var(--text2);margin-top:4px}
+.stat-change.up{color:var(--red)}
+.stat-change.down{color:var(--green)}
+
+.breakdown-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--shadow-d)}
+.breakdown-item:last-child{border-bottom:none}
+.breakdown-left{display:flex;align-items:center;gap:12px}
+.breakdown-icon{font-size:24px}
+.breakdown-info{flex:1}
+.breakdown-label{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
+.breakdown-meta{font-size:11px;color:var(--text2)}
+.breakdown-right{text-align:right}
+.breakdown-amount{font-size:16px;font-weight:700;color:var(--text)}
+.breakdown-percent{font-size:11px;color:var(--text2)}
+
+.progress-bar{width:100%;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-top:6px;box-shadow:var(--neu-in)}
+.progress-fill{height:100%;transition:width 0.3s ease}
+.progress-fill.diesel{background:var(--diesel)}
+.progress-fill.maintenance{background:var(--maintenance)}
+.progress-fill.documentation{background:var(--documentation)}
+.progress-fill.miscellaneous{background:var(--miscellaneous)}
+
+.chart-placeholder{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-in);padding:40px;text-align:center;color:var(--text3);font-size:13px}
 
 /* FAB */
 .fab{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom,0px));right:18px;width:54px;height:54px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:5px 5px 14px rgba(179,37,51,0.5),-2px -2px 8px rgba(179,37,51,0.2);z-index:50}
@@ -187,14 +252,21 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   <!-- SUMMARY CARD -->
   <div class="summary-card">
     <div class="summary-top">
-      <span class="summary-period" id="summary-period">THIS WEEK</span>
+      <span class="summary-period" id="summary-period">THIS MONTH</span>
     </div>
     <div class="summary-amount" id="summary-amount">₱ 0.00</div>
     <div class="summary-meta" id="summary-meta">0 expenses recorded</div>
   </div>
 
-  <!-- FILTERS -->
-  <div class="filters">
+  <!-- VIEW TOGGLE -->
+  <div class="view-toggle">
+    <button class="view-btn active" onclick="switchView('calendar')">📅 Calendar</button>
+    <button class="view-btn" onclick="switchView('list')">📋 List</button>
+    <button class="view-btn" onclick="switchView('reports')">📊 Reports</button>
+  </div>
+
+  <!-- FILTERS (for Calendar & List views) -->
+  <div class="filters" id="truck-filters">
     <button class="filter-btn active" onclick="filterByTruck('All')">All Trucks</button>
     <button class="filter-btn" onclick="filterByTruck('CAH')">CAH</button>
     <button class="filter-btn" onclick="filterByTruck('CBQ')">CBQ</button>
@@ -203,17 +275,86 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     <button class="filter-btn" onclick="filterByTruck('CBJ')">CBJ</button>
   </div>
 
-  <div class="filters">
-    <button class="filter-btn active" onclick="filterByPeriod('week')">This Week</button>
-    <button class="filter-btn" onclick="filterByPeriod('month')">This Month</button>
-    <button class="filter-btn" onclick="filterByPeriod('all')">All Time</button>
+  <!-- ═══ CALENDAR VIEW ═══ -->
+  <div class="calendar-view active" id="calendar-view">
+    <div class="calendar-header">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <button class="cal-nav-btn" onclick="goToToday()">Today</button>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-month" id="cal-month">May 2025</div>
+    </div>
+    <div class="calendar-grid">
+      <div class="cal-weekdays">
+        <div class="cal-weekday">Mon</div>
+        <div class="cal-weekday">Tue</div>
+        <div class="cal-weekday">Wed</div>
+        <div class="cal-weekday">Thu</div>
+        <div class="cal-weekday">Fri</div>
+        <div class="cal-weekday">Sat</div>
+        <div class="cal-weekday">Sun</div>
+      </div>
+      <div class="cal-days" id="cal-days"></div>
+    </div>
   </div>
 
-  <div id="expenses-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading expenses...</div>
-  <div id="expenses-list"></div>
-  <div id="expenses-empty" class="empty-state" style="display:none">
-    <div class="empty-icon">💰</div>
-    <p>No expenses yet.<br>Tap <strong style="color:var(--red)">+</strong> to add one.</p>
+  <!-- ═══ LIST VIEW ═══ -->
+  <div class="list-view" id="list-view">
+    <div id="expenses-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading expenses...</div>
+    <div id="expenses-list"></div>
+    <div id="expenses-empty" class="empty-state" style="display:none">
+      <div class="empty-icon">💰</div>
+      <p>No expenses yet.<br>Tap <strong style="color:var(--red)">+</strong> to add one.</p>
+    </div>
+  </div>
+
+  <!-- ═══ REPORTS VIEW ═══ -->
+  <div class="reports-view" id="reports-view">
+    <!-- Overview Stats -->
+    <div class="report-section">
+      <div class="report-title"><span class="icon">📊</span> Overview</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">This Month</div>
+          <div class="stat-value" id="stat-month">₱0</div>
+          <div class="stat-change" id="stat-month-change">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Week</div>
+          <div class="stat-value" id="stat-week">₱0</div>
+          <div class="stat-change" id="stat-week-change">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Year to Date</div>
+          <div class="stat-value" id="stat-ytd">₱0</div>
+          <div class="stat-change" id="stat-ytd-change">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg per Day</div>
+          <div class="stat-value" id="stat-avg">₱0</div>
+          <div class="stat-change" id="stat-avg-change">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- By Category -->
+    <div class="report-section">
+      <div class="report-title"><span class="icon">📂</span> By Category</div>
+      <div id="category-breakdown"></div>
+    </div>
+
+    <!-- By Truck -->
+    <div class="report-section">
+      <div class="report-title"><span class="icon">🚛</span> By Truck</div>
+      <div id="truck-breakdown"></div>
+    </div>
+
+    <!-- Top Expenses -->
+    <div class="report-section">
+      <div class="report-title"><span class="icon">💸</span> Top 5 Expenses</div>
+      <div id="top-expenses"></div>
+    </div>
   </div>
 </div>
 
@@ -383,7 +524,8 @@ let selectedExpense = null;
 let newPhotoBase64 = '';
 let hasNewPhoto = false;
 let currentTruckFilter = 'All';
-let currentPeriodFilter = 'week';
+let currentView = 'calendar';
+let currentMonth = new Date();
 
 // ═══ CATEGORY ICONS ═══════════════════════════════════
 const CATEGORY_ICONS = {
@@ -391,6 +533,13 @@ const CATEGORY_ICONS = {
   'Maintenance': '🔧',
   'Documentation': '📄',
   'Miscellaneous': '📦'
+};
+
+const CATEGORY_COLORS = {
+  'Diesel': '#f59e0b',
+  'Maintenance': '#ef4444',
+  'Documentation': '#3b82f6',
+  'Miscellaneous': '#8b5cf6'
 };
 
 // ═══ INIT ═════════════════════════════════════════════
@@ -412,9 +561,7 @@ const CATEGORY_ICONS = {
     return;
   }
 
-  // Set today's date as default
   document.getElementById('f-date').valueAsDate = new Date();
-
   loadCategories();
   loadExpenses();
 })();
@@ -562,7 +709,6 @@ function loadCategories() {
     });
   }).catch(err => {
     console.error('Categories load failed:', err);
-    // Fallback categories
     categories = {
       'Diesel': ['Fuel'],
       'Maintenance': ['Engine', 'Tires', 'Brakes', 'Oil Change', 'Electrical', 'Body/Paint'],
@@ -609,11 +755,10 @@ function loadExpenses() {
       weekNumber: r[10] || '',
       month: r[11] || '',
       photo: r[12] || ''
-    })).filter(e => e.truck); // Filter out empty rows
+    })).filter(e => e.truck);
 
-    updateSummary();
-    renderExpenses(filterExpenses());
     document.getElementById('expenses-loading').style.display = 'none';
+    renderCurrentView();
   }).catch(err => {
     document.getElementById('expenses-loading').style.display = 'none';
     showToast('Cannot load expenses: ' + err.message);
@@ -621,89 +766,167 @@ function loadExpenses() {
   });
 }
 
-// ═══ FILTERS ══════════════════════════════════════════
+// ═══ VIEW SWITCHING ═══════════════════════════════════
+function switchView(view) {
+  currentView = view;
+  
+  document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  document.querySelectorAll('.calendar-view, .list-view, .reports-view').forEach(v => v.classList.remove('active'));
+  document.getElementById(view + '-view').classList.add('active');
+  
+  // Show/hide truck filters based on view
+  document.getElementById('truck-filters').style.display = view === 'reports' ? 'none' : 'flex';
+  
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentView === 'calendar') {
+    renderCalendar();
+  } else if (currentView === 'list') {
+    renderList();
+  } else if (currentView === 'reports') {
+    renderReports();
+  }
+  updateSummary();
+}
+
+// ═══ CALENDAR RENDERING ═══════════════════════════════
+function changeMonth(delta) {
+  currentMonth.setMonth(currentMonth.getMonth() + delta);
+  renderCalendar();
+}
+
+function goToToday() {
+  currentMonth = new Date();
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+  
+  document.getElementById('cal-month').textContent = 
+    currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Monday = 0
+  const daysInMonth = lastDay.getDate();
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  let html = '';
+  
+  // Previous month days
+  const prevMonthDays = new Date(year, month, 0).getDate();
+  for (let i = startDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month"><div class="cal-date">${prevMonthDays - i}</div></div>`;
+  }
+  
+  // Current month days
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    date.setHours(0, 0, 0, 0);
+    const dateStr = date.toISOString().split('T')[0];
+    const isToday = date.getTime() === today.getTime();
+    
+    // Filter expenses for this day
+    let dayExpenses = allExpenses.filter(e => e.date === dateStr);
+    if (currentTruckFilter !== 'All') {
+      dayExpenses = dayExpenses.filter(e => e.truck === currentTruckFilter);
+    }
+    
+    // Group by category and sum
+    const categoryTotals = {};
+    dayExpenses.forEach(e => {
+      if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
+      categoryTotals[e.category] += e.amount;
+    });
+    
+    const expensesHtml = Object.entries(categoryTotals)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([cat, amt]) => {
+        const icon = CATEGORY_ICONS[cat] || '💰';
+        const amtStr = amt >= 1000 ? `${(amt/1000).toFixed(1)}k` : amt.toFixed(0);
+        return `<div class="cal-expense-dot"><span class="icon">${icon}</span><span class="amount">₱${amtStr}</span></div>`;
+      }).join('');
+    
+    html += `<div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayExpenses('${dateStr}')">
+      <div class="cal-date">${day}</div>
+      <div class="cal-expenses">${expensesHtml}</div>
+    </div>`;
+  }
+  
+  // Next month days to fill grid
+  const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
+  const nextMonthDays = totalCells - (startDay + daysInMonth);
+  for (let i = 1; i <= nextMonthDays; i++) {
+    html += `<div class="cal-day other-month"><div class="cal-date">${i}</div></div>`;
+  }
+  
+  document.getElementById('cal-days').innerHTML = html;
+}
+
+function showDayExpenses(dateStr) {
+  let dayExpenses = allExpenses.filter(e => e.date === dateStr);
+  if (currentTruckFilter !== 'All') {
+    dayExpenses = dayExpenses.filter(e => e.truck === currentTruckFilter);
+  }
+  
+  if (dayExpenses.length === 0) {
+    showToast('No expenses on this date');
+    return;
+  }
+  
+  const date = new Date(dateStr);
+  const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const total = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+  
+  const list = dayExpenses.map(e => {
+    const icon = CATEGORY_ICONS[e.category] || '💰';
+    return `${icon} ${e.truck} - ${e.subcategory} - ₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}`;
+  }).join('\n');
+  
+  showToast(`${dateText}\n\nTotal: ₱${total.toLocaleString('en-PH', {minimumFractionDigits: 2})}\n\n${list}`);
+}
+
+// ═══ LIST RENDERING ═══════════════════════════════════
 function filterByTruck(truck) {
   currentTruckFilter = truck;
-  document.querySelectorAll('.filters button').forEach(b => {
+  document.querySelectorAll('#truck-filters .filter-btn').forEach(b => {
     if (b.textContent.includes(truck) || (truck === 'All' && b.textContent === 'All Trucks')) {
       b.classList.add('active');
-    } else if (!b.onclick.toString().includes('Period')) {
+    } else {
       b.classList.remove('active');
     }
   });
-  updateSummary();
-  renderExpenses(filterExpenses());
+  renderCurrentView();
 }
 
-function filterByPeriod(period) {
-  currentPeriodFilter = period;
-  document.querySelectorAll('.filters button').forEach(b => {
-    const text = b.textContent.toLowerCase();
-    if ((period === 'week' && text.includes('week')) ||
-        (period === 'month' && text.includes('month')) ||
-        (period === 'all' && text.includes('all time'))) {
-      b.classList.add('active');
-    } else if (b.onclick.toString().includes('Period')) {
-      b.classList.remove('active');
-    }
-  });
-  updateSummary();
-  renderExpenses(filterExpenses());
-}
-
-function filterExpenses() {
+function renderList() {
   let filtered = allExpenses;
-
-  // Filter by truck
   if (currentTruckFilter !== 'All') {
     filtered = filtered.filter(e => e.truck === currentTruckFilter);
   }
-
-  // Filter by period
-  const now = new Date();
-  if (currentPeriodFilter === 'week') {
-    const weekAgo = new Date(now);
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    filtered = filtered.filter(e => new Date(e.date) >= weekAgo);
-  } else if (currentPeriodFilter === 'month') {
-    const monthAgo = new Date(now);
-    monthAgo.setMonth(monthAgo.getMonth() - 1);
-    filtered = filtered.filter(e => new Date(e.date) >= monthAgo);
-  }
-
-  return filtered;
-}
-
-// ═══ UPDATE SUMMARY ═══════════════════════════════════
-function updateSummary() {
-  const filtered = filterExpenses();
-  const total = filtered.reduce((sum, e) => sum + e.amount, 0);
   
-  document.getElementById('summary-amount').textContent = '₱ ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  document.getElementById('summary-meta').textContent = filtered.length + ' expense' + (filtered.length !== 1 ? 's' : '') + ' recorded';
-  
-  const periodText = currentPeriodFilter === 'week' ? 'THIS WEEK' : 
-                     currentPeriodFilter === 'month' ? 'THIS MONTH' : 'ALL TIME';
-  document.getElementById('summary-period').textContent = periodText;
-}
-
-// ═══ RENDER EXPENSES ══════════════════════════════════
-function renderExpenses(list) {
   const container = document.getElementById('expenses-list');
   const empty = document.getElementById('expenses-empty');
   
-  if (!list.length) {
+  if (!filtered.length) {
     container.innerHTML = '';
     empty.style.display = 'block';
     return;
   }
   
   empty.style.display = 'none';
+  filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // Sort by date (newest first)
-  list.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  container.innerHTML = list.map(e => {
+  container.innerHTML = filtered.map(e => {
     const icon = CATEGORY_ICONS[e.category] || '💰';
     const catClass = e.category.toLowerCase();
     const dateStr = new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -726,6 +949,170 @@ function renderExpenses(list) {
   }).join('');
 }
 
+// ═══ REPORTS RENDERING ════════════════════════════════
+function renderReports() {
+  const now = new Date();
+  const thisMonth = now.toISOString().slice(0, 7);
+  const thisYear = now.getFullYear();
+  
+  // Calculate periods
+  const weekAgo = new Date(now);
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  
+  const monthAgo = new Date(now);
+  monthAgo.setMonth(monthAgo.getMonth() - 1);
+  
+  const yearStart = new Date(thisYear, 0, 1);
+  
+  // Filter expenses
+  const thisWeekExpenses = allExpenses.filter(e => new Date(e.date) >= weekAgo);
+  const thisMonthExpenses = allExpenses.filter(e => e.month === thisMonth);
+  const ytdExpenses = allExpenses.filter(e => new Date(e.date) >= yearStart);
+  
+  const lastWeekExpenses = allExpenses.filter(e => {
+    const d = new Date(e.date);
+    return d >= new Date(weekAgo.getTime() - 7*24*60*60*1000) && d < weekAgo;
+  });
+  const lastMonthExpenses = allExpenses.filter(e => {
+    const lastMonth = new Date(now);
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    return e.month === lastMonth.toISOString().slice(0, 7);
+  });
+  
+  // Calculate totals
+  const weekTotal = thisWeekExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const monthTotal = thisMonthExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const ytdTotal = ytdExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const avgPerDay = monthTotal / now.getDate();
+  
+  const lastWeekTotal = lastWeekExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const lastMonthTotal = lastMonthExpenses.reduce((sum, e) => sum + e.amount, 0);
+  
+  // Calculate changes
+  const weekChange = lastWeekTotal > 0 ? ((weekTotal - lastWeekTotal) / lastWeekTotal * 100).toFixed(1) : 0;
+  const monthChange = lastMonthTotal > 0 ? ((monthTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1) : 0;
+  
+  // Update stats
+  document.getElementById('stat-month').textContent = '₱' + monthTotal.toLocaleString('en-PH', {minimumFractionDigits: 0});
+  document.getElementById('stat-week').textContent = '₱' + weekTotal.toLocaleString('en-PH', {minimumFractionDigits: 0});
+  document.getElementById('stat-ytd').textContent = '₱' + ytdTotal.toLocaleString('en-PH', {minimumFractionDigits: 0});
+  document.getElementById('stat-avg').textContent = '₱' + avgPerDay.toLocaleString('en-PH', {minimumFractionDigits: 0});
+  
+  const weekChangeEl = document.getElementById('stat-week-change');
+  weekChangeEl.textContent = weekChange > 0 ? `↑ ${weekChange}% vs last week` : weekChange < 0 ? `↓ ${Math.abs(weekChange)}% vs last week` : '—';
+  weekChangeEl.className = 'stat-change ' + (weekChange > 0 ? 'up' : weekChange < 0 ? 'down' : '');
+  
+  const monthChangeEl = document.getElementById('stat-month-change');
+  monthChangeEl.textContent = monthChange > 0 ? `↑ ${monthChange}% vs last month` : monthChange < 0 ? `↓ ${Math.abs(monthChange)}% vs last month` : '—';
+  monthChangeEl.className = 'stat-change ' + (monthChange > 0 ? 'up' : monthChange < 0 ? 'down' : '');
+  
+  // Category breakdown
+  const categoryTotals = {};
+  thisMonthExpenses.forEach(e => {
+    if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
+    categoryTotals[e.category] += e.amount;
+  });
+  
+  const categoryHtml = Object.entries(categoryTotals)
+    .sort((a, b) => b[1] - a[1])
+    .map(([cat, amt]) => {
+      const icon = CATEGORY_ICONS[cat] || '💰';
+      const percent = ((amt / monthTotal) * 100).toFixed(1);
+      const count = thisMonthExpenses.filter(e => e.category === cat).length;
+      return `<div class="breakdown-item">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">${icon}</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label">${cat}</div>
+            <div class="breakdown-meta">${count} transaction${count !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount">₱${amt.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>
+          <div class="breakdown-percent">${percent}%</div>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill ${cat.toLowerCase()}" style="width:${percent}%"></div>
+      </div>`;
+    }).join('');
+  
+  document.getElementById('category-breakdown').innerHTML = categoryHtml || '<div class="empty-state"><p>No data for this month</p></div>';
+  
+  // Truck breakdown
+  const truckTotals = {};
+  thisMonthExpenses.forEach(e => {
+    if (!truckTotals[e.truck]) truckTotals[e.truck] = 0;
+    truckTotals[e.truck] += e.amount;
+  });
+  
+  const truckHtml = Object.entries(truckTotals)
+    .sort((a, b) => b[1] - a[1])
+    .map(([truck, amt]) => {
+      const percent = ((amt / monthTotal) * 100).toFixed(1);
+      const count = thisMonthExpenses.filter(e => e.truck === truck).length;
+      return `<div class="breakdown-item">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">🚛</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label">${truck}</div>
+            <div class="breakdown-meta">${count} transaction${count !== 1 ? 's' : ''}</div>
+          </div>
+        </div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount">₱${amt.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>
+          <div class="breakdown-percent">${percent}%</div>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${percent}%;background:var(--red)"></div>
+      </div>`;
+    }).join('');
+  
+  document.getElementById('truck-breakdown').innerHTML = truckHtml || '<div class="empty-state"><p>No data for this month</p></div>';
+  
+  // Top 5 expenses
+  const topExpenses = [...thisMonthExpenses]
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 5);
+  
+  const topHtml = topExpenses.map(e => {
+    const icon = CATEGORY_ICONS[e.category] || '💰';
+    const dateStr = new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `<div class="breakdown-item">
+      <div class="breakdown-left">
+        <div class="breakdown-icon">${icon}</div>
+        <div class="breakdown-info">
+          <div class="breakdown-label">${e.truck} - ${e.subcategory}</div>
+          <div class="breakdown-meta">${dateStr}</div>
+        </div>
+      </div>
+      <div class="breakdown-right">
+        <div class="breakdown-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+      </div>
+    </div>`;
+  }).join('');
+  
+  document.getElementById('top-expenses').innerHTML = topHtml || '<div class="empty-state"><p>No expenses yet</p></div>';
+}
+
+// ═══ UPDATE SUMMARY ═══════════════════════════════════
+function updateSummary() {
+  const now = new Date();
+  const thisMonth = now.toISOString().slice(0, 7);
+  
+  let filtered = allExpenses.filter(e => e.month === thisMonth);
+  if (currentTruckFilter !== 'All' && currentView !== 'reports') {
+    filtered = filtered.filter(e => e.truck === currentTruckFilter);
+  }
+  
+  const total = filtered.reduce((sum, e) => sum + e.amount, 0);
+  
+  document.getElementById('summary-amount').textContent = '₱ ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('summary-meta').textContent = filtered.length + ' expense' + (filtered.length !== 1 ? 's' : '') + ' this month';
+  document.getElementById('summary-period').textContent = 'THIS MONTH';
+}
+
 // ═══ DETAIL SHEET ═════════════════════════════════════
 function openDetail(rowIndex) {
   selectedExpense = allExpenses.find(e => e.rowIndex === rowIndex);
@@ -740,7 +1127,6 @@ function openDetail(rowIndex) {
   document.getElementById('d-amount').textContent = '₱ ' + e.amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   document.getElementById('d-subcategory').textContent = e.subcategory;
 
-  // Receipt
   const receiptWrap = document.getElementById('d-receipt-wrap');
   if (e.receipt) {
     document.getElementById('d-receipt').textContent = e.receipt;
@@ -749,7 +1135,6 @@ function openDetail(rowIndex) {
     receiptWrap.style.display = 'none';
   }
 
-  // Notes
   const notesWrap = document.getElementById('d-notes-wrap');
   if (e.notes) {
     document.getElementById('d-notes').textContent = e.notes;
@@ -758,7 +1143,6 @@ function openDetail(rowIndex) {
     notesWrap.style.display = 'none';
   }
 
-  // Photo
   const photoWrap = document.getElementById('detail-photo-wrap');
   photoWrap.innerHTML = e.photo
     ? `<img src="${e.photo}" alt="Receipt">`
@@ -794,7 +1178,6 @@ function openAddDrawer() {
   document.getElementById('add-drawer').classList.add('open');
 }
 
-// ═══ EDIT DRAWER ══════════════════════════════════════
 function openEditDrawer() {
   if (!selectedExpense) return;
   closeDetail();
@@ -858,7 +1241,6 @@ function saveExpense() {
 
   showSaving('Saving expense...');
 
-  // Handle photo upload
   let photoPromise;
   if (hasNewPhoto && newPhotoBase64) {
     photoPromise = uploadPhotoToDrive(newPhotoBase64);
@@ -873,7 +1255,7 @@ function saveExpense() {
     const timestamp = new Date().toISOString();
     const dateObj = new Date(date);
     const weekNumber = getWeekNumber(dateObj);
-    const month = dateObj.toISOString().slice(0, 7); // YYYY-MM
+    const month = dateObj.toISOString().slice(0, 7);
     const email = localStorage.getItem('pedroex-email') || 'admin';
 
     let row;
@@ -957,13 +1339,13 @@ function hideSaving() {
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
+  t.style.whiteSpace = 'pre-line';
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// ═══ CLOSE ON OVERLAY TAP ═════════════════════════════
 ['add-drawer', 'detail-overlay', 'confirm-overlay'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('click', e => {
