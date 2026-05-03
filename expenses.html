@@ -164,6 +164,7 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .ec-receipt{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);margin-top:6px}
 
 /* ═══ REPORTS VIEW - PREMIUM CHARTS ═══ */
+/* REPORTS VIEW - PREMIUM CHARTS */
 .reports-view{display:none}
 .reports-view.active{display:block}
 .report-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
@@ -171,10 +172,41 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .report-title .icon{font-size:20px}
 
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
-.stat-card{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-xs);padding:14px;text-align:center}
-.stat-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-.stat-value{font-size:22px;font-weight:700;color:var(--text)}
-.stat-change{font-size:11px;color:var(--text2);margin-top:4px}
+.stat-card{
+  background:var(--bg2);
+  border-radius:12px;
+  box-shadow:var(--neu-xs);
+  padding:14px;
+  text-align:center;
+  min-width:0;
+  overflow:hidden;
+}
+.stat-label{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-bottom:6px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.stat-value{
+  font-size:20px;
+  font-weight:700;
+  color:var(--text);
+  word-break:break-all;
+  line-height:1.2;
+}
+.stat-change{
+  font-size:10px;
+  color:var(--text2);
+  margin-top:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .stat-change.up{color:var(--red)}
 .stat-change.down{color:var(--manpower)}
 
@@ -1315,10 +1347,21 @@ function renderReports() {
   const weekChange = lastWeekTotal > 0 ? ((weekTotal - lastWeekTotal) / lastWeekTotal * 100).toFixed(1) : 0;
   const monthChange = lastMonthTotal > 0 ? ((monthTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1) : 0;
   
-  document.getElementById('stat-month').textContent = '₱' + monthTotal.toLocaleString('en-PH', {minimumFractionDigits: 0});
-  document.getElementById('stat-week').textContent = '₱' + weekTotal.toLocaleString('en-PH', {minimumFractionDigits: 0});
-  document.getElementById('stat-ytd').textContent = '₱' + ytdTotal.toLocaleString('en-PH', {minimumFractionDigits: 0});
-  document.getElementById('stat-avg').textContent = '₱' + avgPerDay.toLocaleString('en-PH', {minimumFractionDigits: 0});
+// ✅ Helper function for compact numbers
+    function formatCompactCurrency(amount) {
+      if (amount >= 1000000) {
+        return '₱' + (amount / 1000000).toFixed(1) + 'M';
+      } else if (amount >= 1000) {
+        return '₱' + (amount / 1000).toFixed(1) + 'k';
+      } else {
+        return '₱' + amount.toFixed(0);
+      }
+    }
+
+    document.getElementById('stat-month').textContent = formatCompactCurrency(monthTotal);
+    document.getElementById('stat-week').textContent = formatCompactCurrency(weekTotal);
+    document.getElementById('stat-ytd').textContent = formatCompactCurrency(ytdTotal);
+    document.getElementById('stat-avg').textContent = formatCompactCurrency(avgPerDay);
   
   const weekChangeEl = document.getElementById('stat-week-change');
   weekChangeEl.textContent = weekChange > 0 ? `↑ ${weekChange}% vs last week` : weekChange < 0 ? `↓ ${Math.abs(weekChange)}% vs last week` : '—';
