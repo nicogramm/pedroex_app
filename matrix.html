@@ -5,1204 +5,2472 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
 <meta name="theme-color" content="#e0e0e5">
-<title>Submit Expense | PedroEX</title>
+<link rel="manifest" href="manifest.json">
+<title>Profit Matrix — PedroEX</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════
+   NEUMORPHIC THEME VARIABLES
+═══════════════════════════════════════ */
 :root {
---bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
---text:#2a2a2e;--text2:#777;--text3:#aaa;--red:#B32533;
---neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
---neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
---neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
---neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
+  /* LIGHT NEUMORPHIC */
+  --bg:       #e0e0e5;
+  --bg2:      #e8e8ed;
+  --shadow-d: #b8b9be;
+  --shadow-l: #ffffff;
+  --text:     #2a2a2e;
+  --text2:    #777;
+  --text3:    #aaa;
+  --red:      #B32533;
+  --green:    #16a34a;
+  --blue:     #2563eb;
+  --orange:   #f59e0b;
+  --purple:   #8b5cf6;
+  
+  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
 }
+
 body.dark {
---bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
---text:#e8e8ec;--text2:#888;--text3:#555;
---neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
---neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
---neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
---neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background 0.4s,color 0.4s}
-
-/* TOPBAR */
-.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);flex-shrink:0;position:relative;z-index:50}
-body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
-.tb-back{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:22px;font-weight:400;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:1}
-.tb-back:active{box-shadow:var(--neu-in);transform:scale(0.95)}
-.tb-title{font-size:17px;font-weight:700;letter-spacing:-0.4px;color:var(--text);position:absolute;left:50%;transform:translateX(-50%)}
-.tb-action{display:flex;gap:8px}
-.tb-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.tb-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
-
-/* PAGE */
-.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(120px + env(safe-area-inset-bottom,0px));height:calc(100vh - 68px)}
-
-/* EXPENSE TYPE SELECTOR */
-.expense-type-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-.expense-type-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
-.expense-type-btn.active{box-shadow:var(--neu-in);color:var(--red)}
-.expense-type-btn:active{transform:scale(0.98)}
-
-/* VIEW TOGGLE */
-.view-toggle{display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px;margin-bottom:16px}
-.view-btn{flex:1;padding:10px;background:transparent;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text3);cursor:pointer;transition:all 0.2s}
-.view-btn.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
-
-/* QUARTER SELECTOR */
-.quarter-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-.quarter-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
-.quarter-btn.active{box-shadow:var(--neu-in);color:var(--red)}
-.quarter-btn:active{transform:scale(0.98)}
-
-/* INFO CARD */
-.info-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:20px;border-left:4px solid var(--red)}
-.info-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.info-text{font-size:12px;color:var(--text2);line-height:1.6}
-
-/* CALENDAR VIEW */
-.calendar-view{display:none}
-.calendar-view.active{display:block}
-.calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.cal-nav{display:flex;gap:8px}
-.cal-nav-btn{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);padding:8px 16px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
-.cal-nav-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
-.cal-month{font-size:18px;font-weight:700;color:var(--text)}
-.calendar-grid{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px}
-.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
-.cal-weekday{text-align:center;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);padding:4px 0}
-.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-
-.cal-day{
-  background:var(--bg);
-  border-radius:10px;
-  box-shadow:var(--neu-xs);
-  padding:4px 2px;
-  text-align:center;
-  min-height:44px;
-  cursor:pointer;
-  transition:box-shadow 0.15s;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  position:relative;
-}
-.cal-day:active{box-shadow:var(--neu-in);transform:scale(0.98)}
-.cal-day.today .cal-day-num{color:var(--red);font-weight:700}
-.cal-day.has-att{box-shadow:var(--neu-xs)}
-.cal-day.has-att .cal-day-num{color:var(--text);font-weight:600}
-.cal-day.selected{box-shadow:var(--neu-in)}
-.cal-day.other-month{opacity:0.3;pointer-events:none}
-.cal-day-num{font-size:13px;font-weight:500;color:var(--text2);line-height:1.4;margin-bottom:2px}
-
-.cal-names{
-  display:flex;
-  flex-wrap:wrap;
-  gap:2px;
-  justify-content:center;
-  width:100%;
-  margin-top:2px;
+  --bg:       #2a2a2f;
+  --bg2:      #313137;
+  --shadow-d: #16161a;
+  --shadow-l: #3e3e46;
+  --text:     #e8e8ec;
+  --text2:    #888;
+  --text3:    #555;
+  
+  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
 }
 
-.cal-name-pill{
-  font-size:8px;
-  font-weight:700;
-  padding:1px 4px;
-  border-radius:4px;
-  color:#fff;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:100%;
-  line-height:1.2;
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  -webkit-tap-highlight-color: transparent;
 }
 
-.cal-name-pill.diesel{background:#B32533}
-.cal-name-pill.parts{background:#2563eb}
-.cal-name-pill.parking{background:#16a34a}
+html, body { 
+  height: 100%; 
+  overflow: hidden; 
+  background: var(--bg); 
+  color: var(--text); 
+  font-family: 'Inter', sans-serif; 
+  -webkit-font-smoothing: antialiased; 
+  transition: background 0.4s, color 0.4s;
+}
 
-/* FORM VIEW */
-.form-view{display:none}
-.form-view.active{display:block}
-.form-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px}
-.section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.fg{margin-bottom:16px}
-.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:13px 16px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:box-shadow 0.15s}
-.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.3)}
+.screen { 
+  display: flex; 
+  flex-direction: column; 
+  height: 100dvh; 
+  width: 100%;
+}
 
-/* COMPUTED FIELDS */
-.computed-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-.computed-card{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-in);padding:14px;text-align:center}
-.computed-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
-.computed-value{font-size:20px;font-weight:700;color:var(--red);line-height:1}
+/* ═══════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════ */
+.topbar {
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+  position: relative;
+  z-index: 50;
+}
 
-/* BUTTON */
-.btn-submit{width:100%;padding:16px;border-radius:14px;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none;background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);transition:transform 0.1s}
-.btn-submit:active{transform:scale(0.98)}
-.btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+body.dark .topbar {
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
 
-/* DAY DETAIL OVERLAY */
-.day-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.day-detail-overlay.open{display:block}
-.day-detail-header{background:var(--bg);padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
-.day-detail-close{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.day-detail-close:active{box-shadow:var(--neu-in);transform:scale(0.95)}
-.day-detail-title{font-size:17px;font-weight:700;color:var(--text)}
-.day-detail-content{padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
-.expense-item{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:12px;cursor:pointer;transition:transform 0.12s;border-left:4px solid var(--red)}
-.expense-item:active{transform:scale(0.98)}
-.expense-item.not-mine{opacity:0.6;cursor:default;border-left-color:var(--text3)}
-.expense-item.diesel{border-left-color:#B32533}
-.expense-item.parts{border-left-color:#2563eb}
-.expense-item.parking{border-left-color:#16a34a}
-.ei-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.ei-payee{font-size:15px;font-weight:700;color:var(--text)}
-.ei-amount{font-size:20px;font-weight:700;color:var(--red)}
-.ei-details{font-size:12px;color:var(--text2);line-height:1.6}
-.ei-user{font-size:10px;color:var(--text3);margin-top:6px;font-style:italic}
-.ei-type{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-top:4px}
+.tb-back {
+  background: var(--bg);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--neu-sm);
+  width: 40px;
+  height: 40px;
+  color: var(--red);
+  font-size: 22px;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+}
 
-/* FAB */
-.fab{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom,0px));right:18px;width:54px;height:54px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:5px 5px 14px rgba(179,37,51,0.5),-2px -2px 8px rgba(179,37,51,0.2);z-index:50}
-.fab:active{transform:scale(0.93)}
-.fab-report{bottom:calc(148px + env(safe-area-inset-bottom,0px));background:var(--bg);color:var(--red);box-shadow:var(--neu-out)}
+.tb-back:active {
+  box-shadow: var(--neu-in);
+  transform: scale(0.95);
+}
 
-/* TOAST */
-.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;max-width:90%;opacity:0;pointer-events:none;transition:opacity 0.25s}
-.toast.show{opacity:1}
+.tb-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--text);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-/* SAVING OVERLAY */
-.saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
-.saving-overlay.show{display:flex}
-.saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-.saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.saving-text{font-size:14px;color:var(--text2);font-weight:500}
+.tb-action {
+  display: flex;
+  gap: 8px;
+}
 
-/* EDIT DRAWER */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end}
-.overlay.open{display:flex}
-.drawer{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:92dvh;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 -8px 30px rgba(0,0,0,0.15)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.drawer-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 20px;opacity:0.3}
-.drawer-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-0.3px;margin-bottom:4px}
-.drawer-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
-.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
-.btn{padding:14px;border-radius:14px;font-size:15px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none;background:var(--bg);transition:box-shadow 0.15s,transform 0.1s}
-.btn:active{transform:scale(0.98)}
-.btn-red{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4)}
-.btn-ghost{color:var(--text2);box-shadow:var(--neu-sm)}
-.btn-ghost:active{box-shadow:var(--neu-in)}
-.btn-delete{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);margin-top:12px;width:100%}
+.tb-btn {
+  background: var(--bg);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--neu-sm);
+  width: 40px;
+  height: 40px;
+  color: var(--red);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
 
-/* REPORT MODAL */
-.report-modal{display:none;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.report-modal.open{display:block}
-.report-header{background:var(--bg);padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
-.report-content{padding:20px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
-.report-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px}
-.report-subtitle{font-size:14px;color:var(--text2);margin-bottom:24px}
-.report-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px}
-.report-section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.report-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bg2)}
-.report-row:last-child{border-bottom:none}
-.report-label{font-size:14px;color:var(--text2)}
-.report-value{font-size:16px;font-weight:600;color:var(--text)}
-.report-total{background:var(--bg2);border-radius:12px;padding:16px;margin-top:16px}
-.report-total-label{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.report-total-value{font-size:28px;font-weight:700;color:var(--red)}
+.tb-btn:active {
+  box-shadow: var(--neu-in);
+  transform: scale(0.95);
+}
+
+/* ═══════════════════════════════════════
+   PAGE WRAP
+═══════════════════════════════════════ */
+.page-wrap {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ═══════════════════════════════════════
+   HERO CARD (PROFIT OVERVIEW WITH VAT)
+═══════════════════════════════════════ */
+.hero-card {
+  background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(179, 37, 51, 0.3);
+  color: #fff;
+}
+
+.hero-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.hero-amount {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 6px;
+}
+
+.hero-margin {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.hero-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px 0;
+}
+
+.hero-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.hero-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-item-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+.hero-item-value {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.hero-item-small {
+  font-size: 16px;
+}
+
+/* ═══════════════════════════════════════
+   VIEW TOGGLE
+═══════════════════════════════════════ */
+.view-toggle {
+  display: flex;
+  gap: 8px;
+  background: var(--bg);
+  border-radius: 14px;
+  box-shadow: var(--neu-in);
+  padding: 4px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.view-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.view-btn.active {
+  background: var(--bg);
+  box-shadow: var(--neu-sm);
+  color: var(--red);
+}
+
+/* ═══════════════════════════════════════
+   SECTION CARD
+═══════════════════════════════════════ */
+.section-card {
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: var(--neu-out);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title .icon {
+  font-size: 20px;
+}
+
+.section-subtitle {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: -12px;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════
+   INFO BANNER
+═══════════════════════════════════════ */
+.info-banner {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--blue);
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.info-banner strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════
+   TRUCK CARD
+═══════════════════════════════════════ */
+.truck-card {
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: var(--neu-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: transform 0.15s;
+  border-left: 4px solid var(--red);
+}
+
+.truck-card:active {
+  transform: scale(0.98);
+  box-shadow: var(--neu-in);
+}
+
+.truck-card.profitable {
+  border-left-color: var(--green);
+}
+
+.truck-card.warning {
+  border-left-color: var(--orange);
+}
+
+.truck-card.loss {
+  border-left-color: var(--red);
+}
+
+.truck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.truck-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.truck-margin {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.truck-margin.profitable { color: var(--green); }
+.truck-margin.warning { color: var(--orange); }
+.truck-margin.loss { color: var(--red); }
+
+.truck-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.truck-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.truck-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+}
+
+.truck-stat-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.truck-breakdown {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark .truck-breakdown {
+  border-top-color: rgba(255, 255, 255, 0.04);
+}
+
+/* ═══════════════════════════════════════
+   ROUTE CARD
+═══════════════════════════════════════ */
+.route-card {
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: var(--neu-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.route-card:active {
+  transform: scale(0.98);
+  box-shadow: var(--neu-in);
+}
+
+.route-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.route-meta {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.route-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.route-stat {
+  text-align: center;
+}
+
+.route-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.route-stat-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════
+   CHART CONTAINER
+═══════════════════════════════════════ */
+.chart-container {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 12px;
+  box-shadow: var(--neu-in);
+  position: relative;
+  height: 220px;
+}
+
+.chart-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* ═══════════════════════════════════════
+   STAT GRID
+═══════════════════════════════════════ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--bg2);
+  border-radius: 12px;
+  box-shadow: var(--neu-xs);
+  padding: 14px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.stat-change {
+  font-size: 10px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+
+.stat-change.up { color: var(--green); }
+.stat-change.down { color: var(--red); }
+
+/* ═══════════════════════════════════════
+   BREAKDOWN ITEM
+═══════════════════════════════════════ */
+.breakdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.dark .breakdown-item {
+  border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+}
+
+.breakdown-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.breakdown-icon {
+  font-size: 24px;
+}
+
+.breakdown-info {
+  flex: 1;
+}
+
+.breakdown-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.breakdown-meta {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.breakdown-right {
+  text-align: right;
+}
+
+.breakdown-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.breakdown-percent {
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* ═══════════════════════════════════════
+   HEATMAP
+═══════════════════════════════════════ */
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.heatmap-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text3);
+  padding: 8px 4px;
+}
+
+.heatmap-row-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.heatmap-cell {
+  background: var(--bg2);
+  border-radius: 10px;
+  box-shadow: var(--neu-xs);
+  padding: 12px 4px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.heatmap-cell.excellent {
+  background: var(--green);
+  color: #fff;
+  box-shadow: none;
+}
+
+.heatmap-cell.good {
+  background: #4ade80;
+  color: #fff;
+  box-shadow: none;
+}
+
+.heatmap-cell.acceptable {
+  background: var(--orange);
+  color: #fff;
+  box-shadow: none;
+}
+
+.heatmap-cell.poor {
+  background: var(--red);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* ═══════════════════════════════════════
+   ALERTS
+═══════════════════════════════════════ */
+.alert-item {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-left: 3px solid var(--orange);
+}
+
+.alert-item.success {
+  border-left-color: var(--green);
+}
+
+.alert-item.warning {
+  border-left-color: var(--orange);
+}
+
+.alert-item.info {
+  border-left-color: var(--blue);
+}
+
+.alert-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alert-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════
+   BIR REPORT CARD
+═══════════════════════════════════════ */
+.bir-card {
+  background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 16px;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+}
+
+.bir-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+.bir-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bir-row:last-child {
+  border-bottom: none;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.bir-label {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.bir-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bir-savings {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.bir-savings-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+
+.bir-savings-value {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+/* ═══════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg);
+  padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.07);
+  z-index: 40;
+}
+
+body.dark .bottom-nav {
+  box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4);
+}
+
+.bnav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.bnav.active {
+  color: var(--red);
+}
+
+.bnav-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.2s;
+}
+
+.bnav:not(.active) .bnav-icon {
+  box-shadow: var(--neu-sm);
+}
+
+.bnav.active .bnav-icon {
+  box-shadow: var(--neu-in);
+}
+
+/* ═══════════════════════════════════════
+   LOADING / EMPTY STATES
+═══════════════════════════════════════ */
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 56px;
+  color: var(--text3);
+  font-size: 13px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--text3);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  opacity: 0.25;
+  margin-bottom: 14px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text2);
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border-radius: 14px;
+  box-shadow: var(--neu-out);
+  border-left: 3px solid var(--red);
+  padding: 13px 22px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  z-index: 400;
+  max-width: 90%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════
+   PULL TO REFRESH
+═══════════════════════════════════════ */
+.ptr-indicator {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--bg);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  box-shadow: var(--neu-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+
+.ptr-indicator.visible {
+  transform: translateX(-50%) translateY(0px);
+}
+
+.ptr-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--text3);
+  border-top-color: var(--red);
+  border-radius: 50%;
+}
+
+.ptr-spinner.spinning {
+  animation: spin 0.7s linear infinite;
+}
+
+.ptr-arrow {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--red);
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+/* ═══════════════════════════════════════
+   PERIOD SELECTOR
+═══════════════════════════════════════ */
+.period-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.period-btn {
+  background: var(--bg);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--neu-sm);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.period-btn.active {
+  box-shadow: var(--neu-in);
+  color: var(--red);
+}
+
+.period-btn:active {
+  transform: scale(0.98);
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE ADJUSTMENTS
+═══════════════════════════════════════ */
+@media (max-width: 360px) {
+  .hero-amount {
+    font-size: 28px;
+  }
+  
+  .truck-name {
+    font-size: 16px;
+  }
+  
+  .stat-value {
+    font-size: 18px;
+  }
+}
 </style>
 </head>
 <body>
-<div class="topbar">
-<button class="tb-back" onclick="location.href='index.html'">✕</button>
-<span class="tb-title">Expense Manager</span>
-<div class="tb-action">
-<button class="tb-btn" onclick="loadExpenses()">↻</button>
-</div>
-</div>
-<div class="page-wrap">
-<!-- EXPENSE TYPE SELECTOR -->
-<div class="expense-type-selector">
-<button class="expense-type-btn active" data-type="diesel" onclick="selectExpenseType(event, 'diesel')">⛽ Diesel</button>
-<button class="expense-type-btn" data-type="parts" onclick="selectExpenseType(event, 'parts')">🔧 Parts & Repairs</button>
-<button class="expense-type-btn" data-type="parking" onclick="selectExpenseType(event, 'parking')">🅿️ Parking & Tolls</button>
+
+<!-- ═══════════════════════════════════════
+     ADMIN ACCESS CHECK
+═══════════════════════════════════════ -->
+<script>
+(function checkAdminAccess() {
+  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+  
+  if (userRole !== 'admin') {
+    alert('⛔ Access Denied\n\nThis page is restricted to administrators only.');
+    window.location.href = 'index.html';
+    return;
+  }
+})();
+</script>
+
+<div class="screen">
+  <!-- ═══ TOPBAR ═══ -->
+  <div class="topbar">
+    <button class="tb-back" onclick="location.href='index.html'">✕</button>
+    <span class="tb-title">Profit Matrix</span>
+    <div class="tb-action">
+      <button class="tb-btn" onclick="loadAll()">↻</button>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE WRAP ═══ -->
+  <div class="page-wrap" id="page-wrap">
+    <!-- LOADING -->
+    <div id="wrap-loading" class="loading-wrap">
+      <div class="spinner"></div>&nbsp;Calculating profitability...
+    </div>
+
+    <!-- CONTENT (hidden until loaded) -->
+    <div id="wrap-content" style="display:none">
+      
+      <!-- HERO CARD WITH VAT BREAKDOWN -->
+      <div class="hero-card">
+        <div class="hero-title">Net Profit (After VAT)</div>
+        <div class="hero-amount" id="hero-profit">₱ 0.00</div>
+        <div class="hero-margin" id="hero-margin">True Margin: 0% • 0 trips</div>
+        
+        <div class="hero-divider"></div>
+        
+        <div class="hero-breakdown">
+          <div class="hero-item">
+            <div class="hero-item-label">Gross Revenue</div>
+            <div class="hero-item-value hero-item-small" id="hero-gross">₱ 0</div>
+          </div>
+          <div class="hero-item">
+            <div class="hero-item-label">Output VAT</div>
+            <div class="hero-item-value hero-item-small" id="hero-output-vat">₱ 0</div>
+          </div>
+          <div class="hero-item">
+            <div class="hero-item-label">Real Expenses</div>
+            <div class="hero-item-value hero-item-small" id="hero-expenses">₱ 0</div>
+          </div>
+          <div class="hero-item">
+            <div class="hero-item-label">Input VAT</div>
+            <div class="hero-item-value hero-item-small" id="hero-input-vat">₱ 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BIR LIABILITY CARD -->
+      <div class="bir-card">
+        <div class="bir-title">🏛️ BIR VAT Summary</div>
+        <div class="bir-row">
+          <div class="bir-label">Output VAT (Sales)</div>
+          <div class="bir-value" id="bir-output">₱ 0</div>
+        </div>
+        <div class="bir-row">
+          <div class="bir-label">Input VAT (Purchases)</div>
+          <div class="bir-value" id="bir-input">₱ 0</div>
+        </div>
+        <div class="bir-row">
+          <div class="bir-label">VAT Payable to BIR</div>
+          <div class="bir-value" id="bir-payable">₱ 0</div>
+        </div>
+        <div class="bir-savings">
+          <div class="bir-savings-label">💰 VAT Savings from Purchases</div>
+          <div class="bir-savings-value" id="bir-savings">₱ 0</div>
+        </div>
+      </div>
+
+      <!-- PERIOD SELECTOR -->
+      <div class="period-selector">
+        <button class="period-btn active" onclick="changePeriod('month')">This Month</button>
+        <button class="period-btn" onclick="changePeriod('week')">This Week</button>
+        <button class="period-btn" onclick="changePeriod('year')">Year to Date</button>
+        <button class="period-btn" onclick="changePeriod('all')">All Time</button>
+      </div>
+
+      <!-- VIEW TOGGLE -->
+      <div class="view-toggle">
+        <button class="view-btn active" onclick="switchView('overview')">📊 Overview</button>
+        <button class="view-btn" onclick="switchView('trucks')">🚛 Trucks</button>
+        <button class="view-btn" onclick="switchView('routes')">📍 Routes</button>
+        <button class="view-btn" onclick="switchView('insights')">🧠 Insights</button>
+      </div>
+
+      <!-- ═══ OVERVIEW VIEW ═══ -->
+      <div id="view-overview" class="view-content">
+        
+        <!-- EXPENSE SOURCES EXPLANATION -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">💰</span> Real Expenses Breakdown
+          </div>
+          <div class="section-subtitle">Source: Expenses.html (Admin) — Expenses_Master sheet</div>
+          
+          <div id="real-expenses-breakdown"></div>
+        </div>
+
+        <!-- INPUT VAT SOURCES -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">📉</span> Input VAT Sources
+          </div>
+          <div class="section-subtitle">Source: Expenses-Emp.html (Employees) — Quarterly Purchase Sheets</div>
+          
+          <div class="info-banner">
+            💡 <strong>Input VAT</strong> is recovered from purchases with VAT receipts. 
+            This reduces your BIR liability by up to 50%!
+          </div>
+          
+          <div id="input-vat-breakdown"></div>
+        </div>
+
+        <!-- PROFIT TREND CHART -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">📈</span> Profit Trend (Last 30 Days)
+          </div>
+          <div class="chart-container">
+            <canvas id="profitTrendChart" class="chart-canvas"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══ BY TRUCK VIEW ═══ -->
+      <div id="view-trucks" class="view-content" style="display:none">
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">🚛</span> Profitability by Truck
+          </div>
+          <div id="trucks-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ BY ROUTE VIEW ═══ -->
+      <div id="view-routes" class="view-content" style="display:none">
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">📍</span> Profitability by Route
+          </div>
+          <div id="routes-list"></div>
+        </div>
+      </div>
+
+      <!-- ═══ INSIGHTS VIEW ═══ -->
+      <div id="view-insights" class="view-content" style="display:none">
+        
+        <!-- KPI Cards -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">📊</span> Key Performance Indicators
+          </div>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Avg Profit/Trip</div>
+              <div class="stat-value" id="kpi-avg-trip">₱0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Avg Profit/Day</div>
+              <div class="stat-value" id="kpi-avg-day">₱0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Fleet Utilization</div>
+              <div class="stat-value" id="kpi-utilization">0%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Effective Tax Rate</div>
+              <div class="stat-value" id="kpi-tax-rate">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Alerts -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">🚨</span> Smart Alerts & Recommendations
+          </div>
+          <div id="alerts-list"></div>
+        </div>
+
+        <!-- Top Performers -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">🏆</span> Top Performers
+          </div>
+          <div id="top-performers"></div>
+        </div>
+
+      </div>
+
+    </div><!-- end wrap-content -->
+  </div><!-- end page-wrap -->
+
+  <!-- ═══ BOTTOM NAV ═══ -->
+  <div class="bottom-nav">
+    <button class="bnav" onclick="location.href='index.html'">
+      <div class="bnav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/>
+          <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      Home
+    </button>
+    <button class="bnav" onclick="location.href='trucks.html'">
+      <div class="bnav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/>
+          <circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/>
+          <circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      Trucks
+    </button>
+    <button class="bnav" onclick="location.href='trips.html'">
+      <div class="bnav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      Trips
+    </button>
+    <button class="bnav" onclick="location.href='billing.html'">
+      <div class="bnav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      Billing
+    </button>
+    <button class="bnav active">
+      <div class="bnav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      Matrix
+    </button>
+  </div>
 </div>
 
-<!-- VIEW TOGGLE -->
-<div class="view-toggle">
-<button class="view-btn active" onclick="switchView(event, 'calendar')">📅 Calendar</button>
-<button class="view-btn" onclick="switchView(event, 'form')">➕ Add New</button>
-</div>
-
-<!-- QUARTER SELECTOR -->
-<div class="quarter-selector" id="quarter-selector"></div>
-
-<!-- CALENDAR VIEW -->
-<div class="calendar-view active" id="calendar-view">
-<div class="calendar-header">
-<div class="cal-nav">
-<button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
-<button class="cal-nav-btn" onclick="goToToday()">Today</button>
-<button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
-</div>
-<div class="cal-month" id="cal-month">May 2025</div>
-</div>
-<div class="calendar-grid">
-<div class="cal-weekdays">
-<div class="cal-weekday">M</div>
-<div class="cal-weekday">T</div>
-<div class="cal-weekday">W</div>
-<div class="cal-weekday">T</div>
-<div class="cal-weekday">F</div>
-<div class="cal-weekday">S</div>
-<div class="cal-weekday">S</div>
-</div>
-<div class="cal-days" id="cal-days"></div>
-</div>
-</div>
-
-<!-- FORM VIEW -->
-<div class="form-view" id="form-view">
-<div class="info-card">
-<div class="info-title" id="form-info-title">⛽ Diesel Purchase Entry</div>
-<div class="info-text" id="form-info-text">Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.</div>
-</div>
-<div class="form-section">
-<div class="section-title">📝 Receipt Details</div>
-<div class="fg">
-<label class="fl">Date of Purchase *</label>
-<input class="fi" id="f-date" type="date" onchange="updateQuarter()">
-</div>
-<div class="fg">
-<label class="fl">Current Quarter</label>
-<input class="fi" id="f-quarter" type="text" readonly style="background:var(--bg2);color:var(--text3)">
-</div>
-<div class="fg">
-<label class="fl"><span id="payee-label">Name of Payee (Gas Station)</span> *</label>
-<input class="fi" id="f-payee" type="text" placeholder="e.g. Petron Station">
-</div>
-<div class="fg">
-<label class="fl">Address (Optional)</label>
-<input class="fi" id="f-address" type="text" placeholder="Address">
-</div>
-<div class="fg">
-<label class="fl">TIN Number (Optional)</label>
-<input class="fi" id="f-tin" type="text" placeholder="000-000-000-000">
-</div>
-<div class="fg">
-<label class="fl">OR Number (Optional)</label>
-<input class="fi" id="f-or" type="text" placeholder="Receipt number">
-</div>
-<div class="fg">
-<label class="fl">Gross Amount (₱) *</label>
-<input class="fi" id="f-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal" oninput="computeVAT()">
-</div>
-<div class="computed-grid" id="vat-computed">
-<div class="computed-card">
-<div class="computed-label">Vatable Purchase</div>
-<div class="computed-value" id="vatable">₱0.00</div>
-</div>
-<div class="computed-card">
-<div class="computed-label">Input VAT</div>
-<div class="computed-value" id="input-vat">₱0.00</div>
-</div>
-</div>
-</div>
-<button class="btn-submit" onclick="submitExpense()" id="submit-btn">Submit Diesel Expense</button>
-</div>
-</div>
-
-<!-- FAB BUTTONS -->
-<button class="fab fab-report" id="fab-report" onclick="openReport()" style="display:none">📊</button>
-<button class="fab" id="fab" onclick="switchView(event, 'form')" style="display:none">+</button>
-
-<!-- DAY DETAIL OVERLAY -->
-<div class="day-detail-overlay" id="day-detail-overlay">
-<div class="day-detail-header">
-<button class="day-detail-close" onclick="closeDayDetail()">✕</button>
-<div class="day-detail-title" id="day-detail-title">Day Expenses</div>
-<div style="width:40px"></div>
-</div>
-<div class="day-detail-content" id="day-detail-content"></div>
-</div>
-
-<!-- EDIT DRAWER -->
-<div class="overlay" id="edit-drawer">
-<div class="drawer">
-<div class="drawer-handle"></div>
-<div class="drawer-title">Edit Expense</div>
-<div class="drawer-sub">Update your expense</div>
-<div class="fg">
-<label class="fl">Date of Purchase *</label>
-<input class="fi" id="e-date" type="date">
-</div>
-<div class="fg">
-<label class="fl">Name of Payee *</label>
-<input class="fi" id="e-payee" type="text">
-</div>
-<div class="fg">
-<label class="fl">Address (Optional)</label>
-<input class="fi" id="e-address" type="text">
-</div>
-<div class="fg">
-<label class="fl">TIN Number (Optional)</label>
-<input class="fi" id="e-tin" type="text">
-</div>
-<div class="fg">
-<label class="fl">OR Number (Optional)</label>
-<input class="fi" id="e-or" type="text">
-</div>
-<div class="fg">
-<label class="fl">Gross Amount (₱) *</label>
-<input class="fi" id="e-amount" type="number" step="0.01" oninput="computeEditVAT()">
-</div>
-<div class="computed-grid" id="e-vat-computed">
-<div class="computed-card">
-<div class="computed-label">Vatable Purchase</div>
-<div class="computed-value" id="e-vatable">₱0.00</div>
-</div>
-<div class="computed-card">
-<div class="computed-label">Input VAT</div>
-<div class="computed-value" id="e-input-vat">₱0.00</div>
-</div>
-</div>
-<div class="btn-row">
-<button class="btn btn-ghost" onclick="closeEditDrawer()">Cancel</button>
-<button class="btn btn-red" onclick="updateExpense()">Update</button>
-</div>
-<button class="btn btn-delete" onclick="deleteExpense()">Delete Expense</button>
-</div>
-</div>
-
-<!-- REPORT MODAL -->
-<div class="report-modal" id="report-modal">
-<div class="report-header">
-<button class="day-detail-close" onclick="closeReport()">✕</button>
-<div class="day-detail-title">Quarterly VAT Report</div>
-<div style="width:40px"></div>
-</div>
-<div class="report-content">
-<div class="report-title">📊 VAT Summary Report</div>
-<div class="report-subtitle" id="report-quarter">Q1 2025</div>
-
-<!-- EXPLANATION CARD -->
-<div class="info-card" style="border-left-color:#2563eb">
-<div class="info-title">📖 Report Explanation</div>
-<div class="info-text">
-<strong>Data Source:</strong><br>
-• Expenses shown here are from <strong>expense-emp.html</strong> (Employee Expense Tracker)<br>
-• These are purchases with Input VAT that can be deducted from BIR obligations<br>
-• Admin expenses from <strong>expense.html</strong> are NOT included here<br><br>
-<strong>VAT Computation:</strong><br>
-• Gross Amount = Total amount paid (already includes 12% VAT)<br>
-• Vatable Purchase = Gross ÷ 1.12 (base amount before VAT)<br>
-• Input VAT = Gross - Vatable (12% that can be deducted from BIR)
-</div>
-</div>
-
-<!-- BILLING INCOME SECTION -->
-<div class="report-section">
-<div class="report-section-title">💰 Billing Income (Output VAT)</div>
-<div class="fg" style="margin-bottom:12px">
-<label class="fl">Total Gross Billing (with 12% VAT) *</label>
-<input class="fi" id="gross-billing" type="number" step="0.01" placeholder="0.00" oninput="computeBIRLiability()">
-</div>
-<div class="report-row">
-<div class="report-label">Vatable Sales</div>
-<div class="report-value" id="vatable-sales">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Output VAT (12% from billing)</div>
-<div class="report-value" id="output-vat">₱0.00</div>
-</div>
-</div>
-
-<!-- DIESEL EXPENSES -->
-<div class="report-section">
-<div class="report-section-title">⛽ Diesel Expenses (Input VAT)</div>
-<div class="report-row">
-<div class="report-label">Total Gross Amount</div>
-<div class="report-value" id="diesel-gross">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Vatable Purchases</div>
-<div class="report-value" id="diesel-vatable">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Input VAT (deductible from BIR)</div>
-<div class="report-value" id="diesel-vat" style="color:#16a34a;font-weight:700">₱0.00</div>
-</div>
-</div>
-
-<!-- PARTS & REPAIRS -->
-<div class="report-section">
-<div class="report-section-title">🔧 Parts & Repairs (Input VAT)</div>
-<div class="report-row">
-<div class="report-label">Total Gross Amount</div>
-<div class="report-value" id="parts-gross">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Vatable Purchases</div>
-<div class="report-value" id="parts-vatable">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Input VAT (deductible from BIR)</div>
-<div class="report-value" id="parts-vat" style="color:#16a34a;font-weight:700">₱0.00</div>
-</div>
-</div>
-
-<!-- PARKING & TOLLS -->
-<div class="report-section">
-<div class="report-section-title">🅿️ Parking & Tolls (Input VAT)</div>
-<div class="report-row">
-<div class="report-label">Total Gross Amount</div>
-<div class="report-value" id="parking-gross">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Vatable Purchases</div>
-<div class="report-value" id="parking-vatable">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Input VAT (deductible from BIR)</div>
-<div class="report-value" id="parking-vat" style="color:#16a34a;font-weight:700">₱0.00</div>
-</div>
-</div>
-
-<!-- GRAND SUMMARY -->
-<div class="report-section">
-<div class="report-section-title">📊 Grand Summary</div>
-<div class="report-total" style="background:var(--bg);box-shadow:var(--neu-out);border-left:4px solid #2563eb">
-<div class="report-total-label">Total Vatable Purchases</div>
-<div class="report-total-value" style="color:#2563eb" id="grand-vatable">₱0.00</div>
-</div>
-<div class="report-total" style="background:var(--bg);box-shadow:var(--neu-out);border-left:4px solid #16a34a;margin-top:12px">
-<div class="report-total-label">Total Input VAT (Savings)</div>
-<div class="report-total-value" style="color:#16a34a" id="grand-input-vat">₱0.00</div>
-</div>
-<div class="report-total" style="background:var(--bg);box-shadow:var(--neu-out);border-left:4px solid var(--red);margin-top:12px">
-<div class="report-total-label">Total Gross Expenses</div>
-<div class="report-total-value" id="grand-total">₱0.00</div>
-</div>
-</div>
-
-<!-- BIR LIABILITY -->
-<div class="report-section" style="border-left:4px solid #ef4444">
-<div class="report-section-title">🏛️ BIR VAT Liability</div>
-<div class="report-row">
-<div class="report-label">Output VAT (from billing)</div>
-<div class="report-value" style="color:#ef4444" id="bir-output">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Less: Input VAT (from purchases)</div>
-<div class="report-value" style="color:#16a34a" id="bir-input">-₱0.00</div>
-</div>
-<div class="report-total" style="background:#fef2f2;border-left:4px solid #ef4444">
-<div class="report-total-label">VAT Payable to BIR</div>
-<div class="report-total-value" style="color:#ef4444" id="vat-payable">₱0.00</div>
-</div>
-</div>
-
-<!-- SAVINGS BREAKDOWN -->
-<div class="report-section" style="border-left:4px solid #16a34a">
-<div class="report-section-title">💚 Your VAT Savings</div>
-<div class="info-text" style="margin-bottom:12px">
-Without Input VAT tracking, you would pay the full Output VAT. 
-But because you tracked expenses with Input VAT, your BIR liability is reduced:
-</div>
-<div class="report-row">
-<div class="report-label">Original VAT Liability (without Input VAT)</div>
-<div class="report-value" id="original-liability">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Actual VAT Payable (with Input VAT)</div>
-<div class="report-value" id="actual-payable">₱0.00</div>
-</div>
-<div class="report-total" style="background:#f0fdf4;border-left:4px solid #16a34a">
-<div class="report-total-label">Total Savings this Quarter</div>
-<div class="report-total-value" style="color:#16a34a" id="total-savings">₱0.00</div>
-</div>
-</div>
-
-</div>
-</div>
-
-<!-- SAVING OVERLAY -->
-<div class="saving-overlay" id="saving-overlay">
-<div class="saving-box">
-<div class="saving-spinner"></div>
-<div class="saving-text" id="saving-text">Saving...</div>
-</div>
-</div>
 <div class="toast" id="toast"></div>
 
-<script>
-// ═══ CONFIG ═══════════════════════════════════════════
-const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-let token = '';
-let currentUser = '';
-let allExpenses = [];
-let currentQuarter = '';
-let currentMonth = new Date();
-let editingExpense = null;
-let currentExpenseType = 'diesel';
-let firstLoad = true;
-let selectedDay = null;
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-// ═══ INIT ═════════════════════════════════════════════
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const TAB_TRIPS = 'Trips';
+const TAB_EXPENSES_REAL = 'Expenses_Master';  // ✅ Real expenses (Admin)
+const TAB_ATTENDANCE = 'Attendance';
+const TAB_EMPLOYEES = 'Employees';
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let token = '';
+let allTrips = [];
+let realExpenses = [];        // ✅ From Expenses.html (Admin)
+let inputVATData = [];         // ✅ From Expenses-Emp.html (Employees)
+let allAttendance = [];
+let employeeRoles = {};
+let currentPeriod = 'month';
+let currentView = 'overview';
+
+// Chart instances
+let profitTrendChart = null;
+
+// ═══════════════════════════════════════
+// RATES
+// ═══════════════════════════════════════
+const DRIVER_DAILY_RATE = 500;
+const HELPER_DAILY_RATE = 350;
+const TWO_MAN_BONUS = 280;
+const MEAL_ALLOWANCE = 210;
+const DOCUMENTATION_DAILY_RATE = 40000 / 365;
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
 (function init() {
-const dark = localStorage.getItem('pedroex-theme') === 'dark';
-document.body.classList.toggle('dark', dark);
-token = localStorage.getItem('pedroex-token') || '';
-const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-if (!token || Date.now() >= expiry) {
-location.href = 'index.html';
-return;
-}
-currentUser = localStorage.getItem('pedroex-name') || 'Unknown';
-document.getElementById('f-date').valueAsDate = new Date();
-updateQuarter();
-detectCurrentQuarter();
-buildQuarterSelector();
-updateFormLabels();
-loadExpenses();
+  const dark = localStorage.getItem('pedroex-theme') === 'dark';
+  document.body.classList.toggle('dark', dark);
+
+  token = localStorage.getItem('pedroex-token') || '';
+  const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  if (!token || Date.now() >= expiry) {
+    location.href = 'index.html';
+    return;
+  }
+
+  loadAll();
+
+  // Pull to refresh
+  initPullToRefresh(
+    document.querySelector('.page-wrap'),
+    function(done) {
+      loadAll();
+      setTimeout(done, 1500);
+    }
+  );
 })();
 
-function selectExpenseType(event, type) {
-currentExpenseType = type;
-document.querySelectorAll('.expense-type-btn').forEach(btn => btn.classList.remove('active'));
-event.target.classList.add('active');
-updateFormLabels();
-detectCurrentQuarter();
-buildQuarterSelector();
-loadExpenses();
-}
-
-function updateFormLabels() {
-const labels = {
-diesel: {
-title: '⛽ Diesel Purchase Entry',
-text: 'Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.',
-payee: 'Name of Payee (Gas Station)',
-button: 'Submit Diesel Expense',
-showVAT: true
-},
-parts: {
-title: '🔧 Parts & Repairs Entry',
-text: 'Submit your parts and repair expenses here. The system will automatically compute VAT.',
-payee: 'Name of Supplier/Shop',
-button: 'Submit Parts & Repairs',
-showVAT: true
-},
-parking: {
-title: '🅿️ Parking Fees & Tolls Entry',
-text: 'Submit your parking and toll expenses here. The system will automatically compute VAT.',
-payee: 'Name of Location/Toll Gate',
-button: 'Submit Parking & Tolls',
-showVAT: true
-}
-};
-const config = labels[currentExpenseType];
-document.getElementById('form-info-title').textContent = config.title;
-document.getElementById('form-info-text').textContent = config.text;
-document.getElementById('payee-label').textContent = config.payee;
-document.getElementById('submit-btn').textContent = config.button;
-document.getElementById('vat-computed').style.display = config.showVAT ? 'grid' : 'none';
-}
-
-function getSheetSuffix() {
-const suffixes = {
-diesel: '-Diesel',
-parts: '-Parts',
-parking: '-Parking'
-};
-return suffixes[currentExpenseType];
-}
-
-// ═══ QUARTER MANAGEMENT ═══════════════════════════════
-function detectCurrentQuarter() {
-const now = new Date();
-const month = now.getMonth() + 1;
-const year = now.getFullYear();
-let baseQuarter = '';
-if (month >= 1 && month <= 3) {
-baseQuarter = `Purchases (Jan-Mar ${year})`;
-} else if (month >= 4 && month <= 6) {
-baseQuarter = `Purchases (Apr-Jun ${year})`;
-} else if (month >= 7 && month <= 9) {
-baseQuarter = `Purchases (Jul-Sep ${year})`;
-} else {
-baseQuarter = `Purchases (Oct-Dec ${year})`;
-}
-currentQuarter = baseQuarter + getSheetSuffix();
-}
-
-function buildQuarterSelector() {
-const now = new Date();
-const year = now.getFullYear();
-const quarters = [
-{ label: 'Q1', base: `Purchases (Jan-Mar ${year})` },
-{ label: 'Q2', base: `Purchases (Apr-Jun ${year})` },
-{ label: 'Q3', base: `Purchases (Jul-Sep ${year})` },
-{ label: 'Q4', base: `Purchases (Oct-Dec ${year})` }
-];
-document.getElementById('quarter-selector').innerHTML = quarters.map(q => {
-const fullName = q.base + getSheetSuffix();
-return `<button class="quarter-btn ${fullName === currentQuarter ? 'active' : ''}" onclick="selectQuarter('${fullName}')">${q.label} ${year}</button>`;
-}).join('');
-}
-
-function selectQuarter(quarterName) {
-currentQuarter = quarterName;
-buildQuarterSelector();
-loadExpenses();
-}
-
-function updateQuarter() {
-const dateStr = document.getElementById('f-date').value;
-if (!dateStr) {
-document.getElementById('f-quarter').value = '';
-return;
-}
-const date = new Date(dateStr);
-const month = date.getMonth() + 1;
-const year = date.getFullYear();
-let baseQuarter = '';
-if (month >= 1 && month <= 3) {
-baseQuarter = `Purchases (Jan-Mar ${year})`;
-} else if (month >= 4 && month <= 6) {
-baseQuarter = `Purchases (Apr-Jun ${year})`;
-} else if (month >= 7 && month <= 9) {
-baseQuarter = `Purchases (Jul-Sep ${year})`;
-} else {
-baseQuarter = `Purchases (Oct-Dec ${year})`;
-}
-document.getElementById('f-quarter').value = baseQuarter + getSheetSuffix();
-}
-
-function switchView(event, view) {
-document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-event.target.classList.add('active');
-document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
-document.getElementById(view + '-view').classList.add('active');
-const showFabs = view === 'calendar';
-document.getElementById('fab').style.display = showFabs ? 'flex' : 'none';
-document.getElementById('fab-report').style.display = showFabs ? 'flex' : 'none';
-}
-
-// ═══ VAT COMPUTATION ══════════════════════════════════
-function computeVAT() {
-const amount = parseFloat(document.getElementById('f-amount').value) || 0;
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-document.getElementById('vatable').textContent = '₱' + vatable.toFixed(2);
-document.getElementById('input-vat').textContent = '₱' + inputVat.toFixed(2);
-}
-
-function computeEditVAT() {
-const amount = parseFloat(document.getElementById('e-amount').value) || 0;
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-document.getElementById('e-vatable').textContent = '₱' + vatable.toFixed(2);
-document.getElementById('e-input-vat').textContent = '₱' + inputVat.toFixed(2);
-}
-
-function loadExpenses() {
-showSaving('Loading expenses...');
-
-apiGet(currentQuarter + '!A8:O1000').then(res => {
-const rows = res.values || [];
-allExpenses = rows.map((r, i) => ({
-rowIndex: i + 8,
-date: r[0] || '',
-payee: r[1] || '',
-address: r[2] || '',
-tin: r[3] || '',
-orNum: r[5] || '',
-amount: parseFloat(r[8]) || 0,
-vatable: parseFloat(r[10]) || 0,
-inputVat: parseFloat(r[11]) || 0,
-user: r[13] || '',
-type: r[14] || currentExpenseType
-})).filter(e => e.date && e.payee && e.type === currentExpenseType);
-hideSaving();
-renderCalendar();
-if (firstLoad) {
-firstLoad = false;
-switchView({ target: document.querySelector('.view-btn.active') }, 'calendar');
-}
-}).catch(err => {
-hideSaving();
-if (err.message.includes('Unable to parse range')) {
-allExpenses = [];
-renderCalendar();
-} else {
-showToast('❌ Load failed: ' + err.message);
-}
-});
-}
-
-function renderCalendar() {
-const year = currentMonth.getFullYear();
-const month = currentMonth.getMonth();
-document.getElementById('cal-month').textContent =
-currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-const firstDay = new Date(year, month, 1);
-const lastDay = new Date(year, month + 1, 0);
-const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-const daysInMonth = lastDay.getDate();
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const dayMap = {};
-allExpenses.forEach(r => {
-if (!r.date) return;
-const [y, m, d] = r.date.split('-').map(Number);
-if (y !== year || m-1 !== month) return;
-if (!dayMap[d]) dayMap[d] = [];
-dayMap[d].push({ amount: r.amount, type: r.type || currentExpenseType });
-});
-
-let html = '';
-const prevMonthDays = new Date(year, month, 0).getDate();
-for (let i = startDay - 1; i >= 0; i--) {
-html += `<div class="cal-day other-month"><div class="cal-day-num">${prevMonthDays - i}</div></div>`;
-}
-
-for (let day = 1; day <= daysInMonth; day++) {
-const date = new Date(year, month, day);
-date.setHours(0, 0, 0, 0);
-const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-const isToday = date.getTime() === today.getTime();
-const entries = dayMap[day] || [];
-const cls = 'cal-day' + (isToday ? ' today' : '') + (entries.length ? ' has-att' : '') + (dateStr === selectedDay ? ' selected' : '');
-
-let pillsHtml = '';
-if (entries.length) {
-const shown = entries.slice(0, 3);
-const typeIcons = { diesel: '⛽', parts: '🔧', parking: '🅿️' };
-pillsHtml = '<div class="cal-names">'
-+ shown.map(e => {
-const typeClass = e.type || currentExpenseType;
-const icon = typeIcons[typeClass];
-return `<div class="cal-name-pill ${typeClass}">${icon}${e.amount.toFixed(0)}</div>`;
-}).join('')
-+ (entries.length > 3 ? `<div class="cal-name-pill" style="background:var(--text3)">+${entries.length-3}</div>` : '')
-+ '</div>';
-}
-
-html += `<div class="${cls}" onclick="selectDay('${dateStr}')">
-<div class="cal-day-num">${day}</div>
-${pillsHtml}
-</div>`;
-}
-
-const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
-const nextMonthDays = totalCells - (startDay + daysInMonth);
-for (let i = 1; i <= nextMonthDays; i++) {
-html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
-}
-
-document.getElementById('cal-days').innerHTML = html;
-}
-
-function changeMonth(delta) {
-currentMonth.setMonth(currentMonth.getMonth() + delta);
-renderCalendar();
-}
-
-function goToToday() {
-currentMonth = new Date();
-renderCalendar();
-}
-
-function selectDay(dateStr) {
-selectedDay = dateStr;
-showDayDetail(dateStr);
-renderCalendar();
-}
-
-function showDayDetail(dateStr) {
-const dayExpenses = allExpenses.filter(e => e.date === dateStr);
-
-if (dayExpenses.length === 0) {
-showToast('No expenses on this date');
-return;
-}
-const [y, m, d] = dateStr.split('-').map(Number);
-const date = new Date(y, m-1, d);
-const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-document.getElementById('day-detail-title').textContent = dateText;
-
-const typeLabels = { diesel: 'Diesel', parts: 'Parts & Repairs', parking: 'Parking & Tolls' };
-const html = dayExpenses.map(e => {
-const isMine = e.user === currentUser;
-const typeClass = e.type || currentExpenseType;
-const typeLabel = typeLabels[typeClass];
-return `<div class="expense-item ${typeClass} ${isMine ? '' : 'not-mine'}" ${isMine ? `onclick="openEditDrawer(${e.rowIndex})"` : ''}>
-<div class="ei-header">
-<div class="ei-payee">${e.payee}</div>
-<div class="ei-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-</div>
-<div class="ei-details">
-${e.address ? `📍 ${e.address}<br>` : ''}
-${e.tin ? `🏢 TIN: ${e.tin}<br>` : ''}
-${e.orNum ? `🧾 OR: ${e.orNum}` : ''}
-</div>
-<div class="ei-type">${typeLabel}</div>
-<div class="ei-user">by ${e.user}</div>
-</div>`;
-}).join('');
-document.getElementById('day-detail-content').innerHTML = html;
-document.getElementById('day-detail-overlay').classList.add('open');
-}
-
-function closeDayDetail() {
-document.getElementById('day-detail-overlay').classList.remove('open');
-}
-
-// ═══ SUBMIT EXPENSE ═══════════════════════════════════
-function submitExpense() {
-const date = document.getElementById('f-date').value.trim();
-const payee = document.getElementById('f-payee').value.trim();
-const address = document.getElementById('f-address').value.trim();
-const tin = document.getElementById('f-tin').value.trim();
-const orNum = document.getElementById('f-or').value.trim();
-const amount = parseFloat(document.getElementById('f-amount').value) || 0;
-
-if (!date || !payee || amount <= 0) {
-showToast('❌ Please fill required fields: Date, Payee, Amount');
-return;
-}
-
-const quarter = document.getElementById('f-quarter').value;
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-
-showSaving('Checking quarterly sheet...');
-checkOrCreateSheet(quarter).then(() => {
-showSaving('Saving expense...');
-const row = [
-date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, currentExpenseType
-];
-return apiAppend(quarter + '!A8:O8', [row]);
-})
-.then(() => {
-hideSaving();
-showToast('✅ Expense submitted!');
-document.getElementById('f-payee').value = '';
-document.getElementById('f-address').value = '';
-document.getElementById('f-tin').value = '';
-document.getElementById('f-or').value = '';
-document.getElementById('f-amount').value = '';
-computeVAT();
-setTimeout(() => {
-loadExpenses();
-const calBtn = document.querySelector('.view-btn[onclick*="calendar"]');
-switchView({ target: calBtn }, 'calendar');
-}, 1000);
-})
-.catch(err => {
-hideSaving();
-showToast('❌ Submit failed: ' + err.message);
-console.error(err);
-});
-}
-
-// ═══ EDIT EXPENSE ═════════════════════════════════════
-function openEditDrawer(rowIndex) {
-editingExpense = allExpenses.find(e => e.rowIndex === rowIndex);
-if (!editingExpense) return;
-if (editingExpense.user !== currentUser) {
-showToast('❌ You can only edit your own expenses');
-return;
-}
-document.getElementById('e-date').value = editingExpense.date;
-document.getElementById('e-payee').value = editingExpense.payee;
-document.getElementById('e-address').value = editingExpense.address;
-document.getElementById('e-tin').value = editingExpense.tin;
-document.getElementById('e-or').value = editingExpense.orNum;
-document.getElementById('e-amount').value = editingExpense.amount;
-computeEditVAT();
-closeDayDetail();
-document.getElementById('edit-drawer').classList.add('open');
-}
-
-function closeEditDrawer() {
-document.getElementById('edit-drawer').classList.remove('open');
-editingExpense = null;
-}
-
-function updateExpense() {
-if (!editingExpense) return;
-const date = document.getElementById('e-date').value.trim();
-const payee = document.getElementById('e-payee').value.trim();
-const address = document.getElementById('e-address').value.trim();
-const tin = document.getElementById('e-tin').value.trim();
-const orNum = document.getElementById('e-or').value.trim();
-const amount = parseFloat(document.getElementById('e-amount').value) || 0;
-
-if (!date || !payee || amount <= 0) {
-showToast('❌ Please fill required fields');
-return;
-}
-
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-
-showSaving('Updating...');
-const row = [
-date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, editingExpense.type
-];
-apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex, [row])
-.then(() => {
-hideSaving();
-showToast('✅ Expense updated!');
-closeEditDrawer();
-loadExpenses();
-})
-.catch(err => {
-hideSaving();
-showToast('❌ Update failed: ' + err.message);
-});
-}
-
-function deleteExpense() {
-if (!editingExpense) return;
-if (!confirm('Delete this expense? This cannot be undone.')) return;
-showSaving('Deleting...');
-const emptyRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex, [emptyRow])
-.then(() => {
-hideSaving();
-showToast('✅ Expense deleted');
-closeEditDrawer();
-loadExpenses();
-})
-.catch(err => {
-hideSaving();
-showToast('❌ Delete failed: ' + err.message);
-});
-}
-
-// ═══ REPORT MODAL ═════════════════════════════════════
-function openReport() {
-showSaving('Generating report...');
-const year = new Date().getFullYear();
-const quarters = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Oct-Dec'];
-const types = ['diesel', 'parts', 'parking'];
-
-let allPromises = [];
-quarters.forEach(q => {
-types.forEach(type => {
-const suffix = { diesel: '-Diesel', parts: '-Parts', parking: '-Parking' }[type];
-const sheetName = `Purchases (${q} ${year})${suffix}`;
-allPromises.push(
-apiGet(sheetName + '!A8:O1000')
-.then(res => ({ type, data: res.values || [] }))
-.catch(() => ({ type, data: [] }))
-);
-});
-});
-
-Promise.all(allPromises).then(results => {
-const summary = { 
-diesel: { gross: 0, vatable: 0, vat: 0 }, 
-parts: { gross: 0, vatable: 0, vat: 0 }, 
-parking: { gross: 0, vatable: 0, vat: 0 } 
-};
-results.forEach(r => {
-r.data.forEach(row => {
-if (row[0] && row[1]) {
-summary[r.type].gross += parseFloat(row[8]) || 0;
-summary[r.type].vatable += parseFloat(row[10]) || 0;
-summary[r.type].vat += parseFloat(row[11]) || 0;
-}
-});
-});
-
-document.getElementById('report-quarter').textContent = 'Full Year ' + year;
-
-// DIESEL
-document.getElementById('diesel-gross').textContent = '₱' + summary.diesel.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('diesel-vatable').textContent = '₱' + summary.diesel.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('diesel-vat').textContent = '₱' + summary.diesel.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-// PARTS
-document.getElementById('parts-gross').textContent = '₱' + summary.parts.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parts-vatable').textContent = '₱' + summary.parts.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parts-vat').textContent = '₱' + summary.parts.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-// PARKING
-document.getElementById('parking-gross').textContent = '₱' + summary.parking.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parking-vatable').textContent = '₱' + summary.parking.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parking-vat').textContent = '₱' + summary.parking.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-// GRAND TOTALS
-const grandVatable = summary.diesel.vatable + summary.parts.vatable + summary.parking.vatable;
-const grandInputVat = summary.diesel.vat + summary.parts.vat + summary.parking.vat;
-const grandTotal = summary.diesel.gross + summary.parts.gross + summary.parking.gross;
-
-document.getElementById('grand-vatable').textContent = '₱' + grandVatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('grand-input-vat').textContent = '₱' + grandInputVat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('grand-total').textContent = '₱' + grandTotal.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-// BIR LIABILITY (initial)
-document.getElementById('bir-input').textContent = '-₱' + grandInputVat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-hideSaving();
-document.getElementById('report-modal').classList.add('open');
-});
-}
-
-// NEW FUNCTION: Compute BIR Liability
-function computeBIRLiability() {
-const grossBilling = parseFloat(document.getElementById('gross-billing').value) || 0;
-const vatableSales = grossBilling / 1.12;
-const outputVat = grossBilling - vatableSales;
-
-// Get Input VAT from displayed values
-const inputVatText = document.getElementById('grand-input-vat').textContent.replace(/[₱,]/g, '');
-const inputVat = parseFloat(inputVatText) || 0;
-
-const vatPayable = outputVat - inputVat;
-const savings = inputVat;
-
-// Update Output VAT section
-document.getElementById('vatable-sales').textContent = '₱' + vatableSales.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('output-vat').textContent = '₱' + outputVat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-// Update BIR Liability
-document.getElementById('bir-output').textContent = '₱' + outputVat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('vat-payable').textContent = '₱' + Math.max(0, vatPayable).toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-// Update Savings
-document.getElementById('original-liability').textContent = '₱' + outputVat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('actual-payable').textContent = '₱' + Math.max(0, vatPayable).toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('total-savings').textContent = '₱' + savings.toLocaleString('en-PH', {minimumFractionDigits: 2});
-}
-
-function closeReport() {
-document.getElementById('report-modal').classList.remove('open');
-}
-
-// ═══ SHEET MANAGEMENT ═════════════════════════════════
-function checkOrCreateSheet(quarterName) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`, {
-headers: { Authorization: 'Bearer ' + token }
-})
-.then(r => {
-if (!r.ok) throw new Error('Cannot access spreadsheet');
-return r.json();
-})
-.then(data => {
-const sheets = data.sheets || [];
-const exists = sheets.some(s => s.properties.title === quarterName);
-if (exists) return Promise.resolve();
-showSaving('Creating new quarterly sheet...');
-return createQuarterlySheet(quarterName);
-});
-}
-
-function createQuarterlySheet(quarterName) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
-method: 'POST',
-headers: {
-Authorization: 'Bearer ' + token,
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({
-requests: [{
-addSheet: {
-properties: { title: quarterName }
-}
-}]
-})
-})
-.then(r => {
-if (!r.ok) throw new Error('Cannot create sheet');
-return r.json();
-})
-.then(() => {
-const headers = [
-['PEDROEX Transport Services'],
-['Summary of Purchases', quarterName],
-[], [], [], [],
-['DATE', 'NAME OF PAYEE', 'ADDRESS', 'TIN NUMBER', 'AR/DR', 'OR', 'SI', 'ZERO RATED SALE', 'AMOUNT', 'NON VATABLE', 'VATABLE PURCHASES', 'INPUT VAT', 'GROSS PURCHASES', 'USER', 'TYPE']
-];
-return apiUpdate(quarterName + '!A1:O7', headers);
-});
-}
-
-// ═══ API HELPERS ══════════════════════════════════════
+// ═══════════════════════════════════════
+// API HELPERS
+// ═══════════════════════════════════════
 function apiGet(range) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
-headers: { Authorization: 'Bearer ' + token }
-}).then(r => {
-if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
-if (!r.ok) throw new Error('API Error');
-return r.json();
-});
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
+    headers: { Authorization: 'Bearer ' + token }
+  }).then(r => {
+    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+    if (!r.ok) throw new Error('API Error');
+    return r.json();
+  });
 }
 
-function apiUpdate(range, values) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
-method: 'PUT',
-headers: {
-Authorization: 'Bearer ' + token,
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({ values })
-}).then(r => {
-if (!r.ok) throw new Error('Update failed');
-return r.json();
-});
+// ═══════════════════════════════════════
+// LOAD ALL DATA
+// ═══════════════════════════════════════
+function loadAll() {
+  document.getElementById('wrap-loading').style.display = 'flex';
+  document.getElementById('wrap-content').style.display = 'none';
+
+  Promise.all([
+    // 1. Trips (Revenue)
+    apiGet(TAB_TRIPS + '!A2:I'),
+    
+    // 2. Real Expenses (Expenses.html — Admin)
+    apiGet(TAB_EXPENSES_REAL + '!A2:M'),
+    
+    // 3. Attendance (for manpower calculation)
+    apiGet(TAB_ATTENDANCE + '!A2:J'),
+    
+    // 4. Employees (for role mapping)
+    apiGet(TAB_EMPLOYEES + '!A2:E'),
+    
+    // 5. Input VAT from Quarterly Sheets (Expenses-Emp.html)
+    loadInputVAT()
+    
+  ]).then(res => {
+    // Parse Trips
+    const tripRows = res[0].values || [];
+    allTrips = tripRows.map((r, i) => ({
+      rowIndex: i + 2,
+      id: r[0] || '',
+      deliveryDate: convertExcelDate(r[1]),
+      truck: r[2] || '',
+      shipmentDate: r[3] ? convertExcelDate(r[3]) : '',
+      type: r[4] || '',
+      shipmentNumber: r[5] || '',
+      billed: r[6] || '',
+      route: r[7] || '',
+      rate: parseFloat(r[8]) || 0
+    })).filter(t => t.truck && t.deliveryDate && t.rate > 0);
+
+    // Parse Real Expenses (Expenses_Master)
+    const expenseRows = res[1].values || [];
+    realExpenses = expenseRows.map((r, i) => ({
+      rowIndex: i + 2,
+      id: r[0] || '',
+      date: r[1] || '',
+      truck: r[2] || '',
+      category: r[3] || '',
+      subcategory: r[4] || '',
+      amount: parseFloat(r[5]) || 0
+    })).filter(e => e.truck && e.date && e.amount > 0);
+
+    // Parse Attendance
+    const attendanceRows = res[2].values || [];
+    allAttendance = attendanceRows.map(r => ({
+      date: r[1] || '',
+      employee: r[2] || '',
+      twoManTeam: (r[3] || '').toLowerCase() === 'yes',
+      mealAllowance: ['yes', 'meals only'].includes((r[5] || '').toLowerCase()),
+      truck: r[6] || ''
+    })).filter(a => a.date && a.employee && a.truck);
+
+    // Parse Employee Roles
+    const employeeRows = res[3].values || [];
+    employeeRoles = {};
+    employeeRows.forEach(r => {
+      const firstName = (r[1] || '').trim();
+      const lastName = (r[2] || '').trim();
+      const position = (r[4] || '').toLowerCase().trim();
+      
+      if (firstName && position) {
+        const fullName = `${firstName} ${lastName}`;
+        employeeRoles[fullName] = position;
+        employeeRoles[firstName] = position;
+      }
+    });
+
+    // Input VAT data already loaded in res[4]
+    inputVATData = res[4];
+
+    console.log('✅ Data loaded:', {
+      trips: allTrips.length,
+      realExpenses: realExpenses.length,
+      attendance: allAttendance.length,
+      employees: Object.keys(employeeRoles).length,
+      inputVAT: inputVATData.totalInputVAT
+    });
+
+    document.getElementById('wrap-loading').style.display = 'none';
+    document.getElementById('wrap-content').style.display = 'block';
+
+    renderAll();
+
+  }).catch(err => {
+    document.getElementById('wrap-loading').style.display = 'none';
+    showToast('❌ Failed to load data');
+    console.error('Load error:', err);
+  });
 }
 
-function apiAppend(range, values) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
-method: 'POST',
-headers: {
-Authorization: 'Bearer ' + token,
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({ values })
-}).then(r => {
-if (!r.ok) throw new Error('Append failed');
-return r.json();
-});
+// ═══════════════════════════════════════
+// LOAD INPUT VAT FROM QUARTERLY SHEETS
+// ═══════════════════════════════════════
+function loadInputVAT() {
+  const year = new Date().getFullYear();
+  const quarters = [
+    { label: 'Q1', months: 'Jan-Mar' },
+    { label: 'Q2', months: 'Apr-Jun' },
+    { label: 'Q3', months: 'Jul-Sep' },
+    { label: 'Q4', months: 'Oct-Dec' }
+  ];
+  const types = ['Diesel', 'Parts', 'Parking'];
+
+  let allPromises = [];
+  
+  quarters.forEach(q => {
+    types.forEach(type => {
+      const sheetName = `Purchases (${q.months} ${year})-${type}`;
+      allPromises.push(
+        apiGet(sheetName + '!A8:O1000')
+          .then(res => {
+            const rows = res.values || [];
+            const inputVAT = rows
+              .filter(r => r[0] && r[1])  // Has date and payee
+              .map(r => parseFloat(r[11]) || 0)  // Column L = Input VAT
+              .reduce((sum, v) => sum + v, 0);
+            
+            return { type, quarter: q.label, inputVAT };
+          })
+          .catch(() => ({ type, quarter: q.label, inputVAT: 0 }))
+      );
+    });
+  });
+
+  return Promise.all(allPromises).then(results => {
+    const summary = {
+      diesel: 0,
+      parts: 0,
+      parking: 0,
+      totalInputVAT: 0
+    };
+
+    results.forEach(r => {
+      const key = r.type.toLowerCase();
+      summary[key] += r.inputVAT;
+      summary.totalInputVAT += r.inputVAT;
+    });
+
+    return summary;
+  });
 }
 
-// ═══ UI HELPERS ═══════════════════════════════════════
-function showSaving(msg) {
-document.getElementById('saving-text').textContent = msg || 'Saving...';
-document.getElementById('saving-overlay').classList.add('show');
+// ═══════════════════════════════════════
+// EXCEL DATE CONVERTER
+// ═══════════════════════════════════════
+function convertExcelDate(value) {
+  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return value;
+  }
+  
+  const num = parseFloat(value);
+  if (!isNaN(num) && num > 1000) {
+    const excelEpoch = new Date(1899, 11, 30);
+    const date = new Date(excelEpoch.getTime() + num * 86400000);
+    
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    
+    return `${year}-${month}-${day}`;
+  }
+  
+  if (typeof value === 'string') {
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) {
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+  }
+  
+  return '';
 }
 
-function hideSaving() {
-document.getElementById('saving-overlay').classList.remove('show');
+function pad(n) {
+  return n < 10 ? '0' + n : String(n);
+}
+
+// ═══════════════════════════════════════
+// MANPOWER COST CALCULATION
+// ═══════════════════════════════════════
+function calculateManpowerCost(attendance) {
+  const role = employeeRoles[attendance.employee] || 'helper';
+  let cost = (role === 'driver') ? DRIVER_DAILY_RATE : HELPER_DAILY_RATE;
+  
+  if (attendance.twoManTeam) cost += TWO_MAN_BONUS;
+  if (attendance.mealAllowance) cost += MEAL_ALLOWANCE;
+  
+  return cost;
+}
+
+function getManpowerExpensesForDate(dateStr) {
+  const dayAttendance = allAttendance.filter(a => a.date === dateStr);
+  return dayAttendance.map(a => ({
+    truck: a.truck,
+    amount: calculateManpowerCost(a),
+    category: 'Manpower'
+  }));
+}
+
+function getDocumentationExpensesForDate(dateStr) {
+  const dayAttendance = allAttendance.filter(a => a.date === dateStr);
+  const trucks = [...new Set(dayAttendance.map(a => a.truck))].filter(t => t);
+  
+  return trucks.map(truck => ({
+    truck: truck,
+    amount: DOCUMENTATION_DAILY_RATE,
+    category: 'Documentation'
+  }));
+}
+
+// ═══════════════════════════════════════
+// PERIOD FILTERING
+// ═══════════════════════════════════════
+function changePeriod(period) {
+  currentPeriod = period;
+  
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  renderAll();
+}
+
+function getFilteredTrips() {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  
+  switch(currentPeriod) {
+    case 'week':
+      const weekAgo = new Date(now);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const weekAgoStr = weekAgo.toISOString().split('T')[0];
+      return allTrips.filter(t => t.deliveryDate >= weekAgoStr && t.deliveryDate <= today);
+    
+    case 'month':
+      const thisMonth = today.slice(0, 7);
+      return allTrips.filter(t => t.deliveryDate.startsWith(thisMonth));
+    
+    case 'year':
+      const thisYear = today.slice(0, 4);
+      return allTrips.filter(t => t.deliveryDate.startsWith(thisYear));
+    
+    case 'all':
+    default:
+      return allTrips;
+  }
+}
+
+function getFilteredRealExpenses() {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  
+  switch(currentPeriod) {
+    case 'week':
+      const weekAgo = new Date(now);
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      const weekAgoStr = weekAgo.toISOString().split('T')[0];
+      return realExpenses.filter(e => e.date >= weekAgoStr && e.date <= today);
+    
+    case 'month':
+      const thisMonth = today.slice(0, 7);
+      return realExpenses.filter(e => e.date.startsWith(thisMonth));
+    
+    case 'year':
+      const thisYear = today.slice(0, 4);
+      return realExpenses.filter(e => e.date.startsWith(thisYear));
+    
+    case 'all':
+    default:
+      return realExpenses;
+  }
+}
+
+// ═══════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════
+function switchView(view) {
+  currentView = view;
+  
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  document.querySelectorAll('.view-content').forEach(v => {
+    v.style.display = 'none';
+  });
+  document.getElementById('view-' + view).style.display = 'block';
+  
+  // Render specific view
+  if (view === 'overview') renderOverviewView();
+  else if (view === 'trucks') renderTrucksView();
+  else if (view === 'routes') renderRoutesView();
+  else if (view === 'insights') renderInsightsView();
+}
+
+// ═══════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════
+function renderAll() {
+  updateHeroCard();
+  renderOverviewView();
+}
+
+// ═══════════════════════════════════════
+// HERO CARD WITH VAT BREAKDOWN
+// ═══════════════════════════════════════
+function updateHeroCard() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredRealExpenses();
+  
+  // ✅ Calculate GROSS revenue (with 12% VAT)
+  const baseRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+  const grossRevenue = baseRevenue * 1.12;
+  const outputVAT = grossRevenue * (12/112);  // Extract 12% from gross
+  const netRevenue = grossRevenue - outputVAT;
+  
+  // ✅ Calculate REAL expenses (operational + manpower + documentation)
+  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  
+  // Get unique dates from trips
+  const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+  
+  let manpowerTotal = 0;
+  let documentationTotal = 0;
+  
+  tripDates.forEach(date => {
+    const manpower = getManpowerExpensesForDate(date);
+    const documentation = getDocumentationExpensesForDate(date);
+    
+    manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+  });
+  
+  const totalRealExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+  
+  // ✅ Input VAT (from quarterly purchase sheets)
+  const inputVAT = inputVATData.totalInputVAT || 0;
+  
+  // ✅ BIR Liability
+  const birLiability = outputVAT - inputVAT;
+  
+  // ✅ TRUE NET PROFIT (after VAT)
+  const grossProfit = netRevenue - totalRealExpenses;
+  const trueNetProfit = grossProfit + inputVAT;  // Add back VAT savings
+  
+  const trueMargin = netRevenue > 0 ? (trueNetProfit / netRevenue * 100) : 0;
+  
+  // Update Hero Card
+  document.getElementById('hero-profit').textContent = formatCurrency(trueNetProfit);
+  document.getElementById('hero-margin').textContent = 
+    `True Margin: ${trueMargin.toFixed(1)}% • ${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
+  document.getElementById('hero-gross').textContent = formatCompact(grossRevenue);
+  document.getElementById('hero-output-vat').textContent = formatCompact(outputVAT);
+  document.getElementById('hero-expenses').textContent = formatCompact(totalRealExpenses);
+  document.getElementById('hero-input-vat').textContent = formatCompact(inputVAT);
+  
+  // Update BIR Card
+  document.getElementById('bir-output').textContent = formatCurrency(outputVAT);
+  document.getElementById('bir-input').textContent = formatCurrency(inputVAT);
+  document.getElementById('bir-payable').textContent = formatCurrency(birLiability);
+  document.getElementById('bir-savings').textContent = formatCurrency(inputVAT);
+}
+
+// ═══════════════════════════════════════
+// OVERVIEW VIEW
+// ═══════════════════════════════════════
+function renderOverviewView() {
+  renderRealExpensesBreakdown();
+  renderInputVATBreakdown();
+  renderProfitTrendChart();
+}
+
+function renderRealExpensesBreakdown() {
+  const expenses = getFilteredRealExpenses();
+  const trips = getFilteredTrips();
+  
+  // Group by category
+  const categoryTotals = {
+    'Diesel': 0,
+    'Maintenance': 0,
+    'Documentation': 0,
+    'Miscellaneous': 0,
+    'Manpower': 0
+  };
+  
+  expenses.forEach(e => {
+    if (categoryTotals[e.category] !== undefined) {
+      categoryTotals[e.category] += e.amount;
+    }
+  });
+  
+  // Add auto-generated expenses
+  const dates = [...new Set(trips.map(t => t.deliveryDate))];
+  
+  dates.forEach(date => {
+    const manpower = getManpowerExpensesForDate(date);
+    const documentation = getDocumentationExpensesForDate(date);
+    
+    categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
+    categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
+  });
+  
+  const total = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
+  
+  const container = document.getElementById('real-expenses-breakdown');
+  
+  const icons = {
+    'Diesel': '⛽',
+    'Maintenance': '🔧',
+    'Documentation': '📄',
+    'Miscellaneous': '📦',
+    'Manpower': '👷'
+  };
+  
+  const sources = {
+    'Diesel': 'Expenses_Master',
+    'Maintenance': 'Expenses_Master',
+    'Documentation': 'Auto-generated (₱109.59/day per truck)',
+    'Miscellaneous': 'Expenses_Master',
+    'Manpower': 'Auto-generated from Attendance'
+  };
+  
+  container.innerHTML = Object.entries(categoryTotals)
+    .filter(([cat, amt]) => amt > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([cat, amt]) => {
+      const percent = total > 0 ? (amt / total * 100).toFixed(1) : 0;
+      
+      return `<div class="breakdown-item">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">${icons[cat]}</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label">${cat}</div>
+            <div class="breakdown-meta">Source: ${sources[cat]}</div>
+          </div>
+        </div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount">${formatCompact(amt)}</div>
+          <div class="breakdown-percent">${percent}%</div>
+        </div>
+      </div>`;
+    }).join('') +
+    `<div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--bg2)">
+      <div class="breakdown-item" style="border:none">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">💰</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label" style="font-size:16px">TOTAL REAL EXPENSES</div>
+          </div>
+        </div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount" style="font-size:20px;color:var(--red)">${formatCurrency(total)}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderInputVATBreakdown() {
+  const container = document.getElementById('input-vat-breakdown');
+  
+  const icons = {
+    'diesel': '⛽',
+    'parts': '🔧',
+    'parking': '🅿️'
+  };
+  
+  const labels = {
+    'diesel': 'Diesel Purchases',
+    'parts': 'Parts & Repairs',
+    'parking': 'Parking & Tolls'
+  };
+  
+  const total = inputVATData.totalInputVAT || 0;
+  
+  if (total === 0) {
+    container.innerHTML = '<div class="empty-state"><p>No Input VAT data available for this period</p></div>';
+    return;
+  }
+  
+  container.innerHTML = Object.entries(inputVATData)
+    .filter(([key, value]) => key !== 'totalInputVAT' && value > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([type, amt]) => {
+      const percent = total > 0 ? (amt / total * 100).toFixed(1) : 0;
+      
+      return `<div class="breakdown-item">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">${icons[type]}</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label">${labels[type]}</div>
+            <div class="breakdown-meta">Quarterly Purchase Sheets</div>
+          </div>
+        </div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount">${formatCompact(amt)}</div>
+          <div class="breakdown-percent">${percent}%</div>
+        </div>
+      </div>`;
+    }).join('') +
+    `<div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--bg2)">
+      <div class="breakdown-item" style="border:none">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">📉</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label" style="font-size:16px">TOTAL INPUT VAT</div>
+            <div class="breakdown-meta">Reduces BIR liability</div>
+          </div>
+        </div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount" style="font-size:20px;color:var(--green)">${formatCurrency(total)}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderProfitTrendChart() {
+  const ctx = document.getElementById('profitTrendChart');
+  if (!ctx) return;
+  
+  if (profitTrendChart) profitTrendChart.destroy();
+  
+  // Get last 30 days
+  const last30Days = [];
+  const now = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    last30Days.push(date.toISOString().split('T')[0]);
+  }
+  
+  const dailyData = last30Days.map(dateStr => {
+    const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
+    const dayExpenses = realExpenses.filter(e => e.date === dateStr);
+    
+    const baseRevenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
+    const grossRevenue = baseRevenue * 1.12;
+    const outputVAT = grossRevenue * (12/112);
+    const netRevenue = grossRevenue - outputVAT;
+    
+    const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
+    const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
+    
+    const totalExpenses = operationalExpenses + manpower + documentation;
+    const profit = netRevenue - totalExpenses;
+    
+    return { revenue: netRevenue, expenses: totalExpenses, profit };
+  });
+  
+  profitTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: last30Days.map(d => new Date(d).getDate()),
+      datasets: [
+        {
+          label: 'Net Revenue',
+          data: dailyData.map(d => d.revenue),
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37, 99, 235, 0.1)',
+          tension: 0.4,
+          fill: false
+        },
+        {
+          label: 'Expenses',
+          data: dailyData.map(d => d.expenses),
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          tension: 0.4,
+          fill: false
+        },
+        {
+          label: 'Profit',
+          data: dailyData.map(d => d.profit),
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22, 163, 74, 0.1)',
+          tension: 0.4,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom'
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: (value) => formatCompact(value)
+          }
+        }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+// BY TRUCK VIEW
+// ═══════════════════════════════════════
+function renderTrucksView() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredRealExpenses();
+  
+  // Group by truck
+  const truckData = {};
+  
+  trips.forEach(trip => {
+    if (!truckData[trip.truck]) {
+      truckData[trip.truck] = {
+        revenue: 0,
+        expenses: 0,
+        trips: 0,
+        dates: new Set()
+      };
+    }
+    
+    truckData[trip.truck].revenue += trip.rate * 1.12;  // ✅ Gross revenue with VAT
+    truckData[trip.truck].trips += 1;
+    truckData[trip.truck].dates.add(trip.deliveryDate);
+  });
+  
+  // Add operational expenses
+  expenses.forEach(expense => {
+    if (truckData[expense.truck]) {
+      truckData[expense.truck].expenses += expense.amount;
+    }
+  });
+  
+  // Add manpower and documentation
+  Object.keys(truckData).forEach(truck => {
+    const dates = Array.from(truckData[truck].dates);
+    
+    dates.forEach(date => {
+      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+      
+      manpower.forEach(m => truckData[truck].expenses += m.amount);
+      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    });
+  });
+  
+  // Calculate profit and sort
+  const truckArray = Object.entries(truckData).map(([truck, data]) => {
+    const grossRevenue = data.revenue;
+    const outputVAT = grossRevenue * (12/112);
+    const netRevenue = grossRevenue - outputVAT;
+    
+    const profit = netRevenue - data.expenses;
+    const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
+    
+    return {
+      truck,
+      grossRevenue,
+      netRevenue,
+      expenses: data.expenses,
+      profit,
+      margin,
+      trips: data.trips,
+      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
+    };
+  }).sort((a, b) => b.margin - a.margin);
+  
+  // Render
+  const container = document.getElementById('trucks-list');
+  
+  if (truckArray.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚛</div><p>No trip data for selected period</p></div>';
+    return;
+  }
+  
+  container.innerHTML = truckArray.map(t => {
+    const marginClass = t.margin >= 30 ? 'profitable' : t.margin >= 20 ? 'warning' : 'loss';
+    
+    return `<div class="truck-card ${marginClass}">
+      <div class="truck-header">
+        <div class="truck-name">🚛 ${t.truck}</div>
+        <div class="truck-margin ${marginClass}">${t.margin.toFixed(1)}%</div>
+      </div>
+      <div class="truck-stats">
+        <div class="truck-stat">
+          <div class="truck-stat-label">Gross Revenue</div>
+          <div class="truck-stat-value">${formatCompact(t.grossRevenue)}</div>
+        </div>
+        <div class="truck-stat">
+          <div class="truck-stat-label">Expenses</div>
+          <div class="truck-stat-value">${formatCompact(t.expenses)}</div>
+        </div>
+        <div class="truck-stat">
+          <div class="truck-stat-label">Net Profit</div>
+          <div class="truck-stat-value">${formatCompact(t.profit)}</div>
+        </div>
+        <div class="truck-stat">
+          <div class="truck-stat-label">Avg/Trip</div>
+          <div class="truck-stat-value">${formatCompact(t.avgPerTrip)}</div>
+        </div>
+      </div>
+      <div class="truck-breakdown">
+        ${t.trips} trip${t.trips !== 1 ? 's' : ''} completed • Net Revenue: ${formatCompact(t.netRevenue)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// BY ROUTE VIEW
+// ═══════════════════════════════════════
+function renderRoutesView() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredRealExpenses();
+  
+  // Group by route
+  const routeData = {};
+  
+  trips.forEach(trip => {
+    if (!trip.route) return;
+    
+    if (!routeData[trip.route]) {
+      routeData[trip.route] = {
+        revenue: 0,
+        expenses: 0,
+        trips: 0,
+        trucks: new Set(),
+        dates: new Set()
+      };
+    }
+    
+    routeData[trip.route].revenue += trip.rate * 1.12;
+    routeData[trip.route].trips += 1;
+    routeData[trip.route].trucks.add(trip.truck);
+    routeData[trip.route].dates.add(trip.deliveryDate);
+  });
+  
+  // Add expenses for trips on this route
+  trips.forEach(trip => {
+    if (!trip.route) return;
+    
+    const tripExpenses = expenses.filter(e => 
+      e.truck === trip.truck && e.date === trip.deliveryDate
+    );
+    
+    tripExpenses.forEach(e => {
+      routeData[trip.route].expenses += e.amount;
+    });
+    
+    // Add manpower and documentation
+    const manpower = getManpowerExpensesForDate(trip.deliveryDate)
+      .filter(m => m.truck === trip.truck);
+    const documentation = getDocumentationExpensesForDate(trip.deliveryDate)
+      .filter(d => d.truck === trip.truck);
+    
+    manpower.forEach(m => routeData[trip.route].expenses += m.amount);
+    documentation.forEach(d => routeData[trip.route].expenses += d.amount);
+  });
+  
+  // Calculate profit and sort
+  const routeArray = Object.entries(routeData).map(([route, data]) => {
+    const grossRevenue = data.revenue;
+    const outputVAT = grossRevenue * (12/112);
+    const netRevenue = grossRevenue - outputVAT;
+    
+    const profit = netRevenue - data.expenses;
+    const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
+    
+    return {
+      route,
+      grossRevenue,
+      netRevenue,
+      expenses: data.expenses,
+      profit,
+      margin,
+      trips: data.trips,
+      trucks: data.trucks.size,
+      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
+    };
+  }).sort((a, b) => b.margin - a.margin);
+  
+  // Render
+  const container = document.getElementById('routes-list');
+  
+  if (routeArray.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><p>No route data for selected period</p></div>';
+    return;
+  }
+  
+  container.innerHTML = routeArray.map(r => {
+    return `<div class="route-card">
+      <div class="route-name">📍 ${r.route}</div>
+      <div class="route-meta">${r.trips} trip${r.trips !== 1 ? 's' : ''} • ${r.trucks} truck${r.trucks !== 1 ? 's' : ''}</div>
+      <div class="route-stats">
+        <div class="route-stat">
+          <div class="route-stat-value">${formatCompact(r.profit)}</div>
+          <div class="route-stat-label">Total Profit</div>
+        </div>
+        <div class="route-stat">
+          <div class="route-stat-value">${formatCompact(r.avgPerTrip)}</div>
+          <div class="route-stat-label">Avg/Trip</div>
+        </div>
+        <div class="route-stat">
+          <div class="route-stat-value" style="color:${r.margin >= 30 ? 'var(--green)' : r.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${r.margin.toFixed(1)}%</div>
+          <div class="route-stat-label">Margin</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// INSIGHTS VIEW
+// ═══════════════════════════════════════
+function renderInsightsView() {
+  renderKPIs();
+  renderAlerts();
+  renderTopPerformers();
+}
+
+function renderKPIs() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredRealExpenses();
+  
+  if (trips.length === 0) {
+    document.getElementById('kpi-avg-trip').textContent = '—';
+    document.getElementById('kpi-avg-day').textContent = '—';
+    document.getElementById('kpi-utilization').textContent = '—';
+    document.getElementById('kpi-tax-rate').textContent = '—';
+    return;
+  }
+  
+  const baseRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+  const grossRevenue = baseRevenue * 1.12;
+  const outputVAT = grossRevenue * (12/112);
+  const netRevenue = grossRevenue - outputVAT;
+  
+  const dates = [...new Set(trips.map(t => t.deliveryDate))];
+  let manpowerTotal = 0;
+  let documentationTotal = 0;
+  
+  dates.forEach(date => {
+    const manpower = getManpowerExpensesForDate(date);
+    const documentation = getDocumentationExpensesForDate(date);
+    
+    manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+  });
+  
+  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+  const grossProfit = netRevenue - totalExpenses;
+  
+  const inputVAT = inputVATData.totalInputVAT || 0;
+  const trueNetProfit = grossProfit + inputVAT;
+  
+  const avgProfitPerTrip = trips.length > 0 ? trueNetProfit / trips.length : 0;
+  const avgProfitPerDay = dates.length > 0 ? trueNetProfit / dates.length : 0;
+  
+  // Fleet utilization (simplified: trips per truck per day)
+  const trucks = [...new Set(trips.map(t => t.truck))];
+  const utilization = trucks.length > 0 && dates.length > 0 
+    ? (trips.length / (trucks.length * dates.length) * 100) 
+    : 0;
+  
+  // Effective tax rate
+  const birLiability = outputVAT - inputVAT;
+  const effectiveTaxRate = netRevenue > 0 ? (birLiability / netRevenue * 100) : 0;
+  
+  document.getElementById('kpi-avg-trip').textContent = formatCompact(avgProfitPerTrip);
+  document.getElementById('kpi-avg-day').textContent = formatCompact(avgProfitPerDay);
+  document.getElementById('kpi-utilization').textContent = utilization.toFixed(0) + '%';
+  document.getElementById('kpi-tax-rate').textContent = effectiveTaxRate.toFixed(1) + '%';
+}
+
+function renderAlerts() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredRealExpenses();
+  
+  const alerts = [];
+  
+  // Check Input VAT savings
+  const inputVAT = inputVATData.totalInputVAT || 0;
+  const baseRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+  const grossRevenue = baseRevenue * 1.12;
+  const outputVAT = grossRevenue * (12/112);
+  
+  if (inputVAT > 0) {
+    const savingsPercent = outputVAT > 0 ? (inputVAT / outputVAT * 100) : 0;
+    alerts.push({
+      type: 'success',
+      icon: '✅',
+      text: `<strong>Great job!</strong> You've recovered ₱${formatCompact(inputVAT)} (${savingsPercent.toFixed(0)}%) from Input VAT this period.`
+    });
+  }
+  
+  // Check for low-margin trucks
+  const truckData = {};
+  
+  trips.forEach(trip => {
+    if (!truckData[trip.truck]) {
+      truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
+    }
+    truckData[trip.truck].revenue += trip.rate * 1.12;
+    truckData[trip.truck].dates.add(trip.deliveryDate);
+  });
+  
+  expenses.forEach(expense => {
+    if (truckData[expense.truck]) {
+      truckData[expense.truck].expenses += expense.amount;
+    }
+  });
+  
+  Object.keys(truckData).forEach(truck => {
+    const dates = Array.from(truckData[truck].dates);
+    
+    dates.forEach(date => {
+      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+      
+      manpower.forEach(m => truckData[truck].expenses += m.amount);
+      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    });
+  });
+  
+  Object.entries(truckData).forEach(([truck, data]) => {
+    const grossRevenue = data.revenue;
+    const outputVAT = grossRevenue * (12/112);
+    const netRevenue = grossRevenue - outputVAT;
+    
+    const profit = netRevenue - data.expenses;
+    const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
+    
+    if (margin < 20 && margin > 0) {
+      alerts.push({
+        type: 'warning',
+        icon: '⚠️',
+        text: `<strong>${truck}</strong> profit margin dropped to ${margin.toFixed(1)}% — review operating costs`
+      });
+    }
+    
+    if (margin >= 40) {
+      alerts.push({
+        type: 'success',
+        icon: '🏆',
+        text: `<strong>${truck}</strong> is performing excellently at ${margin.toFixed(1)}% margin`
+      });
+    }
+  });
+  
+  const container = document.getElementById('alerts-list');
+  
+  if (alerts.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>No alerts at this time. All systems operating normally.</p></div>';
+    return;
+  }
+  
+  container.innerHTML = alerts.map(a => {
+    return `<div class="alert-item ${a.type}">
+      <div class="alert-icon">${a.icon}</div>
+      <div class="alert-text">${a.text}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTopPerformers() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredRealExpenses();
+  
+  // Calculate truck performance
+  const truckData = {};
+  
+  trips.forEach(trip => {
+    if (!truckData[trip.truck]) {
+      truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
+    }
+    truckData[trip.truck].revenue += trip.rate * 1.12;
+    truckData[trip.truck].dates.add(trip.deliveryDate);
+  });
+  
+  expenses.forEach(expense => {
+    if (truckData[expense.truck]) {
+      truckData[expense.truck].expenses += expense.amount;
+    }
+  });
+  
+  Object.keys(truckData).forEach(truck => {
+    const dates = Array.from(truckData[truck].dates);
+    
+    dates.forEach(date => {
+      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+      
+      manpower.forEach(m => truckData[truck].expenses += m.amount);
+      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    });
+  });
+  
+  const topTrucks = Object.entries(truckData)
+    .map(([truck, data]) => {
+      const grossRevenue = data.revenue;
+      const outputVAT = grossRevenue * (12/112);
+      const netRevenue = grossRevenue - outputVAT;
+      
+      const profit = netRevenue - data.expenses;
+      const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
+      return { truck, profit, margin };
+    })
+    .sort((a, b) => b.margin - a.margin)
+    .slice(0, 3);
+  
+  const container = document.getElementById('top-performers');
+  
+  if (topTrucks.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>No data available</p></div>';
+    return;
+  }
+  
+  container.innerHTML = topTrucks.map((t, i) => {
+    const medals = ['🥇', '🥈', '🥉'];
+    
+    return `<div class="breakdown-item">
+      <div class="breakdown-left">
+        <div class="breakdown-icon">${medals[i]}</div>
+        <div class="breakdown-info">
+          <div class="breakdown-label">${t.truck}</div>
+          <div class="breakdown-meta">Most profitable truck</div>
+        </div>
+      </div>
+      <div class="breakdown-right">
+        <div class="breakdown-amount">${formatCompact(t.profit)}</div>
+        <div class="breakdown-percent" style="color:var(--green)">${t.margin.toFixed(1)}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function formatCurrency(amount) {
+  return '₱ ' + parseFloat(amount).toLocaleString('en-PH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function formatCompact(amount) {
+  if (amount >= 1000000) {
+    return '₱' + (amount / 1000000).toFixed(1) + 'M';
+  } else if (amount >= 1000) {
+    return '₱' + (amount / 1000).toFixed(1) + 'k';
+  } else {
+    return '₱' + amount.toFixed(0);
+  }
 }
 
 let toastTimer;
 function showToast(msg) {
-const t = document.getElementById('toast');
-t.textContent = msg;
-t.classList.add('show');
-clearTimeout(toastTimer);
-toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-document.getElementById('edit-drawer').addEventListener('click', e => {
-if (e.target.id === 'edit-drawer') closeEditDrawer();
-});
+// ═══════════════════════════════════════
+// PULL TO REFRESH
+// ═══════════════════════════════════════
+function initPullToRefresh(scrollEl, onRefresh) {
+  let startY = 0;
+  let pulling = false;
+  const threshold = 70;
+  
+  const indicator = document.createElement('div');
+  indicator.className = 'ptr-indicator';
+  indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+  document.body.appendChild(indicator);
+
+  scrollEl.addEventListener('touchstart', function(e) {
+    if (scrollEl.scrollTop === 0) {
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchmove', function(e) {
+    if (!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if (dist < 0) { pulling = false; return; }
+
+    const progress = Math.min(dist / threshold, 1);
+    indicator.classList.add('visible');
+
+    const arrow = document.getElementById('ptr-arrow');
+    if (arrow) {
+      arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
+      arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    pulling = false;
+
+    const dist = e.changedTouches[0].clientY - startY;
+    if (dist >= threshold) {
+      indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
+      onRefresh(function() {
+        indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+        indicator.classList.remove('visible');
+      });
+    } else {
+      indicator.classList.remove('visible');
+    }
+  });
+}
 </script>
+
 </body>
 </html>
