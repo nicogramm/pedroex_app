@@ -547,7 +547,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     </div>
 
     <div class="fg">
-      <label class="fl">Subcategory *</label>
+      <label class="fl">Subcategory (Optional)</label>
       <select class="fi" id="f-subcategory">
         <option value="">Select category first</option>
       </select>
@@ -1896,7 +1896,7 @@ function saveExpense() {
   const receipt = document.getElementById('f-receipt').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
 
-  if (!truck || !date || !category || !subcategory || amount <= 0) {
+  if (!truck || !date || !category || amount <= 0) {
     showToast('❌ Please fill all required fields');
     return;
   }
