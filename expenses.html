@@ -1477,38 +1477,54 @@ function renderReports() {
   document.getElementById('truck-breakdown').innerHTML = truckHtml || '<div class="empty-state"><p>No data for this month</p></div>';
   
   // Daily breakdown
-  let dailyHtml = '';
-  
-  for (let day = 1; day <= now.getDate(); day++) {
-    const dateStr = `${thisMonth}-${String(day).padStart(2, '0')}`;
-    const dayExpenses = thisMonthExpenses.filter(e => e.date === dateStr);
-    const manpowerExpenses = getManpowerExpensesForDate(dateStr);
-    const documentationExpenses = getDocumentationExpensesForDate(dateStr);
-    const dayTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + 
-                     manpowerExpenses.reduce((sum, e) => sum + e.amount, 0) +
-                     documentationExpenses.reduce((sum, e) => sum + e.amount, 0);
-    
-    if (dayTotal > 0) {
-      const date = new Date(dateStr);
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-      
-      dailyHtml += `<div class="breakdown-item">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">📅</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label">${dayName}</div>
-            <div class="breakdown-meta">${dayExpenses.length + manpowerExpenses.length + documentationExpenses.length} expense${dayExpenses.length + manpowerExpenses.length + documentationExpenses.length !== 1 ? 's' : ''}</div>
-          </div>
-        </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount">₱${dayTotal.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>
-        </div>
-      </div>`;
+    // Daily breakdown
+    let dailyHtml = '';
+    for (let day = 1; day <= now.getDate(); day++) {
+        const dateStr = `${thisMonth}-${String(day).padStart(2, '0')}`;
+        const dayExpenses = thisMonthExpenses.filter(e => e.date === dateStr);
+        const manpowerExpenses = getManpowerExpensesForDate(dateStr);
+        const documentationExpenses = getDocumentationExpensesForDate(dateStr);
+        
+        const operationalTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+        const manpowerTotal = manpowerExpenses.reduce((sum, e) => sum + e.amount, 0);
+        const documentationTotal = documentationExpenses.reduce((sum, e) => sum + e.amount, 0);
+        const dayTotal = operationalTotal + manpowerTotal + documentationTotal;
+        
+        if (dayTotal > 0) {
+            const date = new Date(dateStr);
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            
+            // Build breakdown details
+            let breakdownDetails = [];
+            if (operationalTotal > 0) {
+                breakdownDetails.push(`Operational: ₱${operationalTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+            }
+            if (manpowerTotal > 0) {
+                breakdownDetails.push(`Manpower: ₱${manpowerTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+            }
+            if (documentationTotal > 0) {
+                breakdownDetails.push(`Documentation: ₱${documentationTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+            }
+            
+            const totalCount = dayExpenses.length + manpowerExpenses.length + documentationExpenses.length;
+            
+            dailyHtml += `<div class="breakdown-item" onclick="showDayDetail('${dateStr}')" style="cursor:pointer">
+                <div class="breakdown-left">
+                    <div class="breakdown-icon">📅</div>
+                    <div class="breakdown-info">
+                        <div class="breakdown-label">${dayName}</div>
+                        <div class="breakdown-meta">${breakdownDetails.join(' • ')}</div>
+                    </div>
+                </div>
+                <div class="breakdown-right">
+                    <div class="breakdown-amount">₱${dayTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+                    <div class="breakdown-percent">${totalCount} item${totalCount !== 1 ? 's' : ''}</div>
+                </div>
+            </div>`;
+        }
     }
-  }
-  
-  document.getElementById('daily-breakdown').innerHTML = dailyHtml || '<div class="empty-state"><p>No expenses yet this month</p></div>';
-}
+    document.getElementById('daily-breakdown').innerHTML = dailyHtml || '<div class="empty-state"><p>No expenses yet this month</p></div>';
+    }
 
 // ═══ CHART RENDERING ══════════════════════════════════
 function renderTrendChart() {
