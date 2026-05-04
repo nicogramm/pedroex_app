@@ -1401,13 +1401,16 @@ function apiGet(range) {
 // ═══════════════════════════════════════
 // LOAD ALL DATA
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// LOAD ALL DATA — UPDATED TO INCLUDE INPUT VAT
+// ═══════════════════════════════════════
 function loadAll() {
     document.getElementById('wrap-loading').style.display = 'flex';
     document.getElementById('wrap-content').style.display = 'none';
 
     Promise.all([
         apiGet(TAB_TRIPS + '!A2:I'),
-        apiGet(TAB_EXPENSES + '!A2:M'),
+        apiGet(TAB_EXPENSES + '!A2:O'),  // ✅ Extended to column O to get Type
         apiGet(TAB_ATTENDANCE + '!A2:J'),
         apiGet(TAB_EMPLOYEES + '!A2:E')
     ]).then(res => {
@@ -1434,7 +1437,9 @@ function loadAll() {
             category: r[3] || '',
             subcategory: r[4] || '',
             amount: parseFloat(r[5]) || 0,
-            hasVAT: ['Diesel', 'Maintenance', 'Parts'].includes(r[3])
+            inputVAT: parseFloat(r[11]) || 0,  // ✅ Column L (index 11)
+            type: r[14] || '',  // ✅ Column O (index 14) — diesel/parts/parking
+            hasVAT: ['diesel', 'parts', 'parking'].includes((r[14] || '').toLowerCase())
         })).filter(e => e.truck && e.date && e.amount > 0);
 
         const attendanceRows = res[2].values || [];
@@ -1462,6 +1467,8 @@ function loadAll() {
         console.log('✅ Data loaded:', {
             trips: allTrips.length,
             expenses: allExpenses.length,
+            expensesWithVAT: allExpenses.filter(e => e.hasVAT).length,
+            totalInputVAT: allExpenses.filter(e => e.hasVAT).reduce((sum, e) => sum + e.inputVAT, 0),
             attendance: allAttendance.length
         });
 
@@ -1473,6 +1480,307 @@ function loadAll() {
         showToast('❌ Failed to load data');
         console.error(err);
     });
+}
+
+// ═══════════════════════════════════════
+// VAT CALCULATION — CORRECTED
+// ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// VAT CALCULATION — CORRECTED v2
+// ═══════════════════════════════════════
+
+function getCurrentQuarter() {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    
+    if (month >= 1 && month <= 3) {
+        return `Purchases (Jan-Mar ${year})`;
+    } else if (month >= 4 && month <= 6) {
+        return `Purchases (Apr-Jun ${year})`;
+    } else if (month >= 7 && month <= 9) {
+        return `Purchases (Jul-Sep ${year})`;
+    } else {
+        return `Purchases (Oct-Dec ${year})`;
+    }
+}
+
+async function getInputVATForCurrentQuarter() {
+    const quarterBase = getCurrentQuarter();
+    const types = ['Diesel', 'Parts', 'Parking'];
+    
+    let totalInputVAT = 0;
+    const breakdown = { diesel: 0, parts: 0, parking: 0 };
+    
+    for (const type of types) {
+        const sheetName = `${quarterBase}-${type}`;
+        try {
+            const res = await apiGet(sheetName + '!A8:O1000');
+            const rows = res.values || [];
+            
+            rows.forEach(row => {
+                if (row[0] && row[1]) { // Has date and payee
+                    const inputVAT = parseFloat(row[11]) || 0; // Column L
+                    if (inputVAT > 0) {
+                        totalInputVAT += inputVAT;
+                        breakdown[type.toLowerCase()] += inputVAT;
+                    }
+                }
+            });
+        } catch (err) {
+            console.warn(`Sheet ${sheetName} not found:`, err.message);
+        }
+    }
+    
+    console.log('✅ Input VAT loaded:', {
+        quarter: quarterBase,
+        total: totalInputVAT,
+        breakdown
+    });
+    
+    return { total: totalInputVAT, breakdown };
+}
+
+async function calculateVAT(trips) {
+    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
+    
+    // ✅ CORRECT FORMULA
+    const vatableSales = grossSales * 1.12;
+    const outputVAT = vatableSales * 0.12;
+    
+    // ✅ Get Input VAT from quarterly sheets
+    const inputVATData = await getInputVATForCurrentQuarter();
+    const inputVAT = inputVATData.total;
+    
+    const netVATPayable = outputVAT - inputVAT;
+    const vatSavings = inputVAT;
+    
+    return {
+        grossSales,
+        vatableSales,
+        outputVAT,
+        inputVAT,
+        inputVATBreakdown: inputVATData.breakdown,
+        netVATPayable,
+        vatSavings,
+        quarter: getCurrentQuarter()
+    };
+}
+
+// Update VAT Summary (make async)
+async function updateVATSummary() {
+    const trips = getFilteredTrips();
+    const vat = await calculateVAT(trips);
+
+    document.getElementById('vat-output').textContent = formatCompact(vat.outputVAT);
+    document.getElementById('vat-input').textContent = formatCompact(vat.inputVAT);
+    document.getElementById('vat-net').textContent = formatCompact(vat.netVATPayable);
+    document.getElementById('vat-savings').textContent = formatCompact(vat.vatSavings);
+}
+
+// Update VAT Modal (make async)
+async function showVATModal() {
+    const trips = getFilteredTrips();
+    const vat = await calculateVAT(trips);
+
+    document.getElementById('vat-modal-gross').textContent = formatCurrency(vat.grossSales);
+    document.getElementById('vat-modal-vatable').textContent = formatCurrency(vat.vatableSales);
+    document.getElementById('vat-modal-output').textContent = formatCurrency(vat.outputVAT);
+    document.getElementById('vat-modal-input').textContent = formatCurrency(vat.inputVAT);
+    document.getElementById('vat-modal-net-payable').textContent = formatCurrency(vat.netVATPayable);
+    document.getElementById('vat-modal-savings').textContent = formatCurrency(vat.vatSavings);
+
+    // ✅ Input VAT breakdown by category
+    const categoryLabels = {
+        'diesel': '⛽ Diesel',
+        'parts': '🔧 Parts & Repairs',
+        'parking': '🅿️ Parking & Tolls'
+    };
+
+    const inputList = Object.entries(vat.inputVATBreakdown)
+        .filter(([cat, amt]) => amt > 0)
+        .sort((a, b) => b[1] - a[1])
+        .map(([cat, amt]) => {
+            const label = categoryLabels[cat] || cat;
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">${label}</div>
+                <div class="modal-list-value">${formatCurrency(amt)}</div>
+            </div>`;
+        }).join('');
+    
+    document.getElementById('vat-modal-input-list').innerHTML = inputList || 
+        '<div class="empty-state"><p>No input VAT recorded for this quarter</p></div>';
+
+    // Sales by truck
+    const salesByTruck = {};
+    trips.forEach(t => {
+        if (!salesByTruck[t.truck]) salesByTruck[t.truck] = 0;
+        salesByTruck[t.truck] += t.rate;
+    });
+
+    const truckList = Object.entries(salesByTruck)
+        .sort((a, b) => b[1] - a[1])
+        .map(([truck, amount]) => {
+            const vatable = amount * 1.12;
+            const vat = vatable * 0.12;
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">🚛 ${truck}</div>
+                <div class="modal-list-value">
+                    ${formatCurrency(amount)}<br>
+                    <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
+                </div>
+            </div>`;
+        }).join('');
+    document.getElementById('vat-modal-trucks').innerHTML = truckList;
+
+    // ✅ CORRECTED BIR formula
+    const formula = `<strong>✅ CORRECT BIR VAT COMPUTATION:</strong><br><br>
+
+<strong>📊 OUTPUT VAT (Sales Tax):</strong><br>
+Step 1: Calculate Vatable Sales<br>
+&nbsp;&nbsp;Vatable Sales = Gross Sales × 1.12<br>
+&nbsp;&nbsp;${formatCurrency(vat.vatableSales)} = ${formatCurrency(vat.grossSales)} × 1.12<br><br>
+
+Step 2: Calculate 12% Output VAT<br>
+&nbsp;&nbsp;Output VAT = Vatable Sales × 0.12<br>
+&nbsp;&nbsp;<strong>${formatCurrency(vat.outputVAT)} = ${formatCurrency(vat.vatableSales)} × 0.12</strong><br><br>
+
+<strong>💰 INPUT VAT (Purchases Tax — Recoverable):</strong><br>
+Quarter: <strong>${vat.quarter}</strong><br>
+Total Input VAT: <strong>${formatCurrency(vat.inputVAT)}</strong><br>
+&nbsp;&nbsp;↳ Diesel: ${formatCurrency(vat.inputVATBreakdown.diesel)}<br>
+&nbsp;&nbsp;↳ Parts & Repairs: ${formatCurrency(vat.inputVATBreakdown.parts)}<br>
+&nbsp;&nbsp;↳ Parking & Tolls: ${formatCurrency(vat.inputVATBreakdown.parking)}<br><br>
+
+<strong>📋 NET VAT PAYABLE TO BIR:</strong><br>
+Net VAT Payable = Output VAT - Input VAT<br>
+<strong style="color:var(--red);font-size:16px">${formatCurrency(vat.netVATPayable)} = ${formatCurrency(vat.outputVAT)} - ${formatCurrency(vat.inputVAT)}</strong><br><br>
+
+<strong>💚 VAT SAVINGS:</strong><br>
+Amount saved by claiming Input VAT: <strong style="color:var(--green)">${formatCurrency(vat.vatSavings)}</strong><br><br>
+
+<em style="font-size:11px;opacity:0.7">
+Note: Input VAT is automatically loaded from quarterly expense sheets (${vat.quarter}-Diesel/Parts/Parking).
+All amounts are based on actual receipts with VAT.
+</em>`;
+
+    document.getElementById('vat-modal-formula').innerHTML = formula;
+    document.getElementById('vatModal').classList.add('show');
+}
+
+// ═══════════════════════════════════════
+// VAT SUMMARY — UPDATED
+// ═══════════════════════════════════════
+function updateVATSummary() {
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+    
+    const vat = calculateVAT(trips, expenses);
+
+    document.getElementById('vat-output').textContent = formatCompact(vat.outputVAT);
+    document.getElementById('vat-input').textContent = formatCompact(vat.inputVAT);
+    document.getElementById('vat-net').textContent = formatCompact(vat.netVATPayable);
+    document.getElementById('vat-savings').textContent = formatCompact(vat.vatSavings);
+}
+
+// ═══════════════════════════════════════
+// VAT MODAL — ENHANCED WITH INPUT VAT DETAILS
+// ═══════════════════════════════════════
+function showVATModal() {
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+    
+    const vat = calculateVAT(trips, expenses);
+
+    document.getElementById('vat-modal-gross').textContent = formatCurrency(vat.grossSales);
+    document.getElementById('vat-modal-vatable').textContent = formatCurrency(vat.vatableSales);
+    document.getElementById('vat-modal-output').textContent = formatCurrency(vat.outputVAT);
+    document.getElementById('vat-modal-input').textContent = formatCurrency(vat.inputVAT);
+    document.getElementById('vat-modal-net-payable').textContent = formatCurrency(vat.netVATPayable);
+    document.getElementById('vat-modal-savings').textContent = formatCurrency(vat.vatSavings);
+
+    // ✅ Input VAT breakdown by category
+    const inputVATByCategory = {};
+    expenses.filter(e => e.hasVAT && e.inputVAT > 0).forEach(e => {
+        const category = e.type || 'Other';
+        if (!inputVATByCategory[category]) inputVATByCategory[category] = 0;
+        inputVATByCategory[category] += e.inputVAT;
+    });
+
+    const categoryLabels = {
+        'diesel': '⛽ Diesel',
+        'parts': '🔧 Parts & Repairs',
+        'parking': '🅿️ Parking & Tolls'
+    };
+
+    const inputList = Object.entries(inputVATByCategory)
+        .sort((a, b) => b[1] - a[1])
+        .map(([cat, amt]) => {
+            const label = categoryLabels[cat] || cat;
+            const count = expenses.filter(e => e.type === cat && e.inputVAT > 0).length;
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">${label} (${count} transaction${count !== 1 ? 's' : ''})</div>
+                <div class="modal-list-value">${formatCurrency(amt)}</div>
+            </div>`;
+        }).join('');
+    
+    document.getElementById('vat-modal-input-list').innerHTML = inputList || 
+        '<div class="empty-state"><p>No input VAT recorded</p></div>';
+
+    // Sales by truck
+    const salesByTruck = {};
+    trips.forEach(t => {
+        if (!salesByTruck[t.truck]) salesByTruck[t.truck] = 0;
+        salesByTruck[t.truck] += t.rate;
+    });
+
+    const truckList = Object.entries(salesByTruck)
+        .sort((a, b) => b[1] - a[1])
+        .map(([truck, amount]) => {
+            const vatable = amount / 1.12;
+            const vat = vatable * 0.12;
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">🚛 ${truck}</div>
+                <div class="modal-list-value">
+                    ${formatCurrency(amount)}<br>
+                    <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
+                </div>
+            </div>`;
+        }).join('');
+    document.getElementById('vat-modal-trucks').innerHTML = truckList;
+
+    // ✅ CORRECTED BIR formula explanation
+    const formula = `<strong>✅ CORRECT BIR VAT COMPUTATION:</strong><br><br>
+
+<strong>📊 OUTPUT VAT (Sales Tax):</strong><br>
+Step 1: Remove embedded VAT from Gross Sales<br>
+&nbsp;&nbsp;Vatable Sales = Gross Sales ÷ 1.12<br>
+&nbsp;&nbsp;${formatCurrency(vat.vatableSales)} = ${formatCurrency(vat.grossSales)} ÷ 1.12<br><br>
+
+Step 2: Calculate 12% Output VAT<br>
+&nbsp;&nbsp;Output VAT = Vatable Sales × 0.12<br>
+&nbsp;&nbsp;<strong>${formatCurrency(vat.outputVAT)} = ${formatCurrency(vat.vatableSales)} × 0.12</strong><br><br>
+
+<strong>💰 INPUT VAT (Purchases Tax — Recoverable):</strong><br>
+Total Input VAT from purchases: <strong>${formatCurrency(vat.inputVAT)}</strong><br>
+&nbsp;&nbsp;↳ Diesel: ${formatCurrency(inputVATByCategory['diesel'] || 0)}<br>
+&nbsp;&nbsp;↳ Parts & Repairs: ${formatCurrency(inputVATByCategory['parts'] || 0)}<br>
+&nbsp;&nbsp;↳ Parking & Tolls: ${formatCurrency(inputVATByCategory['parking'] || 0)}<br><br>
+
+<strong>📋 NET VAT PAYABLE TO BIR:</strong><br>
+Net VAT Payable = Output VAT - Input VAT<br>
+<strong style="color:var(--red);font-size:16px">${formatCurrency(vat.netVATPayable)} = ${formatCurrency(vat.outputVAT)} - ${formatCurrency(vat.inputVAT)}</strong><br><br>
+
+<strong>💚 VAT SAVINGS:</strong><br>
+Amount saved by claiming Input VAT: <strong style="color:var(--green)">${formatCurrency(vat.vatSavings)}</strong><br><br>
+
+<em style="font-size:11px;opacity:0.7">
+Note: Input VAT is automatically computed from your expense entries in the Expense Manager.
+All amounts are based on actual receipts with VAT.
+</em>`;
+
+    document.getElementById('vat-modal-formula').innerHTML = formula;
+    document.getElementById('vatModal').classList.add('show');
 }
 
 // ═══════════════════════════════════════
