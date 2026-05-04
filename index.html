@@ -354,7 +354,9 @@ const ALL_MODULES = [
   {id:'matrix',      icon:'chart',     label:'Matrix',       stat:'sv-matrix',   sub:'Performance',     link:'matrix.html'},
   
   // FINANCE (wide cards)
-  {id:'expenses',    icon:'card',      label:'Expenses',     stat:'sv-exp',      sub:'Cost tracking',   wide:true, link:'expenses.html'},
+  // ✅ ADMIN: 2 cards | EMPLOYEE: 1 card
+  {id:'expenses-admin',  icon:'chart',  label:'Expenses',     stat:'sv-exp-admin', sub:'Reports & Analytics', wide:true, link:'expenses.html', adminOnly: true},
+  {id:'expenses-emp',    icon:'card',   label:'Expenses',     stat:'sv-exp-emp',   sub:'Submit expense',      wide:true, link:'expenses_emp.html'},
   {id:'billing',     icon:'doc',       label:'Billing',      stat:'sv-billing',  sub:'Invoices',        wide:true, link:'billing.html'},
   
   // SYSTEM (wide card)
@@ -556,21 +558,36 @@ function updateGreeting(firstName) {
 
 // DASHBOARD
 function buildDashboard() {
-  document.getElementById('mod-grid').innerHTML = ALL_MODULES.map(m => {
+  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+  const isAdmin = userRole === 'admin';
+  
+  // ✅ Filter modules based on role
+  const visibleModules = ALL_MODULES.filter(m => {
+    if (m.adminOnly && !isAdmin) return false;
+    return true;
+  });
+  
+  document.getElementById('mod-grid').innerHTML = visibleModules.map(m => {
     const icon = ICONS[m.icon] || '';
     const onclick = m.link ? `location.href='${m.link}'` : '';
+    
     if (m.wide) {
       return `<div class="mod-card wide" onclick="${onclick}">
         <div class="mod-icon-box">${icon}</div>
-        <div><div class="mod-label">${m.label}</div>
-        <div class="mod-value" id="${m.stat}">—</div>
-        <div class="mod-sub">${m.sub}</div></div></div>`;
+        <div>
+          <div class="mod-label">${m.label}</div>
+          <div class="mod-value" id="${m.stat}">—</div>
+          <div class="mod-sub">${m.sub}</div>
+        </div>
+      </div>`;
     }
+    
     return `<div class="mod-card" onclick="${onclick}">
       <div class="mod-icon-box">${icon}</div>
       <div class="mod-label">${m.label}</div>
       <div class="mod-value" id="${m.stat}">—</div>
-      <div class="mod-sub">${m.sub}</div></div>`;
+      <div class="mod-sub">${m.sub}</div>
+    </div>`;
   }).join('');
 }
 
