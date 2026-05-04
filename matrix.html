@@ -170,7 +170,7 @@ body.dark .topbar {
 }
 
 /* ═══════════════════════════════════════
-   HERO CARD (PROFIT OVERVIEW WITH VAT)
+   HERO CARD (PROFIT OVERVIEW)
 ═══════════════════════════════════════ */
 .hero-card {
   background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%);
@@ -236,10 +236,6 @@ body.dark .topbar {
   letter-spacing: -0.5px;
 }
 
-.hero-item-small {
-  font-size: 16px;
-}
-
 /* ═══════════════════════════════════════
    VIEW TOGGLE
 ═══════════════════════════════════════ */
@@ -300,33 +296,6 @@ body.dark .topbar {
 
 .section-title .icon {
   font-size: 20px;
-}
-
-.section-subtitle {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: -12px;
-  margin-bottom: 16px;
-  font-style: italic;
-}
-
-/* ═══════════════════════════════════════
-   INFO BANNER
-═══════════════════════════════════════ */
-.info-banner {
-  background: var(--bg2);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 16px;
-  border-left: 4px solid var(--blue);
-  font-size: 12px;
-  color: var(--text2);
-  line-height: 1.6;
-}
-
-.info-banner strong {
-  color: var(--text);
-  font-weight: 600;
 }
 
 /* ═══════════════════════════════════════
@@ -697,73 +666,6 @@ body.dark .breakdown-item {
 }
 
 /* ═══════════════════════════════════════
-   BIR REPORT CARD
-═══════════════════════════════════════ */
-.bir-card {
-  background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
-  border-radius: 18px;
-  padding: 20px;
-  margin-bottom: 16px;
-  color: #fff;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
-}
-
-.bir-title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  opacity: 0.9;
-  margin-bottom: 16px;
-}
-
-.bir-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.bir-row:last-child {
-  border-bottom: none;
-  padding-top: 16px;
-  margin-top: 8px;
-  border-top: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.bir-label {
-  font-size: 13px;
-  opacity: 0.9;
-}
-
-.bir-value {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.bir-savings {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 16px;
-  text-align: center;
-}
-
-.bir-savings-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.8;
-  margin-bottom: 6px;
-}
-
-.bir-savings-value {
-  font-size: 24px;
-  font-weight: 800;
-}
-
-/* ═══════════════════════════════════════
    BOTTOM NAV
 ═══════════════════════════════════════ */
 .bottom-nav {
@@ -1032,52 +934,23 @@ body.dark .bottom-nav {
     <!-- CONTENT (hidden until loaded) -->
     <div id="wrap-content" style="display:none">
       
-      <!-- HERO CARD WITH VAT BREAKDOWN -->
+      <!-- HERO CARD -->
       <div class="hero-card">
-        <div class="hero-title">Net Profit (After VAT)</div>
+        <div class="hero-title">Net Profit This Month</div>
         <div class="hero-amount" id="hero-profit">₱ 0.00</div>
-        <div class="hero-margin" id="hero-margin">True Margin: 0% • 0 trips</div>
+        <div class="hero-margin" id="hero-margin">Margin: 0% • 0 trips</div>
         
         <div class="hero-divider"></div>
         
         <div class="hero-breakdown">
           <div class="hero-item">
-            <div class="hero-item-label">Gross Revenue</div>
-            <div class="hero-item-value hero-item-small" id="hero-gross">₱ 0</div>
+            <div class="hero-item-label">Revenue</div>
+            <div class="hero-item-value" id="hero-revenue">₱ 0</div>
           </div>
           <div class="hero-item">
-            <div class="hero-item-label">Output VAT</div>
-            <div class="hero-item-value hero-item-small" id="hero-output-vat">₱ 0</div>
+            <div class="hero-item-label">Expenses</div>
+            <div class="hero-item-value" id="hero-expenses">₱ 0</div>
           </div>
-          <div class="hero-item">
-            <div class="hero-item-label">Real Expenses</div>
-            <div class="hero-item-value hero-item-small" id="hero-expenses">₱ 0</div>
-          </div>
-          <div class="hero-item">
-            <div class="hero-item-label">Input VAT</div>
-            <div class="hero-item-value hero-item-small" id="hero-input-vat">₱ 0</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- BIR LIABILITY CARD -->
-      <div class="bir-card">
-        <div class="bir-title">🏛️ BIR VAT Summary</div>
-        <div class="bir-row">
-          <div class="bir-label">Output VAT (Sales)</div>
-          <div class="bir-value" id="bir-output">₱ 0</div>
-        </div>
-        <div class="bir-row">
-          <div class="bir-label">Input VAT (Purchases)</div>
-          <div class="bir-value" id="bir-input">₱ 0</div>
-        </div>
-        <div class="bir-row">
-          <div class="bir-label">VAT Payable to BIR</div>
-          <div class="bir-value" id="bir-payable">₱ 0</div>
-        </div>
-        <div class="bir-savings">
-          <div class="bir-savings-label">💰 VAT Savings from Purchases</div>
-          <div class="bir-savings-value" id="bir-savings">₱ 0</div>
         </div>
       </div>
 
@@ -1091,54 +964,14 @@ body.dark .bottom-nav {
 
       <!-- VIEW TOGGLE -->
       <div class="view-toggle">
-        <button class="view-btn active" onclick="switchView('overview')">📊 Overview</button>
-        <button class="view-btn" onclick="switchView('trucks')">🚛 Trucks</button>
+        <button class="view-btn active" onclick="switchView('trucks')">🚛 Trucks</button>
         <button class="view-btn" onclick="switchView('routes')">📍 Routes</button>
+        <button class="view-btn" onclick="switchView('trends')">📈 Trends</button>
         <button class="view-btn" onclick="switchView('insights')">🧠 Insights</button>
       </div>
 
-      <!-- ═══ OVERVIEW VIEW ═══ -->
-      <div id="view-overview" class="view-content">
-        
-        <!-- EXPENSE SOURCES EXPLANATION -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">💰</span> Real Expenses Breakdown
-          </div>
-          <div class="section-subtitle">Source: Expenses.html (Admin) — Expenses_Master sheet</div>
-          
-          <div id="real-expenses-breakdown"></div>
-        </div>
-
-        <!-- INPUT VAT SOURCES -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">📉</span> Input VAT Sources
-          </div>
-          <div class="section-subtitle">Source: Expenses-Emp.html (Employees) — Quarterly Purchase Sheets</div>
-          
-          <div class="info-banner">
-            💡 <strong>Input VAT</strong> is recovered from purchases with VAT receipts. 
-            This reduces your BIR liability by up to 50%!
-          </div>
-          
-          <div id="input-vat-breakdown"></div>
-        </div>
-
-        <!-- PROFIT TREND CHART -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">📈</span> Profit Trend (Last 30 Days)
-          </div>
-          <div class="chart-container">
-            <canvas id="profitTrendChart" class="chart-canvas"></canvas>
-          </div>
-        </div>
-
-      </div>
-
       <!-- ═══ BY TRUCK VIEW ═══ -->
-      <div id="view-trucks" class="view-content" style="display:none">
+      <div id="view-trucks" class="view-content">
         <div class="section-card">
           <div class="section-title">
             <span class="icon">🚛</span> Profitability by Truck
@@ -1155,6 +988,48 @@ body.dark .bottom-nav {
           </div>
           <div id="routes-list"></div>
         </div>
+      </div>
+
+      <!-- ═══ TRENDS VIEW ═══ -->
+      <div id="view-trends" class="view-content" style="display:none">
+        
+        <!-- Profit Trend Chart -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">📈</span> Profit Trend (Last 30 Days)
+          </div>
+          <div class="chart-container">
+            <canvas id="profitTrendChart" class="chart-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Monthly Comparison -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">📊</span> Monthly Performance
+          </div>
+          <div id="monthly-breakdown"></div>
+        </div>
+
+        <!-- Weekly Heatmap -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">🗓️</span> Weekly Profitability Heatmap
+          </div>
+          <div class="heatmap-grid" id="heatmap-grid"></div>
+        </div>
+
+        <!-- Cost Breakdown -->
+        <div class="section-card">
+          <div class="section-title">
+            <span class="icon">💰</span> Expense Breakdown
+          </div>
+          <div class="chart-container" style="height:200px">
+            <canvas id="expenseChart" class="chart-canvas"></canvas>
+          </div>
+          <div id="expense-breakdown" style="margin-top:16px"></div>
+        </div>
+
       </div>
 
       <!-- ═══ INSIGHTS VIEW ═══ -->
@@ -1179,8 +1054,8 @@ body.dark .bottom-nav {
               <div class="stat-value" id="kpi-utilization">0%</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label">Effective Tax Rate</div>
-              <div class="stat-value" id="kpi-tax-rate">0%</div>
+              <div class="stat-label">Profit Margin</div>
+              <div class="stat-value" id="kpi-margin">0%</div>
             </div>
           </div>
         </div>
@@ -1271,7 +1146,7 @@ body.dark .bottom-nav {
 // ═══════════════════════════════════════
 const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const TAB_TRIPS = 'Trips';
-const TAB_EXPENSES_REAL = 'Expenses_Master';  // ✅ Real expenses (Admin)
+const TAB_EXPENSES = 'Expenses_Master';
 const TAB_ATTENDANCE = 'Attendance';
 const TAB_EMPLOYEES = 'Employees';
 
@@ -1280,24 +1155,15 @@ const TAB_EMPLOYEES = 'Employees';
 // ═══════════════════════════════════════
 let token = '';
 let allTrips = [];
-let realExpenses = [];        // ✅ From Expenses.html (Admin)
-let inputVATData = [];         // ✅ From Expenses-Emp.html (Employees)
+let allExpenses = [];
 let allAttendance = [];
 let employeeRoles = {};
 let currentPeriod = 'month';
-let currentView = 'overview';
+let currentView = 'trucks';
 
 // Chart instances
 let profitTrendChart = null;
-
-// ═══════════════════════════════════════
-// RATES
-// ═══════════════════════════════════════
-const DRIVER_DAILY_RATE = 500;
-const HELPER_DAILY_RATE = 350;
-const TWO_MAN_BONUS = 280;
-const MEAL_ALLOWANCE = 210;
-const DOCUMENTATION_DAILY_RATE = 40000 / 365;
+let expenseChart = null;
 
 // ═══════════════════════════════════════
 // INIT
@@ -1346,21 +1212,10 @@ function loadAll() {
   document.getElementById('wrap-content').style.display = 'none';
 
   Promise.all([
-    // 1. Trips (Revenue)
     apiGet(TAB_TRIPS + '!A2:I'),
-    
-    // 2. Real Expenses (Expenses.html — Admin)
-    apiGet(TAB_EXPENSES_REAL + '!A2:M'),
-    
-    // 3. Attendance (for manpower calculation)
+    apiGet(TAB_EXPENSES + '!A2:M'),
     apiGet(TAB_ATTENDANCE + '!A2:J'),
-    
-    // 4. Employees (for role mapping)
-    apiGet(TAB_EMPLOYEES + '!A2:E'),
-    
-    // 5. Input VAT from Quarterly Sheets (Expenses-Emp.html)
-    loadInputVAT()
-    
+    apiGet(TAB_EMPLOYEES + '!A2:E')
   ]).then(res => {
     // Parse Trips
     const tripRows = res[0].values || [];
@@ -1377,9 +1232,9 @@ function loadAll() {
       rate: parseFloat(r[8]) || 0
     })).filter(t => t.truck && t.deliveryDate && t.rate > 0);
 
-    // Parse Real Expenses (Expenses_Master)
+    // Parse Expenses
     const expenseRows = res[1].values || [];
-    realExpenses = expenseRows.map((r, i) => ({
+    allExpenses = expenseRows.map((r, i) => ({
       rowIndex: i + 2,
       id: r[0] || '',
       date: r[1] || '',
@@ -1414,15 +1269,11 @@ function loadAll() {
       }
     });
 
-    // Input VAT data already loaded in res[4]
-    inputVATData = res[4];
-
     console.log('✅ Data loaded:', {
       trips: allTrips.length,
-      realExpenses: realExpenses.length,
+      expenses: allExpenses.length,
       attendance: allAttendance.length,
-      employees: Object.keys(employeeRoles).length,
-      inputVAT: inputVATData.totalInputVAT
+      employees: Object.keys(employeeRoles).length
     });
 
     document.getElementById('wrap-loading').style.display = 'none';
@@ -1434,58 +1285,6 @@ function loadAll() {
     document.getElementById('wrap-loading').style.display = 'none';
     showToast('❌ Failed to load data');
     console.error('Load error:', err);
-  });
-}
-
-// ═══════════════════════════════════════
-// LOAD INPUT VAT FROM QUARTERLY SHEETS
-// ═══════════════════════════════════════
-function loadInputVAT() {
-  const year = new Date().getFullYear();
-  const quarters = [
-    { label: 'Q1', months: 'Jan-Mar' },
-    { label: 'Q2', months: 'Apr-Jun' },
-    { label: 'Q3', months: 'Jul-Sep' },
-    { label: 'Q4', months: 'Oct-Dec' }
-  ];
-  const types = ['Diesel', 'Parts', 'Parking'];
-
-  let allPromises = [];
-  
-  quarters.forEach(q => {
-    types.forEach(type => {
-      const sheetName = `Purchases (${q.months} ${year})-${type}`;
-      allPromises.push(
-        apiGet(sheetName + '!A8:O1000')
-          .then(res => {
-            const rows = res.values || [];
-            const inputVAT = rows
-              .filter(r => r[0] && r[1])  // Has date and payee
-              .map(r => parseFloat(r[11]) || 0)  // Column L = Input VAT
-              .reduce((sum, v) => sum + v, 0);
-            
-            return { type, quarter: q.label, inputVAT };
-          })
-          .catch(() => ({ type, quarter: q.label, inputVAT: 0 }))
-      );
-    });
-  });
-
-  return Promise.all(allPromises).then(results => {
-    const summary = {
-      diesel: 0,
-      parts: 0,
-      parking: 0,
-      totalInputVAT: 0
-    };
-
-    results.forEach(r => {
-      const key = r.type.toLowerCase();
-      summary[key] += r.inputVAT;
-      summary.totalInputVAT += r.inputVAT;
-    });
-
-    return summary;
   });
 }
 
@@ -1526,6 +1325,12 @@ function pad(n) {
 // ═══════════════════════════════════════
 // MANPOWER COST CALCULATION
 // ═══════════════════════════════════════
+const DRIVER_DAILY_RATE = 500;
+const HELPER_DAILY_RATE = 350;
+const TWO_MAN_BONUS = 280;
+const MEAL_ALLOWANCE = 210;
+const DOCUMENTATION_DAILY_RATE = 40000 / 365;
+
 function calculateManpowerCost(attendance) {
   const role = employeeRoles[attendance.employee] || 'helper';
   let cost = (role === 'driver') ? DRIVER_DAILY_RATE : HELPER_DAILY_RATE;
@@ -1595,7 +1400,7 @@ function getFilteredTrips() {
   }
 }
 
-function getFilteredRealExpenses() {
+function getFilteredExpenses() {
   const now = new Date();
   const today = now.toISOString().split('T')[0];
   
@@ -1604,19 +1409,19 @@ function getFilteredRealExpenses() {
       const weekAgo = new Date(now);
       weekAgo.setDate(weekAgo.getDate() - 7);
       const weekAgoStr = weekAgo.toISOString().split('T')[0];
-      return realExpenses.filter(e => e.date >= weekAgoStr && e.date <= today);
+      return allExpenses.filter(e => e.date >= weekAgoStr && e.date <= today);
     
     case 'month':
       const thisMonth = today.slice(0, 7);
-      return realExpenses.filter(e => e.date.startsWith(thisMonth));
+      return allExpenses.filter(e => e.date.startsWith(thisMonth));
     
     case 'year':
       const thisYear = today.slice(0, 4);
-      return realExpenses.filter(e => e.date.startsWith(thisYear));
+      return allExpenses.filter(e => e.date.startsWith(thisYear));
     
     case 'all':
     default:
-      return realExpenses;
+      return allExpenses;
   }
 }
 
@@ -1637,9 +1442,9 @@ function switchView(view) {
   document.getElementById('view-' + view).style.display = 'block';
   
   // Render specific view
-  if (view === 'overview') renderOverviewView();
-  else if (view === 'trucks') renderTrucksView();
+  if (view === 'trucks') renderTrucksView();
   else if (view === 'routes') renderRoutesView();
+  else if (view === 'trends') renderTrendsView();
   else if (view === 'insights') renderInsightsView();
 }
 
@@ -1648,23 +1453,20 @@ function switchView(view) {
 // ═══════════════════════════════════════
 function renderAll() {
   updateHeroCard();
-  renderOverviewView();
+  renderTrucksView();
 }
 
 // ═══════════════════════════════════════
-// HERO CARD WITH VAT BREAKDOWN
+// HERO CARD
 // ═══════════════════════════════════════
 function updateHeroCard() {
   const trips = getFilteredTrips();
-  const expenses = getFilteredRealExpenses();
+  const expenses = getFilteredExpenses();
   
-  // ✅ Calculate GROSS revenue (with 12% VAT)
-  const baseRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
-  const grossRevenue = baseRevenue * 1.12;
-  const outputVAT = grossRevenue * (12/112);  // Extract 12% from gross
-  const netRevenue = grossRevenue - outputVAT;
+  // Calculate total revenue
+  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
   
-  // ✅ Calculate REAL expenses (operational + manpower + documentation)
+  // Calculate total expenses (operational + manpower + documentation)
   const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   
   // Get unique dates from trips
@@ -1681,186 +1483,225 @@ function updateHeroCard() {
     documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
   });
   
-  const totalRealExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+  const netProfit = totalRevenue - totalExpenses;
+  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
   
-  // ✅ Input VAT (from quarterly purchase sheets)
-  const inputVAT = inputVATData.totalInputVAT || 0;
-  
-  // ✅ BIR Liability
-  const birLiability = outputVAT - inputVAT;
-  
-  // ✅ TRUE NET PROFIT (after VAT)
-  const grossProfit = netRevenue - totalRealExpenses;
-  const trueNetProfit = grossProfit + inputVAT;  // Add back VAT savings
-  
-  const trueMargin = netRevenue > 0 ? (trueNetProfit / netRevenue * 100) : 0;
-  
-  // Update Hero Card
-  document.getElementById('hero-profit').textContent = formatCurrency(trueNetProfit);
+  document.getElementById('hero-profit').textContent = formatCurrency(netProfit);
   document.getElementById('hero-margin').textContent = 
-    `True Margin: ${trueMargin.toFixed(1)}% • ${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
-  document.getElementById('hero-gross').textContent = formatCompact(grossRevenue);
-  document.getElementById('hero-output-vat').textContent = formatCompact(outputVAT);
-  document.getElementById('hero-expenses').textContent = formatCompact(totalRealExpenses);
-  document.getElementById('hero-input-vat').textContent = formatCompact(inputVAT);
-  
-  // Update BIR Card
-  document.getElementById('bir-output').textContent = formatCurrency(outputVAT);
-  document.getElementById('bir-input').textContent = formatCurrency(inputVAT);
-  document.getElementById('bir-payable').textContent = formatCurrency(birLiability);
-  document.getElementById('bir-savings').textContent = formatCurrency(inputVAT);
+    `Margin: ${margin.toFixed(1)}% • ${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
+  document.getElementById('hero-revenue').textContent = formatCompact(totalRevenue);
+  document.getElementById('hero-expenses').textContent = formatCompact(totalExpenses);
 }
 
 // ═══════════════════════════════════════
-// OVERVIEW VIEW
+// BY TRUCK VIEW
 // ═══════════════════════════════════════
-function renderOverviewView() {
-  renderRealExpensesBreakdown();
-  renderInputVATBreakdown();
-  renderProfitTrendChart();
-}
-
-function renderRealExpensesBreakdown() {
-  const expenses = getFilteredRealExpenses();
+function renderTrucksView() {
   const trips = getFilteredTrips();
+  const expenses = getFilteredExpenses();
   
-  // Group by category
-  const categoryTotals = {
-    'Diesel': 0,
-    'Maintenance': 0,
-    'Documentation': 0,
-    'Miscellaneous': 0,
-    'Manpower': 0
-  };
+  // Group by truck
+  const truckData = {};
   
-  expenses.forEach(e => {
-    if (categoryTotals[e.category] !== undefined) {
-      categoryTotals[e.category] += e.amount;
+  trips.forEach(trip => {
+    if (!truckData[trip.truck]) {
+      truckData[trip.truck] = {
+        revenue: 0,
+        expenses: 0,
+        trips: 0,
+        dates: new Set()
+      };
+    }
+    
+    truckData[trip.truck].revenue += trip.rate;
+    truckData[trip.truck].trips += 1;
+    truckData[trip.truck].dates.add(trip.deliveryDate);
+  });
+  
+  // Add operational expenses
+  expenses.forEach(expense => {
+    if (truckData[expense.truck]) {
+      truckData[expense.truck].expenses += expense.amount;
     }
   });
   
-  // Add auto-generated expenses
-  const dates = [...new Set(trips.map(t => t.deliveryDate))];
-  
-  dates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
+  // Add manpower and documentation
+  Object.keys(truckData).forEach(truck => {
+    const dates = Array.from(truckData[truck].dates);
     
-    categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
-    categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
+    dates.forEach(date => {
+      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+      
+      manpower.forEach(m => truckData[truck].expenses += m.amount);
+      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    });
   });
   
-  const total = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
+  // Calculate profit and sort
+  const truckArray = Object.entries(truckData).map(([truck, data]) => {
+    const profit = data.revenue - data.expenses;
+    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+    
+    return {
+      truck,
+      revenue: data.revenue,
+      expenses: data.expenses,
+      profit,
+      margin,
+      trips: data.trips,
+      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
+    };
+  }).sort((a, b) => b.margin - a.margin);
   
-  const container = document.getElementById('real-expenses-breakdown');
+  // Render
+  const container = document.getElementById('trucks-list');
   
-  const icons = {
-    'Diesel': '⛽',
-    'Maintenance': '🔧',
-    'Documentation': '📄',
-    'Miscellaneous': '📦',
-    'Manpower': '👷'
-  };
-  
-  const sources = {
-    'Diesel': 'Expenses_Master',
-    'Maintenance': 'Expenses_Master',
-    'Documentation': 'Auto-generated (₱109.59/day per truck)',
-    'Miscellaneous': 'Expenses_Master',
-    'Manpower': 'Auto-generated from Attendance'
-  };
-  
-  container.innerHTML = Object.entries(categoryTotals)
-    .filter(([cat, amt]) => amt > 0)
-    .sort((a, b) => b[1] - a[1])
-    .map(([cat, amt]) => {
-      const percent = total > 0 ? (amt / total * 100).toFixed(1) : 0;
-      
-      return `<div class="breakdown-item">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">${icons[cat]}</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label">${cat}</div>
-            <div class="breakdown-meta">Source: ${sources[cat]}</div>
-          </div>
-        </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount">${formatCompact(amt)}</div>
-          <div class="breakdown-percent">${percent}%</div>
-        </div>
-      </div>`;
-    }).join('') +
-    `<div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--bg2)">
-      <div class="breakdown-item" style="border:none">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">💰</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label" style="font-size:16px">TOTAL REAL EXPENSES</div>
-          </div>
-        </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount" style="font-size:20px;color:var(--red)">${formatCurrency(total)}</div>
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderInputVATBreakdown() {
-  const container = document.getElementById('input-vat-breakdown');
-  
-  const icons = {
-    'diesel': '⛽',
-    'parts': '🔧',
-    'parking': '🅿️'
-  };
-  
-  const labels = {
-    'diesel': 'Diesel Purchases',
-    'parts': 'Parts & Repairs',
-    'parking': 'Parking & Tolls'
-  };
-  
-  const total = inputVATData.totalInputVAT || 0;
-  
-  if (total === 0) {
-    container.innerHTML = '<div class="empty-state"><p>No Input VAT data available for this period</p></div>';
+  if (truckArray.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚛</div><p>No trip data for selected period</p></div>';
     return;
   }
   
-  container.innerHTML = Object.entries(inputVATData)
-    .filter(([key, value]) => key !== 'totalInputVAT' && value > 0)
-    .sort((a, b) => b[1] - a[1])
-    .map(([type, amt]) => {
-      const percent = total > 0 ? (amt / total * 100).toFixed(1) : 0;
-      
-      return `<div class="breakdown-item">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">${icons[type]}</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label">${labels[type]}</div>
-            <div class="breakdown-meta">Quarterly Purchase Sheets</div>
-          </div>
+  container.innerHTML = truckArray.map(t => {
+    const marginClass = t.margin >= 30 ? 'profitable' : t.margin >= 20 ? 'warning' : 'loss';
+    
+    return `<div class="truck-card ${marginClass}">
+      <div class="truck-header">
+        <div class="truck-name">🚛 ${t.truck}</div>
+        <div class="truck-margin ${marginClass}">${t.margin.toFixed(1)}%</div>
+      </div>
+      <div class="truck-stats">
+        <div class="truck-stat">
+          <div class="truck-stat-label">Revenue</div>
+          <div class="truck-stat-value">${formatCompact(t.revenue)}</div>
         </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount">${formatCompact(amt)}</div>
-          <div class="breakdown-percent">${percent}%</div>
+        <div class="truck-stat">
+          <div class="truck-stat-label">Expenses</div>
+          <div class="truck-stat-value">${formatCompact(t.expenses)}</div>
         </div>
-      </div>`;
-    }).join('') +
-    `<div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--bg2)">
-      <div class="breakdown-item" style="border:none">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">📉</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label" style="font-size:16px">TOTAL INPUT VAT</div>
-            <div class="breakdown-meta">Reduces BIR liability</div>
-          </div>
+        <div class="truck-stat">
+          <div class="truck-stat-label">Net Profit</div>
+          <div class="truck-stat-value">${formatCompact(t.profit)}</div>
         </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount" style="font-size:20px;color:var(--green)">${formatCurrency(total)}</div>
+        <div class="truck-stat">
+          <div class="truck-stat-label">Avg/Trip</div>
+          <div class="truck-stat-value">${formatCompact(t.avgPerTrip)}</div>
+        </div>
+      </div>
+      <div class="truck-breakdown">
+        ${t.trips} trip${t.trips !== 1 ? 's' : ''} completed
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// BY ROUTE VIEW
+// ═══════════════════════════════════════
+function renderRoutesView() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredExpenses();
+  
+  // Group by route
+  const routeData = {};
+  
+  trips.forEach(trip => {
+    if (!trip.route) return;
+    
+    if (!routeData[trip.route]) {
+      routeData[trip.route] = {
+        revenue: 0,
+        expenses: 0,
+        trips: 0,
+        trucks: new Set(),
+        dates: new Set()
+      };
+    }
+    
+    routeData[trip.route].revenue += trip.rate;
+    routeData[trip.route].trips += 1;
+    routeData[trip.route].trucks.add(trip.truck);
+    routeData[trip.route].dates.add(trip.deliveryDate);
+  });
+  
+  // Add expenses for trips on this route
+  trips.forEach(trip => {
+    if (!trip.route) return;
+    
+    const tripExpenses = expenses.filter(e => 
+      e.truck === trip.truck && e.date === trip.deliveryDate
+    );
+    
+    tripExpenses.forEach(e => {
+      routeData[trip.route].expenses += e.amount;
+    });
+    
+    // Add manpower and documentation
+    const manpower = getManpowerExpensesForDate(trip.deliveryDate)
+      .filter(m => m.truck === trip.truck);
+    const documentation = getDocumentationExpensesForDate(trip.deliveryDate)
+      .filter(d => d.truck === trip.truck);
+    
+    manpower.forEach(m => routeData[trip.route].expenses += m.amount);
+    documentation.forEach(d => routeData[trip.route].expenses += d.amount);
+  });
+  
+  // Calculate profit and sort
+  const routeArray = Object.entries(routeData).map(([route, data]) => {
+    const profit = data.revenue - data.expenses;
+    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+    
+    return {
+      route,
+      revenue: data.revenue,
+      expenses: data.expenses,
+      profit,
+      margin,
+      trips: data.trips,
+      trucks: data.trucks.size,
+      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
+    };
+  }).sort((a, b) => b.margin - a.margin);
+  
+  // Render
+  const container = document.getElementById('routes-list');
+  
+  if (routeArray.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><p>No route data for selected period</p></div>';
+    return;
+  }
+  
+  container.innerHTML = routeArray.map(r => {
+    return `<div class="route-card">
+      <div class="route-name">📍 ${r.route}</div>
+      <div class="route-meta">${r.trips} trip${r.trips !== 1 ? 's' : ''} • ${r.trucks} truck${r.trucks !== 1 ? 's' : ''}</div>
+      <div class="route-stats">
+        <div class="route-stat">
+          <div class="route-stat-value">${formatCompact(r.profit)}</div>
+          <div class="route-stat-label">Total Profit</div>
+        </div>
+        <div class="route-stat">
+          <div class="route-stat-value">${formatCompact(r.avgPerTrip)}</div>
+          <div class="route-stat-label">Avg/Trip</div>
+        </div>
+        <div class="route-stat">
+          <div class="route-stat-value" style="color:${r.margin >= 30 ? 'var(--green)' : r.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${r.margin.toFixed(1)}%</div>
+          <div class="route-stat-label">Margin</div>
         </div>
       </div>
     </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════
+// TRENDS VIEW
+// ═══════════════════════════════════════
+function renderTrendsView() {
+  renderProfitTrendChart();
+  renderMonthlyBreakdown();
+  renderWeeklyHeatmap();
+  renderExpenseBreakdown();
 }
 
 function renderProfitTrendChart() {
@@ -1880,21 +1721,18 @@ function renderProfitTrendChart() {
   
   const dailyData = last30Days.map(dateStr => {
     const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
-    const dayExpenses = realExpenses.filter(e => e.date === dateStr);
+    const dayExpenses = allExpenses.filter(e => e.date === dateStr);
     
-    const baseRevenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
-    const grossRevenue = baseRevenue * 1.12;
-    const outputVAT = grossRevenue * (12/112);
-    const netRevenue = grossRevenue - outputVAT;
+    const revenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
     
     const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
     const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
     const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
     
-    const totalExpenses = operationalExpenses + manpower + documentation;
-    const profit = netRevenue - totalExpenses;
+    const expenses = operationalExpenses + manpower + documentation;
+    const profit = revenue - expenses;
     
-    return { revenue: netRevenue, expenses: totalExpenses, profit };
+    return { revenue, expenses, profit };
   });
   
   profitTrendChart = new Chart(ctx, {
@@ -1903,7 +1741,7 @@ function renderProfitTrendChart() {
       labels: last30Days.map(d => new Date(d).getDate()),
       datasets: [
         {
-          label: 'Net Revenue',
+          label: 'Revenue',
           data: dailyData.map(d => d.revenue),
           borderColor: '#2563eb',
           backgroundColor: 'rgba(37, 99, 235, 0.1)',
@@ -1954,214 +1792,256 @@ function renderProfitTrendChart() {
   });
 }
 
-// ═══════════════════════════════════════
-// BY TRUCK VIEW
-// ═══════════════════════════════════════
-function renderTrucksView() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredRealExpenses();
+function renderMonthlyBreakdown() {
+  // Get last 6 months
+  const months = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({
+      key: `${date.getFullYear()}-${pad(date.getMonth() + 1)}`,
+      label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    });
+  }
   
-  // Group by truck
-  const truckData = {};
-  
-  trips.forEach(trip => {
-    if (!truckData[trip.truck]) {
-      truckData[trip.truck] = {
-        revenue: 0,
-        expenses: 0,
-        trips: 0,
-        dates: new Set()
-      };
-    }
+  const monthlyData = months.map(month => {
+    const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
+    const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
     
-    truckData[trip.truck].revenue += trip.rate * 1.12;  // ✅ Gross revenue with VAT
-    truckData[trip.truck].trips += 1;
-    truckData[trip.truck].dates.add(trip.deliveryDate);
-  });
-  
-  // Add operational expenses
-  expenses.forEach(expense => {
-    if (truckData[expense.truck]) {
-      truckData[expense.truck].expenses += expense.amount;
-    }
-  });
-  
-  // Add manpower and documentation
-  Object.keys(truckData).forEach(truck => {
-    const dates = Array.from(truckData[truck].dates);
+    const revenue = monthTrips.reduce((sum, t) => sum + t.rate, 0);
+    
+    const dates = [...new Set(monthTrips.map(t => t.deliveryDate))];
+    let manpowerTotal = 0;
+    let documentationTotal = 0;
     
     dates.forEach(date => {
-      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
-      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+      const manpower = getManpowerExpensesForDate(date);
+      const documentation = getDocumentationExpensesForDate(date);
       
-      manpower.forEach(m => truckData[truck].expenses += m.amount);
-      documentation.forEach(d => truckData[truck].expenses += d.amount);
+      manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+      documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
     });
-  });
-  
-  // Calculate profit and sort
-  const truckArray = Object.entries(truckData).map(([truck, data]) => {
-    const grossRevenue = data.revenue;
-    const outputVAT = grossRevenue * (12/112);
-    const netRevenue = grossRevenue - outputVAT;
     
-    const profit = netRevenue - data.expenses;
-    const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
+    const operationalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const expenses = operationalExpenses + manpowerTotal + documentationTotal;
+    const profit = revenue - expenses;
+    const margin = revenue > 0 ? (profit / revenue * 100) : 0;
     
-    return {
-      truck,
-      grossRevenue,
-      netRevenue,
-      expenses: data.expenses,
-      profit,
-      margin,
-      trips: data.trips,
-      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
-    };
-  }).sort((a, b) => b.margin - a.margin);
+    return { ...month, revenue, expenses, profit, margin };
+  }).filter(m => m.revenue > 0);
   
-  // Render
-  const container = document.getElementById('trucks-list');
+  const container = document.getElementById('monthly-breakdown');
   
-  if (truckArray.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚛</div><p>No trip data for selected period</p></div>';
+  if (monthlyData.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>No monthly data available</p></div>';
     return;
   }
   
-  container.innerHTML = truckArray.map(t => {
-    const marginClass = t.margin >= 30 ? 'profitable' : t.margin >= 20 ? 'warning' : 'loss';
+  container.innerHTML = monthlyData.reverse().map((m, i) => {
+    const prevMonth = monthlyData[i + 1];
+    let changeText = '';
     
-    return `<div class="truck-card ${marginClass}">
-      <div class="truck-header">
-        <div class="truck-name">🚛 ${t.truck}</div>
-        <div class="truck-margin ${marginClass}">${t.margin.toFixed(1)}%</div>
-      </div>
-      <div class="truck-stats">
-        <div class="truck-stat">
-          <div class="truck-stat-label">Gross Revenue</div>
-          <div class="truck-stat-value">${formatCompact(t.grossRevenue)}</div>
-        </div>
-        <div class="truck-stat">
-          <div class="truck-stat-label">Expenses</div>
-          <div class="truck-stat-value">${formatCompact(t.expenses)}</div>
-        </div>
-        <div class="truck-stat">
-          <div class="truck-stat-label">Net Profit</div>
-          <div class="truck-stat-value">${formatCompact(t.profit)}</div>
-        </div>
-        <div class="truck-stat">
-          <div class="truck-stat-label">Avg/Trip</div>
-          <div class="truck-stat-value">${formatCompact(t.avgPerTrip)}</div>
+    if (prevMonth && prevMonth.profit > 0) {
+      const change = ((m.profit - prevMonth.profit) / prevMonth.profit * 100);
+      const changeClass = change > 0 ? 'up' : 'down';
+      changeText = `<div class="breakdown-meta stat-change ${changeClass}">
+        ${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}% vs previous month
+      </div>`;
+    }
+    
+    return `<div class="breakdown-item">
+      <div class="breakdown-left">
+        <div class="breakdown-icon">📅</div>
+        <div class="breakdown-info">
+          <div class="breakdown-label">${m.label}</div>
+          ${changeText}
         </div>
       </div>
-      <div class="truck-breakdown">
-        ${t.trips} trip${t.trips !== 1 ? 's' : ''} completed • Net Revenue: ${formatCompact(t.netRevenue)}
+      <div class="breakdown-right">
+        <div class="breakdown-amount">${formatCompact(m.profit)}</div>
+        <div class="breakdown-percent" style="color:${m.margin >= 30 ? 'var(--green)' : m.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${m.margin.toFixed(1)}%</div>
       </div>
     </div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════
-// BY ROUTE VIEW
-// ═══════════════════════════════════════
-function renderRoutesView() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredRealExpenses();
+function renderWeeklyHeatmap() {
+  const trucks = [...new Set(allTrips.map(t => t.truck))].sort();
   
-  // Group by route
-  const routeData = {};
-  
-  trips.forEach(trip => {
-    if (!trip.route) return;
+  // Get last 4 weeks
+  const weeks = [];
+  const now = new Date();
+  for (let i = 3; i >= 0; i--) {
+    const weekStart = new Date(now);
+    weekStart.setDate(weekStart.getDate() - (i * 7) - now.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
     
-    if (!routeData[trip.route]) {
-      routeData[trip.route] = {
-        revenue: 0,
-        expenses: 0,
-        trips: 0,
-        trucks: new Set(),
-        dates: new Set()
-      };
-    }
-    
-    routeData[trip.route].revenue += trip.rate * 1.12;
-    routeData[trip.route].trips += 1;
-    routeData[trip.route].trucks.add(trip.truck);
-    routeData[trip.route].dates.add(trip.deliveryDate);
-  });
-  
-  // Add expenses for trips on this route
-  trips.forEach(trip => {
-    if (!trip.route) return;
-    
-    const tripExpenses = expenses.filter(e => 
-      e.truck === trip.truck && e.date === trip.deliveryDate
-    );
-    
-    tripExpenses.forEach(e => {
-      routeData[trip.route].expenses += e.amount;
+    weeks.push({
+      label: `W${i + 1}`,
+      start: weekStart.toISOString().split('T')[0],
+      end: weekEnd.toISOString().split('T')[0]
     });
-    
-    // Add manpower and documentation
-    const manpower = getManpowerExpensesForDate(trip.deliveryDate)
-      .filter(m => m.truck === trip.truck);
-    const documentation = getDocumentationExpensesForDate(trip.deliveryDate)
-      .filter(d => d.truck === trip.truck);
-    
-    manpower.forEach(m => routeData[trip.route].expenses += m.amount);
-    documentation.forEach(d => routeData[trip.route].expenses += d.amount);
-  });
-  
-  // Calculate profit and sort
-  const routeArray = Object.entries(routeData).map(([route, data]) => {
-    const grossRevenue = data.revenue;
-    const outputVAT = grossRevenue * (12/112);
-    const netRevenue = grossRevenue - outputVAT;
-    
-    const profit = netRevenue - data.expenses;
-    const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
-    
-    return {
-      route,
-      grossRevenue,
-      netRevenue,
-      expenses: data.expenses,
-      profit,
-      margin,
-      trips: data.trips,
-      trucks: data.trucks.size,
-      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
-    };
-  }).sort((a, b) => b.margin - a.margin);
-  
-  // Render
-  const container = document.getElementById('routes-list');
-  
-  if (routeArray.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><p>No route data for selected period</p></div>';
-    return;
   }
   
-  container.innerHTML = routeArray.map(r => {
-    return `<div class="route-card">
-      <div class="route-name">📍 ${r.route}</div>
-      <div class="route-meta">${r.trips} trip${r.trips !== 1 ? 's' : ''} • ${r.trucks} truck${r.trucks !== 1 ? 's' : ''}</div>
-      <div class="route-stats">
-        <div class="route-stat">
-          <div class="route-stat-value">${formatCompact(r.profit)}</div>
-          <div class="route-stat-label">Total Profit</div>
+  const container = document.getElementById('heatmap-grid');
+  
+  let html = '<div class="heatmap-header"></div>';
+  weeks.forEach(w => {
+    html += `<div class="heatmap-header">${w.label}</div>`;
+  });
+  
+  trucks.forEach(truck => {
+    html += `<div class="heatmap-row-label">${truck}</div>`;
+    
+    weeks.forEach(week => {
+      const weekTrips = allTrips.filter(t => 
+        t.truck === truck && 
+        t.deliveryDate >= week.start && 
+        t.deliveryDate <= week.end
+      );
+      
+      const weekExpenses = allExpenses.filter(e => 
+        e.truck === truck && 
+        e.date >= week.start && 
+        e.date <= week.end
+      );
+      
+      const revenue = weekTrips.reduce((sum, t) => sum + t.rate, 0);
+      
+      const dates = [...new Set(weekTrips.map(t => t.deliveryDate))];
+      let manpowerTotal = 0;
+      let documentationTotal = 0;
+      
+      dates.forEach(date => {
+        const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+        const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+        
+        manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+        documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+      });
+      
+      const operationalExpenses = weekExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const expenses = operationalExpenses + manpowerTotal + documentationTotal;
+      const profit = revenue - expenses;
+      const margin = revenue > 0 ? (profit / revenue * 100) : 0;
+      
+      let cellClass = '';
+      if (margin >= 35) cellClass = 'excellent';
+      else if (margin >= 30) cellClass = 'good';
+      else if (margin >= 20) cellClass = 'acceptable';
+      else if (margin > 0) cellClass = 'poor';
+      
+      const displayText = margin > 0 ? `${margin.toFixed(0)}%` : '—';
+      
+      html += `<div class="heatmap-cell ${cellClass}">${displayText}</div>`;
+    });
+  });
+  
+  container.innerHTML = html;
+}
+
+function renderExpenseBreakdown() {
+  const expenses = getFilteredExpenses();
+  const trips = getFilteredTrips();
+  
+  const categoryTotals = {
+    'Diesel': 0,
+    'Maintenance': 0,
+    'Documentation': 0,
+    'Miscellaneous': 0,
+    'Manpower': 0
+  };
+  
+  expenses.forEach(e => {
+    if (categoryTotals[e.category] !== undefined) {
+      categoryTotals[e.category] += e.amount;
+    }
+  });
+  
+  // Add auto-generated manpower and documentation
+  const dates = [...new Set(trips.map(t => t.deliveryDate))];
+  
+  dates.forEach(date => {
+    const manpower = getManpowerExpensesForDate(date);
+    const documentation = getDocumentationExpensesForDate(date);
+    
+    categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
+    categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
+  });
+  
+  const total = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
+  
+  // Render pie chart
+  const ctx = document.getElementById('expenseChart');
+  if (ctx) {
+    if (expenseChart) expenseChart.destroy();
+    
+    const labels = Object.keys(categoryTotals).filter(k => categoryTotals[k] > 0);
+    const data = labels.map(k => categoryTotals[k]);
+    const colors = {
+      'Diesel': '#f59e0b',
+      'Maintenance': '#ef4444',
+      'Documentation': '#3b82f6',
+      'Miscellaneous': '#8b5cf6',
+      'Manpower': '#10b981'
+    };
+    
+    expenseChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: labels.map(l => colors[l]),
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => context.label + ': ' + formatCurrency(context.parsed)
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Render breakdown list
+  const container = document.getElementById('expense-breakdown');
+  
+  const icons = {
+    'Diesel': '⛽',
+    'Maintenance': '🔧',
+    'Documentation': '📄',
+    'Miscellaneous': '📦',
+    'Manpower': '👷'
+  };
+  
+  container.innerHTML = Object.entries(categoryTotals)
+    .filter(([cat, amt]) => amt > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([cat, amt]) => {
+      const percent = total > 0 ? (amt / total * 100).toFixed(1) : 0;
+      
+      return `<div class="breakdown-item">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">${icons[cat]}</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label">${cat}</div>
+          </div>
         </div>
-        <div class="route-stat">
-          <div class="route-stat-value">${formatCompact(r.avgPerTrip)}</div>
-          <div class="route-stat-label">Avg/Trip</div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount">${formatCompact(amt)}</div>
+          <div class="breakdown-percent">${percent}%</div>
         </div>
-        <div class="route-stat">
-          <div class="route-stat-value" style="color:${r.margin >= 30 ? 'var(--green)' : r.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${r.margin.toFixed(1)}%</div>
-          <div class="route-stat-label">Margin</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+      </div>`;
+    }).join('');
 }
 
 // ═══════════════════════════════════════
@@ -2175,20 +2055,17 @@ function renderInsightsView() {
 
 function renderKPIs() {
   const trips = getFilteredTrips();
-  const expenses = getFilteredRealExpenses();
+  const expenses = getFilteredExpenses();
   
   if (trips.length === 0) {
     document.getElementById('kpi-avg-trip').textContent = '—';
     document.getElementById('kpi-avg-day').textContent = '—';
     document.getElementById('kpi-utilization').textContent = '—';
-    document.getElementById('kpi-tax-rate').textContent = '—';
+    document.getElementById('kpi-margin').textContent = '—';
     return;
   }
   
-  const baseRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
-  const grossRevenue = baseRevenue * 1.12;
-  const outputVAT = grossRevenue * (12/112);
-  const netRevenue = grossRevenue - outputVAT;
+  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
   
   const dates = [...new Set(trips.map(t => t.deliveryDate))];
   let manpowerTotal = 0;
@@ -2204,13 +2081,11 @@ function renderKPIs() {
   
   const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
-  const grossProfit = netRevenue - totalExpenses;
+  const netProfit = totalRevenue - totalExpenses;
+  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
   
-  const inputVAT = inputVATData.totalInputVAT || 0;
-  const trueNetProfit = grossProfit + inputVAT;
-  
-  const avgProfitPerTrip = trips.length > 0 ? trueNetProfit / trips.length : 0;
-  const avgProfitPerDay = dates.length > 0 ? trueNetProfit / dates.length : 0;
+  const avgProfitPerTrip = trips.length > 0 ? netProfit / trips.length : 0;
+  const avgProfitPerDay = dates.length > 0 ? netProfit / dates.length : 0;
   
   // Fleet utilization (simplified: trips per truck per day)
   const trucks = [...new Set(trips.map(t => t.truck))];
@@ -2218,36 +2093,17 @@ function renderKPIs() {
     ? (trips.length / (trucks.length * dates.length) * 100) 
     : 0;
   
-  // Effective tax rate
-  const birLiability = outputVAT - inputVAT;
-  const effectiveTaxRate = netRevenue > 0 ? (birLiability / netRevenue * 100) : 0;
-  
   document.getElementById('kpi-avg-trip').textContent = formatCompact(avgProfitPerTrip);
   document.getElementById('kpi-avg-day').textContent = formatCompact(avgProfitPerDay);
   document.getElementById('kpi-utilization').textContent = utilization.toFixed(0) + '%';
-  document.getElementById('kpi-tax-rate').textContent = effectiveTaxRate.toFixed(1) + '%';
+  document.getElementById('kpi-margin').textContent = margin.toFixed(1) + '%';
 }
 
 function renderAlerts() {
   const trips = getFilteredTrips();
-  const expenses = getFilteredRealExpenses();
+  const expenses = getFilteredExpenses();
   
   const alerts = [];
-  
-  // Check Input VAT savings
-  const inputVAT = inputVATData.totalInputVAT || 0;
-  const baseRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
-  const grossRevenue = baseRevenue * 1.12;
-  const outputVAT = grossRevenue * (12/112);
-  
-  if (inputVAT > 0) {
-    const savingsPercent = outputVAT > 0 ? (inputVAT / outputVAT * 100) : 0;
-    alerts.push({
-      type: 'success',
-      icon: '✅',
-      text: `<strong>Great job!</strong> You've recovered ₱${formatCompact(inputVAT)} (${savingsPercent.toFixed(0)}%) from Input VAT this period.`
-    });
-  }
   
   // Check for low-margin trucks
   const truckData = {};
@@ -2256,7 +2112,7 @@ function renderAlerts() {
     if (!truckData[trip.truck]) {
       truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
     }
-    truckData[trip.truck].revenue += trip.rate * 1.12;
+    truckData[trip.truck].revenue += trip.rate;
     truckData[trip.truck].dates.add(trip.deliveryDate);
   });
   
@@ -2279,26 +2135,49 @@ function renderAlerts() {
   });
   
   Object.entries(truckData).forEach(([truck, data]) => {
-    const grossRevenue = data.revenue;
-    const outputVAT = grossRevenue * (12/112);
-    const netRevenue = grossRevenue - outputVAT;
-    
-    const profit = netRevenue - data.expenses;
-    const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
+    const profit = data.revenue - data.expenses;
+    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
     
     if (margin < 20 && margin > 0) {
       alerts.push({
         type: 'warning',
         icon: '⚠️',
-        text: `<strong>${truck}</strong> profit margin dropped to ${margin.toFixed(1)}% — review operating costs`
+        text: `<strong>${truck}</strong> profit margin dropped to ${margin.toFixed(1)}% — investigate costs`
       });
     }
+  });
+  
+  // Check for high performers
+  Object.entries(truckData).forEach(([truck, data]) => {
+    const profit = data.revenue - data.expenses;
+    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
     
     if (margin >= 40) {
       alerts.push({
         type: 'success',
-        icon: '🏆',
+        icon: '✅',
         text: `<strong>${truck}</strong> is performing excellently at ${margin.toFixed(1)}% margin`
+      });
+    }
+  });
+  
+  // Check for expense spikes
+  const categoryTotals = {};
+  expenses.forEach(e => {
+    if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
+    categoryTotals[e.category] += e.amount;
+  });
+  
+  const totalExpenses = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
+  
+  Object.entries(categoryTotals).forEach(([category, amount]) => {
+    const percent = totalExpenses > 0 ? (amount / totalExpenses * 100) : 0;
+    
+    if (category === 'Maintenance' && percent > 15) {
+      alerts.push({
+        type: 'info',
+        icon: '📊',
+        text: `Maintenance costs are ${percent.toFixed(1)}% of expenses — consider preventive maintenance`
       });
     }
   });
@@ -2320,7 +2199,7 @@ function renderAlerts() {
 
 function renderTopPerformers() {
   const trips = getFilteredTrips();
-  const expenses = getFilteredRealExpenses();
+  const expenses = getFilteredExpenses();
   
   // Calculate truck performance
   const truckData = {};
@@ -2329,7 +2208,7 @@ function renderTopPerformers() {
     if (!truckData[trip.truck]) {
       truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
     }
-    truckData[trip.truck].revenue += trip.rate * 1.12;
+    truckData[trip.truck].revenue += trip.rate;
     truckData[trip.truck].dates.add(trip.deliveryDate);
   });
   
@@ -2353,12 +2232,8 @@ function renderTopPerformers() {
   
   const topTrucks = Object.entries(truckData)
     .map(([truck, data]) => {
-      const grossRevenue = data.revenue;
-      const outputVAT = grossRevenue * (12/112);
-      const netRevenue = grossRevenue - outputVAT;
-      
-      const profit = netRevenue - data.expenses;
-      const margin = netRevenue > 0 ? (profit / netRevenue * 100) : 0;
+      const profit = data.revenue - data.expenses;
+      const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
       return { truck, profit, margin };
     })
     .sort((a, b) => b.margin - a.margin)
