@@ -1228,7 +1228,7 @@ function loadRecords() {
   .then(res => {
     // ✅ SIMPLE LANG — no filtering
     records = (res.values || []).filter(r => r && r[1]).map((r, i) => ({
-      id: i + 2,
+      id: r[0],
       empName: r[1] || '',
       date: r[2] || '',
       truck: r[3] || '',
@@ -1546,28 +1546,29 @@ document.getElementById('record-form').addEventListener('submit', async function
   
   let picture = uploadedImage || '';
   
-  const row = [
-    id || (records.length + 2),
-    empName,
-    date,
-    truck,
-    docType,
-    number,
-    liquidated,
-    ackBy,
-    signature,
-    picture,
-    comments
-  ];
-  
+    const rowId = id ? id : Date.now().toString();
+
+    const row = [
+    rowId,      // A - ID
+    empName,    // B
+    date,       // C
+    truck,      // D
+    docType,    // E
+    number,     // F
+    liquidated, // G
+    ackBy,      // H
+    signature,  // I
+    picture,    // J
+    comments    // K
+    ];
   console.log('Saving record with signature:', !!signature);
   
-  const range = id ? `Records!A${id}:K${id}` : 'Records!A:K';
-  const method = id ? 'PUT' : 'POST';
-  const url = id 
-    ? `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW`
-    : `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}:append?valueInputOption=RAW`;
-  
+    const range = id ? `Records!A${id}:K${id}` : 'Records!A:K';
+    const method = id ? 'PUT' : 'POST';
+    const url = id 
+        ? `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW`
+        : `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
+    
   fetch(url, {
     method: method,
     headers: {
