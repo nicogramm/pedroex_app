@@ -63,7 +63,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .info-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .info-text{font-size:12px;color:var(--text2);line-height:1.6}
 
-/* ✅ CALENDAR VIEW — FIXED WIDTH with proper spacing */
+/* CALENDAR VIEW */
 .calendar-view{display:none}
 .calendar-view.active{display:block}
 .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -76,14 +76,13 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .cal-weekday{text-align:center;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);padding:4px 0}
 .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 
-/* ✅ FIXED: Calendar days with consistent width and proper height */
 .cal-day{
   background:var(--bg);
   border-radius:10px;
   box-shadow:var(--neu-xs);
   padding:4px 2px;
   text-align:center;
-  min-height:44px; /* ✅ Base height like attendance calendar */
+  min-height:44px;
   cursor:pointer;
   transition:box-shadow 0.15s;
   display:flex;
@@ -100,7 +99,6 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
 .cal-day-num{font-size:13px;font-weight:500;color:var(--text2);line-height:1.4;margin-bottom:2px}
 
-/* ✅ Entry pills - compact design */
 .cal-names{
   display:flex;
   flex-wrap:wrap;
@@ -123,7 +121,6 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
   line-height:1.2;
 }
 
-/* Type-specific colors */
 .cal-name-pill.diesel{background:#B32533}
 .cal-name-pill.parts{background:#2563eb}
 .cal-name-pill.parking{background:#16a34a}
@@ -234,15 +231,15 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 <div class="page-wrap">
 <!-- EXPENSE TYPE SELECTOR -->
 <div class="expense-type-selector">
-<button class="expense-type-btn active" onclick="selectExpenseType('diesel')">⛽ Diesel</button>
-<button class="expense-type-btn" onclick="selectExpenseType('parts')">🔧 Parts & Repairs</button>
-<button class="expense-type-btn" onclick="selectExpenseType('parking')">🅿️ Parking & Tolls</button>
+<button class="expense-type-btn active" data-type="diesel" onclick="selectExpenseType(event, 'diesel')">⛽ Diesel</button>
+<button class="expense-type-btn" data-type="parts" onclick="selectExpenseType(event, 'parts')">🔧 Parts & Repairs</button>
+<button class="expense-type-btn" data-type="parking" onclick="selectExpenseType(event, 'parking')">🅿️ Parking & Tolls</button>
 </div>
 
 <!-- VIEW TOGGLE -->
 <div class="view-toggle">
-<button class="view-btn active" onclick="switchView('calendar')">📅 Calendar</button>
-<button class="view-btn" onclick="switchView('form')">➕ Add New</button>
+<button class="view-btn active" onclick="switchView(event, 'calendar')">📅 Calendar</button>
+<button class="view-btn" onclick="switchView(event, 'form')">➕ Add New</button>
 </div>
 
 <!-- QUARTER SELECTOR -->
@@ -323,9 +320,9 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 </div>
 </div>
 
-<!-- ✅ FAB BUTTONS — Both visible in calendar view -->
+<!-- FAB BUTTONS -->
 <button class="fab fab-report" id="fab-report" onclick="openReport()" style="display:none">📊</button>
-<button class="fab" id="fab" onclick="switchView('form')" style="display:none">+</button>
+<button class="fab" id="fab" onclick="switchView(event, 'form')" style="display:none">+</button>
 
 <!-- DAY DETAIL OVERLAY -->
 <div class="day-detail-overlay" id="day-detail-overlay">
@@ -476,7 +473,7 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 let token = '';
 let currentUser = '';
-let allExpenses = []; // ✅ Current type expenses only
+let allExpenses = [];
 let currentQuarter = '';
 let currentMonth = new Date();
 let editingExpense = null;
@@ -503,15 +500,15 @@ updateFormLabels();
 loadExpenses();
 })();
 
-// ═══ EXPENSE TYPE MANAGEMENT ══════════════════════════
-function selectExpenseType(type) {
+// ✅ FIX #3: Added event parameter
+function selectExpenseType(event, type) {
 currentExpenseType = type;
 document.querySelectorAll('.expense-type-btn').forEach(btn => btn.classList.remove('active'));
 event.target.classList.add('active');
 updateFormLabels();
 detectCurrentQuarter();
 buildQuarterSelector();
-loadExpenses(); // ✅ Reload expenses for new type
+loadExpenses();
 }
 
 function updateFormLabels() {
@@ -616,8 +613,8 @@ baseQuarter = `Purchases (Oct-Dec ${year})`;
 document.getElementById('f-quarter').value = baseQuarter + getSheetSuffix();
 }
 
-// ═══ VIEW SWITCHING ═══════════════════════════════════
-function switchView(view) {
+// ✅ FIX #3: Added event parameter
+function switchView(event, view) {
 document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
 event.target.classList.add('active');
 document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
@@ -644,13 +641,13 @@ document.getElementById('e-vatable').textContent = '₱' + vatable.toFixed(2);
 document.getElementById('e-input-vat').textContent = '₱' + inputVat.toFixed(2);
 }
 
-// ✅ FIXED: Load ONLY current type expenses
+// ✅ FIX #2: Filter by current expense type only
 function loadExpenses() {
 showSaving('Loading expenses...');
 
-// ✅ Load only current quarter + current type
 apiGet(currentQuarter + '!A8:O1000').then(res => {
 const rows = res.values || [];
+// ✅ Filter by current expense type
 allExpenses = rows.map((r, i) => ({
 rowIndex: i + 8,
 date: r[0] || '',
@@ -663,12 +660,12 @@ vatable: parseFloat(r[10]) || 0,
 inputVat: parseFloat(r[11]) || 0,
 user: r[13] || '',
 type: r[14] || currentExpenseType
-})).filter(e => e.date && e.payee);
+})).filter(e => e.date && e.payee && e.type === currentExpenseType); // ✅ Only current type
 hideSaving();
 renderCalendar();
 if (firstLoad) {
 firstLoad = false;
-switchView('calendar');
+switchView({ target: document.querySelector('.view-btn.active') }, 'calendar');
 }
 }).catch(err => {
 hideSaving();
@@ -681,7 +678,7 @@ showToast('❌ Load failed: ' + err.message);
 });
 }
 
-// ✅ FIXED: Calendar rendering with proper type filtering
+// ✅ FIX #1 & #2: Fixed date parsing + type filtering
 function renderCalendar() {
 const year = currentMonth.getFullYear();
 const month = currentMonth.getMonth();
@@ -695,15 +692,15 @@ const daysInMonth = lastDay.getDate();
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-// ✅ Map: day -> expenses (already filtered by type from loadExpenses)
+// ✅ FIX #1: Proper date parsing without timezone issues
 const dayMap = {};
 allExpenses.forEach(r => {
 if (!r.date) return;
-const parts = r.date.split('-');
-if (parseInt(parts[0]) !== year || parseInt(parts[1])-1 !== month) return;
-const day = parseInt(parts[2]);
-if (!dayMap[day]) dayMap[day] = [];
-dayMap[day].push({ amount: r.amount, type: r.type || currentExpenseType });
+// ✅ Parse as local date
+const [y, m, d] = r.date.split('-').map(Number);
+if (y !== year || m-1 !== month) return;
+if (!dayMap[d]) dayMap[d] = [];
+dayMap[d].push({ amount: r.amount, type: r.type || currentExpenseType });
 });
 
 let html = '';
@@ -715,7 +712,8 @@ html += `<div class="cal-day other-month"><div class="cal-day-num">${prevMonthDa
 for (let day = 1; day <= daysInMonth; day++) {
 const date = new Date(year, month, day);
 date.setHours(0, 0, 0, 0);
-const dateStr = date.toISOString().split('T')[0];
+// ✅ FIX #1: Format date as YYYY-MM-DD in local timezone
+const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 const isToday = date.getTime() === today.getTime();
 const entries = dayMap[day] || [];
 const cls = 'cal-day' + (isToday ? ' today' : '') + (entries.length ? ' has-att' : '') + (dateStr === selectedDay ? ' selected' : '');
@@ -765,16 +763,17 @@ showDayDetail(dateStr);
 renderCalendar();
 }
 
-// ✅ FIXED: Day detail shows only current type expenses
+// ✅ Already filtered by type from loadExpenses
 function showDayDetail(dateStr) {
-// ✅ Filter by date only (already filtered by type from loadExpenses)
 const dayExpenses = allExpenses.filter(e => e.date === dateStr);
 
 if (dayExpenses.length === 0) {
 showToast('No expenses on this date');
 return;
 }
-const date = new Date(dateStr);
+// ✅ FIX #1: Parse date correctly
+const [y, m, d] = dateStr.split('-').map(Number);
+const date = new Date(y, m-1, d);
 const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 document.getElementById('day-detail-title').textContent = dateText;
 
@@ -842,7 +841,8 @@ document.getElementById('f-amount').value = '';
 computeVAT();
 setTimeout(() => {
 loadExpenses();
-switchView('calendar');
+const calBtn = document.querySelector('.view-btn[onclick*="calendar"]');
+switchView({ target: calBtn }, 'calendar');
 }, 1000);
 })
 .catch(err => {
