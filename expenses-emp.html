@@ -10,24 +10,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
-  --text:#2a2a2e;--text2:#777;--text3:#aaa;--red:#B32533;
-  --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
-  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
-  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
-  --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
+--bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
+--text:#2a2a2e;--text2:#777;--text3:#aaa;--red:#B32533;
+--neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+--neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+--neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+--neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
 }
 body.dark {
-  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
-  --text:#e8e8ec;--text2:#888;--text3:#555;
-  --neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
-  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
-  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
-  --neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
+--bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
+--text:#e8e8ec;--text2:#888;--text3:#555;
+--neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
+--neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+--neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+--neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background 0.4s,color 0.4s}
-
 /* TOPBAR */
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);flex-shrink:0;position:relative;z-index:50}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
@@ -37,26 +36,26 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .tb-action{display:flex;gap:8px}
 .tb-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
 .tb-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
-
 /* PAGE */
 .page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(120px + env(safe-area-inset-bottom,0px));height:calc(100vh - 68px)}
-
+/* EXPENSE TYPE SELECTOR */
+.expense-type-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.expense-type-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
+.expense-type-btn.active{box-shadow:var(--neu-in);color:var(--red)}
+.expense-type-btn:active{transform:scale(0.98)}
 /* VIEW TOGGLE */
 .view-toggle{display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px;margin-bottom:16px}
 .view-btn{flex:1;padding:10px;background:transparent;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text3);cursor:pointer;transition:all 0.2s}
 .view-btn.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
-
 /* QUARTER SELECTOR */
 .quarter-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .quarter-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
 .quarter-btn.active{box-shadow:var(--neu-in);color:var(--red)}
 .quarter-btn:active{transform:scale(0.98)}
-
 /* INFO CARD */
 .info-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:20px;border-left:4px solid var(--red)}
 .info-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .info-text{font-size:12px;color:var(--text2);line-height:1.6}
-
 /* CALENDAR VIEW */
 .calendar-view{display:none}
 .calendar-view.active{display:block}
@@ -65,23 +64,21 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .cal-nav-btn{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);padding:8px 16px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
 .cal-nav-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
 .cal-month{font-size:18px;font-weight:700;color:var(--text)}
-
 .calendar-grid{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px}
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px}
 .cal-weekday{text-align:center;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 0}
 .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .cal-day{
-  background:var(--bg);border-radius:12px;box-shadow:var(--neu-sm);
-  padding:8px 4px;text-align:center;aspect-ratio:1/1;cursor:pointer;
-  transition:box-shadow 0.15s;display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-start;overflow:hidden;position:relative;
+background:var(--bg);border-radius:12px;box-shadow:var(--neu-sm);
+padding:8px 4px;text-align:center;aspect-ratio:1/1;cursor:pointer;
+transition:box-shadow 0.15s;display:flex;flex-direction:column;
+align-items:center;justify-content:flex-start;overflow:hidden;position:relative;
 }
 .cal-day:active{box-shadow:var(--neu-in);transform:scale(0.98)}
 .cal-day.today{box-shadow:var(--neu-in);border:2px solid var(--red)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
 .cal-date{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;flex-shrink:0}
 .cal-amount{font-size:10px;font-weight:700;color:var(--red);margin-top:2px}
-
 /* FORM VIEW */
 .form-view{display:none}
 .form-view.active{display:block}
@@ -91,18 +88,15 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
 .fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:13px 16px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:box-shadow 0.15s}
 .fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.3)}
-
 /* COMPUTED FIELDS */
 .computed-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
 .computed-card{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-in);padding:14px;text-align:center}
 .computed-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
 .computed-value{font-size:20px;font-weight:700;color:var(--red);line-height:1}
-
 /* BUTTON */
 .btn-submit{width:100%;padding:16px;border-radius:14px;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none;background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);transition:transform 0.1s}
 .btn-submit:active{transform:scale(0.98)}
 .btn-submit:disabled{opacity:0.5;cursor:not-allowed}
-
 /* DAY DETAIL OVERLAY */
 .day-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .day-detail-overlay.open{display:block}
@@ -112,24 +106,25 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .day-detail-close:active{box-shadow:var(--neu-in);transform:scale(0.95)}
 .day-detail-title{font-size:17px;font-weight:700;color:var(--text)}
 .day-detail-content{padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
-
 .expense-item{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:12px;cursor:pointer;transition:transform 0.12s;border-left:4px solid var(--red)}
 .expense-item:active{transform:scale(0.98)}
 .expense-item.not-mine{opacity:0.6;cursor:default;border-left-color:var(--text3)}
+.expense-item.diesel{border-left-color:#B32533}
+.expense-item.parts{border-left-color:#2563eb}
+.expense-item.parking{border-left-color:#16a34a}
 .ei-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
 .ei-payee{font-size:15px;font-weight:700;color:var(--text)}
 .ei-amount{font-size:20px;font-weight:700;color:var(--red)}
 .ei-details{font-size:12px;color:var(--text2);line-height:1.6}
 .ei-user{font-size:10px;color:var(--text3);margin-top:6px;font-style:italic}
-
+.ei-type{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-top:4px}
 /* FAB */
 .fab{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom,0px));right:18px;width:54px;height:54px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:5px 5px 14px rgba(179,37,51,0.5),-2px -2px 8px rgba(179,37,51,0.2);z-index:50}
 .fab:active{transform:scale(0.93)}
-
+.fab-report{bottom:calc(148px + env(safe-area-inset-bottom,0px));background:var(--bg);color:var(--red);box-shadow:var(--neu-out)}
 /* TOAST */
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;max-width:90%;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .toast.show{opacity:1}
-
 /* SAVING OVERLAY */
 .saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
 .saving-overlay.show{display:flex}
@@ -137,7 +132,6 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .saving-text{font-size:14px;color:var(--text2);font-weight:500}
-
 /* EDIT DRAWER */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end}
 .overlay.open{display:flex}
@@ -153,700 +147,859 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .btn-ghost{color:var(--text2);box-shadow:var(--neu-sm)}
 .btn-ghost:active{box-shadow:var(--neu-in)}
 .btn-delete{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);margin-top:12px;width:100%}
+/* REPORT MODAL */
+.report-modal{display:none;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.report-modal.open{display:block}
+.report-header{background:var(--bg);padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
+.report-content{padding:20px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+.report-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px}
+.report-subtitle{font-size:14px;color:var(--text2);margin-bottom:24px}
+.report-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px}
+.report-section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bg2)}
+.report-row:last-child{border-bottom:none}
+.report-label{font-size:14px;color:var(--text2)}
+.report-value{font-size:16px;font-weight:600;color:var(--text)}
+.report-total{background:var(--bg2);border-radius:12px;padding:16px;margin-top:16px}
+.report-total-label{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.report-total-value{font-size:28px;font-weight:700;color:var(--red)}
 </style>
 </head>
 <body>
-
 <div class="topbar">
-  <button class="tb-back" onclick="location.href='index.html'">✕</button>
-  <span class="tb-title">Diesel Expenses</span>
-  <div class="tb-action">
-    <button class="tb-btn" onclick="loadExpenses()">↻</button>
-  </div>
+<button class="tb-back" onclick="location.href='index.html'">✕</button>
+<span class="tb-title">Expense Manager</span>
+<div class="tb-action">
+<button class="tb-btn" onclick="loadExpenses()">↻</button>
+</div>
+</div>
+<div class="page-wrap">
+<!-- EXPENSE TYPE SELECTOR -->
+<div class="expense-type-selector">
+<button class="expense-type-btn active" onclick="selectExpenseType('diesel')">⛽ Diesel</button>
+<button class="expense-type-btn" onclick="selectExpenseType('parts')">🔧 Parts & Repairs</button>
+<button class="expense-type-btn" onclick="selectExpenseType('parking')">🅿️ Parking & Tolls</button>
 </div>
 
-<div class="page-wrap">
-  <!-- VIEW TOGGLE -->
-  <div class="view-toggle">
-    <button class="view-btn active" onclick="switchView('calendar')">📅 Calendar</button>
-    <button class="view-btn" onclick="switchView('form')">➕ Add New</button>
-  </div>
+<!-- VIEW TOGGLE -->
+<div class="view-toggle">
+<button class="view-btn active" onclick="switchView('calendar')">📅 Calendar</button>
+<button class="view-btn" onclick="switchView('form')">➕ Add New</button>
+</div>
 
-  <!-- QUARTER SELECTOR -->
-  <div class="quarter-selector" id="quarter-selector"></div>
+<!-- QUARTER SELECTOR -->
+<div class="quarter-selector" id="quarter-selector"></div>
 
-  <!-- CALENDAR VIEW -->
-  <div class="calendar-view active" id="calendar-view">
-    <div class="calendar-header">
-      <div class="cal-nav">
-        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
-        <button class="cal-nav-btn" onclick="goToToday()">Today</button>
-        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
-      </div>
-      <div class="cal-month" id="cal-month">May 2025</div>
-    </div>
-    <div class="calendar-grid">
-      <div class="cal-weekdays">
-        <div class="cal-weekday">Mon</div>
-        <div class="cal-weekday">Tue</div>
-        <div class="cal-weekday">Wed</div>
-        <div class="cal-weekday">Thu</div>
-        <div class="cal-weekday">Fri</div>
-        <div class="cal-weekday">Sat</div>
-        <div class="cal-weekday">Sun</div>
-      </div>
-      <div class="cal-days" id="cal-days"></div>
-    </div>
-  </div>
+<!-- CALENDAR VIEW -->
+<div class="calendar-view active" id="calendar-view">
+<div class="calendar-header">
+<div class="cal-nav">
+<button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+<button class="cal-nav-btn" onclick="goToToday()">Today</button>
+<button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+</div>
+<div class="cal-month" id="cal-month">May 2025</div>
+</div>
+<div class="calendar-grid">
+<div class="cal-weekdays">
+<div class="cal-weekday">Mon</div>
+<div class="cal-weekday">Tue</div>
+<div class="cal-weekday">Wed</div>
+<div class="cal-weekday">Thu</div>
+<div class="cal-weekday">Fri</div>
+<div class="cal-weekday">Sat</div>
+<div class="cal-weekday">Sun</div>
+</div>
+<div class="cal-days" id="cal-days"></div>
+</div>
+</div>
 
-  <!-- FORM VIEW -->
-  <div class="form-view" id="form-view">
-    <div class="info-card">
-      <div class="info-title">⛽ Diesel Purchase Entry</div>
-      <div class="info-text">Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.</div>
-    </div>
-
-    <div class="form-section">
-      <div class="section-title">📝 Receipt Details</div>
-      
-      <div class="fg">
-        <label class="fl">Date of Purchase *</label>
-        <input class="fi" id="f-date" type="date" onchange="updateQuarter()">
-      </div>
-
-      <div class="fg">
-        <label class="fl">Current Quarter</label>
-        <input class="fi" id="f-quarter" type="text" readonly style="background:var(--bg2);color:var(--text3)">
-      </div>
-
-      <div class="fg">
-        <label class="fl">Name of Payee (Gas Station) *</label>
-        <input class="fi" id="f-payee" type="text" placeholder="e.g. Shell Station Caloocan">
-      </div>
-
-      <div class="fg">
-        <label class="fl">Address (Optional)</label>
-        <input class="fi" id="f-address" type="text" placeholder="Gas station address">
-      </div>
-
-      <div class="fg">
-        <label class="fl">TIN Number (Optional)</label>
-        <input class="fi" id="f-tin" type="text" placeholder="000-000-000-000">
-      </div>
-
-      <div class="fg">
-        <label class="fl">OR Number (Optional)</label>
-        <input class="fi" id="f-or" type="text" placeholder="Receipt number">
-      </div>
-
-      <div class="fg">
-        <label class="fl">Gross Amount (₱) *</label>
-        <input class="fi" id="f-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal" oninput="computeVAT()">
-      </div>
-
-      <div class="computed-grid">
-        <div class="computed-card">
-          <div class="computed-label">Vatable Purchase</div>
-          <div class="computed-value" id="vatable">₱0.00</div>
-        </div>
-        <div class="computed-card">
-          <div class="computed-label">Input VAT</div>
-          <div class="computed-value" id="input-vat">₱0.00</div>
-        </div>
-      </div>
-    </div>
-
-    <button class="btn-submit" onclick="submitExpense()">Submit Diesel Expense</button>
-  </div>
+<!-- FORM VIEW -->
+<div class="form-view" id="form-view">
+<div class="info-card">
+<div class="info-title" id="form-info-title">⛽ Diesel Purchase Entry</div>
+<div class="info-text" id="form-info-text">Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.</div>
+</div>
+<div class="form-section">
+<div class="section-title">📝 Receipt Details</div>
+<div class="fg">
+<label class="fl">Date of Purchase *</label>
+<input class="fi" id="f-date" type="date" onchange="updateQuarter()">
+</div>
+<div class="fg">
+<label class="fl">Current Quarter</label>
+<input class="fi" id="f-quarter" type="text" readonly style="background:var(--bg2);color:var(--text3)">
+</div>
+<div class="fg">
+<label class="fl"><span id="payee-label">Name of Payee (Gas Station)</span> *</label>
+<input class="fi" id="f-payee" type="text" placeholder="e.g. Shell Station Caloocan">
+</div>
+<div class="fg">
+<label class="fl">Address (Optional)</label>
+<input class="fi" id="f-address" type="text" placeholder="Address">
+</div>
+<div class="fg">
+<label class="fl">TIN Number (Optional)</label>
+<input class="fi" id="f-tin" type="text" placeholder="000-000-000-000">
+</div>
+<div class="fg">
+<label class="fl">OR Number (Optional)</label>
+<input class="fi" id="f-or" type="text" placeholder="Receipt number">
+</div>
+<div class="fg">
+<label class="fl">Gross Amount (₱) *</label>
+<input class="fi" id="f-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal" oninput="computeVAT()">
+</div>
+<div class="computed-grid" id="vat-computed">
+<div class="computed-card">
+<div class="computed-label">Vatable Purchase</div>
+<div class="computed-value" id="vatable">₱0.00</div>
+</div>
+<div class="computed-card">
+<div class="computed-label">Input VAT</div>
+<div class="computed-value" id="input-vat">₱0.00</div>
+</div>
+</div>
+</div>
+<button class="btn-submit" onclick="submitExpense()" id="submit-btn">Submit Diesel Expense</button>
+</div>
 </div>
 
 <!-- FAB (only show in calendar view) -->
+<button class="fab fab-report" id="fab-report" onclick="openReport()" style="display:none">📊</button>
 <button class="fab" id="fab" onclick="switchView('form')" style="display:none">+</button>
 
 <!-- DAY DETAIL OVERLAY -->
 <div class="day-detail-overlay" id="day-detail-overlay">
-  <div class="day-detail-header">
-    <button class="day-detail-close" onclick="closeDayDetail()">✕</button>
-    <div class="day-detail-title" id="day-detail-title">Day Expenses</div>
-    <div style="width:40px"></div>
-  </div>
-  <div class="day-detail-content" id="day-detail-content"></div>
+<div class="day-detail-header">
+<button class="day-detail-close" onclick="closeDayDetail()">✕</button>
+<div class="day-detail-title" id="day-detail-title">Day Expenses</div>
+<div style="width:40px"></div>
+</div>
+<div class="day-detail-content" id="day-detail-content"></div>
 </div>
 
 <!-- EDIT DRAWER -->
 <div class="overlay" id="edit-drawer">
-  <div class="drawer">
-    <div class="drawer-handle"></div>
-    <div class="drawer-title">Edit Expense</div>
-    <div class="drawer-sub">Update your diesel expense</div>
+<div class="drawer">
+<div class="drawer-handle"></div>
+<div class="drawer-title">Edit Expense</div>
+<div class="drawer-sub">Update your expense</div>
+<div class="fg">
+<label class="fl">Date of Purchase *</label>
+<input class="fi" id="e-date" type="date">
+</div>
+<div class="fg">
+<label class="fl">Name of Payee *</label>
+<input class="fi" id="e-payee" type="text">
+</div>
+<div class="fg">
+<label class="fl">Address (Optional)</label>
+<input class="fi" id="e-address" type="text">
+</div>
+<div class="fg">
+<label class="fl">TIN Number (Optional)</label>
+<input class="fi" id="e-tin" type="text">
+</div>
+<div class="fg">
+<label class="fl">OR Number (Optional)</label>
+<input class="fi" id="e-or" type="text">
+</div>
+<div class="fg">
+<label class="fl">Gross Amount (₱) *</label>
+<input class="fi" id="e-amount" type="number" step="0.01" oninput="computeEditVAT()">
+</div>
+<div class="computed-grid" id="e-vat-computed">
+<div class="computed-card">
+<div class="computed-label">Vatable Purchase</div>
+<div class="computed-value" id="e-vatable">₱0.00</div>
+</div>
+<div class="computed-card">
+<div class="computed-label">Input VAT</div>
+<div class="computed-value" id="e-input-vat">₱0.00</div>
+</div>
+</div>
+<div class="btn-row">
+<button class="btn btn-ghost" onclick="closeEditDrawer()">Cancel</button>
+<button class="btn btn-red" onclick="updateExpense()">Update</button>
+</div>
+<button class="btn btn-delete" onclick="deleteExpense()">Delete Expense</button>
+</div>
+</div>
 
-    <div class="fg">
-      <label class="fl">Date of Purchase *</label>
-      <input class="fi" id="e-date" type="date">
-    </div>
+<!-- REPORT MODAL -->
+<div class="report-modal" id="report-modal">
+<div class="report-header">
+<button class="day-detail-close" onclick="closeReport()">✕</button>
+<div class="day-detail-title">Quarterly Report</div>
+<div style="width:40px"></div>
+</div>
+<div class="report-content">
+<div class="report-title">VAT Summary Report</div>
+<div class="report-subtitle" id="report-quarter">Q1 2025</div>
 
-    <div class="fg">
-      <label class="fl">Name of Payee *</label>
-      <input class="fi" id="e-payee" type="text">
-    </div>
+<div class="report-section">
+<div class="report-section-title">⛽ Diesel Expenses</div>
+<div class="report-row">
+<div class="report-label">Total Gross Amount</div>
+<div class="report-value" id="diesel-gross">₱0.00</div>
+</div>
+<div class="report-row">
+<div class="report-label">Vatable Purchases</div>
+<div class="report-value" id="diesel-vatable">₱0.00</div>
+</div>
+<div class="report-row">
+<div class="report-label">Input VAT</div>
+<div class="report-value" id="diesel-vat">₱0.00</div>
+</div>
+</div>
 
-    <div class="fg">
-      <label class="fl">Address (Optional)</label>
-      <input class="fi" id="e-address" type="text">
-    </div>
+<div class="report-section">
+<div class="report-section-title">🔧 Parts & Repairs</div>
+<div class="report-row">
+<div class="report-label">Total Gross Amount</div>
+<div class="report-value" id="parts-gross">₱0.00</div>
+</div>
+<div class="report-row">
+<div class="report-label">Vatable Purchases</div>
+<div class="report-value" id="parts-vatable">₱0.00</div>
+</div>
+<div class="report-row">
+<div class="report-label">Input VAT</div>
+<div class="report-value" id="parts-vat">₱0.00</div>
+</div>
+</div>
 
-    <div class="fg">
-      <label class="fl">TIN Number (Optional)</label>
-      <input class="fi" id="e-tin" type="text">
-    </div>
+<div class="report-section">
+<div class="report-section-title">🅿️ Parking Fees & Tolls</div>
+<div class="report-row">
+<div class="report-label">Total Gross Amount</div>
+<div class="report-value" id="parking-gross">₱0.00</div>
+</div>
+<div class="report-row">
+<div class="report-label">Vatable Purchases</div>
+<div class="report-value" id="parking-vatable">₱0.00</div>
+</div>
+<div class="report-row">
+<div class="report-label">Input VAT</div>
+<div class="report-value" id="parking-vat">₱0.00</div>
+</div>
+</div>
 
-    <div class="fg">
-      <label class="fl">OR Number (Optional)</label>
-      <input class="fi" id="e-or" type="text">
-    </div>
-
-    <div class="fg">
-      <label class="fl">Gross Amount (₱) *</label>
-      <input class="fi" id="e-amount" type="number" step="0.01" oninput="computeEditVAT()">
-    </div>
-
-    <div class="computed-grid">
-      <div class="computed-card">
-        <div class="computed-label">Vatable Purchase</div>
-        <div class="computed-value" id="e-vatable">₱0.00</div>
-      </div>
-      <div class="computed-card">
-        <div class="computed-label">Input VAT</div>
-        <div class="computed-value" id="e-input-vat">₱0.00</div>
-      </div>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeEditDrawer()">Cancel</button>
-      <button class="btn btn-red" onclick="updateExpense()">Update</button>
-    </div>
-
-    <button class="btn btn-delete" onclick="deleteExpense()">Delete Expense</button>
-  </div>
+<div class="report-section">
+<div class="report-section-title">📊 Grand Total</div>
+<div class="report-total">
+<div class="report-total-label">Total Vatable Purchases</div>
+<div class="report-total-value" id="grand-vatable">₱0.00</div>
+</div>
+<div class="report-total">
+<div class="report-total-label">Total Input VAT</div>
+<div class="report-total-value" id="grand-vat">₱0.00</div>
+</div>
+<div class="report-total">
+<div class="report-total-label">Grand Total</div>
+<div class="report-total-value" id="grand-total">₱0.00</div>
+</div>
+</div>
+</div>
 </div>
 
 <!-- SAVING OVERLAY -->
 <div class="saving-overlay" id="saving-overlay">
-  <div class="saving-box">
-    <div class="saving-spinner"></div>
-    <div class="saving-text" id="saving-text">Saving...</div>
-  </div>
+<div class="saving-box">
+<div class="saving-spinner"></div>
+<div class="saving-text" id="saving-text">Saving...</div>
 </div>
-
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
 // ═══ CONFIG ═══════════════════════════════════════════
 const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-
 let token = '';
 let currentUser = '';
 let allExpenses = [];
 let currentQuarter = '';
 let currentMonth = new Date();
 let editingExpense = null;
+let currentExpenseType = 'diesel'; // diesel, parts, parking
 
 // ═══ INIT ═════════════════════════════════════════════
 (function init() {
-  const dark = localStorage.getItem('pedroex-theme') === 'dark';
-  document.body.classList.toggle('dark', dark);
-
-  token = localStorage.getItem('pedroex-token') || '';
-  const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-  if (!token || Date.now() >= expiry) {
-    location.href = 'index.html';
-    return;
-  }
-
-  currentUser = localStorage.getItem('pedroex-name') || 'Unknown';
-
-  document.getElementById('f-date').valueAsDate = new Date();
-  updateQuarter();
-  
-  detectCurrentQuarter();
-  buildQuarterSelector();
-  loadExpenses();
+const dark = localStorage.getItem('pedroex-theme') === 'dark';
+document.body.classList.toggle('dark', dark);
+token = localStorage.getItem('pedroex-token') || '';
+const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+if (!token || Date.now() >= expiry) {
+location.href = 'index.html';
+return;
+}
+currentUser = localStorage.getItem('pedroex-name') || 'Unknown';
+document.getElementById('f-date').valueAsDate = new Date();
+updateQuarter();
+detectCurrentQuarter();
+buildQuarterSelector();
+loadExpenses();
 })();
+
+// ═══ EXPENSE TYPE MANAGEMENT ══════════════════════════
+function selectExpenseType(type) {
+currentExpenseType = type;
+document.querySelectorAll('.expense-type-btn').forEach(btn => btn.classList.remove('active'));
+event.target.classList.add('active');
+updateFormLabels();
+loadExpenses();
+}
+
+function updateFormLabels() {
+const labels = {
+diesel: {
+title: '⛽ Diesel Purchase Entry',
+text: 'Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.',
+payee: 'Name of Payee (Gas Station)',
+button: 'Submit Diesel Expense',
+showVAT: true
+},
+parts: {
+title: '🔧 Parts & Repairs Entry',
+text: 'Submit your parts and repair expenses here. The system will automatically compute VAT.',
+payee: 'Name of Supplier/Shop',
+button: 'Submit Parts & Repairs',
+showVAT: true
+},
+parking: {
+title: '🅿️ Parking Fees & Tolls Entry',
+text: 'Submit your parking and toll expenses here. The system will automatically compute VAT.',
+payee: 'Name of Location/Toll Gate',
+button: 'Submit Parking & Tolls',
+showVAT: true
+}
+};
+const config = labels[currentExpenseType];
+document.getElementById('form-info-title').textContent = config.title;
+document.getElementById('form-info-text').textContent = config.text;
+document.getElementById('payee-label').textContent = config.payee;
+document.getElementById('submit-btn').textContent = config.button;
+document.getElementById('vat-computed').style.display = config.showVAT ? 'grid' : 'none';
+}
+
+function getSheetSuffix() {
+const suffixes = {
+diesel: '-Diesel',
+parts: '-Parts',
+parking: '-Parking'
+};
+return suffixes[currentExpenseType];
+}
 
 // ═══ QUARTER MANAGEMENT ═══════════════════════════════
 function detectCurrentQuarter() {
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const year = now.getFullYear();
-
-  if (month >= 1 && month <= 3) {
-    currentQuarter = `Purchases (Jan-Mar ${year}) -Diesel`;
-  } else if (month >= 4 && month <= 6) {
-    currentQuarter = `Purchases (Apr-Jun ${year}) -Diesel`;
-  } else if (month >= 7 && month <= 9) {
-    currentQuarter = `Purchases (Jul-Sep ${year}) -Diesel`;
-  } else {
-    currentQuarter = `Purchases (Oct-Dec ${year}) -Diesel`;
-  }
+const now = new Date();
+const month = now.getMonth() + 1;
+const year = now.getFullYear();
+let baseQuarter = '';
+if (month >= 1 && month <= 3) {
+baseQuarter = `Purchases (Jan-Mar ${year})`;
+} else if (month >= 4 && month <= 6) {
+baseQuarter = `Purchases (Apr-Jun ${year})`;
+} else if (month >= 7 && month <= 9) {
+baseQuarter = `Purchases (Jul-Sep ${year})`;
+} else {
+baseQuarter = `Purchases (Oct-Dec ${year})`;
+}
+currentQuarter = baseQuarter + getSheetSuffix();
 }
 
 function buildQuarterSelector() {
-  const now = new Date();
-  const year = now.getFullYear();
-  
-  const quarters = [
-    { label: 'Q1', name: `Purchases (Jan-Mar ${year}) -Diesel` },
-    { label: 'Q2', name: `Purchases (Apr-Jun ${year}) -Diesel` },
-    { label: 'Q3', name: `Purchases (Jul-Sep ${year}) -Diesel` },
-    { label: 'Q4', name: `Purchases (Oct-Dec ${year}) -Diesel` }
-  ];
-
-  document.getElementById('quarter-selector').innerHTML = quarters.map(q => 
-    `<button class="quarter-btn ${q.name === currentQuarter ? 'active' : ''}" onclick="selectQuarter('${q.name}')">${q.label} ${year}</button>`
-  ).join('');
+const now = new Date();
+const year = now.getFullYear();
+const quarters = [
+{ label: 'Q1', base: `Purchases (Jan-Mar ${year})` },
+{ label: 'Q2', base: `Purchases (Apr-Jun ${year})` },
+{ label: 'Q3', base: `Purchases (Jul-Sep ${year})` },
+{ label: 'Q4', base: `Purchases (Oct-Dec ${year})` }
+];
+document.getElementById('quarter-selector').innerHTML = quarters.map(q => {
+const fullName = q.base + getSheetSuffix();
+return `<button class="quarter-btn ${fullName === currentQuarter ? 'active' : ''}" onclick="selectQuarter('${fullName}')">${q.label} ${year}</button>`;
+}).join('');
 }
 
 function selectQuarter(quarterName) {
-  currentQuarter = quarterName;
-  buildQuarterSelector();
-  loadExpenses();
+currentQuarter = quarterName;
+buildQuarterSelector();
+loadExpenses();
 }
 
 function updateQuarter() {
-  const dateStr = document.getElementById('f-date').value;
-  if (!dateStr) {
-    document.getElementById('f-quarter').value = '';
-    return;
-  }
-
-  const date = new Date(dateStr);
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-
-  let quarter = '';
-  if (month >= 1 && month <= 3) {
-    quarter = `Purchases (Jan-Mar ${year}) -Diesel`;
-  } else if (month >= 4 && month <= 6) {
-    quarter = `Purchases (Apr-Jun ${year}) -Diesel`;
-  } else if (month >= 7 && month <= 9) {
-    quarter = `Purchases (Jul-Sep ${year}) -Diesel`;
-  } else {
-    quarter = `Purchases (Oct-Dec ${year}) -Diesel`;
-  }
-
-  document.getElementById('f-quarter').value = quarter;
+const dateStr = document.getElementById('f-date').value;
+if (!dateStr) {
+document.getElementById('f-quarter').value = '';
+return;
+}
+const date = new Date(dateStr);
+const month = date.getMonth() + 1;
+const year = date.getFullYear();
+let baseQuarter = '';
+if (month >= 1 && month <= 3) {
+baseQuarter = `Purchases (Jan-Mar ${year})`;
+} else if (month >= 4 && month <= 6) {
+baseQuarter = `Purchases (Apr-Jun ${year})`;
+} else if (month >= 7 && month <= 9) {
+baseQuarter = `Purchases (Jul-Sep ${year})`;
+} else {
+baseQuarter = `Purchases (Oct-Dec ${year})`;
+}
+document.getElementById('f-quarter').value = baseQuarter + getSheetSuffix();
 }
 
 // ═══ VIEW SWITCHING ═══════════════════════════════════
 function switchView(view) {
-  document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  
-  document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
-  document.getElementById(view + '-view').classList.add('active');
-
-  // Show/hide FAB
-  document.getElementById('fab').style.display = view === 'calendar' ? 'flex' : 'none';
+document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+event.target.classList.add('active');
+document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
+document.getElementById(view + '-view').classList.add('active');
+// Show/hide FABs
+const showFabs = view === 'calendar';
+document.getElementById('fab').style.display = showFabs ? 'flex' : 'none';
+document.getElementById('fab-report').style.display = showFabs ? 'flex' : 'none';
 }
 
 // ═══ VAT COMPUTATION ══════════════════════════════════
 function computeVAT() {
-  const amount = parseFloat(document.getElementById('f-amount').value) || 0;
-  const vatable = amount * 0.88;
-  const inputVat = amount * 0.12;
-  document.getElementById('vatable').textContent = '₱' + vatable.toFixed(2);
-  document.getElementById('input-vat').textContent = '₱' + inputVat.toFixed(2);
+const amount = parseFloat(document.getElementById('f-amount').value) || 0;
+const vatable = amount / 1.12;
+const inputVat = amount - vatable;
+document.getElementById('vatable').textContent = '₱' + vatable.toFixed(2);
+document.getElementById('input-vat').textContent = '₱' + inputVat.toFixed(2);
 }
 
 function computeEditVAT() {
-  const amount = parseFloat(document.getElementById('e-amount').value) || 0;
-  const vatable = amount * 0.88;
-  const inputVat = amount * 0.12;
-  document.getElementById('e-vatable').textContent = '₱' + vatable.toFixed(2);
-  document.getElementById('e-input-vat').textContent = '₱' + inputVat.toFixed(2);
+const amount = parseFloat(document.getElementById('e-amount').value) || 0;
+const vatable = amount / 1.12;
+const inputVat = amount - vatable;
+document.getElementById('e-vatable').textContent = '₱' + vatable.toFixed(2);
+document.getElementById('e-input-vat').textContent = '₱' + inputVat.toFixed(2);
 }
 
 // ═══ LOAD EXPENSES ════════════════════════════════════
 function loadExpenses() {
-  showSaving('Loading expenses...');
-  
-  apiGet(currentQuarter + '!A8:N').then(res => {
-    const rows = res.values || [];
-    allExpenses = rows.map((r, i) => ({
-      rowIndex: i + 8,
-      date: r[0] || '',
-      payee: r[1] || '',
-      address: r[2] || '',
-      tin: r[3] || '',
-      orNum: r[5] || '',
-      amount: parseFloat(r[8]) || 0,
-      vatable: parseFloat(r[10]) || 0,
-      inputVat: parseFloat(r[11]) || 0,
-      user: r[13] || ''
-    })).filter(e => e.date);
-
-    hideSaving();
-    renderCalendar();
-  }).catch(err => {
-    hideSaving();
-    if (err.message.includes('Unable to parse range')) {
-      // Sheet doesn't exist yet
-      allExpenses = [];
-      renderCalendar();
-    } else {
-      showToast('❌ Load failed: ' + err.message);
-    }
-  });
+showSaving('Loading expenses...');
+apiGet(currentQuarter + '!A8:O1000').then(res => {
+const rows = res.values || [];
+allExpenses = rows.map((r, i) => ({
+rowIndex: i + 8,
+date: r[0] || '',
+payee: r[1] || '',
+address: r[2] || '',
+tin: r[3] || '',
+orNum: r[5] || '',
+amount: parseFloat(r[8]) || 0,
+vatable: parseFloat(r[10]) || 0,
+inputVat: parseFloat(r[11]) || 0,
+user: r[13] || '',
+type: currentExpenseType
+})).filter(e => e.date && e.payee); // ✅ FIXED: Filter empty rows
+hideSaving();
+renderCalendar();
+}).catch(err => {
+hideSaving();
+if (err.message.includes('Unable to parse range')) {
+allExpenses = [];
+renderCalendar();
+} else {
+showToast('❌ Load failed: ' + err.message);
+}
+});
 }
 
 // ═══ CALENDAR RENDERING ═══════════════════════════════
 function changeMonth(delta) {
-  currentMonth.setMonth(currentMonth.getMonth() + delta);
-  renderCalendar();
+currentMonth.setMonth(currentMonth.getMonth() + delta);
+renderCalendar();
 }
 
 function goToToday() {
-  currentMonth = new Date();
-  renderCalendar();
+currentMonth = new Date();
+renderCalendar();
 }
 
 function renderCalendar() {
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
-  
-  document.getElementById('cal-month').textContent = 
-    currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-  const daysInMonth = lastDay.getDate();
-  
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  let html = '';
-  
-  const prevMonthDays = new Date(year, month, 0).getDate();
-  for (let i = startDay - 1; i >= 0; i--) {
-    html += `<div class="cal-day other-month"><div class="cal-date">${prevMonthDays - i}</div></div>`;
-  }
-  
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(year, month, day);
-    date.setHours(0, 0, 0, 0);
-    const dateStr = date.toISOString().split('T')[0];
-    const isToday = date.getTime() === today.getTime();
-    
-    const dayExpenses = allExpenses.filter(e => e.date === dateStr);
-    const total = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
-    
-    const amountHtml = total > 0 ? `<div class="cal-amount">₱${total.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>` : '';
-    
-    html += `<div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayDetail('${dateStr}')">
-      <div class="cal-date">${day}</div>
-      ${amountHtml}
-    </div>`;
-  }
-  
-  const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
-  const nextMonthDays = totalCells - (startDay + daysInMonth);
-  for (let i = 1; i <= nextMonthDays; i++) {
-    html += `<div class="cal-day other-month"><div class="cal-date">${i}</div></div>`;
-  }
-  
-  document.getElementById('cal-days').innerHTML = html;
+const year = currentMonth.getFullYear();
+const month = currentMonth.getMonth();
+document.getElementById('cal-month').textContent =
+currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+const firstDay = new Date(year, month, 1);
+const lastDay = new Date(year, month + 1, 0);
+const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+const daysInMonth = lastDay.getDate();
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+let html = '';
+const prevMonthDays = new Date(year, month, 0).getDate();
+for (let i = startDay - 1; i >= 0; i--) {
+html += `<div class="cal-day other-month"><div class="cal-date">${prevMonthDays - i}</div></div>`;
+}
+
+for (let day = 1; day <= daysInMonth; day++) {
+const date = new Date(year, month, day);
+date.setHours(0, 0, 0, 0);
+const dateStr = date.toISOString().split('T')[0];
+const isToday = date.getTime() === today.getTime();
+const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+const total = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+const amountHtml = total > 0 ? `<div class="cal-amount">₱${total.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>` : '';
+html += `<div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayDetail('${dateStr}')">
+<div class="cal-date">${day}</div>
+${amountHtml}
+</div>`;
+}
+
+const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
+const nextMonthDays = totalCells - (startDay + daysInMonth);
+for (let i = 1; i <= nextMonthDays; i++) {
+html += `<div class="cal-day other-month"><div class="cal-date">${i}</div></div>`;
+}
+
+document.getElementById('cal-days').innerHTML = html;
 }
 
 // ═══ DAY DETAIL ═══════════════════════════════════════
 function showDayDetail(dateStr) {
-  const dayExpenses = allExpenses.filter(e => e.date === dateStr);
-  
-  if (dayExpenses.length === 0) {
-    showToast('No expenses on this date');
-    return;
-  }
-  
-  const date = new Date(dateStr);
-  const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  
-  document.getElementById('day-detail-title').textContent = dateText;
-  
-  const html = dayExpenses.map(e => {
-    const isMine = e.user === currentUser;
-    return `<div class="expense-item ${isMine ? '' : 'not-mine'}" ${isMine ? `onclick="openEditDrawer(${e.rowIndex})"` : ''}>
-      <div class="ei-header">
-        <div class="ei-payee">${e.payee}</div>
-        <div class="ei-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-      </div>
-      <div class="ei-details">
-        ${e.address ? `📍 ${e.address}<br>` : ''}
-        ${e.tin ? `🏢 TIN: ${e.tin}<br>` : ''}
-        ${e.orNum ? `🧾 OR: ${e.orNum}` : ''}
-      </div>
-      <div class="ei-user">by ${e.user}</div>
-    </div>`;
-  }).join('');
-  
-  document.getElementById('day-detail-content').innerHTML = html;
-  document.getElementById('day-detail-overlay').classList.add('open');
+const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+if (dayExpenses.length === 0) {
+showToast('No expenses on this date');
+return;
+}
+const date = new Date(dateStr);
+const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+document.getElementById('day-detail-title').textContent = dateText;
+
+const html = dayExpenses.map(e => {
+const isMine = e.user === currentUser;
+const typeClass = e.type || 'diesel';
+const typeLabel = { diesel: 'Diesel', parts: 'Parts & Repairs', parking: 'Parking & Tolls' }[typeClass];
+return `<div class="expense-item ${typeClass} ${isMine ? '' : 'not-mine'}" ${isMine ? `onclick="openEditDrawer(${e.rowIndex})"` : ''}>
+<div class="ei-header">
+<div class="ei-payee">${e.payee}</div>
+<div class="ei-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+</div>
+<div class="ei-details">
+${e.address ? `📍 ${e.address}<br>` : ''}
+${e.tin ? `🏢 TIN: ${e.tin}<br>` : ''}
+${e.orNum ? `🧾 OR: ${e.orNum}` : ''}
+</div>
+<div class="ei-type">${typeLabel}</div>
+<div class="ei-user">by ${e.user}</div>
+</div>`;
+}).join('');
+document.getElementById('day-detail-content').innerHTML = html;
+document.getElementById('day-detail-overlay').classList.add('open');
 }
 
 function closeDayDetail() {
-  document.getElementById('day-detail-overlay').classList.remove('open');
+document.getElementById('day-detail-overlay').classList.remove('open');
 }
 
 // ═══ SUBMIT EXPENSE ═══════════════════════════════════
 function submitExpense() {
-  const date = document.getElementById('f-date').value.trim();
-  const payee = document.getElementById('f-payee').value.trim();
-  const address = document.getElementById('f-address').value.trim();
-  const tin = document.getElementById('f-tin').value.trim();
-  const orNum = document.getElementById('f-or').value.trim();
-  const amount = parseFloat(document.getElementById('f-amount').value) || 0;
+const date = document.getElementById('f-date').value.trim();
+const payee = document.getElementById('f-payee').value.trim();
+const address = document.getElementById('f-address').value.trim();
+const tin = document.getElementById('f-tin').value.trim();
+const orNum = document.getElementById('f-or').value.trim();
+const amount = parseFloat(document.getElementById('f-amount').value) || 0;
 
-  if (!date || !payee || amount <= 0) {
-    showToast('❌ Please fill required fields: Date, Payee, Amount');
-    return;
-  }
+if (!date || !payee || amount <= 0) {
+showToast('❌ Please fill required fields: Date, Payee, Amount');
+return;
+}
 
-  const quarter = document.getElementById('f-quarter').value;
-  const vatable = amount * 0.88;
-  const inputVat = amount * 0.12;
+const quarter = document.getElementById('f-quarter').value;
+const vatable = amount / 1.12;
+const inputVat = amount - vatable;
 
-  showSaving('Checking quarterly sheet...');
-
-  checkOrCreateSheet(quarter).then(() => {
-    showSaving('Saving expense...');
-    
-    const row = [
-      date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser
-    ];
-
-    return apiAppend(quarter + '!A8:N8', [row]);
-  })
-  .then(() => {
-    hideSaving();
-    showToast('✅ Diesel expense submitted!');
-    
-    // Reset form
-    document.getElementById('f-payee').value = '';
-    document.getElementById('f-address').value = '';
-    document.getElementById('f-tin').value = '';
-    document.getElementById('f-or').value = '';
-    document.getElementById('f-amount').value = '';
-    computeVAT();
-    
-    // Reload and switch to calendar
-    setTimeout(() => {
-      loadExpenses();
-      switchView('calendar');
-    }, 1000);
-  })
-  .catch(err => {
-    hideSaving();
-    showToast('❌ Submit failed: ' + err.message);
-    console.error(err);
-  });
+showSaving('Checking quarterly sheet...');
+checkOrCreateSheet(quarter).then(() => {
+showSaving('Saving expense...');
+const row = [
+date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, currentExpenseType
+];
+return apiAppend(quarter + '!A8:O8', [row]);
+})
+.then(() => {
+hideSaving();
+showToast('✅ Expense submitted!');
+// Reset form
+document.getElementById('f-payee').value = '';
+document.getElementById('f-address').value = '';
+document.getElementById('f-tin').value = '';
+document.getElementById('f-or').value = '';
+document.getElementById('f-amount').value = '';
+computeVAT();
+// Reload and switch to calendar
+setTimeout(() => {
+loadExpenses();
+switchView('calendar');
+}, 1000);
+})
+.catch(err => {
+hideSaving();
+showToast('❌ Submit failed: ' + err.message);
+console.error(err);
+});
 }
 
 // ═══ EDIT EXPENSE ═════════════════════════════════════
 function openEditDrawer(rowIndex) {
-  editingExpense = allExpenses.find(e => e.rowIndex === rowIndex);
-  if (!editingExpense) return;
-
-  if (editingExpense.user !== currentUser) {
-    showToast('❌ You can only edit your own expenses');
-    return;
-  }
-
-  document.getElementById('e-date').value = editingExpense.date;
-  document.getElementById('e-payee').value = editingExpense.payee;
-  document.getElementById('e-address').value = editingExpense.address;
-  document.getElementById('e-tin').value = editingExpense.tin;
-  document.getElementById('e-or').value = editingExpense.orNum;
-  document.getElementById('e-amount').value = editingExpense.amount;
-  computeEditVAT();
-
-  closeDayDetail();
-  document.getElementById('edit-drawer').classList.add('open');
+editingExpense = allExpenses.find(e => e.rowIndex === rowIndex);
+if (!editingExpense) return;
+if (editingExpense.user !== currentUser) {
+showToast('❌ You can only edit your own expenses');
+return;
+}
+document.getElementById('e-date').value = editingExpense.date;
+document.getElementById('e-payee').value = editingExpense.payee;
+document.getElementById('e-address').value = editingExpense.address;
+document.getElementById('e-tin').value = editingExpense.tin;
+document.getElementById('e-or').value = editingExpense.orNum;
+document.getElementById('e-amount').value = editingExpense.amount;
+computeEditVAT();
+closeDayDetail();
+document.getElementById('edit-drawer').classList.add('open');
 }
 
 function closeEditDrawer() {
-  document.getElementById('edit-drawer').classList.remove('open');
-  editingExpense = null;
+document.getElementById('edit-drawer').classList.remove('open');
+editingExpense = null;
 }
 
 function updateExpense() {
-  if (!editingExpense) return;
+if (!editingExpense) return;
+const date = document.getElementById('e-date').value.trim();
+const payee = document.getElementById('e-payee').value.trim();
+const address = document.getElementById('e-address').value.trim();
+const tin = document.getElementById('e-tin').value.trim();
+const orNum = document.getElementById('e-or').value.trim();
+const amount = parseFloat(document.getElementById('e-amount').value) || 0;
 
-  const date = document.getElementById('e-date').value.trim();
-  const payee = document.getElementById('e-payee').value.trim();
-  const address = document.getElementById('e-address').value.trim();
-  const tin = document.getElementById('e-tin').value.trim();
-  const orNum = document.getElementById('e-or').value.trim();
-  const amount = parseFloat(document.getElementById('e-amount').value) || 0;
+if (!date || !payee || amount <= 0) {
+showToast('❌ Please fill required fields');
+return;
+}
 
-  if (!date || !payee || amount <= 0) {
-    showToast('❌ Please fill required fields');
-    return;
-  }
+const vatable = amount / 1.12;
+const inputVat = amount - vatable;
 
-  const vatable = amount * 0.88;
-  const inputVat = amount * 0.12;
-
-  showSaving('Updating...');
-
-  const row = [
-    date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser
-  ];
-
-  apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':N' + editingExpense.rowIndex, [row])
-    .then(() => {
-      hideSaving();
-      showToast('✅ Expense updated!');
-      closeEditDrawer();
-      loadExpenses();
-    })
-    .catch(err => {
-      hideSaving();
-      showToast('❌ Update failed: ' + err.message);
-    });
+showSaving('Updating...');
+const row = [
+date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, currentExpenseType
+];
+apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex, [row])
+.then(() => {
+hideSaving();
+showToast('✅ Expense updated!');
+closeEditDrawer();
+loadExpenses();
+})
+.catch(err => {
+hideSaving();
+showToast('❌ Update failed: ' + err.message);
+});
 }
 
 function deleteExpense() {
-  if (!editingExpense) return;
+if (!editingExpense) return;
+if (!confirm('Delete this expense? This cannot be undone.')) return;
+showSaving('Deleting...');
+const emptyRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex, [emptyRow])
+.then(() => {
+hideSaving();
+showToast('✅ Expense deleted');
+closeEditDrawer();
+loadExpenses();
+})
+.catch(err => {
+hideSaving();
+showToast('❌ Delete failed: ' + err.message);
+});
+}
 
-  if (!confirm('Delete this expense? This cannot be undone.')) return;
+// ═══ REPORT MODAL ═════════════════════════════════════
+function openReport() {
+showSaving('Generating report...');
+const year = new Date().getFullYear();
+const quarters = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Oct-Dec'];
+const types = ['diesel', 'parts', 'parking'];
 
-  showSaving('Deleting...');
+let allPromises = [];
+quarters.forEach(q => {
+types.forEach(type => {
+const suffix = { diesel: '-Diesel', parts: '-Parts', parking: '-Parking' }[type];
+const sheetName = `Purchases (${q} ${year})${suffix}`;
+allPromises.push(
+apiGet(sheetName + '!A8:O1000')
+.then(res => ({ type, data: res.values || [] }))
+.catch(() => ({ type, data: [] }))
+);
+});
+});
 
-  const emptyRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-  
-  apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':N' + editingExpense.rowIndex, [emptyRow])
-    .then(() => {
-      hideSaving();
-      showToast('✅ Expense deleted');
-      closeEditDrawer();
-      loadExpenses();
-    })
-    .catch(err => {
-      hideSaving();
-      showToast('❌ Delete failed: ' + err.message);
-    });
+Promise.all(allPromises).then(results => {
+const summary = { diesel: { gross: 0, vatable: 0, vat: 0 }, parts: { gross: 0, vatable: 0, vat: 0 }, parking: { gross: 0, vatable: 0, vat: 0 } };
+results.forEach(r => {
+r.data.forEach(row => {
+if (row[0] && row[1]) { // Has date and payee
+summary[r.type].gross += parseFloat(row[8]) || 0;
+summary[r.type].vatable += parseFloat(row[10]) || 0;
+summary[r.type].vat += parseFloat(row[11]) || 0;
+}
+});
+});
+
+document.getElementById('report-quarter').textContent = currentQuarter.replace(getSheetSuffix(), '');
+document.getElementById('diesel-gross').textContent = '₱' + summary.diesel.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('diesel-vatable').textContent = '₱' + summary.diesel.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('diesel-vat').textContent = '₱' + summary.diesel.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
+
+document.getElementById('parts-gross').textContent = '₱' + summary.parts.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('parts-vatable').textContent = '₱' + summary.parts.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('parts-vat').textContent = '₱' + summary.parts.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
+
+document.getElementById('parking-gross').textContent = '₱' + summary.parking.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('parking-vatable').textContent = '₱' + summary.parking.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('parking-vat').textContent = '₱' + summary.parking.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
+
+const grandVatable = summary.diesel.vatable + summary.parts.vatable + summary.parking.vatable;
+const grandVat = summary.diesel.vat + summary.parts.vat + summary.parking.vat;
+const grandTotal = summary.diesel.gross + summary.parts.gross + summary.parking.gross;
+
+document.getElementById('grand-vatable').textContent = '₱' + grandVatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('grand-vat').textContent = '₱' + grandVat.toLocaleString('en-PH', {minimumFractionDigits: 2});
+document.getElementById('grand-total').textContent = '₱' + grandTotal.toLocaleString('en-PH', {minimumFractionDigits: 2});
+
+hideSaving();
+document.getElementById('report-modal').classList.add('open');
+});
+}
+
+function closeReport() {
+document.getElementById('report-modal').classList.remove('open');
 }
 
 // ═══ SHEET MANAGEMENT ═════════════════════════════════
 function checkOrCreateSheet(quarterName) {
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`, {
-    headers: { Authorization: 'Bearer ' + token }
-  })
-  .then(r => {
-    if (!r.ok) throw new Error('Cannot access spreadsheet');
-    return r.json();
-  })
-  .then(data => {
-    const sheets = data.sheets || [];
-    const exists = sheets.some(s => s.properties.title === quarterName);
-
-    if (exists) return Promise.resolve();
-
-    showSaving('Creating new quarterly sheet...');
-    return createQuarterlySheet(quarterName);
-  });
+return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`, {
+headers: { Authorization: 'Bearer ' + token }
+})
+.then(r => {
+if (!r.ok) throw new Error('Cannot access spreadsheet');
+return r.json();
+})
+.then(data => {
+const sheets = data.sheets || [];
+const exists = sheets.some(s => s.properties.title === quarterName);
+if (exists) return Promise.resolve();
+showSaving('Creating new quarterly sheet...');
+return createQuarterlySheet(quarterName);
+});
 }
 
 function createQuarterlySheet(quarterName) {
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      requests: [{
-        addSheet: {
-          properties: { title: quarterName }
-        }
-      }]
-    })
-  })
-  .then(r => {
-    if (!r.ok) throw new Error('Cannot create sheet');
-    return r.json();
-  })
-  .then(() => {
-    const headers = [
-      ['PEDROEX Transport Services'],
-      ['Summary of Purchases', quarterName],
-      [], [], [], [],
-      ['DATE', 'NAME OF PAYEE', 'ADDRESS', 'TIN NUMBER', 'AR/DR', 'OR', 'SI', 'ZERO RATED SALE', 'AMOUNT', 'NON VATABLE', 'VATABLE PURCHASES', 'INPUT VAT', 'GROSS PURCHASES', 'USER']
-    ];
-    return apiUpdate(quarterName + '!A1:N7', headers);
-  });
+return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
+method: 'POST',
+headers: {
+Authorization: 'Bearer ' + token,
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+requests: [{
+addSheet: {
+properties: { title: quarterName }
+}
+}]
+})
+})
+.then(r => {
+if (!r.ok) throw new Error('Cannot create sheet');
+return r.json();
+})
+.then(() => {
+const headers = [
+['PEDROEX Transport Services'],
+['Summary of Purchases', quarterName],
+[], [], [], [],
+['DATE', 'NAME OF PAYEE', 'ADDRESS', 'TIN NUMBER', 'AR/DR', 'OR', 'SI', 'ZERO RATED SALE', 'AMOUNT', 'NON VATABLE', 'VATABLE PURCHASES', 'INPUT VAT', 'GROSS PURCHASES', 'USER', 'TYPE']
+];
+return apiUpdate(quarterName + '!A1:O7', headers);
+});
 }
 
 // ═══ API HELPERS ══════════════════════════════════════
 function apiGet(range) {
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
-    headers: { Authorization: 'Bearer ' + token }
-  }).then(r => {
-    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
-    if (!r.ok) throw new Error('API Error');
-    return r.json();
-  });
+return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
+headers: { Authorization: 'Bearer ' + token }
+}).then(r => {
+if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+if (!r.ok) throw new Error('API Error');
+return r.json();
+});
 }
 
 function apiUpdate(range, values) {
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
-    method: 'PUT',
-    headers: {
-      Authorization: 'Bearer ' + token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ values })
-  }).then(r => {
-    if (!r.ok) throw new Error('Update failed');
-    return r.json();
-  });
+return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
+method: 'PUT',
+headers: {
+Authorization: 'Bearer ' + token,
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ values })
+}).then(r => {
+if (!r.ok) throw new Error('Update failed');
+return r.json();
+});
 }
 
 function apiAppend(range, values) {
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
-    method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ values })
-  }).then(r => {
-    if (!r.ok) throw new Error('Append failed');
-    return r.json();
-  });
+return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
+method: 'POST',
+headers: {
+Authorization: 'Bearer ' + token,
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ values })
+}).then(r => {
+if (!r.ok) throw new Error('Append failed');
+return r.json();
+});
 }
 
 // ═══ UI HELPERS ═══════════════════════════════════════
 function showSaving(msg) {
-  document.getElementById('saving-text').textContent = msg || 'Saving...';
-  document.getElementById('saving-overlay').classList.add('show');
+document.getElementById('saving-text').textContent = msg || 'Saving...';
+document.getElementById('saving-overlay').classList.add('show');
 }
 
 function hideSaving() {
-  document.getElementById('saving-overlay').classList.remove('show');
+document.getElementById('saving-overlay').classList.remove('show');
 }
 
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+const t = document.getElementById('toast');
+t.textContent = msg;
+t.classList.add('show');
+clearTimeout(toastTimer);
+toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 // Close drawer on backdrop click
 document.getElementById('edit-drawer').addEventListener('click', e => {
-  if (e.target.id === 'edit-drawer') closeEditDrawer();
+if (e.target.id === 'edit-drawer') closeEditDrawer();
 });
 </script>
 </body>
