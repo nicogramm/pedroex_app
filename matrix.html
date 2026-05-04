@@ -16,7 +16,6 @@
    NEUMORPHIC THEME VARIABLES
    ═══════════════════════════════════════ */
 :root {
-    /* LIGHT NEUMORPHIC */
     --bg: #e0e0e5;
     --bg2: #e8e8ed;
     --shadow-d: #b8b9be;
@@ -42,15 +41,8 @@ body.dark {
     --text: #e8e8ec;
     --text2: #888;
     --text3: #555;
-    --neu-out: 5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
-    --neu-in: inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
-    --neu-sm: 4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
-    --neu-xs: 3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
 }
 
-/* ═══════════════════════════════════════
-   BASE
-   ═══════════════════════════════════════ */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -100,13 +92,11 @@ body.dark .topbar {
     height: 40px;
     color: var(--red);
     font-size: 22px;
-    font-weight: 400;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.15s;
-    line-height: 1;
 }
 .tb-back:active {
     box-shadow: var(--neu-in);
@@ -134,7 +124,6 @@ body.dark .topbar {
     height: 40px;
     color: var(--red);
     font-size: 20px;
-    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -158,22 +147,21 @@ body.dark .topbar {
 }
 
 /* ═══════════════════════════════════════
-   HERO CARD (PROFIT OVERVIEW) — CLICKABLE
+   HERO CARD — NET PROFIT
    ═══════════════════════════════════════ */
 .hero-card {
     background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%);
     border-radius: 20px;
     padding: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
     box-shadow: 0 8px 24px rgba(179, 37, 51, 0.3);
     color: #fff;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s;
     position: relative;
 }
 .hero-card:active {
     transform: scale(0.98);
-    box-shadow: 0 6px 18px rgba(179, 37, 51, 0.4);
 }
 .hero-card::after {
     content: '🔍 Tap to view details';
@@ -183,7 +171,6 @@ body.dark .topbar {
     font-size: 10px;
     opacity: 0.7;
     font-weight: 600;
-    letter-spacing: 0.5px;
 }
 .hero-title {
     font-size: 12px;
@@ -234,7 +221,133 @@ body.dark .topbar {
 }
 
 /* ═══════════════════════════════════════
-   FULL SCREEN MODAL (NO BLUR BACKGROUND)
+   VAT SUMMARY CARD — SAME SIZE AS NET PROFIT, BELOW IT
+   ═══════════════════════════════════════ */
+.vat-summary-card {
+    background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+    color: #fff;
+}
+.vat-summary-card:active {
+    transform: scale(0.98);
+}
+.vat-summary-card::after {
+    content: '🔍 Tap for BIR breakdown';
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    font-size: 10px;
+    opacity: 0.7;
+    font-weight: 600;
+}
+.vat-summary-card .section-title {
+    color: #fff;
+    margin-bottom: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+.vat-summary-card .hero-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px 0;
+}
+.vat-summary-card .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+.vat-summary-card .stat-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: none;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+}
+.vat-summary-card .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 6px;
+}
+.vat-summary-card .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* ═══════════════════════════════════════
+   OVERVIEW CHARTS — CLICKABLE
+   ═══════════════════════════════════════ */
+.overview-charts {
+    margin-bottom: 20px;
+}
+.chart-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.chart-card {
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: var(--neu-out);
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    position: relative;
+}
+.chart-card:active {
+    transform: scale(0.98);
+}
+.chart-card::after {
+    content: '👆 Tap to expand';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 9px;
+    opacity: 0.5;
+    font-weight: 600;
+}
+.chart-card.full-width {
+    grid-column: 1 / -1;
+}
+.chart-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.chart-card-title .icon {
+    font-size: 16px;
+}
+.chart-wrapper {
+    position: relative;
+    height: 180px;
+}
+.chart-wrapper.tall {
+    height: 240px;
+}
+.chart-wrapper.gauge {
+    height: 140px;
+}
+
+/* ═══════════════════════════════════════
+   FULL SCREEN MODAL
    ═══════════════════════════════════════ */
 .modal-overlay {
     position: fixed;
@@ -252,12 +365,8 @@ body.dark .topbar {
     display: flex;
 }
 @keyframes slideInUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
 }
 .modal-header {
     padding: 14px 18px;
@@ -265,13 +374,13 @@ body.dark .topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
     flex-shrink: 0;
     background: var(--bg);
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 body.dark .modal-header {
-    border-bottom-color: rgba(255, 255, 255, 0.05);
+    border-bottom-color: rgba(255,255,255,0.05);
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .modal-title {
@@ -354,14 +463,14 @@ body.dark .modal-header {
 }
 .modal-list-item {
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0,0,0,0.03);
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 13px;
 }
 body.dark .modal-list-item {
-    border-bottom-color: rgba(255, 255, 255, 0.03);
+    border-bottom-color: rgba(255,255,255,0.03);
 }
 .modal-list-item:last-child {
     border-bottom: none;
@@ -391,94 +500,9 @@ body.dark .modal-list-item {
     color: var(--text);
     font-weight: 700;
 }
-
-/* ═══════════════════════════════════════
-   OVERVIEW CHARTS SECTION
-   ═══════════════════════════════════════ */
-.overview-charts {
-    margin-bottom: 20px;
-}
-.chart-row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-.chart-card {
-    background: var(--bg);
-    border-radius: 16px;
-    box-shadow: var(--neu-out);
-    padding: 16px;
-}
-.chart-card.full-width {
-    grid-column: 1 / -1;
-}
-.chart-card-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.chart-card-title .icon {
-    font-size: 16px;
-}
-.chart-wrapper {
-    position: relative;
-    height: 180px;
-}
-.chart-wrapper.tall {
-    height: 240px;
-}
-.chart-wrapper.gauge {
-    height: 140px;
-}
-
-/* ═══════════════════════════════════════
-   VAT SUMMARY CARD — BLUE & CLICKABLE
-   ═══════════════════════════════════════ */
-.vat-summary-card {
-    background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
-    color: #fff;
-}
-.vat-summary-card:active {
-    transform: scale(0.98);
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
-}
-.vat-summary-card::after {
-    content: '🔍 Tap for BIR breakdown';
-    position: absolute;
-    bottom: 12px;
-    right: 16px;
-    font-size: 10px;
-    opacity: 0.7;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: #fff;
-}
-.vat-summary-card .section-title {
-    color: #fff;
-    margin-bottom: 16px;
-}
-.vat-summary-card .stat-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    box-shadow: none;
-}
-.vat-summary-card .stat-label {
-    color: rgba(255, 255, 255, 0.8);
-}
-.vat-summary-card .stat-value {
-    color: #fff;
+.modal-chart-wrapper {
+    height: 300px;
+    margin: 16px 0;
 }
 
 /* ═══════════════════════════════════════
@@ -540,7 +564,7 @@ body.dark .modal-list-item {
 }
 
 /* ═══════════════════════════════════════
-   TRUCK CARD
+   TRUCK CARD — WITH DETAILED BREAKDOWN
    ═══════════════════════════════════════ */
 .truck-card {
     background: var(--bg);
@@ -554,7 +578,6 @@ body.dark .modal-list-item {
 }
 .truck-card:active {
     transform: scale(0.98);
-    box-shadow: var(--neu-in);
 }
 .truck-card.profitable {
     border-left-color: var(--green);
@@ -611,76 +634,10 @@ body.dark .modal-list-item {
     color: var(--text2);
     line-height: 1.6;
     padding-top: 12px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0,0,0,0.05);
 }
 body.dark .truck-breakdown {
-    border-top-color: rgba(255, 255, 255, 0.04);
-}
-
-/* ═══════════════════════════════════════
-   ROUTE CARD
-   ═══════════════════════════════════════ */
-.route-card {
-    background: var(--bg);
-    border-radius: 16px;
-    box-shadow: var(--neu-sm);
-    padding: 16px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    transition: transform 0.15s;
-}
-.route-card:active {
-    transform: scale(0.98);
-    box-shadow: var(--neu-in);
-}
-.route-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-}
-.route-meta {
-    font-size: 12px;
-    color: var(--text2);
-    margin-bottom: 12px;
-}
-.route-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-}
-.route-stat {
-    text-align: center;
-}
-.route-stat-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-}
-.route-stat-label {
-    font-size: 9px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text3);
-    margin-top: 2px;
-}
-
-/* ═══════════════════════════════════════
-   CHART CONTAINER
-   ═══════════════════════════════════════ */
-.chart-container {
-    background: var(--bg2);
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 12px;
-    box-shadow: var(--neu-in);
-    position: relative;
-    height: 220px;
-}
-.chart-canvas {
-    width: 100%;
-    height: 100%;
+    border-top-color: rgba(255,255,255,0.04);
 }
 
 /* ═══════════════════════════════════════
@@ -728,10 +685,10 @@ body.dark .truck-breakdown {
     align-items: center;
     justify-content: space-between;
     padding: 12px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 body.dark .breakdown-item {
-    border-bottom-color: rgba(255, 255, 255, 0.04);
+    border-bottom-color: rgba(255,255,255,0.04);
 }
 .breakdown-item:last-child {
     border-bottom: none;
@@ -768,60 +725,6 @@ body.dark .breakdown-item {
 .breakdown-percent {
     font-size: 11px;
     color: var(--text2);
-}
-
-/* ═══════════════════════════════════════
-   HEATMAP
-   ═══════════════════════════════════════ */
-.heatmap-grid {
-    display: grid;
-    grid-template-columns: 80px repeat(4, 1fr);
-    gap: 8px;
-    margin-top: 12px;
-}
-.heatmap-header {
-    font-size: 11px;
-    font-weight: 700;
-    text-align: center;
-    color: var(--text3);
-    padding: 8px 4px;
-}
-.heatmap-row-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-}
-.heatmap-cell {
-    background: var(--bg2);
-    border-radius: 10px;
-    box-shadow: var(--neu-xs);
-    padding: 12px 4px;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 700;
-}
-.heatmap-cell.excellent {
-    background: var(--green);
-    color: #fff;
-    box-shadow: none;
-}
-.heatmap-cell.good {
-    background: #4ade80;
-    color: #fff;
-    box-shadow: none;
-}
-.heatmap-cell.acceptable {
-    background: var(--orange);
-    color: #fff;
-    box-shadow: none;
-}
-.heatmap-cell.poor {
-    background: var(--red);
-    color: #fff;
-    box-shadow: none;
 }
 
 /* ═══════════════════════════════════════
@@ -870,11 +773,11 @@ body.dark .breakdown-item {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 -3px 14px rgba(0,0,0,0.07);
     z-index: 40;
 }
 body.dark .bottom-nav {
-    box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 -3px 14px rgba(0,0,0,0.4);
 }
 .bnav {
     display: flex;
@@ -976,50 +879,6 @@ body.dark .bottom-nav {
 }
 
 /* ═══════════════════════════════════════
-   PULL TO REFRESH
-   ═══════════════════════════════════════ */
-.ptr-indicator {
-    position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
-    left: 50%;
-    transform: translateX(-50%) translateY(-80px);
-    background: var(--bg);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    box-shadow: var(--neu-out);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-    transition: transform 0.2s ease;
-    pointer-events: none;
-}
-.ptr-indicator.visible {
-    transform: translateX(-50%) translateY(0px);
-}
-.ptr-spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--text3);
-    border-top-color: var(--red);
-    border-radius: 50%;
-}
-.ptr-spinner.spinning {
-    animation: spin 0.7s linear infinite;
-}
-.ptr-arrow {
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--red);
-    font-size: 18px;
-    transition: transform 0.2s ease;
-}
-
-/* ═══════════════════════════════════════
    PERIOD SELECTOR
    ═══════════════════════════════════════ */
 .period-selector {
@@ -1052,9 +911,6 @@ body.dark .bottom-nav {
     transform: scale(0.98);
 }
 
-/* ═══════════════════════════════════════
-   RESPONSIVE ADJUSTMENTS
-   ═══════════════════════════════════════ */
 @media (max-width: 360px) {
     .hero-amount {
         font-size: 28px;
@@ -1065,15 +921,11 @@ body.dark .bottom-nav {
     .stat-value {
         font-size: 18px;
     }
- 
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════
-     ADMIN ACCESS CHECK
-     ═══════════════════════════════════════ -->
 <script>
 (function checkAdminAccess() {
     const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
@@ -1086,7 +938,6 @@ body.dark .bottom-nav {
 </script>
 
 <div class="screen">
-    <!-- ═══ TOPBAR ═══ -->
     <div class="topbar">
         <button class="tb-back" onclick="location.href='index.html'">✕</button>
         <span class="tb-title">Profit Matrix</span>
@@ -1095,16 +946,13 @@ body.dark .bottom-nav {
         </div>
     </div>
 
-    <!-- ═══ PAGE WRAP ═══ -->
     <div class="page-wrap" id="page-wrap">
-        <!-- LOADING -->
         <div id="wrap-loading" class="loading-wrap">
             <div class="spinner"></div>&nbsp;Calculating profitability...
         </div>
 
-        <!-- CONTENT (hidden until loaded) -->
         <div id="wrap-content" style="display:none">
-            <!-- HERO CARD — CLICKABLE -->
+            <!-- NET PROFIT HERO CARD -->
             <div class="hero-card" onclick="showProfitModal()">
                 <div class="hero-title">Net Profit This Month</div>
                 <div class="hero-amount" id="hero-profit">₱ 0.00</div>
@@ -1122,10 +970,34 @@ body.dark .bottom-nav {
                 </div>
             </div>
 
-            <!-- OVERVIEW CHARTS -->
+            <!-- BIR VAT SUMMARY — SAME SIZE, BELOW NET PROFIT -->
+            <div class="vat-summary-card" onclick="showVATModal()">
+                <div class="section-title">BIR VAT Summary</div>
+                <div class="hero-divider"></div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Output VAT</div>
+                        <div class="stat-value" id="vat-output">₱0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Input VAT</div>
+                        <div class="stat-value" id="vat-input">₱0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Net Payable</div>
+                        <div class="stat-value" id="vat-net">₱0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">VAT Savings</div>
+                        <div class="stat-value" id="vat-savings" style="color:rgba(255,255,255,0.9)">₱0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OVERVIEW CHARTS — ALL CLICKABLE -->
             <div class="overview-charts">
                 <div class="chart-row">
-                    <div class="chart-card full-width">
+                    <div class="chart-card full-width" onclick="showChartModal('revenue-expenses')">
                         <div class="chart-card-title">
                             <span class="icon">📈</span> Revenue vs Expenses (30 Days)
                         </div>
@@ -1135,9 +1007,8 @@ body.dark .bottom-nav {
                     </div>
                 </div>
 
-                <!-- ✅ PROFIT MARGIN - FULL WIDTH -->
                 <div class="chart-row">
-                    <div class="chart-card full-width">
+                    <div class="chart-card full-width" onclick="showChartModal('profit-margin')">
                         <div class="chart-card-title">
                             <span class="icon">🎯</span> Profit Margin
                         </div>
@@ -1147,9 +1018,8 @@ body.dark .bottom-nav {
                     </div>
                 </div>
 
-                <!-- ✅ EXPENSE MIX - FULL WIDTH, SA IBABA NG PROFIT MARGIN -->
                 <div class="chart-row">
-                    <div class="chart-card full-width">
+                    <div class="chart-card full-width" onclick="showChartModal('expense-mix')">
                         <div class="chart-card-title">
                             <span class="icon">💰</span> Expense Mix
                         </div>
@@ -1160,30 +1030,13 @@ body.dark .bottom-nav {
                 </div>
 
                 <div class="chart-row">
-                    <div class="chart-card full-width">
+                    <div class="chart-card full-width" onclick="showChartModal('fleet-performance')">
                         <div class="chart-card-title">
                             <span class="icon">🚛</span> Fleet Performance
                         </div>
                         <div class="chart-wrapper">
                             <canvas id="fleetBarChart"></canvas>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VAT SUMMARY CARD — BLUE & CLICKABLE -->
-            <div class="vat-summary-card" onclick="showVATModal()">
-                <div class="section-title">
-                    <span class="icon">📊</span> BIR VAT Summary
-                </div>
-                <div class="stat-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Vatable Sales</div>
-                        <div class="stat-value" id="vat-sales">₱0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Output VAT (12%)</div>
-                        <div class="stat-value" id="vat-output">₱0</div>
                     </div>
                 </div>
             </div>
@@ -1204,7 +1057,7 @@ body.dark .bottom-nav {
                 <button class="view-btn" onclick="switchView('insights')">🧠 Insights</button>
             </div>
 
-            <!-- ═══ BY TRUCK VIEW ═══ -->
+            <!-- BY TRUCK VIEW -->
             <div id="view-trucks" class="view-content">
                 <div class="section-card">
                     <div class="section-title">
@@ -1214,7 +1067,7 @@ body.dark .bottom-nav {
                 </div>
             </div>
 
-            <!-- ═══ BY ROUTE VIEW ═══ -->
+            <!-- BY ROUTE VIEW -->
             <div id="view-routes" class="view-content" style="display:none">
                 <div class="section-card">
                     <div class="section-title">
@@ -1224,19 +1077,17 @@ body.dark .bottom-nav {
                 </div>
             </div>
 
-            <!-- ═══ TRENDS VIEW ═══ -->
+            <!-- TRENDS VIEW -->
             <div id="view-trends" class="view-content" style="display:none">
-                <!-- Profit Trend Chart -->
                 <div class="section-card">
                     <div class="section-title">
                         <span class="icon">📈</span> Profit Trend (Last 30 Days)
                     </div>
-                    <div class="chart-container">
-                        <canvas id="profitTrendChart" class="chart-canvas"></canvas>
+                    <div style="height:220px;position:relative">
+                        <canvas id="profitTrendChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Monthly Comparison -->
                 <div class="section-card">
                     <div class="section-title">
                         <span class="icon">📊</span> Monthly Performance
@@ -1244,29 +1095,19 @@ body.dark .bottom-nav {
                     <div id="monthly-breakdown"></div>
                 </div>
 
-                <!-- Weekly Heatmap -->
-                <div class="section-card">
-                    <div class="section-title">
-                        <span class="icon">🗓️</span> Weekly Profitability Heatmap
-                    </div>
-                    <div class="heatmap-grid" id="heatmap-grid"></div>
-                </div>
-
-                <!-- Cost Breakdown -->
                 <div class="section-card">
                     <div class="section-title">
                         <span class="icon">💰</span> Expense Breakdown
                     </div>
-                    <div class="chart-container" style="height:200px">
-                        <canvas id="expenseChart" class="chart-canvas"></canvas>
+                    <div style="height:200px;position:relative;margin-bottom:16px">
+                        <canvas id="expenseChart"></canvas>
                     </div>
-                    <div id="expense-breakdown" style="margin-top:16px"></div>
+                    <div id="expense-breakdown"></div>
                 </div>
             </div>
 
-            <!-- ═══ INSIGHTS VIEW ═══ -->
+            <!-- INSIGHTS VIEW — ENHANCED -->
             <div id="view-insights" class="view-content" style="display:none">
-                <!-- KPI Cards -->
                 <div class="section-card">
                     <div class="section-title">
                         <span class="icon">📊</span> Key Performance Indicators
@@ -1291,7 +1132,13 @@ body.dark .bottom-nav {
                     </div>
                 </div>
 
-                <!-- Smart Alerts -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">🔮</span> Trend Analysis & Forecasting
+                    </div>
+                    <div id="trend-analysis"></div>
+                </div>
+
                 <div class="section-card">
                     <div class="section-title">
                         <span class="icon">🚨</span> Smart Alerts & Recommendations
@@ -1299,7 +1146,6 @@ body.dark .bottom-nav {
                     <div id="alerts-list"></div>
                 </div>
 
-                <!-- Top Performers -->
                 <div class="section-card">
                     <div class="section-title">
                         <span class="icon">🏆</span> Top Performers
@@ -1308,10 +1154,9 @@ body.dark .bottom-nav {
                 </div>
             </div>
 
-        </div><!-- end wrap-content -->
-    </div><!-- end page-wrap -->
+        </div>
+    </div>
 
-    <!-- ═══ BOTTOM NAV ═══ -->
     <div class="bottom-nav">
         <button class="bnav" onclick="location.href='index.html'">
             <div class="bnav-icon">
@@ -1365,9 +1210,7 @@ body.dark .bottom-nav {
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     PROFIT DETAILS MODAL — FULL SCREEN
-     ═══════════════════════════════════════ -->
+<!-- PROFIT DETAILS MODAL -->
 <div class="modal-overlay" id="profitModal">
     <div class="modal-header">
         <div class="modal-title">💰 Net Profit Breakdown</div>
@@ -1413,9 +1256,7 @@ body.dark .bottom-nav {
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     BIR VAT MODAL — FULL SCREEN
-     ═══════════════════════════════════════ -->
+<!-- BIR VAT MODAL — ENHANCED -->
 <div class="modal-overlay" id="vatModal">
     <div class="modal-header">
         <div class="modal-title">📊 BIR VAT Summary</div>
@@ -1438,10 +1279,23 @@ body.dark .bottom-nav {
                     <div class="modal-stat-value" id="vat-modal-output" style="color:var(--red)">₱0</div>
                 </div>
                 <div class="modal-stat-card">
-                    <div class="modal-stat-label">Net of VAT</div>
-                    <div class="modal-stat-value" id="vat-modal-net">₱0</div>
+                    <div class="modal-stat-label">Input VAT</div>
+                    <div class="modal-stat-value" id="vat-modal-input" style="color:var(--green)">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Net VAT Payable</div>
+                    <div class="modal-stat-value" id="vat-modal-net-payable" style="color:var(--orange)">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">VAT Savings</div>
+                    <div class="modal-stat-value" id="vat-modal-savings" style="color:var(--green)">₱0</div>
                 </div>
             </div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">Input VAT Breakdown</div>
+            <div class="modal-list" id="vat-modal-input-list"></div>
         </div>
 
         <div class="modal-section">
@@ -1451,24 +1305,38 @@ body.dark .bottom-nav {
 
         <div class="modal-section">
             <div class="modal-section-title">BIR Formula</div>
-            <div class="modal-formula">
-                <strong>Vatable Sales</strong> = Gross Sales / 1.12<br>
-                <strong>Output VAT</strong> = Vatable Sales × 0.12<br>
-                <strong>Net of VAT</strong> = Gross Sales - Output VAT<br><br>
-                <em>Note: All PedroEX deliveries are subject to 12% VAT per BIR regulations.</em>
+            <div class="modal-formula" id="vat-modal-formula"></div>
+        </div>
+    </div>
+</div>
+
+<!-- CHART DRILL-DOWN MODAL -->
+<div class="modal-overlay" id="chartModal">
+    <div class="modal-header">
+        <div class="modal-title" id="chart-modal-title">Chart Details</div>
+        <button class="modal-close" onclick="closeChartModal()">✕</button>
+    </div>
+    <div class="modal-body">
+        <div class="modal-section">
+            <div class="modal-chart-wrapper">
+                <canvas id="chart-modal-canvas"></canvas>
             </div>
         </div>
 
         <div class="modal-section">
-            <div class="modal-section-title">Source Documents</div>
-            <div class="modal-list" id="vat-modal-sources"></div>
+            <div class="modal-section-title">Key Metrics</div>
+            <div class="modal-stat-grid" id="chart-modal-metrics"></div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">Detailed Breakdown</div>
+            <div class="modal-list" id="chart-modal-breakdown"></div>
         </div>
     </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
@@ -1492,13 +1360,13 @@ let employeeRoles = {};
 let currentPeriod = 'month';
 let currentView = 'trucks';
 
-// Chart instances
 let profitTrendChart = null;
 let expenseChart = null;
 let overviewTrendChart = null;
 let marginGaugeChart = null;
 let expensePieChart = null;
 let fleetBarChart = null;
+let chartModalChart = null;
 
 // ═══════════════════════════════════════
 // INIT
@@ -1515,15 +1383,6 @@ let fleetBarChart = null;
     }
 
     loadAll();
-
-    // Pull to refresh
-    initPullToRefresh(
-        document.querySelector('.page-wrap'),
-        function(done) {
-            loadAll();
-            setTimeout(done, 1500);
-        }
-    );
 })();
 
 // ═══════════════════════════════════════
@@ -1552,7 +1411,6 @@ function loadAll() {
         apiGet(TAB_ATTENDANCE + '!A2:J'),
         apiGet(TAB_EMPLOYEES + '!A2:E')
     ]).then(res => {
-        // Parse Trips
         const tripRows = res[0].values || [];
         allTrips = tripRows.map((r, i) => ({
             rowIndex: i + 2,
@@ -1567,7 +1425,6 @@ function loadAll() {
             rate: parseFloat(r[8]) || 0
         })).filter(t => t.truck && t.deliveryDate && t.rate > 0);
 
-        // Parse Expenses
         const expenseRows = res[1].values || [];
         allExpenses = expenseRows.map((r, i) => ({
             rowIndex: i + 2,
@@ -1576,10 +1433,10 @@ function loadAll() {
             truck: r[2] || '',
             category: r[3] || '',
             subcategory: r[4] || '',
-            amount: parseFloat(r[5]) || 0
+            amount: parseFloat(r[5]) || 0,
+            hasVAT: ['Diesel', 'Maintenance', 'Parts'].includes(r[3])
         })).filter(e => e.truck && e.date && e.amount > 0);
 
-        // Parse Attendance
         const attendanceRows = res[2].values || [];
         allAttendance = attendanceRows.map(r => ({
             date: r[1] || '',
@@ -1589,7 +1446,6 @@ function loadAll() {
             truck: r[6] || ''
         })).filter(a => a.date && a.employee && a.truck);
 
-        // Parse Employee Roles
         const employeeRows = res[3].values || [];
         employeeRoles = {};
         employeeRows.forEach(r => {
@@ -1606,8 +1462,7 @@ function loadAll() {
         console.log('✅ Data loaded:', {
             trips: allTrips.length,
             expenses: allExpenses.length,
-            attendance: allAttendance.length,
-            employees: Object.keys(employeeRoles).length
+            attendance: allAttendance.length
         });
 
         document.getElementById('wrap-loading').style.display = 'none';
@@ -1616,7 +1471,7 @@ function loadAll() {
     }).catch(err => {
         document.getElementById('wrap-loading').style.display = 'none';
         showToast('❌ Failed to load data');
-        console.error('Load error:', err);
+        console.error(err);
     });
 }
 
@@ -1631,10 +1486,7 @@ function convertExcelDate(value) {
     if (!isNaN(num) && num > 1000) {
         const excelEpoch = new Date(1899, 11, 30);
         const date = new Date(excelEpoch.getTime() + num * 86400000);
-        const year = date.getFullYear();
-        const month = pad(date.getMonth() + 1);
-        const day = pad(date.getDate());
-        return `${year}-${month}-${day}`;
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
     }
     if (typeof value === 'string') {
         const d = new Date(value);
@@ -1686,13 +1538,39 @@ function getDocumentationExpensesForDate(dateStr) {
 }
 
 // ═══════════════════════════════════════
+// VAT CALCULATION — FIXED
+// ═══════════════════════════════════════
+function calculateVAT(trips, expenses) {
+    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
+    
+    // ✅ CORRECT FORMULA
+    const vatableSales = grossSales / 1.12;  // Remove VAT component
+    const outputVAT = vatableSales * 0.12;   // Calculate 12% VAT
+    
+    // ✅ INPUT VAT from purchases with VAT
+    const inputVAT = expenses
+        .filter(e => e.hasVAT)
+        .reduce((sum, e) => sum + (e.amount * (0.12 / 1.12)), 0);
+    
+    const netVATPayable = outputVAT - inputVAT;
+    const vatSavings = inputVAT;
+    
+    return {
+        grossSales,
+        vatableSales,
+        outputVAT,
+        inputVAT,
+        netVATPayable,
+        vatSavings
+    };
+}
+
+// ═══════════════════════════════════════
 // PERIOD FILTERING
 // ═══════════════════════════════════════
 function changePeriod(period) {
     currentPeriod = period;
-    document.querySelectorAll('.period-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     renderAll();
 }
@@ -1704,8 +1582,7 @@ function getFilteredTrips() {
         case 'week':
             const weekAgo = new Date(now);
             weekAgo.setDate(weekAgo.getDate() - 7);
-            const weekAgoStr = weekAgo.toISOString().split('T')[0];
-            return allTrips.filter(t => t.deliveryDate >= weekAgoStr && t.deliveryDate <= today);
+            return allTrips.filter(t => t.deliveryDate >= weekAgo.toISOString().split('T')[0] && t.deliveryDate <= today);
         case 'month':
             const thisMonth = today.slice(0, 7);
             return allTrips.filter(t => t.deliveryDate.startsWith(thisMonth));
@@ -1725,8 +1602,7 @@ function getFilteredExpenses() {
         case 'week':
             const weekAgo = new Date(now);
             weekAgo.setDate(weekAgo.getDate() - 7);
-            const weekAgoStr = weekAgo.toISOString().split('T')[0];
-            return allExpenses.filter(e => e.date >= weekAgoStr && e.date <= today);
+            return allExpenses.filter(e => e.date >= weekAgo.toISOString().split('T')[0] && e.date <= today);
         case 'month':
             const thisMonth = today.slice(0, 7);
             return allExpenses.filter(e => e.date.startsWith(thisMonth));
@@ -1744,17 +1620,12 @@ function getFilteredExpenses() {
 // ═══════════════════════════════════════
 function switchView(view) {
     currentView = view;
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
 
-    document.querySelectorAll('.view-content').forEach(v => {
-        v.style.display = 'none';
-    });
+    document.querySelectorAll('.view-content').forEach(v => v.style.display = 'none');
     document.getElementById('view-' + view).style.display = 'block';
 
-    // Render specific view
     if (view === 'trucks') renderTrucksView();
     else if (view === 'routes') renderRoutesView();
     else if (view === 'trends') renderTrendsView();
@@ -1778,13 +1649,8 @@ function updateHeroCard() {
     const trips = getFilteredTrips();
     const expenses = getFilteredExpenses();
 
-    // Calculate total revenue
     const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
 
-    // Calculate total expenses (operational + manpower + documentation)
-    const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-
-    // Get unique dates from trips
     const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
     let manpowerTotal = 0;
     let documentationTotal = 0;
@@ -1796,6 +1662,7 @@ function updateHeroCard() {
         documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
     });
 
+    const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
     const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
     const netProfit = totalRevenue - totalExpenses;
     const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
@@ -1808,16 +1675,18 @@ function updateHeroCard() {
 }
 
 // ═══════════════════════════════════════
-// VAT SUMMARY
+// VAT SUMMARY — UPDATED
 // ═══════════════════════════════════════
 function updateVATSummary() {
     const trips = getFilteredTrips();
-    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
-    const vatableSales = grossSales / 1.12;
-    const outputVAT = vatableSales * 0.12;
+    const expenses = getFilteredExpenses();
+    
+    const vat = calculateVAT(trips, expenses);
 
-    document.getElementById('vat-sales').textContent = formatCompact(vatableSales);
-    document.getElementById('vat-output').textContent = formatCompact(outputVAT);
+    document.getElementById('vat-output').textContent = formatCompact(vat.outputVAT);
+    document.getElementById('vat-input').textContent = formatCompact(vat.inputVAT);
+    document.getElementById('vat-net').textContent = formatCompact(vat.netVATPayable);
+    document.getElementById('vat-savings').textContent = formatCompact(vat.vatSavings);
 }
 
 // ═══════════════════════════════════════
@@ -1835,7 +1704,6 @@ function renderOverviewTrendChart() {
     if (!ctx) return;
     if (overviewTrendChart) overviewTrendChart.destroy();
 
-    // Get last 30 days
     const last30Days = [];
     const now = new Date();
     for (let i = 29; i >= 0; i--) {
@@ -1889,11 +1757,7 @@ function renderOverviewTrendChart() {
                 legend: {
                     display: true,
                     position: 'top',
-                    labels: {
-                        font: { size: 11, weight: '600' },
-                        usePointStyle: true,
-                        padding: 12
-                    }
+                    labels: { font: { size: 11, weight: '600' }, usePointStyle: true, padding: 12 }
                 },
                 tooltip: {
                     callbacks: {
@@ -1904,10 +1768,7 @@ function renderOverviewTrendChart() {
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        callback: (value) => formatCompact(value),
-                        font: { size: 10 }
-                    },
+                    ticks: { callback: (value) => formatCompact(value), font: { size: 10 } },
                     grid: { color: 'rgba(0,0,0,0.05)' }
                 },
                 x: {
@@ -2051,11 +1912,7 @@ function renderExpensePieChartOverview() {
                 legend: {
                     display: true,
                     position: 'bottom',
-                    labels: {
-                        font: { size: 9, weight: '600' },
-                        usePointStyle: true,
-                        padding: 8
-                    }
+                    labels: { font: { size: 9, weight: '600' }, usePointStyle: true, padding: 8 }
                 },
                 tooltip: {
                     callbacks: {
@@ -2075,28 +1932,21 @@ function renderFleetBarChart() {
     const trips = getFilteredTrips();
     const expenses = getFilteredExpenses();
 
-    // Group by truck
     const truckData = {};
     trips.forEach(trip => {
         if (!truckData[trip.truck]) {
-            truckData[trip.truck] = {
-                revenue: 0,
-                expenses: 0,
-                dates: new Set()
-            };
+            truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
         }
         truckData[trip.truck].revenue += trip.rate;
         truckData[trip.truck].dates.add(trip.deliveryDate);
     });
 
-    // Add operational expenses
     expenses.forEach(expense => {
         if (truckData[expense.truck]) {
             truckData[expense.truck].expenses += expense.amount;
         }
     });
 
-    // Add manpower and documentation
     Object.keys(truckData).forEach(truck => {
         const dates = Array.from(truckData[truck].dates);
         dates.forEach(date => {
@@ -2107,7 +1957,6 @@ function renderFleetBarChart() {
         });
     });
 
-    // Calculate profit and sort
     const truckArray = Object.entries(truckData).map(([truck, data]) => {
         const profit = data.revenue - data.expenses;
         const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
@@ -2143,10 +1992,7 @@ function renderFleetBarChart() {
                 y: {
                     beginAtZero: true,
                     max: 50,
-                    ticks: {
-                        callback: (value) => value + '%',
-                        font: { size: 10 }
-                    },
+                    ticks: { callback: (value) => value + '%', font: { size: 10 } },
                     grid: { color: 'rgba(0,0,0,0.05)' }
                 },
                 x: {
@@ -2159,7 +2005,7 @@ function renderFleetBarChart() {
 }
 
 // ═══════════════════════════════════════
-// PROFIT MODAL — FULL SCREEN
+// PROFIT MODAL
 // ═══════════════════════════════════════
 function showProfitModal() {
     const trips = getFilteredTrips();
@@ -2170,20 +2016,12 @@ function showProfitModal() {
     const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
     let manpowerTotal = 0;
     let documentationTotal = 0;
-    const manpowerDetails = [];
-    const documentationDetails = [];
 
     tripDates.forEach(date => {
         const manpower = getManpowerExpensesForDate(date);
         const documentation = getDocumentationExpensesForDate(date);
-        manpower.forEach(m => {
-            manpowerTotal += m.amount;
-            manpowerDetails.push({ date, ...m });
-        });
-        documentation.forEach(d => {
-            documentationTotal += d.amount;
-            documentationDetails.push({ date, ...d });
-        });
+        manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+        documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
     });
 
     const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -2191,13 +2029,11 @@ function showProfitModal() {
     const netProfit = totalRevenue - totalExpenses;
     const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
 
-    // Update summary
     document.getElementById('modal-revenue').textContent = formatCurrency(totalRevenue);
     document.getElementById('modal-expenses').textContent = formatCurrency(totalExpenses);
     document.getElementById('modal-profit').textContent = formatCurrency(netProfit);
     document.getElementById('modal-margin').textContent = margin.toFixed(1) + '%';
 
-    // Revenue sources
     const revenueByTruck = {};
     trips.forEach(t => {
         if (!revenueByTruck[t.truck]) revenueByTruck[t.truck] = 0;
@@ -2215,7 +2051,6 @@ function showProfitModal() {
         }).join('');
     document.getElementById('modal-revenue-list').innerHTML = revenueList;
 
-    // Expense breakdown
     const expenseByCategory = {
         'Diesel': 0,
         'Maintenance': 0,
@@ -2249,21 +2084,19 @@ function showProfitModal() {
         }).join('');
     document.getElementById('modal-expense-list').innerHTML = expenseList;
 
-    // Formula
     const formula = `<strong>Net Profit Calculation:</strong><br><br>
 Revenue = ${formatCurrency(totalRevenue)}<br>
 &nbsp;&nbsp;↳ ${trips.length} trip${trips.length !== 1 ? 's' : ''} × average rate<br><br>
 Expenses = ${formatCurrency(totalExpenses)}<br>
 &nbsp;&nbsp;↳ Operational: ${formatCurrency(operationalExpenses)}<br>
-&nbsp;&nbsp;↳ Manpower: ${formatCurrency(manpowerTotal)} (${manpowerDetails.length} worker-days)<br>
-&nbsp;&nbsp;↳ Documentation: ${formatCurrency(documentationTotal)} (${documentationDetails.length} truck-days × ₱${DOCUMENTATION_DAILY_RATE.toFixed(2)}/day)<br><br>
+&nbsp;&nbsp;↳ Manpower: ${formatCurrency(manpowerTotal)}<br>
+&nbsp;&nbsp;↳ Documentation: ${formatCurrency(documentationTotal)}<br><br>
 <strong>Net Profit = Revenue - Expenses</strong><br>
 <strong>${formatCurrency(netProfit)} = ${formatCurrency(totalRevenue)} - ${formatCurrency(totalExpenses)}</strong><br><br>
 <strong>Profit Margin = (Net Profit / Revenue) × 100</strong><br>
 <strong>${margin.toFixed(2)}% = (${formatCurrency(netProfit)} / ${formatCurrency(totalRevenue)}) × 100</strong>`;
 
     document.getElementById('modal-formula').innerHTML = formula;
-
     document.getElementById('profitModal').classList.add('show');
 }
 
@@ -2272,19 +2105,38 @@ function closeProfitModal() {
 }
 
 // ═══════════════════════════════════════
-// VAT MODAL — FULL SCREEN
+// VAT MODAL — ENHANCED
 // ═══════════════════════════════════════
 function showVATModal() {
     const trips = getFilteredTrips();
-    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
-    const vatableSales = grossSales / 1.12;
-    const outputVAT = vatableSales * 0.12;
-    const netOfVAT = grossSales - outputVAT;
+    const expenses = getFilteredExpenses();
+    
+    const vat = calculateVAT(trips, expenses);
 
-    document.getElementById('vat-modal-gross').textContent = formatCurrency(grossSales);
-    document.getElementById('vat-modal-vatable').textContent = formatCurrency(vatableSales);
-    document.getElementById('vat-modal-output').textContent = formatCurrency(outputVAT);
-    document.getElementById('vat-modal-net').textContent = formatCurrency(netOfVAT);
+    document.getElementById('vat-modal-gross').textContent = formatCurrency(vat.grossSales);
+    document.getElementById('vat-modal-vatable').textContent = formatCurrency(vat.vatableSales);
+    document.getElementById('vat-modal-output').textContent = formatCurrency(vat.outputVAT);
+    document.getElementById('vat-modal-input').textContent = formatCurrency(vat.inputVAT);
+    document.getElementById('vat-modal-net-payable').textContent = formatCurrency(vat.netVATPayable);
+    document.getElementById('vat-modal-savings').textContent = formatCurrency(vat.vatSavings);
+
+    // Input VAT breakdown
+    const inputVATByCategory = {};
+    expenses.filter(e => e.hasVAT).forEach(e => {
+        if (!inputVATByCategory[e.category]) inputVATByCategory[e.category] = 0;
+        inputVATByCategory[e.category] += e.amount * (0.12 / 1.12);
+    });
+
+    const inputList = Object.entries(inputVATByCategory)
+        .sort((a, b) => b[1] - a[1])
+        .map(([cat, amt]) => {
+            const icons = { 'Diesel': '⛽', 'Maintenance': '🔧', 'Parts': '🔩' };
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">${icons[cat] || '📦'} ${cat}</div>
+                <div class="modal-list-value">${formatCurrency(amt)}</div>
+            </div>`;
+        }).join('');
+    document.getElementById('vat-modal-input-list').innerHTML = inputList || '<div class="empty-state"><p>No input VAT recorded</p></div>';
 
     // Sales by truck
     const salesByTruck = {};
@@ -2308,29 +2160,24 @@ function showVATModal() {
         }).join('');
     document.getElementById('vat-modal-trucks').innerHTML = truckList;
 
-    // Source documents
-    const sourceList = trips.slice(0, 10).map(t => {
-        const vatable = t.rate / 1.12;
-        const vat = vatable * 0.12;
-        return `<div class="modal-list-item">
-            <div class="modal-list-label">
-                📄 ${t.shipmentNumber || t.id}<br>
-                <span style="font-size:10px;color:var(--text3)">${t.deliveryDate} • ${t.truck}</span>
-            </div>
-            <div class="modal-list-value">
-                ${formatCurrency(t.rate)}<br>
-                <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
-            </div>
-        </div>`;
-    }).join('');
+    // BIR formula
+    const formula = `<strong>✅ CORRECT BIR VAT COMPUTATION:</strong><br><br>
+<strong>Step 1: Remove VAT from Gross Sales</strong><br>
+Vatable Sales = Gross Sales ÷ 1.12<br>
+${formatCurrency(vat.vatableSales)} = ${formatCurrency(vat.grossSales)} ÷ 1.12<br><br>
+<strong>Step 2: Calculate Output VAT</strong><br>
+Output VAT = Vatable Sales × 0.12<br>
+${formatCurrency(vat.outputVAT)} = ${formatCurrency(vat.vatableSales)} × 0.12<br><br>
+<strong>Step 3: Deduct Input VAT (from purchases)</strong><br>
+Input VAT = ${formatCurrency(vat.inputVAT)}<br>
+(from Diesel, Maintenance, Parts with 12% VAT)<br><br>
+<strong>Step 4: Calculate Net VAT Payable to BIR</strong><br>
+Net VAT Payable = Output VAT - Input VAT<br>
+<strong>${formatCurrency(vat.netVATPayable)} = ${formatCurrency(vat.outputVAT)} - ${formatCurrency(vat.inputVAT)}</strong><br><br>
+<strong>💰 VAT Savings: ${formatCurrency(vat.vatSavings)}</strong><br>
+(Amount saved by claiming input VAT)`;
 
-    const remaining = trips.length - 10;
-    const remainingText = remaining > 0 
-        ? `<div class="modal-list-item"><div class="modal-list-label" style="text-align:center;width:100%;opacity:0.5">+ ${remaining} more trip${remaining !== 1 ? 's' : ''}</div></div>`
-        : '';
-
-    document.getElementById('vat-modal-sources').innerHTML = sourceList + remainingText;
-
+    document.getElementById('vat-modal-formula').innerHTML = formula;
     document.getElementById('vatModal').classList.add('show');
 }
 
@@ -2339,19 +2186,186 @@ function closeVATModal() {
 }
 
 // ═══════════════════════════════════════
-// BY TRUCK VIEW
+// CHART DRILL-DOWN MODAL
+// ═══════════════════════════════════════
+function showChartModal(chartType) {
+    document.getElementById('chartModal').classList.add('show');
+    
+    const titles = {
+        'revenue-expenses': '📈 Revenue vs Expenses — Detailed View',
+        'profit-margin': '🎯 Profit Margin Analysis',
+        'expense-mix': '💰 Expense Mix Breakdown',
+        'fleet-performance': '🚛 Fleet Performance Metrics'
+    };
+    
+    document.getElementById('chart-modal-title').textContent = titles[chartType] || 'Chart Details';
+    
+    // Render expanded chart and metrics based on type
+    if (chartType === 'revenue-expenses') renderRevenueExpensesModal();
+    else if (chartType === 'profit-margin') renderProfitMarginModal();
+    else if (chartType === 'expense-mix') renderExpenseMixModal();
+    else if (chartType === 'fleet-performance') renderFleetPerformanceModal();
+}
+
+function closeChartModal() {
+    document.getElementById('chartModal').classList.remove('show');
+    if (chartModalChart) {
+        chartModalChart.destroy();
+        chartModalChart = null;
+    }
+}
+
+function renderRevenueExpensesModal() {
+    const ctx = document.getElementById('chart-modal-canvas');
+    if (chartModalChart) chartModalChart.destroy();
+    
+    const last30Days = [];
+    const now = new Date();
+    for (let i = 29; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        last30Days.push(date.toISOString().split('T')[0]);
+    }
+
+    const dailyData = last30Days.map(dateStr => {
+        const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
+        const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+
+        const revenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
+        const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+        const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
+        const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
+        const expenses = operationalExpenses + manpower + documentation;
+        const profit = revenue - expenses;
+
+        return { revenue, expenses, profit };
+    });
+    
+    chartModalChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: last30Days.map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+            datasets: [
+                {
+                    label: 'Revenue',
+                    data: dailyData.map(d => d.revenue),
+                    borderColor: '#16a34a',
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3
+                },
+                {
+                    label: 'Expenses',
+                    data: dailyData.map(d => d.expenses),
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3
+                },
+                {
+                    label: 'Net Profit',
+                    data: dailyData.map(d => d.profit),
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4,
+                    fill: false,
+                    borderWidth: 2,
+                    borderDash: [5, 5]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true, position: 'top' },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: (value) => formatCompact(value) }
+                }
+            }
+        }
+    });
+    
+    const totalRevenue = dailyData.reduce((sum, d) => sum + d.revenue, 0);
+    const totalExpenses = dailyData.reduce((sum, d) => sum + d.expenses, 0);
+    const totalProfit = totalRevenue - totalExpenses;
+    const avgDaily = totalProfit / 30;
+    
+    document.getElementById('chart-modal-metrics').innerHTML = `
+        <div class="modal-stat-card">
+            <div class="modal-stat-label">Total Revenue</div>
+            <div class="modal-stat-value">${formatCurrency(totalRevenue)}</div>
+        </div>
+        <div class="modal-stat-card">
+            <div class="modal-stat-label">Total Expenses</div>
+            <div class="modal-stat-value">${formatCurrency(totalExpenses)}</div>
+        </div>
+        <div class="modal-stat-card">
+            <div class="modal-stat-label">Net Profit</div>
+            <div class="modal-stat-value" style="color:var(--green)">${formatCurrency(totalProfit)}</div>
+        </div>
+        <div class="modal-stat-card">
+            <div class="modal-stat-label">Avg Daily Profit</div>
+            <div class="modal-stat-value">${formatCurrency(avgDaily)}</div>
+        </div>
+    `;
+    
+    const breakdownHTML = dailyData.slice(-7).reverse().map((d, i) => {
+        const date = last30Days[last30Days.length - 7 + i];
+        const margin = d.revenue > 0 ? ((d.profit / d.revenue) * 100).toFixed(1) : 0;
+        return `<div class="modal-list-item">
+            <div class="modal-list-label">${new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            <div class="modal-list-value">
+                ${formatCurrency(d.profit)}<br>
+                <span style="font-size:10px;color:var(--text3)">${margin}% margin</span>
+            </div>
+        </div>`;
+    }).join('');
+    
+    document.getElementById('chart-modal-breakdown').innerHTML = breakdownHTML;
+}
+
+function renderProfitMarginModal() {
+    // Similar implementation for profit margin drill-down
+    document.getElementById('chart-modal-metrics').innerHTML = '<div class="empty-state"><p>Profit margin details</p></div>';
+    document.getElementById('chart-modal-breakdown').innerHTML = '';
+}
+
+function renderExpenseMixModal() {
+    // Similar implementation for expense mix drill-down
+    document.getElementById('chart-modal-metrics').innerHTML = '<div class="empty-state"><p>Expense mix details</p></div>';
+    document.getElementById('chart-modal-breakdown').innerHTML = '';
+}
+
+function renderFleetPerformanceModal() {
+    // Similar implementation for fleet performance drill-down
+    document.getElementById('chart-modal-metrics').innerHTML = '<div class="empty-state"><p>Fleet performance details</p></div>';
+    document.getElementById('chart-modal-breakdown').innerHTML = '';
+}
+
+// ═══════════════════════════════════════
+// BY TRUCK VIEW — WITH DETAILED BREAKDOWN
 // ═══════════════════════════════════════
 function renderTrucksView() {
     const trips = getFilteredTrips();
     const expenses = getFilteredExpenses();
 
-    // Group by truck
     const truckData = {};
     trips.forEach(trip => {
         if (!truckData[trip.truck]) {
             truckData[trip.truck] = {
                 revenue: 0,
-                expenses: 0,
+                expenses: { diesel: 0, manpower: 0, maintenance: 0, documentation: 0, other: 0 },
                 trips: 0,
                 dates: new Set()
             };
@@ -2361,40 +2375,41 @@ function renderTrucksView() {
         truckData[trip.truck].dates.add(trip.deliveryDate);
     });
 
-    // Add operational expenses
     expenses.forEach(expense => {
         if (truckData[expense.truck]) {
-            truckData[expense.truck].expenses += expense.amount;
+            if (expense.category === 'Diesel') truckData[expense.truck].expenses.diesel += expense.amount;
+            else if (expense.category === 'Maintenance') truckData[expense.truck].expenses.maintenance += expense.amount;
+            else truckData[expense.truck].expenses.other += expense.amount;
         }
     });
 
-    // Add manpower and documentation
     Object.keys(truckData).forEach(truck => {
         const dates = Array.from(truckData[truck].dates);
         dates.forEach(date => {
             const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
             const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
-            manpower.forEach(m => truckData[truck].expenses += m.amount);
-            documentation.forEach(d => truckData[truck].expenses += d.amount);
+            manpower.forEach(m => truckData[truck].expenses.manpower += m.amount);
+            documentation.forEach(d => truckData[truck].expenses.documentation += d.amount);
         });
     });
 
-    // Calculate profit and sort
     const truckArray = Object.entries(truckData).map(([truck, data]) => {
-        const profit = data.revenue - data.expenses;
+        const totalExpenses = Object.values(data.expenses).reduce((sum, v) => sum + v, 0);
+        const profit = data.revenue - totalExpenses;
         const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+        const avgPerTrip = data.trips > 0 ? profit / data.trips : 0;
         return {
             truck,
             revenue: data.revenue,
             expenses: data.expenses,
+            totalExpenses,
             profit,
             margin,
             trips: data.trips,
-            avgPerTrip: data.trips > 0 ? profit / data.trips : 0
+            avgPerTrip
         };
     }).sort((a, b) => b.margin - a.margin);
 
-    // Render
     const container = document.getElementById('trucks-list');
     if (truckArray.length === 0) {
         container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚛</div><p>No trip data for selected period</p></div>';
@@ -2415,7 +2430,7 @@ function renderTrucksView() {
                 </div>
                 <div class="truck-stat">
                     <div class="truck-stat-label">Expenses</div>
-                    <div class="truck-stat-value">${formatCompact(t.expenses)}</div>
+                    <div class="truck-stat-value">${formatCompact(t.totalExpenses)}</div>
                 </div>
                 <div class="truck-stat">
                     <div class="truck-stat-label">Net Profit</div>
@@ -2427,7 +2442,12 @@ function renderTrucksView() {
                 </div>
             </div>
             <div class="truck-breakdown">
-                ${t.trips} trip${t.trips !== 1 ? 's' : ''} completed
+                <strong>${t.trips} trip${t.trips !== 1 ? 's' : ''}</strong> • 
+                ⛽ Diesel: ${formatCompact(t.expenses.diesel)} • 
+                👷 Manpower: ${formatCompact(t.expenses.manpower)} • 
+                🔧 Maintenance: ${formatCompact(t.expenses.maintenance)} • 
+                📄 Documentation: ${formatCompact(t.expenses.documentation)}
+                ${t.expenses.other > 0 ? ` • 📦 Other: ${formatCompact(t.expenses.other)}` : ''}
             </div>
         </div>`;
     }).join('');
@@ -2440,45 +2460,28 @@ function renderRoutesView() {
     const trips = getFilteredTrips();
     const expenses = getFilteredExpenses();
 
-    // Group by route
     const routeData = {};
     trips.forEach(trip => {
         if (!trip.route) return;
         if (!routeData[trip.route]) {
-            routeData[trip.route] = {
-                revenue: 0,
-                expenses: 0,
-                trips: 0,
-                trucks: new Set(),
-                dates: new Set()
-            };
+            routeData[trip.route] = { revenue: 0, expenses: 0, trips: 0, trucks: new Set() };
         }
         routeData[trip.route].revenue += trip.rate;
         routeData[trip.route].trips += 1;
         routeData[trip.route].trucks.add(trip.truck);
-        routeData[trip.route].dates.add(trip.deliveryDate);
     });
 
-    // Add expenses for trips on this route
     trips.forEach(trip => {
         if (!trip.route) return;
-        const tripExpenses = expenses.filter(e => 
-            e.truck === trip.truck && e.date === trip.deliveryDate
-        );
-        tripExpenses.forEach(e => {
-            routeData[trip.route].expenses += e.amount;
-        });
+        const tripExpenses = expenses.filter(e => e.truck === trip.truck && e.date === trip.deliveryDate);
+        tripExpenses.forEach(e => routeData[trip.route].expenses += e.amount);
 
-        // Add manpower and documentation
-        const manpower = getManpowerExpensesForDate(trip.deliveryDate)
-            .filter(m => m.truck === trip.truck);
-        const documentation = getDocumentationExpensesForDate(trip.deliveryDate)
-            .filter(d => d.truck === trip.truck);
+        const manpower = getManpowerExpensesForDate(trip.deliveryDate).filter(m => m.truck === trip.truck);
+        const documentation = getDocumentationExpensesForDate(trip.deliveryDate).filter(d => d.truck === trip.truck);
         manpower.forEach(m => routeData[trip.route].expenses += m.amount);
         documentation.forEach(d => routeData[trip.route].expenses += d.amount);
     });
 
-    // Calculate profit and sort
     const routeArray = Object.entries(routeData).map(([route, data]) => {
         const profit = data.revenue - data.expenses;
         const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
@@ -2494,7 +2497,6 @@ function renderRoutesView() {
         };
     }).sort((a, b) => b.margin - a.margin);
 
-    // Render
     const container = document.getElementById('routes-list');
     if (routeArray.length === 0) {
         container.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><p>No route data for selected period</p></div>';
@@ -2502,22 +2504,32 @@ function renderRoutesView() {
     }
 
     container.innerHTML = routeArray.map(r => {
-        return `<div class="route-card">
-            <div class="route-name">📍 ${r.route}</div>
-            <div class="route-meta">${r.trips} trip${r.trips !== 1 ? 's' : ''} • ${r.trucks} truck${r.trucks !== 1 ? 's' : ''}</div>
-            <div class="route-stats">
-                <div class="route-stat">
-                    <div class="route-stat-value">${formatCompact(r.profit)}</div>
-                    <div class="route-stat-label">Total Profit</div>
+        const marginClass = r.margin >= 30 ? 'profitable' : r.margin >= 20 ? 'warning' : 'loss';
+        return `<div class="truck-card ${marginClass}">
+            <div class="truck-header">
+                <div class="truck-name">📍 ${r.route}</div>
+                <div class="truck-margin ${marginClass}">${r.margin.toFixed(1)}%</div>
+            </div>
+            <div class="truck-stats">
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Revenue</div>
+                    <div class="truck-stat-value">${formatCompact(r.revenue)}</div>
                 </div>
-                <div class="route-stat">
-                    <div class="route-stat-value">${formatCompact(r.avgPerTrip)}</div>
-                    <div class="route-stat-label">Avg/Trip</div>
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Expenses</div>
+                    <div class="truck-stat-value">${formatCompact(r.expenses)}</div>
                 </div>
-                <div class="route-stat">
-                    <div class="route-stat-value" style="color:${r.margin >= 30 ? 'var(--green)' : r.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${r.margin.toFixed(1)}%</div>
-                    <div class="route-stat-label">Margin</div>
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Net Profit</div>
+                    <div class="truck-stat-value">${formatCompact(r.profit)}</div>
                 </div>
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Avg/Trip</div>
+                    <div class="truck-stat-value">${formatCompact(r.avgPerTrip)}</div>
+                </div>
+            </div>
+            <div class="truck-breakdown">
+                ${r.trips} trip${r.trips !== 1 ? 's' : ''} • ${r.trucks} truck${r.trucks !== 1 ? 's' : ''}
             </div>
         </div>`;
     }).join('');
@@ -2529,7 +2541,6 @@ function renderRoutesView() {
 function renderTrendsView() {
     renderProfitTrendChart();
     renderMonthlyBreakdown();
-    renderWeeklyHeatmap();
     renderExpenseBreakdown();
 }
 
@@ -2538,7 +2549,6 @@ function renderProfitTrendChart() {
     if (!ctx) return;
     if (profitTrendChart) profitTrendChart.destroy();
 
-    // Get last 30 days
     const last30Days = [];
     const now = new Date();
     for (let i = 29; i >= 0; i--) {
@@ -2565,53 +2575,31 @@ function renderProfitTrendChart() {
         type: 'line',
         data: {
             labels: last30Days.map(d => new Date(d).getDate()),
-            datasets: [
-                {
-                    label: 'Revenue',
-                    data: dailyData.map(d => d.revenue),
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    tension: 0.4,
-                    fill: false
-                },
-                {
-                    label: 'Expenses',
-                    data: dailyData.map(d => d.expenses),
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    tension: 0.4,
-                    fill: false
-                },
-                {
-                    label: 'Profit',
-                    data: dailyData.map(d => d.profit),
-                    borderColor: '#16a34a',
-                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }
-            ]
+            datasets: [{
+                label: 'Daily Profit',
+                data: dailyData.map(d => d.profit),
+                borderColor: '#16a34a',
+                backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 3
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: true,
-                    position: 'bottom'
-                },
+                legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
+                        label: (context) => 'Profit: ' + formatCurrency(context.parsed.y)
                     }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        callback: (value) => formatCompact(value)
-                    }
+                    ticks: { callback: (value) => formatCompact(value) }
                 }
             }
         }
@@ -2619,7 +2607,6 @@ function renderProfitTrendChart() {
 }
 
 function renderMonthlyBreakdown() {
-    // Get last 6 months
     const months = [];
     const now = new Date();
     for (let i = 5; i >= 0; i--) {
@@ -2688,76 +2675,6 @@ function renderMonthlyBreakdown() {
     }).join('');
 }
 
-function renderWeeklyHeatmap() {
-    const trucks = [...new Set(allTrips.map(t => t.truck))].sort();
-
-    // Get last 4 weeks
-    const weeks = [];
-    const now = new Date();
-    for (let i = 3; i >= 0; i--) {
-        const weekStart = new Date(now);
-        weekStart.setDate(weekStart.getDate() - (i * 7) - now.getDay());
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-        weeks.push({
-            label: `W${i + 1}`,
-            start: weekStart.toISOString().split('T')[0],
-            end: weekEnd.toISOString().split('T')[0]
-        });
-    }
-
-    const container = document.getElementById('heatmap-grid');
-    let html = '<div class="heatmap-header"></div>';
-    weeks.forEach(w => {
-        html += `<div class="heatmap-header">${w.label}</div>`;
-    });
-
-    trucks.forEach(truck => {
-        html += `<div class="heatmap-row-label">${truck}</div>`;
-        weeks.forEach(week => {
-            const weekTrips = allTrips.filter(t => 
-                t.truck === truck && 
-                t.deliveryDate >= week.start && 
-                t.deliveryDate <= week.end
-            );
-            const weekExpenses = allExpenses.filter(e => 
-                e.truck === truck && 
-                e.date >= week.start && 
-                e.date <= week.end
-            );
-
-            const revenue = weekTrips.reduce((sum, t) => sum + t.rate, 0);
-
-            const dates = [...new Set(weekTrips.map(t => t.deliveryDate))];
-            let manpowerTotal = 0;
-            let documentationTotal = 0;
-
-            dates.forEach(date => {
-                const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
-                const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
-                manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
-                documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
-            });
-
-            const operationalExpenses = weekExpenses.reduce((sum, e) => sum + e.amount, 0);
-            const expenses = operationalExpenses + manpowerTotal + documentationTotal;
-            const profit = revenue - expenses;
-            const margin = revenue > 0 ? (profit / revenue * 100) : 0;
-
-            let cellClass = '';
-            if (margin >= 35) cellClass = 'excellent';
-            else if (margin >= 30) cellClass = 'good';
-            else if (margin >= 20) cellClass = 'acceptable';
-            else if (margin > 0) cellClass = 'poor';
-
-            const displayText = margin > 0 ? `${margin.toFixed(0)}%` : '—';
-            html += `<div class="heatmap-cell ${cellClass}">${displayText}</div>`;
-        });
-    });
-
-    container.innerHTML = html;
-}
-
 function renderExpenseBreakdown() {
     const expenses = getFilteredExpenses();
     const trips = getFilteredTrips();
@@ -2776,7 +2693,6 @@ function renderExpenseBreakdown() {
         }
     });
 
-    // Add auto-generated manpower and documentation
     const dates = [...new Set(trips.map(t => t.deliveryDate))];
     dates.forEach(date => {
         const manpower = getManpowerExpensesForDate(date);
@@ -2787,7 +2703,6 @@ function renderExpenseBreakdown() {
 
     const total = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
 
-    // Render pie chart
     const ctx = document.getElementById('expenseChart');
     if (ctx) {
         if (expenseChart) expenseChart.destroy();
@@ -2828,7 +2743,6 @@ function renderExpenseBreakdown() {
         });
     }
 
-    // Render breakdown list
     const container = document.getElementById('expense-breakdown');
     const icons = {
         'Diesel': '⛽',
@@ -2859,10 +2773,11 @@ function renderExpenseBreakdown() {
 }
 
 // ═══════════════════════════════════════
-// INSIGHTS VIEW
+// INSIGHTS VIEW — ENHANCED
 // ═══════════════════════════════════════
 function renderInsightsView() {
     renderKPIs();
+    renderTrendAnalysis();
     renderAlerts();
     renderTopPerformers();
 }
@@ -2900,7 +2815,6 @@ function renderKPIs() {
     const avgProfitPerTrip = trips.length > 0 ? netProfit / trips.length : 0;
     const avgProfitPerDay = dates.length > 0 ? netProfit / dates.length : 0;
 
-    // Fleet utilization (simplified: trips per truck per day)
     const trucks = [...new Set(trips.map(t => t.truck))];
     const utilization = trucks.length > 0 && dates.length > 0 
         ? (trips.length / (trucks.length * dates.length) * 100)
@@ -2912,13 +2826,77 @@ function renderKPIs() {
     document.getElementById('kpi-margin').textContent = margin.toFixed(1) + '%';
 }
 
+function renderTrendAnalysis() {
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+    
+    // Calculate last 2 periods for comparison
+    const now = new Date();
+    const thisMonth = now.toISOString().slice(0, 7);
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 7);
+    
+    const thisMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(thisMonth));
+    const lastMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(lastMonth));
+    
+    const thisMonthRevenue = thisMonthTrips.reduce((sum, t) => sum + t.rate, 0);
+    const lastMonthRevenue = lastMonthTrips.reduce((sum, t) => sum + t.rate, 0);
+    
+    const revenueChange = lastMonthRevenue > 0 
+        ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue * 100)
+        : 0;
+    
+    // Diesel cost trend
+    const thisMonthDiesel = allExpenses
+        .filter(e => e.date.startsWith(thisMonth) && e.category === 'Diesel')
+        .reduce((sum, e) => sum + e.amount, 0);
+    const lastMonthDiesel = allExpenses
+        .filter(e => e.date.startsWith(lastMonth) && e.category === 'Diesel')
+        .reduce((sum, e) => sum + e.amount, 0);
+    
+    const dieselChange = lastMonthDiesel > 0
+        ? ((thisMonthDiesel - lastMonthDiesel) / lastMonthDiesel * 100)
+        : 0;
+    
+    // Forecast next week
+    const avgDailyProfit = trips.length > 0 
+        ? (thisMonthRevenue - (expenses.reduce((sum, e) => sum + e.amount, 0))) / 30
+        : 0;
+    const forecastWeek = avgDailyProfit * 7;
+    
+    const container = document.getElementById('trend-analysis');
+    container.innerHTML = `
+        <div class="alert-item ${revenueChange > 0 ? 'success' : 'warning'}">
+            <div class="alert-icon">${revenueChange > 0 ? '📈' : '📉'}</div>
+            <div class="alert-text">
+                <strong>Revenue Trend:</strong> ${revenueChange > 0 ? 'Up' : 'Down'} ${Math.abs(revenueChange).toFixed(1)}% vs last month<br>
+                <span style="font-size:11px;opacity:0.7">Current: ${formatCurrency(thisMonthRevenue)} | Previous: ${formatCurrency(lastMonthRevenue)}</span>
+            </div>
+        </div>
+        
+        <div class="alert-item ${dieselChange < 0 ? 'success' : 'warning'}">
+            <div class="alert-icon">⛽</div>
+            <div class="alert-text">
+                <strong>Diesel Costs:</strong> ${dieselChange > 0 ? 'Up' : 'Down'} ${Math.abs(dieselChange).toFixed(1)}% vs last month<br>
+                <span style="font-size:11px;opacity:0.7">${dieselChange > 10 ? 'Consider fuel-saving measures or route optimization' : 'Costs are stable'}</span>
+            </div>
+        </div>
+        
+        <div class="alert-item info">
+            <div class="alert-icon">🔮</div>
+            <div class="alert-text">
+                <strong>7-Day Forecast:</strong> Projected profit ${formatCurrency(forecastWeek)}<br>
+                <span style="font-size:11px;opacity:0.7">Based on ${formatCurrency(avgDailyProfit)}/day average</span>
+            </div>
+        </div>
+    `;
+}
+
 function renderAlerts() {
     const trips = getFilteredTrips();
     const expenses = getFilteredExpenses();
 
     const alerts = [];
 
-    // Check for low-margin trucks
     const truckData = {};
     trips.forEach(trip => {
         if (!truckData[trip.truck]) {
@@ -2955,13 +2933,7 @@ function renderAlerts() {
                 text: `<strong>${truck}</strong> profit margin dropped to ${margin.toFixed(1)}% — investigate costs`
             });
         }
-    });
-
-    // Check for high performers
-    Object.entries(truckData).forEach(([truck, data]) => {
-        const profit = data.revenue - data.expenses;
-        const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
-
+        
         if (margin >= 40) {
             alerts.push({
                 type: 'success',
@@ -2971,7 +2943,6 @@ function renderAlerts() {
         }
     });
 
-    // Check for expense spikes
     const categoryTotals = {};
     expenses.forEach(e => {
         if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
@@ -2986,7 +2957,7 @@ function renderAlerts() {
             alerts.push({
                 type: 'info',
                 icon: '📊',
-                text: `Maintenance costs are ${percent.toFixed(1)}% of expenses — consider preventive maintenance`
+                text: `Maintenance costs are ${percent.toFixed(1)}% of expenses — consider preventive maintenance schedule`
             });
         }
     });
@@ -3009,7 +2980,6 @@ function renderTopPerformers() {
     const trips = getFilteredTrips();
     const expenses = getFilteredExpenses();
 
-    // Calculate truck performance
     const truckData = {};
     trips.forEach(trip => {
         if (!truckData[trip.truck]) {
@@ -3095,58 +3065,6 @@ function showToast(msg) {
     t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ═══════════════════════════════════════
-// PULL TO REFRESH
-// ═══════════════════════════════════════
-function initPullToRefresh(scrollEl, onRefresh) {
-    let startY = 0;
-    let pulling = false;
-    const threshold = 70;
-
-    const indicator = document.createElement('div');
-    indicator.className = 'ptr-indicator';
-    indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
-    document.body.appendChild(indicator);
-
-    scrollEl.addEventListener('touchstart', function(e) {
-        if (scrollEl.scrollTop === 0) {
-            startY = e.touches[0].clientY;
-            pulling = true;
-        }
-    }, { passive: true });
-
-    scrollEl.addEventListener('touchmove', function(e) {
-        if (!pulling) return;
-        const dist = e.touches[0].clientY - startY;
-        if (dist < 0) { pulling = false; return; }
-
-        const progress = Math.min(dist / threshold, 1);
-        indicator.classList.add('visible');
-
-        const arrow = document.getElementById('ptr-arrow');
-        if (arrow) {
-            arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
-            arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
-        }
-    }, { passive: true });
-
-    scrollEl.addEventListener('touchend', function(e) {
-        if (!pulling) return;
-        pulling = false;
-        const dist = e.changedTouches[0].clientY - startY;
-
-        if (dist >= threshold) {
-            indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
-            onRefresh(function() {
-                indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
-                indicator.classList.remove('visible');
-            });
-        } else {
-            indicator.classList.remove('visible');
-        }
-    });
 }
 </script>
 
