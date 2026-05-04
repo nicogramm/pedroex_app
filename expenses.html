@@ -340,9 +340,14 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   <button class="tb-back" onclick="location.href='index.html'">✕</button>
   <span class="tb-title">Expenses</span>
   <div class="tb-action">
+    <button class="tb-btn" onclick="openSettingsDrawer()">⚙️</button>
     <button class="tb-btn" onclick="loadExpenses()">↻</button>
   </div>
 </div>
+
+
+
+
 
 <div class="page-wrap">
   <!-- SUMMARY CARD -->
@@ -618,6 +623,48 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   </div>
 </div>
 
+<!-- ═══ SETTINGS DRAWER ═══ -->
+<div class="overlay" id="settings-drawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">Expense Settings</div>
+    <div class="drawer-sub">Configure daily rates and allowances</div>
+    
+    <div class="fg">
+      <label class="fl">Documentation Daily Rate (₱)</label>
+      <input class="fi" id="s-doc-rate" type="number" step="0.01">
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">
+        Based on ₱40,000/year = ₱109.59/day
+      </div>
+    </div>
+    
+    <div class="fg">
+      <label class="fl">Driver Daily Rate (₱)</label>
+      <input class="fi" id="s-driver-rate" type="number" step="0.01">
+    </div>
+    
+    <div class="fg">
+      <label class="fl">Helper Daily Rate (₱)</label>
+      <input class="fi" id="s-helper-rate" type="number" step="0.01">
+    </div>
+    
+    <div class="fg">
+      <label class="fl">Two-Man Team Bonus (₱)</label>
+      <input class="fi" id="s-bonus" type="number" step="0.01">
+    </div>
+    
+    <div class="fg">
+      <label class="fl">Meal Allowance (₱)</label>
+      <input class="fi" id="s-meal" type="number" step="0.01">
+    </div>
+    
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeSettingsDrawer()">Cancel</button>
+      <button class="btn btn-red" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
 <!-- SAVING OVERLAY -->
 <div class="saving-overlay" id="saving-overlay">
   <div class="saving-box">
@@ -636,6 +683,7 @@ const EXPENSES_SHEET = 'Expenses_Master';
 const CATEGORIES_SHEET = 'Expense_Categories';
 const ATTENDANCE_SHEET = 'Attendance';
 const EMPLOYEES_SHEET = 'Employees';
+const SETTINGS_SHEET = 'Expense_Categories'; // or 'Settings' if you created new sheet
 
 // ═══ MANPOWER & DOCUMENTATION RATES ═══════════════════
 const DRIVER_DAILY_RATE = 500;
@@ -701,6 +749,7 @@ const CATEGORY_COLORS = {
   }
 
   document.getElementById('f-date').valueAsDate = new Date();
+  loadSettings();
   loadCategories();
   loadEmployeeRoles();
   loadAttendance();
@@ -838,15 +887,23 @@ function handlePhotoChange(input) {
 }
 
 // ═══ LOAD EMPLOYEE ROLES ══════════════════════════════
+// ═══ LOAD EMPLOYEE ROLES ══════════════════════════════
 function loadEmployeeRoles() {
-  apiGet(EMPLOYEES_SHEET + '!A2:C').then(res => {
+  apiGet(EMPLOYEES_SHEET + '!A2:E').then(res => {  // ✅ A2:E (hanggang Position)
     const rows = res.values || [];
     employeeRoles = {};
     rows.forEach(r => {
-      const name = r[1];
-      const role = (r[2] || '').toLowerCase();
-      if (name && role) {
-        employeeRoles[name] = role;
+      const firstName = (r[1] || '').trim();
+      const lastName = (r[2] || '').trim();
+      const position = (r[4] || '').toLowerCase().trim(); // ✅ Column E = Position
+      
+      if (firstName && position) {
+        // Store by full name (matching Attendance sheet format)
+        const fullName = `${firstName} ${lastName}`;
+        employeeRoles[fullName] = position;
+        
+        // Also store by first name only (fallback)
+        employeeRoles[firstName] = position;
       }
     });
     console.log('Employee roles loaded:', employeeRoles);
@@ -854,6 +911,44 @@ function loadEmployeeRoles() {
     console.error('Employee roles load failed:', err);
     employeeRoles = {};
   });
+}
+
+// ═══ LOAD SETTINGS ════════════════════════════════════
+function loadSettings() {
+    apiGet(SETTINGS_SHEET + '!A2:B').then(res => {
+        const rows = res.values || [];
+        rows.forEach(r => {
+            const setting = r[0];
+            const value = parseFloat(r[1]) || 0;
+            
+            switch(setting) {
+                case 'Documentation_Daily_Rate':
+                    DOCUMENTATION_DAILY_RATE = value;
+                    break;
+                case 'Driver_Daily_Rate':
+                    DRIVER_DAILY_RATE = value;
+                    break;
+                case 'Helper_Daily_Rate':
+                    HELPER_DAILY_RATE = value;
+                    break;
+                case 'Two_Man_Bonus':
+                    TWO_MAN_BONUS = value;
+                    break;
+                case 'Meal_Allowance':
+                    MEAL_ALLOWANCE = value;
+                    break;
+            }
+        });
+        console.log('Settings loaded:', {
+            DOCUMENTATION_DAILY_RATE,
+            DRIVER_DAILY_RATE,
+            HELPER_DAILY_RATE,
+            TWO_MAN_BONUS,
+            MEAL_ALLOWANCE
+        });
+    }).catch(err => {
+        console.warn('Settings load failed, using defaults:', err);
+    });
 }
 
 // ═══ LOAD CATEGORIES ══════════════════════════════════
@@ -1923,6 +2018,71 @@ function showToast(msg) {
     }
   });
 });
+
+
+// ═══ SETTINGS DRAWER ══════════════════════════════════
+function openSettingsDrawer() {
+  document.getElementById('s-doc-rate').value = DOCUMENTATION_DAILY_RATE.toFixed(2);
+  document.getElementById('s-driver-rate').value = DRIVER_DAILY_RATE;
+  document.getElementById('s-helper-rate').value = HELPER_DAILY_RATE;
+  document.getElementById('s-bonus').value = TWO_MAN_BONUS;
+  document.getElementById('s-meal').value = MEAL_ALLOWANCE;
+  document.getElementById('settings-drawer').classList.add('open');
+}
+
+function closeSettingsDrawer() {
+  document.getElementById('settings-drawer').classList.remove('open');
+}
+
+function saveSettings() {
+  const newDocRate = parseFloat(document.getElementById('s-doc-rate').value) || DOCUMENTATION_DAILY_RATE;
+  const newDriverRate = parseFloat(document.getElementById('s-driver-rate').value) || DRIVER_DAILY_RATE;
+  const newHelperRate = parseFloat(document.getElementById('s-helper-rate').value) || HELPER_DAILY_RATE;
+  const newBonus = parseFloat(document.getElementById('s-bonus').value) || TWO_MAN_BONUS;
+  const newMeal = parseFloat(document.getElementById('s-meal').value) || MEAL_ALLOWANCE;
+  
+  showSaving('Saving settings...');
+  
+  const updates = [
+    ['Documentation_Daily_Rate', newDocRate],
+    ['Driver_Daily_Rate', newDriverRate],
+    ['Helper_Daily_Rate', newHelperRate],
+    ['Two_Man_Bonus', newBonus],
+    ['Meal_Allowance', newMeal]
+  ];
+  
+  apiUpdate(SETTINGS_SHEET + '!A2:B6', updates)
+    .then(() => {
+      DOCUMENTATION_DAILY_RATE = newDocRate;
+      DRIVER_DAILY_RATE = newDriverRate;
+      HELPER_DAILY_RATE = newHelperRate;
+      TWO_MAN_BONUS = newBonus;
+      MEAL_ALLOWANCE = newMeal;
+      
+      hideSaving();
+      showToast('✅ Settings saved!');
+      closeSettingsDrawer();
+      loadExpenses();
+    })
+    .catch(err => {
+      hideSaving();
+      showToast('❌ Save failed: ' + err.message);
+    });
+}
+
+// Add settings-drawer to overlay click handlers
+['add-drawer', 'detail-overlay', 'confirm-overlay', 'settings-drawer'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('click', e => {
+    if (e.target === el) {
+      el.classList.remove('open');
+      if (id === 'detail-overlay') closeDetail();
+      if (id === 'add-drawer') closeAddDrawer();
+      if (id === 'settings-drawer') closeSettingsDrawer();
+    }
+  });
+});
+
 </script>
 </body>
 </html>
