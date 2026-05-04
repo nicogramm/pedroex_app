@@ -170,7 +170,7 @@ body.dark .topbar {
 }
 
 /* ═══════════════════════════════════════
-   HERO CARD (PROFIT OVERVIEW)
+   HERO CARD (PROFIT OVERVIEW) — NOW CLICKABLE
 ═══════════════════════════════════════ */
 .hero-card {
   background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%);
@@ -179,6 +179,25 @@ body.dark .topbar {
   margin-bottom: 20px;
   box-shadow: 0 8px 24px rgba(179, 37, 51, 0.3);
   color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.hero-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 6px 18px rgba(179, 37, 51, 0.4);
+}
+
+.hero-card::after {
+  content: '🔍 Tap to view details';
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 10px;
+  opacity: 0.7;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .hero-title {
@@ -234,6 +253,281 @@ body.dark .topbar {
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.5px;
+}
+
+/* ═══════════════════════════════════════
+   MODAL OVERLAY
+═══════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-box {
+  background: var(--bg);
+  border-radius: 20px;
+  box-shadow: var(--neu-out);
+  max-width: 600px;
+  width: 100%;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+body.dark .modal-header {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-close {
+  background: var(--bg);
+  border: none;
+  border-radius: 10px;
+  box-shadow: var(--neu-sm);
+  width: 36px;
+  height: 36px;
+  color: var(--red);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.modal-close:active {
+  box-shadow: var(--neu-in);
+  transform: scale(0.95);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-section {
+  margin-bottom: 24px;
+}
+
+.modal-section:last-child {
+  margin-bottom: 0;
+}
+
+.modal-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.modal-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.modal-stat-card {
+  background: var(--bg2);
+  border-radius: 12px;
+  box-shadow: var(--neu-xs);
+  padding: 14px;
+}
+
+.modal-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+
+.modal-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-list {
+  background: var(--bg2);
+  border-radius: 12px;
+  box-shadow: var(--neu-in);
+  padding: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.modal-list-item {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+body.dark .modal-list-item {
+  border-bottom-color: rgba(255, 255, 255, 0.03);
+}
+
+.modal-list-item:last-child {
+  border-bottom: none;
+}
+
+.modal-list-label {
+  color: var(--text2);
+  flex: 1;
+}
+
+.modal-list-value {
+  font-weight: 600;
+  color: var(--text);
+  margin-left: 12px;
+}
+
+.modal-formula {
+  background: var(--bg2);
+  border-radius: 12px;
+  box-shadow: var(--neu-in);
+  padding: 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text2);
+  overflow-x: auto;
+}
+
+.modal-formula strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════
+   OVERVIEW CHARTS SECTION
+═══════════════════════════════════════ */
+.overview-charts {
+  margin-bottom: 20px;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.chart-card {
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: var(--neu-out);
+  padding: 16px;
+}
+
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.chart-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart-card-title .icon {
+  font-size: 16px;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 180px;
+}
+
+.chart-wrapper.tall {
+  height: 240px;
+}
+
+.chart-wrapper.gauge {
+  height: 140px;
+}
+
+/* ═══════════════════════════════════════
+   VAT SUMMARY CARD — NOW CLICKABLE
+═══════════════════════════════════════ */
+.vat-summary-card {
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: var(--neu-out);
+  padding: 20px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.vat-summary-card:active {
+  transform: scale(0.98);
+  box-shadow: var(--neu-in);
+}
+
+.vat-summary-card::after {
+  content: '🔍 Tap for BIR breakdown';
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 10px;
+  opacity: 0.5;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text3);
 }
 
 /* ═══════════════════════════════════════
@@ -894,6 +1188,10 @@ body.dark .bottom-nav {
   .stat-value {
     font-size: 18px;
   }
+  
+  .chart-row {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 </head>
@@ -934,8 +1232,8 @@ body.dark .bottom-nav {
     <!-- CONTENT (hidden until loaded) -->
     <div id="wrap-content" style="display:none">
       
-      <!-- HERO CARD -->
-      <div class="hero-card">
+      <!-- HERO CARD — CLICKABLE -->
+      <div class="hero-card" onclick="showProfitModal()">
         <div class="hero-title">Net Profit This Month</div>
         <div class="hero-amount" id="hero-profit">₱ 0.00</div>
         <div class="hero-margin" id="hero-margin">Margin: 0% • 0 trips</div>
@@ -950,6 +1248,68 @@ body.dark .bottom-nav {
           <div class="hero-item">
             <div class="hero-item-label">Expenses</div>
             <div class="hero-item-value" id="hero-expenses">₱ 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERVIEW CHARTS -->
+      <div class="overview-charts">
+        <div class="chart-row">
+          <div class="chart-card full-width">
+            <div class="chart-card-title">
+              <span class="icon">📈</span> Revenue vs Expenses (30 Days)
+            </div>
+            <div class="chart-wrapper tall">
+              <canvas id="overviewTrendChart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-card-title">
+              <span class="icon">🎯</span> Profit Margin
+            </div>
+            <div class="chart-wrapper gauge">
+              <canvas id="marginGaugeChart"></canvas>
+            </div>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-card-title">
+              <span class="icon">💰</span> Expense Mix
+            </div>
+            <div class="chart-wrapper gauge">
+              <canvas id="expensePieChart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-row">
+          <div class="chart-card full-width">
+            <div class="chart-card-title">
+              <span class="icon">🚛</span> Fleet Performance
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="fleetBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VAT SUMMARY CARD — CLICKABLE -->
+      <div class="vat-summary-card" onclick="showVATModal()">
+        <div class="section-title">
+          <span class="icon">📊</span> BIR VAT Summary
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label">Vatable Sales</div>
+            <div class="stat-value" id="vat-sales">₱0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Output VAT (12%)</div>
+            <div class="stat-value" id="vat-output">₱0</div>
           </div>
         </div>
       </div>
@@ -1135,6 +1495,116 @@ body.dark .bottom-nav {
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════
+     PROFIT DETAILS MODAL
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="profitModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">💰 Net Profit Breakdown</div>
+      <button class="modal-close" onclick="closeProfitModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      
+      <div class="modal-section">
+        <div class="modal-section-title">Summary</div>
+        <div class="modal-stat-grid">
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Total Revenue</div>
+            <div class="modal-stat-value" id="modal-revenue">₱0</div>
+          </div>
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Total Expenses</div>
+            <div class="modal-stat-value" id="modal-expenses">₱0</div>
+          </div>
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Net Profit</div>
+            <div class="modal-stat-value" id="modal-profit" style="color:var(--green)">₱0</div>
+          </div>
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Profit Margin</div>
+            <div class="modal-stat-value" id="modal-margin">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Revenue Sources</div>
+        <div class="modal-list" id="modal-revenue-list"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Expense Breakdown</div>
+        <div class="modal-list" id="modal-expense-list"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Calculation Formula</div>
+        <div class="modal-formula" id="modal-formula"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     BIR VAT MODAL
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="vatModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">📊 BIR VAT Summary</div>
+      <button class="modal-close" onclick="closeVATModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      
+      <div class="modal-section">
+        <div class="modal-section-title">VAT Computation</div>
+        <div class="modal-stat-grid">
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Gross Sales</div>
+            <div class="modal-stat-value" id="vat-modal-gross">₱0</div>
+          </div>
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Vatable Sales</div>
+            <div class="modal-stat-value" id="vat-modal-vatable">₱0</div>
+          </div>
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Output VAT (12%)</div>
+            <div class="modal-stat-value" id="vat-modal-output" style="color:var(--red)">₱0</div>
+          </div>
+          <div class="modal-stat-card">
+            <div class="modal-stat-label">Net of VAT</div>
+            <div class="modal-stat-value" id="vat-modal-net">₱0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Sales by Truck</div>
+        <div class="modal-list" id="vat-modal-trucks"></div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">BIR Formula</div>
+        <div class="modal-formula">
+          <strong>Vatable Sales</strong> = Gross Sales / 1.12<br>
+          <strong>Output VAT</strong> = Vatable Sales × 0.12<br>
+          <strong>Net of VAT</strong> = Gross Sales - Output VAT<br><br>
+          
+          <em>Note: All PedroEX deliveries are subject to 12% VAT per BIR regulations.</em>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Source Documents</div>
+        <div class="modal-list" id="vat-modal-sources"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- Chart.js -->
@@ -1164,6 +1634,10 @@ let currentView = 'trucks';
 // Chart instances
 let profitTrendChart = null;
 let expenseChart = null;
+let overviewTrendChart = null;
+let marginGaugeChart = null;
+let expensePieChart = null;
+let fleetBarChart = null;
 
 // ═══════════════════════════════════════
 // INIT
@@ -1346,7 +1820,8 @@ function getManpowerExpensesForDate(dateStr) {
   return dayAttendance.map(a => ({
     truck: a.truck,
     amount: calculateManpowerCost(a),
-    category: 'Manpower'
+    category: 'Manpower',
+    employee: a.employee
   }));
 }
 
@@ -1453,6 +1928,8 @@ function switchView(view) {
 // ═══════════════════════════════════════
 function renderAll() {
   updateHeroCard();
+  updateVATSummary();
+  renderOverviewCharts();
   renderTrucksView();
 }
 
@@ -1493,6 +1970,572 @@ function updateHeroCard() {
   document.getElementById('hero-revenue').textContent = formatCompact(totalRevenue);
   document.getElementById('hero-expenses').textContent = formatCompact(totalExpenses);
 }
+
+// ═══════════════════════════════════════
+// VAT SUMMARY
+// ═══════════════════════════════════════
+function updateVATSummary() {
+  const trips = getFilteredTrips();
+  const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
+  const vatableSales = grossSales / 1.12;
+  const outputVAT = vatableSales * 0.12;
+  
+  document.getElementById('vat-sales').textContent = formatCompact(vatableSales);
+  document.getElementById('vat-output').textContent = formatCompact(outputVAT);
+}
+
+// ═══════════════════════════════════════
+// OVERVIEW CHARTS
+// ═══════════════════════════════════════
+function renderOverviewCharts() {
+  renderOverviewTrendChart();
+  renderMarginGaugeChart();
+  renderExpensePieChartOverview();
+  renderFleetBarChart();
+}
+
+function renderOverviewTrendChart() {
+  const ctx = document.getElementById('overviewTrendChart');
+  if (!ctx) return;
+  
+  if (overviewTrendChart) overviewTrendChart.destroy();
+  
+  // Get last 30 days
+  const last30Days = [];
+  const now = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    last30Days.push(date.toISOString().split('T')[0]);
+  }
+  
+  const dailyData = last30Days.map(dateStr => {
+    const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
+    const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+    
+    const revenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
+    
+    const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
+    const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
+    
+    const expenses = operationalExpenses + manpower + documentation;
+    
+    return { revenue, expenses };
+  });
+  
+  overviewTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: last30Days.map(d => new Date(d).getDate()),
+      datasets: [
+        {
+          label: 'Revenue',
+          data: dailyData.map(d => d.revenue),
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22, 163, 74, 0.1)',
+          tension: 0.4,
+          fill: true,
+          borderWidth: 3
+        },
+        {
+          label: 'Expenses',
+          data: dailyData.map(d => d.expenses),
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          tension: 0.4,
+          fill: true,
+          borderWidth: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: { 
+            font: { size: 11, weight: '600' },
+            usePointStyle: true,
+            padding: 12
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: (value) => formatCompact(value),
+            font: { size: 10 }
+          },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        },
+        x: {
+          ticks: { font: { size: 10 } },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+function renderMarginGaugeChart() {
+  const ctx = document.getElementById('marginGaugeChart');
+  if (!ctx) return;
+  
+  if (marginGaugeChart) marginGaugeChart.destroy();
+  
+  const trips = getFilteredTrips();
+  const expenses = getFilteredExpenses();
+  
+  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+  
+  const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+  let manpowerTotal = 0;
+  let documentationTotal = 0;
+  
+  tripDates.forEach(date => {
+    const manpower = getManpowerExpensesForDate(date);
+    const documentation = getDocumentationExpensesForDate(date);
+    
+    manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+  });
+  
+  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+  const netProfit = totalRevenue - totalExpenses;
+  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+  
+  const gaugeData = [margin, 100 - margin];
+  
+  marginGaugeChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Profit Margin', 'Remaining'],
+      datasets: [{
+        data: gaugeData,
+        backgroundColor: [
+          margin >= 30 ? '#16a34a' : margin >= 20 ? '#f59e0b' : '#ef4444',
+          'rgba(0,0,0,0.05)'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      }
+    },
+    plugins: [{
+      id: 'gaugeText',
+      afterDraw: (chart) => {
+        const ctx = chart.ctx;
+        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+        
+        ctx.save();
+        ctx.font = 'bold 24px Inter';
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text');
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(margin.toFixed(1) + '%', centerX, centerY - 5);
+        
+        ctx.font = '600 11px Inter';
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text3');
+        ctx.fillText('MARGIN', centerX, centerY + 15);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+function renderExpensePieChartOverview() {
+  const ctx = document.getElementById('expensePieChart');
+  if (!ctx) return;
+  
+  if (expensePieChart) expensePieChart.destroy();
+  
+  const expenses = getFilteredExpenses();
+  const trips = getFilteredTrips();
+  
+  const categoryTotals = {
+    'Diesel': 0,
+    'Maintenance': 0,
+    'Manpower': 0,
+    'Documentation': 0,
+    'Other': 0
+  };
+  
+  expenses.forEach(e => {
+    if (e.category === 'Diesel') categoryTotals['Diesel'] += e.amount;
+    else if (e.category === 'Maintenance') categoryTotals['Maintenance'] += e.amount;
+    else categoryTotals['Other'] += e.amount;
+  });
+  
+  const dates = [...new Set(trips.map(t => t.deliveryDate))];
+  
+  dates.forEach(date => {
+    const manpower = getManpowerExpensesForDate(date);
+    const documentation = getDocumentationExpensesForDate(date);
+    
+    categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
+    categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
+  });
+  
+  const labels = Object.keys(categoryTotals).filter(k => categoryTotals[k] > 0);
+  const data = labels.map(k => categoryTotals[k]);
+  const colors = {
+    'Diesel': '#f59e0b',
+    'Maintenance': '#ef4444',
+    'Manpower': '#10b981',
+    'Documentation': '#3b82f6',
+    'Other': '#8b5cf6'
+  };
+  
+  expensePieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: labels.map(l => colors[l]),
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            font: { size: 9, weight: '600' },
+            usePointStyle: true,
+            padding: 8
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => context.label + ': ' + formatCurrency(context.parsed)
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderFleetBarChart() {
+  const ctx = document.getElementById('fleetBarChart');
+  if (!ctx) return;
+  
+  if (fleetBarChart) fleetBarChart.destroy();
+  
+  const trips = getFilteredTrips();
+  const expenses = getFilteredExpenses();
+  
+  // Group by truck
+  const truckData = {};
+  
+  trips.forEach(trip => {
+    if (!truckData[trip.truck]) {
+      truckData[trip.truck] = {
+        revenue: 0,
+        expenses: 0,
+        dates: new Set()
+      };
+    }
+    
+    truckData[trip.truck].revenue += trip.rate;
+    truckData[trip.truck].dates.add(trip.deliveryDate);
+  });
+  
+  // Add operational expenses
+  expenses.forEach(expense => {
+    if (truckData[expense.truck]) {
+      truckData[expense.truck].expenses += expense.amount;
+    }
+  });
+  
+  // Add manpower and documentation
+  Object.keys(truckData).forEach(truck => {
+    const dates = Array.from(truckData[truck].dates);
+    
+    dates.forEach(date => {
+      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+      
+      manpower.forEach(m => truckData[truck].expenses += m.amount);
+      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    });
+  });
+  
+  // Calculate profit and sort
+  const truckArray = Object.entries(truckData).map(([truck, data]) => {
+    const profit = data.revenue - data.expenses;
+    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+    
+    return { truck, profit, margin };
+  }).sort((a, b) => b.margin - a.margin).slice(0, 5);
+  
+  fleetBarChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: truckArray.map(t => t.truck),
+      datasets: [{
+        label: 'Profit Margin (%)',
+        data: truckArray.map(t => t.margin),
+        backgroundColor: truckArray.map(t => 
+          t.margin >= 30 ? '#16a34a' : t.margin >= 20 ? '#f59e0b' : '#ef4444'
+        ),
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (context) => context.parsed.y.toFixed(1) + '%'
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 50,
+          ticks: {
+            callback: (value) => value + '%',
+            font: { size: 10 }
+          },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        },
+        x: {
+          ticks: { font: { size: 10, weight: '600' } },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+// PROFIT MODAL
+// ═══════════════════════════════════════
+function showProfitModal() {
+  const trips = getFilteredTrips();
+  const expenses = getFilteredExpenses();
+  
+  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+  
+  const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+  let manpowerTotal = 0;
+  let documentationTotal = 0;
+  const manpowerDetails = [];
+  const documentationDetails = [];
+  
+  tripDates.forEach(date => {
+    const manpower = getManpowerExpensesForDate(date);
+    const documentation = getDocumentationExpensesForDate(date);
+    
+    manpower.forEach(m => {
+      manpowerTotal += m.amount;
+      manpowerDetails.push({ date, ...m });
+    });
+    
+    documentation.forEach(d => {
+      documentationTotal += d.amount;
+      documentationDetails.push({ date, ...d });
+    });
+  });
+  
+  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+  const netProfit = totalRevenue - totalExpenses;
+  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+  
+  // Update summary
+  document.getElementById('modal-revenue').textContent = formatCurrency(totalRevenue);
+  document.getElementById('modal-expenses').textContent = formatCurrency(totalExpenses);
+  document.getElementById('modal-profit').textContent = formatCurrency(netProfit);
+  document.getElementById('modal-margin').textContent = margin.toFixed(1) + '%';
+  
+  // Revenue sources
+  const revenueByTruck = {};
+  trips.forEach(t => {
+    if (!revenueByTruck[t.truck]) revenueByTruck[t.truck] = 0;
+    revenueByTruck[t.truck] += t.rate;
+  });
+  
+  const revenueList = Object.entries(revenueByTruck)
+    .sort((a, b) => b[1] - a[1])
+    .map(([truck, amount]) => {
+      const tripCount = trips.filter(t => t.truck === truck).length;
+      return `<div class="modal-list-item">
+        <div class="modal-list-label">🚛 ${truck} (${tripCount} trip${tripCount !== 1 ? 's' : ''})</div>
+        <div class="modal-list-value">${formatCurrency(amount)}</div>
+      </div>`;
+    }).join('');
+  
+  document.getElementById('modal-revenue-list').innerHTML = revenueList;
+  
+  // Expense breakdown
+  const expenseByCategory = {
+    'Diesel': 0,
+    'Maintenance': 0,
+    'Manpower': manpowerTotal,
+    'Documentation': documentationTotal,
+    'Other': 0
+  };
+  
+  expenses.forEach(e => {
+    if (e.category === 'Diesel') expenseByCategory['Diesel'] += e.amount;
+    else if (e.category === 'Maintenance') expenseByCategory['Maintenance'] += e.amount;
+    else expenseByCategory['Other'] += e.amount;
+  });
+  
+  const expenseList = Object.entries(expenseByCategory)
+    .filter(([cat, amt]) => amt > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([cat, amt]) => {
+      const percent = totalExpenses > 0 ? (amt / totalExpenses * 100).toFixed(1) : 0;
+      const icons = {
+        'Diesel': '⛽',
+        'Maintenance': '🔧',
+        'Manpower': '👷',
+        'Documentation': '📄',
+        'Other': '📦'
+      };
+      
+      return `<div class="modal-list-item">
+        <div class="modal-list-label">${icons[cat]} ${cat} (${percent}%)</div>
+        <div class="modal-list-value">${formatCurrency(amt)}</div>
+      </div>`;
+    }).join('');
+  
+  document.getElementById('modal-expense-list').innerHTML = expenseList;
+  
+  // Formula
+  const formula = `<strong>Net Profit Calculation:</strong><br><br>
+    
+    Revenue = ${formatCurrency(totalRevenue)}<br>
+    &nbsp;&nbsp;↳ ${trips.length} trip${trips.length !== 1 ? 's' : ''} × average rate<br><br>
+    
+    Expenses = ${formatCurrency(totalExpenses)}<br>
+    &nbsp;&nbsp;↳ Operational: ${formatCurrency(operationalExpenses)}<br>
+    &nbsp;&nbsp;↳ Manpower: ${formatCurrency(manpowerTotal)} (${manpowerDetails.length} worker-days)<br>
+    &nbsp;&nbsp;↳ Documentation: ${formatCurrency(documentationTotal)} (${documentationDetails.length} truck-days × ₱${DOCUMENTATION_DAILY_RATE.toFixed(2)}/day)<br><br>
+    
+    <strong>Net Profit = Revenue - Expenses</strong><br>
+    <strong>${formatCurrency(netProfit)} = ${formatCurrency(totalRevenue)} - ${formatCurrency(totalExpenses)}</strong><br><br>
+    
+    <strong>Profit Margin = (Net Profit / Revenue) × 100</strong><br>
+    <strong>${margin.toFixed(2)}% = (${formatCurrency(netProfit)} / ${formatCurrency(totalRevenue)}) × 100</strong>`;
+  
+  document.getElementById('modal-formula').innerHTML = formula;
+  
+  document.getElementById('profitModal').classList.add('show');
+}
+
+function closeProfitModal() {
+  document.getElementById('profitModal').classList.remove('show');
+}
+
+// ═══════════════════════════════════════
+// VAT MODAL
+// ═══════════════════════════════════════
+function showVATModal() {
+  const trips = getFilteredTrips();
+  
+  const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
+  const vatableSales = grossSales / 1.12;
+  const outputVAT = vatableSales * 0.12;
+  const netOfVAT = grossSales - outputVAT;
+  
+  document.getElementById('vat-modal-gross').textContent = formatCurrency(grossSales);
+  document.getElementById('vat-modal-vatable').textContent = formatCurrency(vatableSales);
+  document.getElementById('vat-modal-output').textContent = formatCurrency(outputVAT);
+  document.getElementById('vat-modal-net').textContent = formatCurrency(netOfVAT);
+  
+  // Sales by truck
+  const salesByTruck = {};
+  trips.forEach(t => {
+    if (!salesByTruck[t.truck]) salesByTruck[t.truck] = 0;
+    salesByTruck[t.truck] += t.rate;
+  });
+  
+  const truckList = Object.entries(salesByTruck)
+    .sort((a, b) => b[1] - a[1])
+    .map(([truck, amount]) => {
+      const vatable = amount / 1.12;
+      const vat = vatable * 0.12;
+      
+      return `<div class="modal-list-item">
+        <div class="modal-list-label">🚛 ${truck}</div>
+        <div class="modal-list-value">
+          ${formatCurrency(amount)}<br>
+          <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
+        </div>
+      </div>`;
+    }).join('');
+  
+  document.getElementById('vat-modal-trucks').innerHTML = truckList;
+  
+  // Source documents
+  const sourceList = trips.slice(0, 10).map(t => {
+    const vatable = t.rate / 1.12;
+    const vat = vatable * 0.12;
+    
+    return `<div class="modal-list-item">
+      <div class="modal-list-label">
+        📄 ${t.shipmentNumber || t.id}<br>
+        <span style="font-size:10px;color:var(--text3)">${t.deliveryDate} • ${t.truck}</span>
+      </div>
+      <div class="modal-list-value">
+        ${formatCurrency(t.rate)}<br>
+        <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
+      </div>
+    </div>`;
+  }).join('');
+  
+  const remaining = trips.length - 10;
+  const remainingText = remaining > 0 
+    ? `<div class="modal-list-item"><div class="modal-list-label" style="text-align:center;width:100%;opacity:0.5">+ ${remaining} more trip${remaining !== 1 ? 's' : ''}</div></div>` 
+    : '';
+  
+  document.getElementById('vat-modal-sources').innerHTML = sourceList + remainingText;
+  
+  document.getElementById('vatModal').classList.add('show');
+}
+
+function closeVATModal() {
+  document.getElementById('vatModal').classList.remove('show');
+}
+
+// Close modals on overlay click
+document.getElementById('profitModal').addEventListener('click', function(e) {
+  if (e.target === this) closeProfitModal();
+});
+
+document.getElementById('vatModal').addEventListener('click', function(e) {
+  if (e.target === this) closeVATModal();
+});
 
 // ═══════════════════════════════════════
 // BY TRUCK VIEW
