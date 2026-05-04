@@ -27,6 +27,7 @@ body.dark {
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background 0.4s,color 0.4s}
+
 /* TOPBAR */
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);flex-shrink:0;position:relative;z-index:50}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
@@ -36,27 +37,33 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .tb-action{display:flex;gap:8px}
 .tb-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
 .tb-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
+
 /* PAGE */
 .page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(120px + env(safe-area-inset-bottom,0px));height:calc(100vh - 68px)}
+
 /* EXPENSE TYPE SELECTOR */
 .expense-type-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .expense-type-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
 .expense-type-btn.active{box-shadow:var(--neu-in);color:var(--red)}
 .expense-type-btn:active{transform:scale(0.98)}
+
 /* VIEW TOGGLE */
 .view-toggle{display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px;margin-bottom:16px}
 .view-btn{flex:1;padding:10px;background:transparent;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text3);cursor:pointer;transition:all 0.2s}
 .view-btn.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
+
 /* QUARTER SELECTOR */
 .quarter-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .quarter-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
 .quarter-btn.active{box-shadow:var(--neu-in);color:var(--red)}
 .quarter-btn:active{transform:scale(0.98)}
+
 /* INFO CARD */
 .info-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:20px;border-left:4px solid var(--red)}
 .info-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .info-text{font-size:12px;color:var(--text2);line-height:1.6}
-/* CALENDAR VIEW */
+
+/* ✅ CALENDAR VIEW — FIXED: Taller days with auto height */
 .calendar-view{display:none}
 .calendar-view.active{display:block}
 .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -68,17 +75,68 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px}
 .cal-weekday{text-align:center;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 0}
 .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+
+/* ✅ FIXED: Auto height calendar days */
 .cal-day{
-background:var(--bg);border-radius:12px;box-shadow:var(--neu-sm);
-padding:8px 4px;text-align:center;aspect-ratio:1/1;cursor:pointer;
-transition:box-shadow 0.15s;display:flex;flex-direction:column;
-align-items:center;justify-content:flex-start;overflow:hidden;position:relative;
+  background:var(--bg);
+  border-radius:12px;
+  box-shadow:var(--neu-sm);
+  padding:8px 4px 10px 4px;
+  text-align:center;
+  min-height:70px; /* ✅ Taller minimum height */
+  height:auto; /* ✅ Auto-expand with content */
+  cursor:pointer;
+  transition:box-shadow 0.15s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  overflow:visible; /* ✅ Allow content to show */
+  position:relative;
 }
 .cal-day:active{box-shadow:var(--neu-in);transform:scale(0.98)}
 .cal-day.today{box-shadow:var(--neu-in);border:2px solid var(--red)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
 .cal-date{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;flex-shrink:0}
-.cal-amount{font-size:10px;font-weight:700;color:var(--red);margin-top:2px}
+
+/* ✅ Amount display */
+.cal-amount{
+  font-size:10px;
+  font-weight:700;
+  color:var(--red);
+  margin-top:4px;
+  line-height:1.2;
+  text-align:center;
+}
+
+/* ✅ Entry pills for multiple expenses */
+.cal-entries{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  width:100%;
+  margin-top:4px;
+}
+
+.cal-entry-pill{
+  font-size:8px;
+  font-weight:700;
+  padding:3px 6px;
+  border-radius:6px;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+  line-height:1.4;
+  text-align:center;
+}
+
+/* Type-specific colors */
+.cal-entry-pill.diesel{background:#B32533}
+.cal-entry-pill.parts{background:#2563eb}
+.cal-entry-pill.parking{background:#16a34a}
+
 /* FORM VIEW */
 .form-view{display:none}
 .form-view.active{display:block}
@@ -88,15 +146,18 @@ align-items:center;justify-content:flex-start;overflow:hidden;position:relative;
 .fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
 .fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:13px 16px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:box-shadow 0.15s}
 .fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.3)}
+
 /* COMPUTED FIELDS */
 .computed-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
 .computed-card{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-in);padding:14px;text-align:center}
 .computed-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
 .computed-value{font-size:20px;font-weight:700;color:var(--red);line-height:1}
+
 /* BUTTON */
 .btn-submit{width:100%;padding:16px;border-radius:14px;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none;background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);transition:transform 0.1s}
 .btn-submit:active{transform:scale(0.98)}
 .btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+
 /* DAY DETAIL OVERLAY */
 .day-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .day-detail-overlay.open{display:block}
@@ -118,13 +179,16 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .ei-details{font-size:12px;color:var(--text2);line-height:1.6}
 .ei-user{font-size:10px;color:var(--text3);margin-top:6px;font-style:italic}
 .ei-type{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text3);margin-top:4px}
+
 /* FAB */
 .fab{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom,0px));right:18px;width:54px;height:54px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:5px 5px 14px rgba(179,37,51,0.5),-2px -2px 8px rgba(179,37,51,0.2);z-index:50}
 .fab:active{transform:scale(0.93)}
 .fab-report{bottom:calc(148px + env(safe-area-inset-bottom,0px));background:var(--bg);color:var(--red);box-shadow:var(--neu-out)}
+
 /* TOAST */
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;max-width:90%;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .toast.show{opacity:1}
+
 /* SAVING OVERLAY */
 .saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
 .saving-overlay.show{display:flex}
@@ -132,6 +196,7 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .saving-text{font-size:14px;color:var(--text2);font-weight:500}
+
 /* EDIT DRAWER */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end}
 .overlay.open{display:flex}
@@ -147,6 +212,7 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .btn-ghost{color:var(--text2);box-shadow:var(--neu-sm)}
 .btn-ghost:active{box-shadow:var(--neu-in)}
 .btn-delete{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);margin-top:12px;width:100%}
+
 /* REPORT MODAL */
 .report-modal{display:none;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .report-modal.open{display:block}
@@ -423,7 +489,8 @@ let allExpenses = [];
 let currentQuarter = '';
 let currentMonth = new Date();
 let editingExpense = null;
-let currentExpenseType = 'diesel'; // diesel, parts, parking
+let currentExpenseType = 'diesel';
+let firstLoad = true;
 
 // ═══ INIT ═════════════════════════════════════════════
 (function init() {
@@ -449,6 +516,8 @@ currentExpenseType = type;
 document.querySelectorAll('.expense-type-btn').forEach(btn => btn.classList.remove('active'));
 event.target.classList.add('active');
 updateFormLabels();
+detectCurrentQuarter();
+buildQuarterSelector();
 loadExpenses();
 }
 
@@ -560,7 +629,6 @@ document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('acti
 event.target.classList.add('active');
 document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
 document.getElementById(view + '-view').classList.add('active');
-// Show/hide FABs
 const showFabs = view === 'calendar';
 document.getElementById('fab').style.display = showFabs ? 'flex' : 'none';
 document.getElementById('fab-report').style.display = showFabs ? 'flex' : 'none';
@@ -599,10 +667,14 @@ amount: parseFloat(r[8]) || 0,
 vatable: parseFloat(r[10]) || 0,
 inputVat: parseFloat(r[11]) || 0,
 user: r[13] || '',
-type: currentExpenseType
-})).filter(e => e.date && e.payee); // ✅ FIXED: Filter empty rows
+type: r[14] || currentExpenseType
+})).filter(e => e.date && e.payee);
 hideSaving();
 renderCalendar();
+if (firstLoad) {
+firstLoad = false;
+switchView('calendar');
+}
 }).catch(err => {
 hideSaving();
 if (err.message.includes('Unable to parse range')) {
@@ -614,17 +686,7 @@ showToast('❌ Load failed: ' + err.message);
 });
 }
 
-// ═══ CALENDAR RENDERING ═══════════════════════════════
-function changeMonth(delta) {
-currentMonth.setMonth(currentMonth.getMonth() + delta);
-renderCalendar();
-}
-
-function goToToday() {
-currentMonth = new Date();
-renderCalendar();
-}
-
+// ✅ FIXED: Calendar rendering with entry pills
 function renderCalendar() {
 const year = currentMonth.getFullYear();
 const month = currentMonth.getMonth();
@@ -651,10 +713,27 @@ const dateStr = date.toISOString().split('T')[0];
 const isToday = date.getTime() === today.getTime();
 const dayExpenses = allExpenses.filter(e => e.date === dateStr);
 const total = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
-const amountHtml = total > 0 ? `<div class="cal-amount">₱${total.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>` : '';
+
+let entriesHtml = '';
+if (dayExpenses.length > 0) {
+const maxShow = 3;
+const shown = dayExpenses.slice(0, maxShow);
+entriesHtml = '<div class="cal-entries">';
+shown.forEach(e => {
+const typeClass = e.type || 'diesel';
+const typeLabel = { diesel: '⛽', parts: '🔧', parking: '🅿️' }[typeClass];
+entriesHtml += `<div class="cal-entry-pill ${typeClass}">${typeLabel} ₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>`;
+});
+if (dayExpenses.length > maxShow) {
+entriesHtml += `<div class="cal-entry-pill" style="background:var(--text3)">+${dayExpenses.length - maxShow}</div>`;
+}
+entriesHtml += '</div>';
+}
+
 html += `<div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayDetail('${dateStr}')">
 <div class="cal-date">${day}</div>
-${amountHtml}
+${total > 0 ? `<div class="cal-amount">₱${total.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>` : ''}
+${entriesHtml}
 </div>`;
 }
 
@@ -665,6 +744,16 @@ html += `<div class="cal-day other-month"><div class="cal-date">${i}</div></div>
 }
 
 document.getElementById('cal-days').innerHTML = html;
+}
+
+function changeMonth(delta) {
+currentMonth.setMonth(currentMonth.getMonth() + delta);
+renderCalendar();
+}
+
+function goToToday() {
+currentMonth = new Date();
+renderCalendar();
 }
 
 // ═══ DAY DETAIL ═══════════════════════════════════════
@@ -733,14 +822,12 @@ return apiAppend(quarter + '!A8:O8', [row]);
 .then(() => {
 hideSaving();
 showToast('✅ Expense submitted!');
-// Reset form
 document.getElementById('f-payee').value = '';
 document.getElementById('f-address').value = '';
 document.getElementById('f-tin').value = '';
 document.getElementById('f-or').value = '';
 document.getElementById('f-amount').value = '';
 computeVAT();
-// Reload and switch to calendar
 setTimeout(() => {
 loadExpenses();
 switchView('calendar');
@@ -796,7 +883,7 @@ const inputVat = amount - vatable;
 
 showSaving('Updating...');
 const row = [
-date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, currentExpenseType
+date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, editingExpense.type
 ];
 apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex, [row])
 .then(() => {
@@ -853,7 +940,7 @@ Promise.all(allPromises).then(results => {
 const summary = { diesel: { gross: 0, vatable: 0, vat: 0 }, parts: { gross: 0, vatable: 0, vat: 0 }, parking: { gross: 0, vatable: 0, vat: 0 } };
 results.forEach(r => {
 r.data.forEach(row => {
-if (row[0] && row[1]) { // Has date and payee
+if (row[0] && row[1]) {
 summary[r.type].gross += parseFloat(row[8]) || 0;
 summary[r.type].vatable += parseFloat(row[10]) || 0;
 summary[r.type].vat += parseFloat(row[11]) || 0;
@@ -997,7 +1084,6 @@ clearTimeout(toastTimer);
 toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
-// Close drawer on backdrop click
 document.getElementById('edit-drawer').addEventListener('click', e => {
 if (e.target.id === 'edit-drawer') closeEditDrawer();
 });
