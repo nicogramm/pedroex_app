@@ -476,7 +476,7 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 let token = '';
 let currentUser = '';
-let allExpenses = [];
+let allExpenses = []; // ✅ Current type expenses only
 let currentQuarter = '';
 let currentMonth = new Date();
 let editingExpense = null;
@@ -499,6 +499,7 @@ document.getElementById('f-date').valueAsDate = new Date();
 updateQuarter();
 detectCurrentQuarter();
 buildQuarterSelector();
+updateFormLabels();
 loadExpenses();
 })();
 
@@ -510,7 +511,7 @@ event.target.classList.add('active');
 updateFormLabels();
 detectCurrentQuarter();
 buildQuarterSelector();
-loadExpenses();
+loadExpenses(); // ✅ Reload expenses for new type
 }
 
 function updateFormLabels() {
@@ -621,7 +622,6 @@ document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('acti
 event.target.classList.add('active');
 document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
 document.getElementById(view + '-view').classList.add('active');
-// ✅ Show BOTH FABs in calendar view
 const showFabs = view === 'calendar';
 document.getElementById('fab').style.display = showFabs ? 'flex' : 'none';
 document.getElementById('fab-report').style.display = showFabs ? 'flex' : 'none';
@@ -644,9 +644,11 @@ document.getElementById('e-vatable').textContent = '₱' + vatable.toFixed(2);
 document.getElementById('e-input-vat').textContent = '₱' + inputVat.toFixed(2);
 }
 
-// ═══ LOAD EXPENSES ════════════════════════════════════
+// ✅ FIXED: Load ONLY current type expenses
 function loadExpenses() {
 showSaving('Loading expenses...');
+
+// ✅ Load only current quarter + current type
 apiGet(currentQuarter + '!A8:O1000').then(res => {
 const rows = res.values || [];
 allExpenses = rows.map((r, i) => ({
@@ -679,7 +681,7 @@ showToast('❌ Load failed: ' + err.message);
 });
 }
 
-// ✅ FIXED: Calendar rendering like attendance calendar
+// ✅ FIXED: Calendar rendering with proper type filtering
 function renderCalendar() {
 const year = currentMonth.getFullYear();
 const month = currentMonth.getMonth();
@@ -693,7 +695,7 @@ const daysInMonth = lastDay.getDate();
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-// Map: day -> [{name, amount, type}]
+// ✅ Map: day -> expenses (already filtered by type from loadExpenses)
 const dayMap = {};
 allExpenses.forEach(r => {
 if (!r.date) return;
@@ -701,7 +703,7 @@ const parts = r.date.split('-');
 if (parseInt(parts[0]) !== year || parseInt(parts[1])-1 !== month) return;
 const day = parseInt(parts[2]);
 if (!dayMap[day]) dayMap[day] = [];
-dayMap[day].push({ amount: r.amount, type: r.type || 'diesel' });
+dayMap[day].push({ amount: r.amount, type: r.type || currentExpenseType });
 });
 
 let html = '';
@@ -721,11 +723,12 @@ const cls = 'cal-day' + (isToday ? ' today' : '') + (entries.length ? ' has-att'
 let pillsHtml = '';
 if (entries.length) {
 const shown = entries.slice(0, 3);
+const typeIcons = { diesel: '⛽', parts: '🔧', parking: '🅿️' };
 pillsHtml = '<div class="cal-names">'
 + shown.map(e => {
-const typeClass = e.type || 'diesel';
-const typeLabel = { diesel: '⛽', parts: '🔧', parking: '🅿️' }[typeClass];
-return `<div class="cal-name-pill ${typeClass}">${typeLabel}${e.amount.toFixed(0)}</div>`;
+const typeClass = e.type || currentExpenseType;
+const icon = typeIcons[typeClass];
+return `<div class="cal-name-pill ${typeClass}">${icon}${e.amount.toFixed(0)}</div>`;
 }).join('')
 + (entries.length > 3 ? `<div class="cal-name-pill" style="background:var(--text3)">+${entries.length-3}</div>` : '')
 + '</div>';
@@ -762,9 +765,11 @@ showDayDetail(dateStr);
 renderCalendar();
 }
 
-// ═══ DAY DETAIL ═══════════════════════════════════════
+// ✅ FIXED: Day detail shows only current type expenses
 function showDayDetail(dateStr) {
+// ✅ Filter by date only (already filtered by type from loadExpenses)
 const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+
 if (dayExpenses.length === 0) {
 showToast('No expenses on this date');
 return;
@@ -773,10 +778,11 @@ const date = new Date(dateStr);
 const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 document.getElementById('day-detail-title').textContent = dateText;
 
+const typeLabels = { diesel: 'Diesel', parts: 'Parts & Repairs', parking: 'Parking & Tolls' };
 const html = dayExpenses.map(e => {
 const isMine = e.user === currentUser;
-const typeClass = e.type || 'diesel';
-const typeLabel = { diesel: 'Diesel', parts: 'Parts & Repairs', parking: 'Parking & Tolls' }[typeClass];
+const typeClass = e.type || currentExpenseType;
+const typeLabel = typeLabels[typeClass];
 return `<div class="expense-item ${typeClass} ${isMine ? '' : 'not-mine'}" ${isMine ? `onclick="openEditDrawer(${e.rowIndex})"` : ''}>
 <div class="ei-header">
 <div class="ei-payee">${e.payee}</div>
