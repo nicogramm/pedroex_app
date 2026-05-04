@@ -14,1194 +14,1060 @@
 <style>
 /* ═══════════════════════════════════════
    NEUMORPHIC THEME VARIABLES
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 :root {
-  /* LIGHT NEUMORPHIC */
-  --bg:       #e0e0e5;
-  --bg2:      #e8e8ed;
-  --shadow-d: #b8b9be;
-  --shadow-l: #ffffff;
-  --text:     #2a2a2e;
-  --text2:    #777;
-  --text3:    #aaa;
-  --red:      #B32533;
-  --green:    #16a34a;
-  --blue:     #2563eb;
-  --orange:   #f59e0b;
-  --purple:   #8b5cf6;
-  
-  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
-  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
-  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
-  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+    /* LIGHT NEUMORPHIC */
+    --bg: #e0e0e5;
+    --bg2: #e8e8ed;
+    --shadow-d: #b8b9be;
+    --shadow-l: #ffffff;
+    --text: #2a2a2e;
+    --text2: #777;
+    --text3: #aaa;
+    --red: #B32533;
+    --green: #16a34a;
+    --blue: #2563eb;
+    --orange: #f59e0b;
+    --purple: #8b5cf6;
+    --neu-out: 6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+    --neu-in: inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+    --neu-sm: 4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+    --neu-xs: 3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
 }
-
 body.dark {
-  --bg:       #2a2a2f;
-  --bg2:      #313137;
-  --shadow-d: #16161a;
-  --shadow-l: #3e3e46;
-  --text:     #e8e8ec;
-  --text2:    #888;
-  --text3:    #555;
-  
-  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
-  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
-  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
-  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
+    --bg: #2a2a2f;
+    --bg2: #313137;
+    --shadow-d: #16161a;
+    --shadow-l: #3e3e46;
+    --text: #e8e8ec;
+    --text2: #888;
+    --text3: #555;
+    --neu-out: 5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
+    --neu-in: inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+    --neu-sm: 4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+    --neu-xs: 3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
 }
 
 /* ═══════════════════════════════════════
    BASE
-═══════════════════════════════════════ */
-*, *::before, *::after { 
-  box-sizing: border-box; 
-  margin: 0; 
-  padding: 0; 
-  -webkit-tap-highlight-color: transparent;
+   ═══════════════════════════════════════ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
-
-html, body { 
-  height: 100%; 
-  overflow: hidden; 
-  background: var(--bg); 
-  color: var(--text); 
-  font-family: 'Inter', sans-serif; 
-  -webkit-font-smoothing: antialiased; 
-  transition: background 0.4s, color 0.4s;
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
 }
-
-.screen { 
-  display: flex; 
-  flex-direction: column; 
-  height: 100dvh; 
-  width: 100%;
+.screen {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    width: 100%;
 }
 
 /* ═══════════════════════════════════════
    TOPBAR
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .topbar {
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
-  flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-  position: relative;
-  z-index: 50;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    position: relative;
+    z-index: 50;
 }
-
 body.dark .topbar {
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
 }
-
 .tb-back {
-  background: var(--bg);
-  border: none;
-  border-radius: 12px;
-  box-shadow: var(--neu-sm);
-  width: 40px;
-  height: 40px;
-  color: var(--red);
-  font-size: 22px;
-  font-weight: 400;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-  line-height: 1;
+    background: var(--bg);
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--neu-sm);
+    width: 40px;
+    height: 40px;
+    color: var(--red);
+    font-size: 22px;
+    font-weight: 400;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    line-height: 1;
 }
-
 .tb-back:active {
-  box-shadow: var(--neu-in);
-  transform: scale(0.95);
+    box-shadow: var(--neu-in);
+    transform: scale(0.95);
 }
-
 .tb-title {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-  color: var(--text);
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
-
 .tb-action {
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 8px;
 }
-
 .tb-btn {
-  background: var(--bg);
-  border: none;
-  border-radius: 12px;
-  box-shadow: var(--neu-sm);
-  width: 40px;
-  height: 40px;
-  color: var(--red);
-  font-size: 20px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
+    background: var(--bg);
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--neu-sm);
+    width: 40px;
+    height: 40px;
+    color: var(--red);
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
 }
-
 .tb-btn:active {
-  box-shadow: var(--neu-in);
-  transform: scale(0.95);
+    box-shadow: var(--neu-in);
+    transform: scale(0.95);
 }
 
 /* ═══════════════════════════════════════
    PAGE WRAP
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .page-wrap {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 16px;
-  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
 }
 
 /* ═══════════════════════════════════════
    HERO CARD (PROFIT OVERVIEW) — CLICKABLE
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .hero-card {
-  background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%);
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 8px 24px rgba(179, 37, 51, 0.3);
-  color: #fff;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
+    background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 24px rgba(179, 37, 51, 0.3);
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
 }
-
 .hero-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 6px 18px rgba(179, 37, 51, 0.4);
+    transform: scale(0.98);
+    box-shadow: 0 6px 18px rgba(179, 37, 51, 0.4);
 }
-
 .hero-card::after {
-  content: '🔍 Tap to view details';
-  position: absolute;
-  bottom: 12px;
-  right: 16px;
-  font-size: 10px;
-  opacity: 0.7;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+    content: '🔍 Tap to view details';
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    font-size: 10px;
+    opacity: 0.7;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
-
 .hero-title {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: 0.8;
-  margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 8px;
 }
-
 .hero-amount {
-  font-size: 36px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  margin-bottom: 6px;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
 }
-
 .hero-margin {
-  font-size: 14px;
-  font-weight: 600;
-  opacity: 0.9;
-  margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.9;
+    margin-bottom: 20px;
 }
-
 .hero-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px 0;
 }
-
 .hero-breakdown {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
 }
-
 .hero-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
-
 .hero-item-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.7;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
 }
-
 .hero-item-value {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 /* ═══════════════════════════════════════
    FULL SCREEN MODAL (NO BLUR BACKGROUND)
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--bg);
-  z-index: 1000;
-  display: none;
-  flex-direction: column;
-  animation: slideInUp 0.3s ease-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    animation: slideInUp 0.3s ease-out;
 }
-
 .modal-overlay.show {
-  display: flex;
+    display: flex;
 }
-
 @keyframes slideInUp {
-  from { 
-    transform: translateY(100%); 
-  }
-  to { 
-    transform: translateY(0); 
-  }
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
 }
-
 .modal-header {
-  padding: 14px 18px;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  flex-shrink: 0;
-  background: var(--bg);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 14px 18px;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    background: var(--bg);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-
 body.dark .modal-header {
-  border-bottom-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-
 .modal-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
 }
-
 .modal-close {
-  background: var(--bg);
-  border: none;
-  border-radius: 10px;
-  box-shadow: var(--neu-sm);
-  width: 36px;
-  height: 36px;
-  color: var(--red);
-  font-size: 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
+    background: var(--bg);
+    border: none;
+    border-radius: 10px;
+    box-shadow: var(--neu-sm);
+    width: 36px;
+    height: 36px;
+    color: var(--red);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
 }
-
 .modal-close:active {
-  box-shadow: var(--neu-in);
-  transform: scale(0.95);
+    box-shadow: var(--neu-in);
+    transform: scale(0.95);
 }
-
 .modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 18px;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  -webkit-overflow-scrolling: touch;
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 18px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    -webkit-overflow-scrolling: touch;
 }
-
 .modal-section {
-  margin-bottom: 24px;
+    margin-bottom: 24px;
 }
-
 .modal-section:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
-
 .modal-section-title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
-  margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text3);
+    margin-bottom: 12px;
 }
-
 .modal-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
 }
-
 .modal-stat-card {
-  background: var(--bg2);
-  border-radius: 12px;
-  box-shadow: var(--neu-xs);
-  padding: 14px;
+    background: var(--bg2);
+    border-radius: 12px;
+    box-shadow: var(--neu-xs);
+    padding: 14px;
 }
-
 .modal-stat-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text3);
-  margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text3);
+    margin-bottom: 6px;
 }
-
 .modal-stat-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
 }
-
 .modal-list {
-  background: var(--bg2);
-  border-radius: 12px;
-  box-shadow: var(--neu-in);
-  padding: 4px;
-  max-height: 300px;
-  overflow-y: auto;
+    background: var(--bg2);
+    border-radius: 12px;
+    box-shadow: var(--neu-in);
+    padding: 4px;
+    max-height: 300px;
+    overflow-y: auto;
 }
-
 .modal-list-item {
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
 }
-
 body.dark .modal-list-item {
-  border-bottom-color: rgba(255, 255, 255, 0.03);
+    border-bottom-color: rgba(255, 255, 255, 0.03);
 }
-
 .modal-list-item:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
-
 .modal-list-label {
-  color: var(--text2);
-  flex: 1;
+    color: var(--text2);
+    flex: 1;
 }
-
 .modal-list-value {
-  font-weight: 600;
-  color: var(--text);
-  margin-left: 12px;
-  text-align: right;
+    font-weight: 600;
+    color: var(--text);
+    margin-left: 12px;
+    text-align: right;
 }
-
 .modal-formula {
-  background: var(--bg2);
-  border-radius: 12px;
-  box-shadow: var(--neu-in);
-  padding: 16px;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  line-height: 1.8;
-  color: var(--text2);
-  overflow-x: auto;
+    background: var(--bg2);
+    border-radius: 12px;
+    box-shadow: var(--neu-in);
+    padding: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--text2);
+    overflow-x: auto;
 }
-
 .modal-formula strong {
-  color: var(--text);
-  font-weight: 700;
+    color: var(--text);
+    font-weight: 700;
 }
 
 /* ═══════════════════════════════════════
    OVERVIEW CHARTS SECTION
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .overview-charts {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
-
 .chart-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
 }
-
 .chart-card {
-  background: var(--bg);
-  border-radius: 16px;
-  box-shadow: var(--neu-out);
-  padding: 16px;
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: var(--neu-out);
+    padding: 16px;
 }
-
 .chart-card.full-width {
-  grid-column: 1 / -1;
+    grid-column: 1 / -1;
 }
-
 .chart-card-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
-
 .chart-card-title .icon {
-  font-size: 16px;
+    font-size: 16px;
 }
-
 .chart-wrapper {
-  position: relative;
-  height: 180px;
+    position: relative;
+    height: 180px;
 }
-
 .chart-wrapper.tall {
-  height: 240px;
+    height: 240px;
 }
-
 .chart-wrapper.gauge {
-  height: 140px;
+    height: 140px;
 }
 
 /* ═══════════════════════════════════════
    VAT SUMMARY CARD — BLUE & CLICKABLE
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .vat-summary-card {
-  background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
-  color: #fff;
+    background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+    color: #fff;
 }
-
 .vat-summary-card:active {
-  transform: scale(0.98);
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+    transform: scale(0.98);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
 }
-
 .vat-summary-card::after {
-  content: '🔍 Tap for BIR breakdown';
-  position: absolute;
-  bottom: 12px;
-  right: 16px;
-  font-size: 10px;
-  opacity: 0.7;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #fff;
+    content: '🔍 Tap for BIR breakdown';
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    font-size: 10px;
+    opacity: 0.7;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #fff;
 }
-
 .vat-summary-card .section-title {
-  color: #fff;
-  margin-bottom: 16px;
+    color: #fff;
+    margin-bottom: 16px;
 }
-
 .vat-summary-card .stat-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  box-shadow: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: none;
 }
-
 .vat-summary-card .stat-label {
-  color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.8);
 }
-
 .vat-summary-card .stat-value {
-  color: #fff;
+    color: #fff;
 }
 
 /* ═══════════════════════════════════════
    VIEW TOGGLE
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .view-toggle {
-  display: flex;
-  gap: 8px;
-  background: var(--bg);
-  border-radius: 14px;
-  box-shadow: var(--neu-in);
-  padding: 4px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+    display: flex;
+    gap: 8px;
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: var(--neu-in);
+    padding: 4px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
-
 .view-btn {
-  flex: 1;
-  min-width: 80px;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  color: var(--text3);
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
-
 .view-btn.active {
-  background: var(--bg);
-  box-shadow: var(--neu-sm);
-  color: var(--red);
+    background: var(--bg);
+    box-shadow: var(--neu-sm);
+    color: var(--red);
 }
 
 /* ═══════════════════════════════════════
    SECTION CARD
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .section-card {
-  background: var(--bg);
-  border-radius: 18px;
-  box-shadow: var(--neu-out);
-  padding: 20px;
-  margin-bottom: 16px;
+    background: var(--bg);
+    border-radius: 18px;
+    box-shadow: var(--neu-out);
+    padding: 20px;
+    margin-bottom: 16px;
 }
-
 .section-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
-
 .section-title .icon {
-  font-size: 20px;
+    font-size: 20px;
 }
 
 /* ═══════════════════════════════════════
    TRUCK CARD
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .truck-card {
-  background: var(--bg);
-  border-radius: 16px;
-  box-shadow: var(--neu-sm);
-  padding: 16px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: transform 0.15s;
-  border-left: 4px solid var(--red);
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: var(--neu-sm);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    border-left: 4px solid var(--red);
 }
-
 .truck-card:active {
-  transform: scale(0.98);
-  box-shadow: var(--neu-in);
+    transform: scale(0.98);
+    box-shadow: var(--neu-in);
 }
-
 .truck-card.profitable {
-  border-left-color: var(--green);
+    border-left-color: var(--green);
 }
-
 .truck-card.warning {
-  border-left-color: var(--orange);
+    border-left-color: var(--orange);
 }
-
 .truck-card.loss {
-  border-left-color: var(--red);
+    border-left-color: var(--red);
 }
-
 .truck-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
 }
-
 .truck-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
 }
-
 .truck-margin {
-  font-size: 20px;
-  font-weight: 700;
+    font-size: 20px;
+    font-weight: 700;
 }
-
 .truck-margin.profitable { color: var(--green); }
 .truck-margin.warning { color: var(--orange); }
 .truck-margin.loss { color: var(--red); }
-
 .truck-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
 }
-
 .truck-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
-
 .truck-stat-label {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text3);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text3);
 }
-
 .truck-stat-value {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
 }
-
 .truck-breakdown {
-  font-size: 11px;
-  color: var(--text2);
-  line-height: 1.6;
-  padding-top: 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.6;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
-
 body.dark .truck-breakdown {
-  border-top-color: rgba(255, 255, 255, 0.04);
+    border-top-color: rgba(255, 255, 255, 0.04);
 }
 
 /* ═══════════════════════════════════════
    ROUTE CARD
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .route-card {
-  background: var(--bg);
-  border-radius: 16px;
-  box-shadow: var(--neu-sm);
-  padding: 16px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: transform 0.15s;
+    background: var(--bg);
+    border-radius: 16px;
+    box-shadow: var(--neu-sm);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
 }
-
 .route-card:active {
-  transform: scale(0.98);
-  box-shadow: var(--neu-in);
+    transform: scale(0.98);
+    box-shadow: var(--neu-in);
 }
-
 .route-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
 }
-
 .route-meta {
-  font-size: 12px;
-  color: var(--text2);
-  margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 12px;
 }
-
 .route-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
 }
-
 .route-stat {
-  text-align: center;
+    text-align: center;
 }
-
 .route-stat-value {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
 }
-
 .route-stat-label {
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text3);
-  margin-top: 2px;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text3);
+    margin-top: 2px;
 }
 
 /* ═══════════════════════════════════════
    CHART CONTAINER
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .chart-container {
-  background: var(--bg2);
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 12px;
-  box-shadow: var(--neu-in);
-  position: relative;
-  height: 220px;
+    background: var(--bg2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    box-shadow: var(--neu-in);
+    position: relative;
+    height: 220px;
 }
-
 .chart-canvas {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 /* ═══════════════════════════════════════
    STAT GRID
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
 }
-
 .stat-card {
-  background: var(--bg2);
-  border-radius: 12px;
-  box-shadow: var(--neu-xs);
-  padding: 14px;
-  text-align: center;
+    background: var(--bg2);
+    border-radius: 12px;
+    box-shadow: var(--neu-xs);
+    padding: 14px;
+    text-align: center;
 }
-
 .stat-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
 }
-
 .stat-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.2;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
 }
-
 .stat-change {
-  font-size: 10px;
-  color: var(--text2);
-  margin-top: 4px;
+    font-size: 10px;
+    color: var(--text2);
+    margin-top: 4px;
 }
-
 .stat-change.up { color: var(--green); }
 .stat-change.down { color: var(--red); }
 
 /* ═══════════════════════════════════════
    BREAKDOWN ITEM
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .breakdown-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
-
 body.dark .breakdown-item {
-  border-bottom-color: rgba(255, 255, 255, 0.04);
+    border-bottom-color: rgba(255, 255, 255, 0.04);
 }
-
 .breakdown-item:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
-
 .breakdown-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
-
 .breakdown-icon {
-  font-size: 24px;
+    font-size: 24px;
 }
-
 .breakdown-info {
-  flex: 1;
+    flex: 1;
 }
-
 .breakdown-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 2px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
 }
-
 .breakdown-meta {
-  font-size: 11px;
-  color: var(--text2);
+    font-size: 11px;
+    color: var(--text2);
 }
-
 .breakdown-right {
-  text-align: right;
+    text-align: right;
 }
-
 .breakdown-amount {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
 }
-
 .breakdown-percent {
-  font-size: 11px;
-  color: var(--text2);
+    font-size: 11px;
+    color: var(--text2);
 }
 
 /* ═══════════════════════════════════════
    HEATMAP
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .heatmap-grid {
-  display: grid;
-  grid-template-columns: 80px repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 12px;
+    display: grid;
+    grid-template-columns: 80px repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
 }
-
 .heatmap-header {
-  font-size: 11px;
-  font-weight: 700;
-  text-align: center;
-  color: var(--text3);
-  padding: 8px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--text3);
+    padding: 8px 4px;
 }
-
 .heatmap-row-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
 }
-
 .heatmap-cell {
-  background: var(--bg2);
-  border-radius: 10px;
-  box-shadow: var(--neu-xs);
-  padding: 12px 4px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 700;
+    background: var(--bg2);
+    border-radius: 10px;
+    box-shadow: var(--neu-xs);
+    padding: 12px 4px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
 }
-
 .heatmap-cell.excellent {
-  background: var(--green);
-  color: #fff;
-  box-shadow: none;
+    background: var(--green);
+    color: #fff;
+    box-shadow: none;
 }
-
 .heatmap-cell.good {
-  background: #4ade80;
-  color: #fff;
-  box-shadow: none;
+    background: #4ade80;
+    color: #fff;
+    box-shadow: none;
 }
-
 .heatmap-cell.acceptable {
-  background: var(--orange);
-  color: #fff;
-  box-shadow: none;
+    background: var(--orange);
+    color: #fff;
+    box-shadow: none;
 }
-
 .heatmap-cell.poor {
-  background: var(--red);
-  color: #fff;
-  box-shadow: none;
+    background: var(--red);
+    color: #fff;
+    box-shadow: none;
 }
 
 /* ═══════════════════════════════════════
    ALERTS
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .alert-item {
-  background: var(--bg2);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  border-left: 3px solid var(--orange);
+    background: var(--bg2);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-left: 3px solid var(--orange);
 }
-
 .alert-item.success {
-  border-left-color: var(--green);
+    border-left-color: var(--green);
 }
-
 .alert-item.warning {
-  border-left-color: var(--orange);
+    border-left-color: var(--orange);
 }
-
 .alert-item.info {
-  border-left-color: var(--blue);
+    border-left-color: var(--blue);
 }
-
 .alert-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-  margin-top: 2px;
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
 }
-
 .alert-text {
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.6;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
 }
 
 /* ═══════════════════════════════════════
    BOTTOM NAV
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--bg);
-  padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 0px));
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.07);
-  z-index: 40;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.07);
+    z-index: 40;
 }
-
 body.dark .bottom-nav {
-  box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4);
 }
-
 .bnav {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: var(--text3);
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'Inter', sans-serif;
 }
-
 .bnav.active {
-  color: var(--red);
+    color: var(--red);
 }
-
 .bnav-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: box-shadow 0.2s;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.2s;
 }
-
 .bnav:not(.active) .bnav-icon {
-  box-shadow: var(--neu-sm);
+    box-shadow: var(--neu-sm);
 }
-
 .bnav.active .bnav-icon {
-  box-shadow: var(--neu-in);
+    box-shadow: var(--neu-in);
 }
 
 /* ═══════════════════════════════════════
    LOADING / EMPTY STATES
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .loading-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 56px;
-  color: var(--text3);
-  font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 56px;
+    color: var(--text3);
+    font-size: 13px;
 }
-
 .spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--text3);
-  border-top-color: var(--red);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text3);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
 }
-
 @keyframes spin {
-  to { transform: rotate(360deg); }
+    to { transform: rotate(360deg); }
 }
-
 .empty-state {
-  text-align: center;
-  padding: 64px 24px;
+    text-align: center;
+    padding: 64px 24px;
 }
-
 .empty-icon {
-  font-size: 48px;
-  opacity: 0.25;
-  margin-bottom: 14px;
+    font-size: 48px;
+    opacity: 0.25;
+    margin-bottom: 14px;
 }
-
 .empty-state p {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text2);
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text2);
 }
 
 /* ═══════════════════════════════════════
    TOAST
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .toast {
-  position: fixed;
-  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--bg);
-  border-radius: 14px;
-  box-shadow: var(--neu-out);
-  border-left: 3px solid var(--red);
-  padding: 13px 22px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-  z-index: 400;
-  max-width: 90%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s;
+    position: fixed;
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: var(--neu-out);
+    border-left: 3px solid var(--red);
+    padding: 13px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    z-index: 400;
+    max-width: 90%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
 }
-
 .toast.show {
-  opacity: 1;
+    opacity: 1;
 }
 
 /* ═══════════════════════════════════════
    PULL TO REFRESH
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .ptr-indicator {
-  position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 10px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-80px);
-  background: var(--bg);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  box-shadow: var(--neu-out);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  transition: transform 0.2s ease;
-  pointer-events: none;
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--bg);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    box-shadow: var(--neu-out);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    transition: transform 0.2s ease;
+    pointer-events: none;
 }
-
 .ptr-indicator.visible {
-  transform: translateX(-50%) translateY(0px);
+    transform: translateX(-50%) translateY(0px);
 }
-
 .ptr-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--text3);
-  border-top-color: var(--red);
-  border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text3);
+    border-top-color: var(--red);
+    border-radius: 50%;
 }
-
 .ptr-spinner.spinning {
-  animation: spin 0.7s linear infinite;
+    animation: spin 0.7s linear infinite;
 }
-
 .ptr-arrow {
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--red);
-  font-size: 18px;
-  transition: transform 0.2s ease;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--red);
+    font-size: 18px;
+    transition: transform 0.2s ease;
 }
 
 /* ═══════════════════════════════════════
    PERIOD SELECTOR
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 .period-selector {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 4px;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
 }
-
 .period-btn {
-  background: var(--bg);
-  border: none;
-  border-radius: 12px;
-  box-shadow: var(--neu-sm);
-  padding: 10px 18px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  color: var(--text2);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
+    background: var(--bg);
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--neu-sm);
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
 }
-
 .period-btn.active {
-  box-shadow: var(--neu-in);
-  color: var(--red);
+    box-shadow: var(--neu-in);
+    color: var(--red);
 }
-
 .period-btn:active {
-  transform: scale(0.98);
+    transform: scale(0.98);
 }
 
 /* ═══════════════════════════════════════
    RESPONSIVE ADJUSTMENTS
-═══════════════════════════════════════ */
+   ═══════════════════════════════════════ */
 @media (max-width: 360px) {
-  .hero-amount {
-    font-size: 28px;
-  }
-  
-  .truck-name {
-    font-size: 16px;
-  }
-  
-  .stat-value {
-    font-size: 18px;
-  }
-  
-  .chart-row {
-    grid-template-columns: 1fr;
-  }
+    .hero-amount {
+        font-size: 28px;
+    }
+    .truck-name {
+        font-size: 16px;
+    }
+    .stat-value {
+        font-size: 18px;
+    }
+    .chart-row {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
@@ -1209,406 +1075,392 @@ body.dark .bottom-nav {
 
 <!-- ═══════════════════════════════════════
      ADMIN ACCESS CHECK
-═══════════════════════════════════════ -->
+     ═══════════════════════════════════════ -->
 <script>
 (function checkAdminAccess() {
-  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
-  
-  if (userRole !== 'admin') {
-    alert('⛔ Access Denied\n\nThis page is restricted to administrators only.');
-    window.location.href = 'index.html';
-    return;
-  }
+    const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+    if (userRole !== 'admin') {
+        alert('⛔ Access Denied\n\nThis page is restricted to administrators only.');
+        window.location.href = 'index.html';
+        return;
+    }
 })();
 </script>
 
 <div class="screen">
-  <!-- ═══ TOPBAR ═══ -->
-  <div class="topbar">
-    <button class="tb-back" onclick="location.href='index.html'">✕</button>
-    <span class="tb-title">Profit Matrix</span>
-    <div class="tb-action">
-      <button class="tb-btn" onclick="loadAll()">↻</button>
-    </div>
-  </div>
-
-  <!-- ═══ PAGE WRAP ═══ -->
-  <div class="page-wrap" id="page-wrap">
-    <!-- LOADING -->
-    <div id="wrap-loading" class="loading-wrap">
-      <div class="spinner"></div>&nbsp;Calculating profitability...
+    <!-- ═══ TOPBAR ═══ -->
+    <div class="topbar">
+        <button class="tb-back" onclick="location.href='index.html'">✕</button>
+        <span class="tb-title">Profit Matrix</span>
+        <div class="tb-action">
+            <button class="tb-btn" onclick="loadAll()">↻</button>
+        </div>
     </div>
 
-    <!-- CONTENT (hidden until loaded) -->
-    <div id="wrap-content" style="display:none">
-      
-      <!-- HERO CARD — CLICKABLE -->
-      <div class="hero-card" onclick="showProfitModal()">
-        <div class="hero-title">Net Profit This Month</div>
-        <div class="hero-amount" id="hero-profit">₱ 0.00</div>
-        <div class="hero-margin" id="hero-margin">Margin: 0% • 0 trips</div>
-        
-        <div class="hero-divider"></div>
-        
-        <div class="hero-breakdown">
-          <div class="hero-item">
-            <div class="hero-item-label">Revenue</div>
-            <div class="hero-item-value" id="hero-revenue">₱ 0</div>
-          </div>
-          <div class="hero-item">
-            <div class="hero-item-label">Expenses</div>
-            <div class="hero-item-value" id="hero-expenses">₱ 0</div>
-          </div>
+    <!-- ═══ PAGE WRAP ═══ -->
+    <div class="page-wrap" id="page-wrap">
+        <!-- LOADING -->
+        <div id="wrap-loading" class="loading-wrap">
+            <div class="spinner"></div>&nbsp;Calculating profitability...
         </div>
-      </div>
 
-      <!-- OVERVIEW CHARTS -->
-      <div class="overview-charts">
-        <div class="chart-row">
-          <div class="chart-card full-width">
-            <div class="chart-card-title">
-              <span class="icon">📈</span> Revenue vs Expenses (30 Days)
+        <!-- CONTENT (hidden until loaded) -->
+        <div id="wrap-content" style="display:none">
+            <!-- HERO CARD — CLICKABLE -->
+            <div class="hero-card" onclick="showProfitModal()">
+                <div class="hero-title">Net Profit This Month</div>
+                <div class="hero-amount" id="hero-profit">₱ 0.00</div>
+                <div class="hero-margin" id="hero-margin">Margin: 0% • 0 trips</div>
+                <div class="hero-divider"></div>
+                <div class="hero-breakdown">
+                    <div class="hero-item">
+                        <div class="hero-item-label">Revenue</div>
+                        <div class="hero-item-value" id="hero-revenue">₱ 0</div>
+                    </div>
+                    <div class="hero-item">
+                        <div class="hero-item-label">Expenses</div>
+                        <div class="hero-item-value" id="hero-expenses">₱ 0</div>
+                    </div>
+                </div>
             </div>
-            <div class="chart-wrapper tall">
-              <canvas id="overviewTrendChart"></canvas>
+
+            <!-- OVERVIEW CHARTS -->
+            <div class="overview-charts">
+                <div class="chart-row">
+                    <div class="chart-card full-width">
+                        <div class="chart-card-title">
+                            <span class="icon">📈</span> Revenue vs Expenses (30 Days)
+                        </div>
+                        <div class="chart-wrapper tall">
+                            <canvas id="overviewTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-card">
+                        <div class="chart-card-title">
+                            <span class="icon">🎯</span> Profit Margin
+                        </div>
+                        <div class="chart-wrapper gauge">
+                            <canvas id="marginGaugeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-card-title">
+                            <span class="icon">💰</span> Expense Mix
+                        </div>
+                        <div class="chart-wrapper gauge">
+                            <canvas id="expensePieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-card full-width">
+                        <div class="chart-card-title">
+                            <span class="icon">🚛</span> Fleet Performance
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="fleetBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        
-        <div class="chart-row">
-          <div class="chart-card">
-            <div class="chart-card-title">
-              <span class="icon">🎯</span> Profit Margin
+
+            <!-- VAT SUMMARY CARD — BLUE & CLICKABLE -->
+            <div class="vat-summary-card" onclick="showVATModal()">
+                <div class="section-title">
+                    <span class="icon">📊</span> BIR VAT Summary
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Vatable Sales</div>
+                        <div class="stat-value" id="vat-sales">₱0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Output VAT (12%)</div>
+                        <div class="stat-value" id="vat-output">₱0</div>
+                    </div>
+                </div>
             </div>
-            <div class="chart-wrapper gauge">
-              <canvas id="marginGaugeChart"></canvas>
+
+            <!-- PERIOD SELECTOR -->
+            <div class="period-selector">
+                <button class="period-btn active" onclick="changePeriod('month')">This Month</button>
+                <button class="period-btn" onclick="changePeriod('week')">This Week</button>
+                <button class="period-btn" onclick="changePeriod('year')">Year to Date</button>
+                <button class="period-btn" onclick="changePeriod('all')">All Time</button>
             </div>
-          </div>
-          
-          <div class="chart-card">
-            <div class="chart-card-title">
-              <span class="icon">💰</span> Expense Mix
+
+            <!-- VIEW TOGGLE -->
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('trucks')">🚛 Trucks</button>
+                <button class="view-btn" onclick="switchView('routes')">📍 Routes</button>
+                <button class="view-btn" onclick="switchView('trends')">📈 Trends</button>
+                <button class="view-btn" onclick="switchView('insights')">🧠 Insights</button>
             </div>
-            <div class="chart-wrapper gauge">
-              <canvas id="expensePieChart"></canvas>
+
+            <!-- ═══ BY TRUCK VIEW ═══ -->
+            <div id="view-trucks" class="view-content">
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">🚛</span> Profitability by Truck
+                    </div>
+                    <div id="trucks-list"></div>
+                </div>
             </div>
-          </div>
-        </div>
-        
-        <div class="chart-row">
-          <div class="chart-card full-width">
-            <div class="chart-card-title">
-              <span class="icon">🚛</span> Fleet Performance
+
+            <!-- ═══ BY ROUTE VIEW ═══ -->
+            <div id="view-routes" class="view-content" style="display:none">
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">📍</span> Profitability by Route
+                    </div>
+                    <div id="routes-list"></div>
+                </div>
             </div>
-            <div class="chart-wrapper">
-              <canvas id="fleetBarChart"></canvas>
+
+            <!-- ═══ TRENDS VIEW ═══ -->
+            <div id="view-trends" class="view-content" style="display:none">
+                <!-- Profit Trend Chart -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">📈</span> Profit Trend (Last 30 Days)
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="profitTrendChart" class="chart-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Monthly Comparison -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">📊</span> Monthly Performance
+                    </div>
+                    <div id="monthly-breakdown"></div>
+                </div>
+
+                <!-- Weekly Heatmap -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">🗓️</span> Weekly Profitability Heatmap
+                    </div>
+                    <div class="heatmap-grid" id="heatmap-grid"></div>
+                </div>
+
+                <!-- Cost Breakdown -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">💰</span> Expense Breakdown
+                    </div>
+                    <div class="chart-container" style="height:200px">
+                        <canvas id="expenseChart" class="chart-canvas"></canvas>
+                    </div>
+                    <div id="expense-breakdown" style="margin-top:16px"></div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- VAT SUMMARY CARD — BLUE & CLICKABLE -->
-      <div class="vat-summary-card" onclick="showVATModal()">
-        <div class="section-title">
-          <span class="icon">📊</span> BIR VAT Summary
-        </div>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-label">Vatable Sales</div>
-            <div class="stat-value" id="vat-sales">₱0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Output VAT (12%)</div>
-            <div class="stat-value" id="vat-output">₱0</div>
-          </div>
-        </div>
-      </div>
+            <!-- ═══ INSIGHTS VIEW ═══ -->
+            <div id="view-insights" class="view-content" style="display:none">
+                <!-- KPI Cards -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">📊</span> Key Performance Indicators
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Profit/Trip</div>
+                            <div class="stat-value" id="kpi-avg-trip">₱0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Profit/Day</div>
+                            <div class="stat-value" id="kpi-avg-day">₱0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Fleet Utilization</div>
+                            <div class="stat-value" id="kpi-utilization">0%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Profit Margin</div>
+                            <div class="stat-value" id="kpi-margin">0%</div>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- PERIOD SELECTOR -->
-      <div class="period-selector">
-        <button class="period-btn active" onclick="changePeriod('month')">This Month</button>
-        <button class="period-btn" onclick="changePeriod('week')">This Week</button>
-        <button class="period-btn" onclick="changePeriod('year')">Year to Date</button>
-        <button class="period-btn" onclick="changePeriod('all')">All Time</button>
-      </div>
+                <!-- Smart Alerts -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">🚨</span> Smart Alerts & Recommendations
+                    </div>
+                    <div id="alerts-list"></div>
+                </div>
 
-      <!-- VIEW TOGGLE -->
-      <div class="view-toggle">
-        <button class="view-btn active" onclick="switchView('trucks')">🚛 Trucks</button>
-        <button class="view-btn" onclick="switchView('routes')">📍 Routes</button>
-        <button class="view-btn" onclick="switchView('trends')">📈 Trends</button>
-        <button class="view-btn" onclick="switchView('insights')">🧠 Insights</button>
-      </div>
-
-      <!-- ═══ BY TRUCK VIEW ═══ -->
-      <div id="view-trucks" class="view-content">
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">🚛</span> Profitability by Truck
-          </div>
-          <div id="trucks-list"></div>
-        </div>
-      </div>
-
-      <!-- ═══ BY ROUTE VIEW ═══ -->
-      <div id="view-routes" class="view-content" style="display:none">
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">📍</span> Profitability by Route
-          </div>
-          <div id="routes-list"></div>
-        </div>
-      </div>
-
-      <!-- ═══ TRENDS VIEW ═══ -->
-      <div id="view-trends" class="view-content" style="display:none">
-        
-        <!-- Profit Trend Chart -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">📈</span> Profit Trend (Last 30 Days)
-          </div>
-          <div class="chart-container">
-            <canvas id="profitTrendChart" class="chart-canvas"></canvas>
-          </div>
-        </div>
-
-        <!-- Monthly Comparison -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">📊</span> Monthly Performance
-          </div>
-          <div id="monthly-breakdown"></div>
-        </div>
-
-        <!-- Weekly Heatmap -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">🗓️</span> Weekly Profitability Heatmap
-          </div>
-          <div class="heatmap-grid" id="heatmap-grid"></div>
-        </div>
-
-        <!-- Cost Breakdown -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">💰</span> Expense Breakdown
-          </div>
-          <div class="chart-container" style="height:200px">
-            <canvas id="expenseChart" class="chart-canvas"></canvas>
-          </div>
-          <div id="expense-breakdown" style="margin-top:16px"></div>
-        </div>
-
-      </div>
-
-      <!-- ═══ INSIGHTS VIEW ═══ -->
-      <div id="view-insights" class="view-content" style="display:none">
-        
-        <!-- KPI Cards -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">📊</span> Key Performance Indicators
-          </div>
-          <div class="stat-grid">
-            <div class="stat-card">
-              <div class="stat-label">Avg Profit/Trip</div>
-              <div class="stat-value" id="kpi-avg-trip">₱0</div>
+                <!-- Top Performers -->
+                <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">🏆</span> Top Performers
+                    </div>
+                    <div id="top-performers"></div>
+                </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-label">Avg Profit/Day</div>
-              <div class="stat-value" id="kpi-avg-day">₱0</div>
+
+        </div><!-- end wrap-content -->
+    </div><!-- end page-wrap -->
+
+    <!-- ═══ BOTTOM NAV ═══ -->
+    <div class="bottom-nav">
+        <button class="bnav" onclick="location.href='index.html'">
+            <div class="bnav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/>
+                </svg>
             </div>
-            <div class="stat-card">
-              <div class="stat-label">Fleet Utilization</div>
-              <div class="stat-value" id="kpi-utilization">0%</div>
+            Home
+        </button>
+        <button class="bnav" onclick="location.href='trucks.html'">
+            <div class="bnav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/>
+                </svg>
             </div>
-            <div class="stat-card">
-              <div class="stat-label">Profit Margin</div>
-              <div class="stat-value" id="kpi-margin">0%</div>
+            Trucks
+        </button>
+        <button class="bnav" onclick="location.href='trips.html'">
+            <div class="bnav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/>
+                </svg>
             </div>
-          </div>
-        </div>
-
-        <!-- Smart Alerts -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">🚨</span> Smart Alerts & Recommendations
-          </div>
-          <div id="alerts-list"></div>
-        </div>
-
-        <!-- Top Performers -->
-        <div class="section-card">
-          <div class="section-title">
-            <span class="icon">🏆</span> Top Performers
-          </div>
-          <div id="top-performers"></div>
-        </div>
-
-      </div>
-
-    </div><!-- end wrap-content -->
-  </div><!-- end page-wrap -->
-
-  <!-- ═══ BOTTOM NAV ═══ -->
-  <div class="bottom-nav">
-    <button class="bnav" onclick="location.href='index.html'">
-      <div class="bnav-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/>
-          <path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      </div>
-      Home
-    </button>
-    <button class="bnav" onclick="location.href='trucks.html'">
-      <div class="bnav-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
-          <path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/>
-          <circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/>
-          <circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      </div>
-      Trucks
-    </button>
-    <button class="bnav" onclick="location.href='trips.html'">
-      <div class="bnav-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      </div>
-      Trips
-    </button>
-    <button class="bnav" onclick="location.href='billing.html'">
-      <div class="bnav-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/>
-          <path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      Billing
-    </button>
-    <button class="bnav active">
-      <div class="bnav-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-          <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
-        </svg>
-      </div>
-      Matrix
-    </button>
-  </div>
+            Trips
+        </button>
+        <button class="bnav" onclick="location.href='billing.html'">
+            <div class="bnav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            Billing
+        </button>
+        <button class="bnav active">
+            <div class="bnav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </div>
+            Matrix
+        </button>
+    </div>
 </div>
 
 <!-- ═══════════════════════════════════════
      PROFIT DETAILS MODAL — FULL SCREEN
-═══════════════════════════════════════ -->
+     ═══════════════════════════════════════ -->
 <div class="modal-overlay" id="profitModal">
-  <div class="modal-header">
-    <div class="modal-title">💰 Net Profit Breakdown</div>
-    <button class="modal-close" onclick="closeProfitModal()">✕</button>
-  </div>
-  <div class="modal-body">
-    
-    <div class="modal-section">
-      <div class="modal-section-title">Summary</div>
-      <div class="modal-stat-grid">
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Total Revenue</div>
-          <div class="modal-stat-value" id="modal-revenue">₱0</div>
-        </div>
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Total Expenses</div>
-          <div class="modal-stat-value" id="modal-expenses">₱0</div>
-        </div>
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Net Profit</div>
-          <div class="modal-stat-value" id="modal-profit" style="color:var(--green)">₱0</div>
-        </div>
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Profit Margin</div>
-          <div class="modal-stat-value" id="modal-margin">0%</div>
-        </div>
-      </div>
+    <div class="modal-header">
+        <div class="modal-title">💰 Net Profit Breakdown</div>
+        <button class="modal-close" onclick="closeProfitModal()">✕</button>
     </div>
+    <div class="modal-body">
+        <div class="modal-section">
+            <div class="modal-section-title">Summary</div>
+            <div class="modal-stat-grid">
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Total Revenue</div>
+                    <div class="modal-stat-value" id="modal-revenue">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Total Expenses</div>
+                    <div class="modal-stat-value" id="modal-expenses">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Net Profit</div>
+                    <div class="modal-stat-value" id="modal-profit" style="color:var(--green)">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Profit Margin</div>
+                    <div class="modal-stat-value" id="modal-margin">0%</div>
+                </div>
+            </div>
+        </div>
 
-    <div class="modal-section">
-      <div class="modal-section-title">Revenue Sources</div>
-      <div class="modal-list" id="modal-revenue-list"></div>
+        <div class="modal-section">
+            <div class="modal-section-title">Revenue Sources</div>
+            <div class="modal-list" id="modal-revenue-list"></div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">Expense Breakdown</div>
+            <div class="modal-list" id="modal-expense-list"></div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">Calculation Formula</div>
+            <div class="modal-formula" id="modal-formula"></div>
+        </div>
     </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">Expense Breakdown</div>
-      <div class="modal-list" id="modal-expense-list"></div>
-    </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">Calculation Formula</div>
-      <div class="modal-formula" id="modal-formula"></div>
-    </div>
-
-  </div>
 </div>
 
 <!-- ═══════════════════════════════════════
      BIR VAT MODAL — FULL SCREEN
-═══════════════════════════════════════ -->
+     ═══════════════════════════════════════ -->
 <div class="modal-overlay" id="vatModal">
-  <div class="modal-header">
-    <div class="modal-title">📊 BIR VAT Summary</div>
-    <button class="modal-close" onclick="closeVATModal()">✕</button>
-  </div>
-  <div class="modal-body">
-    
-    <div class="modal-section">
-      <div class="modal-section-title">VAT Computation</div>
-      <div class="modal-stat-grid">
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Gross Sales</div>
-          <div class="modal-stat-value" id="vat-modal-gross">₱0</div>
-        </div>
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Vatable Sales</div>
-          <div class="modal-stat-value" id="vat-modal-vatable">₱0</div>
-        </div>
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Output VAT (12%)</div>
-          <div class="modal-stat-value" id="vat-modal-output" style="color:var(--red)">₱0</div>
-        </div>
-        <div class="modal-stat-card">
-          <div class="modal-stat-label">Net of VAT</div>
-          <div class="modal-stat-value" id="vat-modal-net">₱0</div>
-        </div>
-      </div>
+    <div class="modal-header">
+        <div class="modal-title">📊 BIR VAT Summary</div>
+        <button class="modal-close" onclick="closeVATModal()">✕</button>
     </div>
+    <div class="modal-body">
+        <div class="modal-section">
+            <div class="modal-section-title">VAT Computation</div>
+            <div class="modal-stat-grid">
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Gross Sales</div>
+                    <div class="modal-stat-value" id="vat-modal-gross">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Vatable Sales</div>
+                    <div class="modal-stat-value" id="vat-modal-vatable">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Output VAT (12%)</div>
+                    <div class="modal-stat-value" id="vat-modal-output" style="color:var(--red)">₱0</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Net of VAT</div>
+                    <div class="modal-stat-value" id="vat-modal-net">₱0</div>
+                </div>
+            </div>
+        </div>
 
-    <div class="modal-section">
-      <div class="modal-section-title">Sales by Truck</div>
-      <div class="modal-list" id="vat-modal-trucks"></div>
+        <div class="modal-section">
+            <div class="modal-section-title">Sales by Truck</div>
+            <div class="modal-list" id="vat-modal-trucks"></div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">BIR Formula</div>
+            <div class="modal-formula">
+                <strong>Vatable Sales</strong> = Gross Sales / 1.12<br>
+                <strong>Output VAT</strong> = Vatable Sales × 0.12<br>
+                <strong>Net of VAT</strong> = Gross Sales - Output VAT<br><br>
+                <em>Note: All PedroEX deliveries are subject to 12% VAT per BIR regulations.</em>
+            </div>
+        </div>
+
+        <div class="modal-section">
+            <div class="modal-section-title">Source Documents</div>
+            <div class="modal-list" id="vat-modal-sources"></div>
+        </div>
     </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">BIR Formula</div>
-      <div class="modal-formula">
-        <strong>Vatable Sales</strong> = Gross Sales / 1.12<br>
-        <strong>Output VAT</strong> = Vatable Sales × 0.12<br>
-        <strong>Net of VAT</strong> = Gross Sales - Output VAT<br><br>
-        
-        <em>Note: All PedroEX deliveries are subject to 12% VAT per BIR regulations.</em>
-      </div>
-    </div>
-
-    <div class="modal-section">
-      <div class="modal-section-title">Source Documents</div>
-      <div class="modal-list" id="vat-modal-sources"></div>
-    </div>
-
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1649,157 +1501,148 @@ let fleetBarChart = null;
 // INIT
 // ═══════════════════════════════════════
 (function init() {
-  const dark = localStorage.getItem('pedroex-theme') === 'dark';
-  document.body.classList.toggle('dark', dark);
+    const dark = localStorage.getItem('pedroex-theme') === 'dark';
+    document.body.classList.toggle('dark', dark);
 
-  token = localStorage.getItem('pedroex-token') || '';
-  const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-  if (!token || Date.now() >= expiry) {
-    location.href = 'index.html';
-    return;
-  }
-
-  loadAll();
-
-  // Pull to refresh
-  initPullToRefresh(
-    document.querySelector('.page-wrap'),
-    function(done) {
-      loadAll();
-      setTimeout(done, 1500);
+    token = localStorage.getItem('pedroex-token') || '';
+    const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    if (!token || Date.now() >= expiry) {
+        location.href = 'index.html';
+        return;
     }
-  );
+
+    loadAll();
+
+    // Pull to refresh
+    initPullToRefresh(
+        document.querySelector('.page-wrap'),
+        function(done) {
+            loadAll();
+            setTimeout(done, 1500);
+        }
+    );
 })();
 
 // ═══════════════════════════════════════
 // API HELPERS
 // ═══════════════════════════════════════
 function apiGet(range) {
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
-    headers: { Authorization: 'Bearer ' + token }
-  }).then(r => {
-    if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
-    if (!r.ok) throw new Error('API Error');
-    return r.json();
-  });
+    return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
+        headers: { Authorization: 'Bearer ' + token }
+    }).then(r => {
+        if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
+        if (!r.ok) throw new Error('API Error');
+        return r.json();
+    });
 }
 
 // ═══════════════════════════════════════
 // LOAD ALL DATA
 // ═══════════════════════════════════════
 function loadAll() {
-  document.getElementById('wrap-loading').style.display = 'flex';
-  document.getElementById('wrap-content').style.display = 'none';
+    document.getElementById('wrap-loading').style.display = 'flex';
+    document.getElementById('wrap-content').style.display = 'none';
 
-  Promise.all([
-    apiGet(TAB_TRIPS + '!A2:I'),
-    apiGet(TAB_EXPENSES + '!A2:M'),
-    apiGet(TAB_ATTENDANCE + '!A2:J'),
-    apiGet(TAB_EMPLOYEES + '!A2:E')
-  ]).then(res => {
-    // Parse Trips
-    const tripRows = res[0].values || [];
-    allTrips = tripRows.map((r, i) => ({
-      rowIndex: i + 2,
-      id: r[0] || '',
-      deliveryDate: convertExcelDate(r[1]),
-      truck: r[2] || '',
-      shipmentDate: r[3] ? convertExcelDate(r[3]) : '',
-      type: r[4] || '',
-      shipmentNumber: r[5] || '',
-      billed: r[6] || '',
-      route: r[7] || '',
-      rate: parseFloat(r[8]) || 0
-    })).filter(t => t.truck && t.deliveryDate && t.rate > 0);
+    Promise.all([
+        apiGet(TAB_TRIPS + '!A2:I'),
+        apiGet(TAB_EXPENSES + '!A2:M'),
+        apiGet(TAB_ATTENDANCE + '!A2:J'),
+        apiGet(TAB_EMPLOYEES + '!A2:E')
+    ]).then(res => {
+        // Parse Trips
+        const tripRows = res[0].values || [];
+        allTrips = tripRows.map((r, i) => ({
+            rowIndex: i + 2,
+            id: r[0] || '',
+            deliveryDate: convertExcelDate(r[1]),
+            truck: r[2] || '',
+            shipmentDate: r[3] ? convertExcelDate(r[3]) : '',
+            type: r[4] || '',
+            shipmentNumber: r[5] || '',
+            billed: r[6] || '',
+            route: r[7] || '',
+            rate: parseFloat(r[8]) || 0
+        })).filter(t => t.truck && t.deliveryDate && t.rate > 0);
 
-    // Parse Expenses
-    const expenseRows = res[1].values || [];
-    allExpenses = expenseRows.map((r, i) => ({
-      rowIndex: i + 2,
-      id: r[0] || '',
-      date: r[1] || '',
-      truck: r[2] || '',
-      category: r[3] || '',
-      subcategory: r[4] || '',
-      amount: parseFloat(r[5]) || 0
-    })).filter(e => e.truck && e.date && e.amount > 0);
+        // Parse Expenses
+        const expenseRows = res[1].values || [];
+        allExpenses = expenseRows.map((r, i) => ({
+            rowIndex: i + 2,
+            id: r[0] || '',
+            date: r[1] || '',
+            truck: r[2] || '',
+            category: r[3] || '',
+            subcategory: r[4] || '',
+            amount: parseFloat(r[5]) || 0
+        })).filter(e => e.truck && e.date && e.amount > 0);
 
-    // Parse Attendance
-    const attendanceRows = res[2].values || [];
-    allAttendance = attendanceRows.map(r => ({
-      date: r[1] || '',
-      employee: r[2] || '',
-      twoManTeam: (r[3] || '').toLowerCase() === 'yes',
-      mealAllowance: ['yes', 'meals only'].includes((r[5] || '').toLowerCase()),
-      truck: r[6] || ''
-    })).filter(a => a.date && a.employee && a.truck);
+        // Parse Attendance
+        const attendanceRows = res[2].values || [];
+        allAttendance = attendanceRows.map(r => ({
+            date: r[1] || '',
+            employee: r[2] || '',
+            twoManTeam: (r[3] || '').toLowerCase() === 'yes',
+            mealAllowance: ['yes', 'meals only'].includes((r[5] || '').toLowerCase()),
+            truck: r[6] || ''
+        })).filter(a => a.date && a.employee && a.truck);
 
-    // Parse Employee Roles
-    const employeeRows = res[3].values || [];
-    employeeRoles = {};
-    employeeRows.forEach(r => {
-      const firstName = (r[1] || '').trim();
-      const lastName = (r[2] || '').trim();
-      const position = (r[4] || '').toLowerCase().trim();
-      
-      if (firstName && position) {
-        const fullName = `${firstName} ${lastName}`;
-        employeeRoles[fullName] = position;
-        employeeRoles[firstName] = position;
-      }
+        // Parse Employee Roles
+        const employeeRows = res[3].values || [];
+        employeeRoles = {};
+        employeeRows.forEach(r => {
+            const firstName = (r[1] || '').trim();
+            const lastName = (r[2] || '').trim();
+            const position = (r[4] || '').toLowerCase().trim();
+            if (firstName && position) {
+                const fullName = `${firstName} ${lastName}`;
+                employeeRoles[fullName] = position;
+                employeeRoles[firstName] = position;
+            }
+        });
+
+        console.log('✅ Data loaded:', {
+            trips: allTrips.length,
+            expenses: allExpenses.length,
+            attendance: allAttendance.length,
+            employees: Object.keys(employeeRoles).length
+        });
+
+        document.getElementById('wrap-loading').style.display = 'none';
+        document.getElementById('wrap-content').style.display = 'block';
+        renderAll();
+    }).catch(err => {
+        document.getElementById('wrap-loading').style.display = 'none';
+        showToast('❌ Failed to load data');
+        console.error('Load error:', err);
     });
-
-    console.log('✅ Data loaded:', {
-      trips: allTrips.length,
-      expenses: allExpenses.length,
-      attendance: allAttendance.length,
-      employees: Object.keys(employeeRoles).length
-    });
-
-    document.getElementById('wrap-loading').style.display = 'none';
-    document.getElementById('wrap-content').style.display = 'block';
-
-    renderAll();
-
-  }).catch(err => {
-    document.getElementById('wrap-loading').style.display = 'none';
-    showToast('❌ Failed to load data');
-    console.error('Load error:', err);
-  });
 }
 
 // ═══════════════════════════════════════
 // EXCEL DATE CONVERTER
 // ═══════════════════════════════════════
 function convertExcelDate(value) {
-  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    return value;
-  }
-  
-  const num = parseFloat(value);
-  if (!isNaN(num) && num > 1000) {
-    const excelEpoch = new Date(1899, 11, 30);
-    const date = new Date(excelEpoch.getTime() + num * 86400000);
-    
-    const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1);
-    const day = pad(date.getDate());
-    
-    return `${year}-${month}-${day}`;
-  }
-  
-  if (typeof value === 'string') {
-    const d = new Date(value);
-    if (!isNaN(d.getTime())) {
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return value;
     }
-  }
-  
-  return '';
+    const num = parseFloat(value);
+    if (!isNaN(num) && num > 1000) {
+        const excelEpoch = new Date(1899, 11, 30);
+        const date = new Date(excelEpoch.getTime() + num * 86400000);
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        return `${year}-${month}-${day}`;
+    }
+    if (typeof value === 'string') {
+        const d = new Date(value);
+        if (!isNaN(d.getTime())) {
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        }
+    }
+    return '';
 }
-
 function pad(n) {
-  return n < 10 ? '0' + n : String(n);
+    return n < 10 ? '0' + n : String(n);
 }
 
 // ═══════════════════════════════════════
@@ -1812,1578 +1655,1495 @@ const MEAL_ALLOWANCE = 210;
 const DOCUMENTATION_DAILY_RATE = 40000 / 365;
 
 function calculateManpowerCost(attendance) {
-  const role = employeeRoles[attendance.employee] || 'helper';
-  let cost = (role === 'driver') ? DRIVER_DAILY_RATE : HELPER_DAILY_RATE;
-  
-  if (attendance.twoManTeam) cost += TWO_MAN_BONUS;
-  if (attendance.mealAllowance) cost += MEAL_ALLOWANCE;
-  
-  return cost;
+    const role = employeeRoles[attendance.employee] || 'helper';
+    let cost = (role === 'driver') ? DRIVER_DAILY_RATE : HELPER_DAILY_RATE;
+    if (attendance.twoManTeam) cost += TWO_MAN_BONUS;
+    if (attendance.mealAllowance) cost += MEAL_ALLOWANCE;
+    return cost;
 }
 
 function getManpowerExpensesForDate(dateStr) {
-  const dayAttendance = allAttendance.filter(a => a.date === dateStr);
-  return dayAttendance.map(a => ({
-    truck: a.truck,
-    amount: calculateManpowerCost(a),
-    category: 'Manpower',
-    employee: a.employee
-  }));
+    const dayAttendance = allAttendance.filter(a => a.date === dateStr);
+    return dayAttendance.map(a => ({
+        truck: a.truck,
+        amount: calculateManpowerCost(a),
+        category: 'Manpower',
+        employee: a.employee
+    }));
 }
 
 function getDocumentationExpensesForDate(dateStr) {
-  const dayAttendance = allAttendance.filter(a => a.date === dateStr);
-  const trucks = [...new Set(dayAttendance.map(a => a.truck))].filter(t => t);
-  
-  return trucks.map(truck => ({
-    truck: truck,
-    amount: DOCUMENTATION_DAILY_RATE,
-    category: 'Documentation'
-  }));
+    const dayAttendance = allAttendance.filter(a => a.date === dateStr);
+    const trucks = [...new Set(dayAttendance.map(a => a.truck))].filter(t => t);
+    return trucks.map(truck => ({
+        truck: truck,
+        amount: DOCUMENTATION_DAILY_RATE,
+        category: 'Documentation'
+    }));
 }
 
 // ═══════════════════════════════════════
 // PERIOD FILTERING
 // ═══════════════════════════════════════
 function changePeriod(period) {
-  currentPeriod = period;
-  
-  document.querySelectorAll('.period-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  event.target.classList.add('active');
-  
-  renderAll();
+    currentPeriod = period;
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    renderAll();
 }
 
 function getFilteredTrips() {
-  const now = new Date();
-  const today = now.toISOString().split('T')[0];
-  
-  switch(currentPeriod) {
-    case 'week':
-      const weekAgo = new Date(now);
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      const weekAgoStr = weekAgo.toISOString().split('T')[0];
-      return allTrips.filter(t => t.deliveryDate >= weekAgoStr && t.deliveryDate <= today);
-    
-    case 'month':
-      const thisMonth = today.slice(0, 7);
-      return allTrips.filter(t => t.deliveryDate.startsWith(thisMonth));
-    
-    case 'year':
-      const thisYear = today.slice(0, 4);
-      return allTrips.filter(t => t.deliveryDate.startsWith(thisYear));
-    
-    case 'all':
-    default:
-      return allTrips;
-  }
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    switch(currentPeriod) {
+        case 'week':
+            const weekAgo = new Date(now);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekAgoStr = weekAgo.toISOString().split('T')[0];
+            return allTrips.filter(t => t.deliveryDate >= weekAgoStr && t.deliveryDate <= today);
+        case 'month':
+            const thisMonth = today.slice(0, 7);
+            return allTrips.filter(t => t.deliveryDate.startsWith(thisMonth));
+        case 'year':
+            const thisYear = today.slice(0, 4);
+            return allTrips.filter(t => t.deliveryDate.startsWith(thisYear));
+        case 'all':
+        default:
+            return allTrips;
+    }
 }
 
 function getFilteredExpenses() {
-  const now = new Date();
-  const today = now.toISOString().split('T')[0];
-  
-  switch(currentPeriod) {
-    case 'week':
-      const weekAgo = new Date(now);
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      const weekAgoStr = weekAgo.toISOString().split('T')[0];
-      return allExpenses.filter(e => e.date >= weekAgoStr && e.date <= today);
-    
-    case 'month':
-      const thisMonth = today.slice(0, 7);
-      return allExpenses.filter(e => e.date.startsWith(thisMonth));
-    
-    case 'year':
-      const thisYear = today.slice(0, 4);
-      return allExpenses.filter(e => e.date.startsWith(thisYear));
-    
-    case 'all':
-    default:
-      return allExpenses;
-  }
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    switch(currentPeriod) {
+        case 'week':
+            const weekAgo = new Date(now);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekAgoStr = weekAgo.toISOString().split('T')[0];
+            return allExpenses.filter(e => e.date >= weekAgoStr && e.date <= today);
+        case 'month':
+            const thisMonth = today.slice(0, 7);
+            return allExpenses.filter(e => e.date.startsWith(thisMonth));
+        case 'year':
+            const thisYear = today.slice(0, 4);
+            return allExpenses.filter(e => e.date.startsWith(thisYear));
+        case 'all':
+        default:
+            return allExpenses;
+    }
 }
 
 // ═══════════════════════════════════════
 // VIEW SWITCHING
 // ═══════════════════════════════════════
 function switchView(view) {
-  currentView = view;
-  
-  document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  event.target.classList.add('active');
-  
-  document.querySelectorAll('.view-content').forEach(v => {
-    v.style.display = 'none';
-  });
-  document.getElementById('view-' + view).style.display = 'block';
-  
-  // Render specific view
-  if (view === 'trucks') renderTrucksView();
-  else if (view === 'routes') renderRoutesView();
-  else if (view === 'trends') renderTrendsView();
-  else if (view === 'insights') renderInsightsView();
+    currentView = view;
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+
+    document.querySelectorAll('.view-content').forEach(v => {
+        v.style.display = 'none';
+    });
+    document.getElementById('view-' + view).style.display = 'block';
+
+    // Render specific view
+    if (view === 'trucks') renderTrucksView();
+    else if (view === 'routes') renderRoutesView();
+    else if (view === 'trends') renderTrendsView();
+    else if (view === 'insights') renderInsightsView();
 }
 
 // ═══════════════════════════════════════
 // RENDER ALL
 // ═══════════════════════════════════════
 function renderAll() {
-  updateHeroCard();
-  updateVATSummary();
-  renderOverviewCharts();
-  renderTrucksView();
+    updateHeroCard();
+    updateVATSummary();
+    renderOverviewCharts();
+    renderTrucksView();
 }
 
 // ═══════════════════════════════════════
 // HERO CARD
 // ═══════════════════════════════════════
 function updateHeroCard() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  // Calculate total revenue
-  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
-  
-  // Calculate total expenses (operational + manpower + documentation)
-  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  
-  // Get unique dates from trips
-  const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
-  
-  let manpowerTotal = 0;
-  let documentationTotal = 0;
-  
-  tripDates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
-    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
-  });
-  
-  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
-  const netProfit = totalRevenue - totalExpenses;
-  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
-  
-  document.getElementById('hero-profit').textContent = formatCurrency(netProfit);
-  document.getElementById('hero-margin').textContent = 
-    `Margin: ${margin.toFixed(1)}% • ${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
-  document.getElementById('hero-revenue').textContent = formatCompact(totalRevenue);
-  document.getElementById('hero-expenses').textContent = formatCompact(totalExpenses);
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    // Calculate total revenue
+    const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+
+    // Calculate total expenses (operational + manpower + documentation)
+    const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+    // Get unique dates from trips
+    const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+    let manpowerTotal = 0;
+    let documentationTotal = 0;
+
+    tripDates.forEach(date => {
+        const manpower = getManpowerExpensesForDate(date);
+        const documentation = getDocumentationExpensesForDate(date);
+        manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+        documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+    });
+
+    const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+    const netProfit = totalRevenue - totalExpenses;
+    const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+
+    document.getElementById('hero-profit').textContent = formatCurrency(netProfit);
+    document.getElementById('hero-margin').textContent = 
+        `Margin: ${margin.toFixed(1)}% • ${trips.length} trip${trips.length !== 1 ? 's' : ''}`;
+    document.getElementById('hero-revenue').textContent = formatCompact(totalRevenue);
+    document.getElementById('hero-expenses').textContent = formatCompact(totalExpenses);
 }
 
 // ═══════════════════════════════════════
 // VAT SUMMARY
 // ═══════════════════════════════════════
 function updateVATSummary() {
-  const trips = getFilteredTrips();
-  const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
-  const vatableSales = grossSales / 1.12;
-  const outputVAT = vatableSales * 0.12;
-  
-  document.getElementById('vat-sales').textContent = formatCompact(vatableSales);
-  document.getElementById('vat-output').textContent = formatCompact(outputVAT);
+    const trips = getFilteredTrips();
+    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
+    const vatableSales = grossSales / 1.12;
+    const outputVAT = vatableSales * 0.12;
+
+    document.getElementById('vat-sales').textContent = formatCompact(vatableSales);
+    document.getElementById('vat-output').textContent = formatCompact(outputVAT);
 }
 
 // ═══════════════════════════════════════
 // OVERVIEW CHARTS
 // ═══════════════════════════════════════
 function renderOverviewCharts() {
-  renderOverviewTrendChart();
-  renderMarginGaugeChart();
-  renderExpensePieChartOverview();
-  renderFleetBarChart();
+    renderOverviewTrendChart();
+    renderMarginGaugeChart();
+    renderExpensePieChartOverview();
+    renderFleetBarChart();
 }
 
 function renderOverviewTrendChart() {
-  const ctx = document.getElementById('overviewTrendChart');
-  if (!ctx) return;
-  
-  if (overviewTrendChart) overviewTrendChart.destroy();
-  
-  // Get last 30 days
-  const last30Days = [];
-  const now = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    last30Days.push(date.toISOString().split('T')[0]);
-  }
-  
-  const dailyData = last30Days.map(dateStr => {
-    const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
-    const dayExpenses = allExpenses.filter(e => e.date === dateStr);
-    
-    const revenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
-    
-    const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
-    const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
-    
-    const expenses = operationalExpenses + manpower + documentation;
-    
-    return { revenue, expenses };
-  });
-  
-  overviewTrendChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: last30Days.map(d => new Date(d).getDate()),
-      datasets: [
-        {
-          label: 'Revenue',
-          data: dailyData.map(d => d.revenue),
-          borderColor: '#16a34a',
-          backgroundColor: 'rgba(22, 163, 74, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3
-        },
-        {
-          label: 'Expenses',
-          data: dailyData.map(d => d.expenses),
-          borderColor: '#ef4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
-          tension: 0.4,
-          fill: true,
-          borderWidth: 3
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'top',
-          labels: { 
-            font: { size: 11, weight: '600' },
-            usePointStyle: true,
-            padding: 12
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: (value) => formatCompact(value),
-            font: { size: 10 }
-          },
-          grid: { color: 'rgba(0,0,0,0.05)' }
-        },
-        x: {
-          ticks: { font: { size: 10 } },
-          grid: { display: false }
-        }
-      }
+    const ctx = document.getElementById('overviewTrendChart');
+    if (!ctx) return;
+    if (overviewTrendChart) overviewTrendChart.destroy();
+
+    // Get last 30 days
+    const last30Days = [];
+    const now = new Date();
+    for (let i = 29; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        last30Days.push(date.toISOString().split('T')[0]);
     }
-  });
+
+    const dailyData = last30Days.map(dateStr => {
+        const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
+        const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+
+        const revenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
+        const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+        const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
+        const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
+        const expenses = operationalExpenses + manpower + documentation;
+
+        return { revenue, expenses };
+    });
+
+    overviewTrendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: last30Days.map(d => new Date(d).getDate()),
+            datasets: [
+                {
+                    label: 'Revenue',
+                    data: dailyData.map(d => d.revenue),
+                    borderColor: '#16a34a',
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3
+                },
+                {
+                    label: 'Expenses',
+                    data: dailyData.map(d => d.expenses),
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: { size: 11, weight: '600' },
+                        usePointStyle: true,
+                        padding: 12
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: (value) => formatCompact(value),
+                        font: { size: 10 }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: {
+                    ticks: { font: { size: 10 } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
 }
 
 function renderMarginGaugeChart() {
-  const ctx = document.getElementById('marginGaugeChart');
-  if (!ctx) return;
-  
-  if (marginGaugeChart) marginGaugeChart.destroy();
-  
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
-  
-  const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
-  let manpowerTotal = 0;
-  let documentationTotal = 0;
-  
-  tripDates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
-    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
-  });
-  
-  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
-  const netProfit = totalRevenue - totalExpenses;
-  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
-  
-  const gaugeData = [margin, 100 - margin];
-  
-  marginGaugeChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Profit Margin', 'Remaining'],
-      datasets: [{
-        data: gaugeData,
-        backgroundColor: [
-          margin >= 30 ? '#16a34a' : margin >= 20 ? '#f59e0b' : '#ef4444',
-          'rgba(0,0,0,0.05)'
-        ],
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '70%',
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false }
-      }
-    },
-    plugins: [{
-      id: 'gaugeText',
-      afterDraw: (chart) => {
-        const ctx = chart.ctx;
-        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
-        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
-        
-        ctx.save();
-        ctx.font = 'bold 24px Inter';
-        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text');
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(margin.toFixed(1) + '%', centerX, centerY - 5);
-        
-        ctx.font = '600 11px Inter';
-        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text3');
-        ctx.fillText('MARGIN', centerX, centerY + 15);
-        ctx.restore();
-      }
-    }]
-  });
+    const ctx = document.getElementById('marginGaugeChart');
+    if (!ctx) return;
+    if (marginGaugeChart) marginGaugeChart.destroy();
+
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+
+    const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+    let manpowerTotal = 0;
+    let documentationTotal = 0;
+
+    tripDates.forEach(date => {
+        const manpower = getManpowerExpensesForDate(date);
+        const documentation = getDocumentationExpensesForDate(date);
+        manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+        documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+    });
+
+    const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+    const netProfit = totalRevenue - totalExpenses;
+    const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+
+    const gaugeData = [margin, 100 - margin];
+
+    marginGaugeChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Profit Margin', 'Remaining'],
+            datasets: [{
+                data: gaugeData,
+                backgroundColor: [
+                    margin >= 30 ? '#16a34a' : margin >= 20 ? '#f59e0b' : '#ef4444',
+                    'rgba(0,0,0,0.05)'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        },
+        plugins: [{
+            id: 'gaugeText',
+            afterDraw: (chart) => {
+                const ctx = chart.ctx;
+                const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+
+                ctx.save();
+                ctx.font = 'bold 24px Inter';
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text');
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(margin.toFixed(1) + '%', centerX, centerY - 5);
+
+                ctx.font = '600 11px Inter';
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text3');
+                ctx.fillText('MARGIN', centerX, centerY + 15);
+                ctx.restore();
+            }
+        }]
+    });
 }
 
 function renderExpensePieChartOverview() {
-  const ctx = document.getElementById('expensePieChart');
-  if (!ctx) return;
-  
-  if (expensePieChart) expensePieChart.destroy();
-  
-  const expenses = getFilteredExpenses();
-  const trips = getFilteredTrips();
-  
-  const categoryTotals = {
-    'Diesel': 0,
-    'Maintenance': 0,
-    'Manpower': 0,
-    'Documentation': 0,
-    'Other': 0
-  };
-  
-  expenses.forEach(e => {
-    if (e.category === 'Diesel') categoryTotals['Diesel'] += e.amount;
-    else if (e.category === 'Maintenance') categoryTotals['Maintenance'] += e.amount;
-    else categoryTotals['Other'] += e.amount;
-  });
-  
-  const dates = [...new Set(trips.map(t => t.deliveryDate))];
-  
-  dates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
-    categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
-  });
-  
-  const labels = Object.keys(categoryTotals).filter(k => categoryTotals[k] > 0);
-  const data = labels.map(k => categoryTotals[k]);
-  const colors = {
-    'Diesel': '#f59e0b',
-    'Maintenance': '#ef4444',
-    'Manpower': '#10b981',
-    'Documentation': '#3b82f6',
-    'Other': '#8b5cf6'
-  };
-  
-  expensePieChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: labels.map(l => colors[l]),
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '60%',
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            font: { size: 9, weight: '600' },
-            usePointStyle: true,
-            padding: 8
-          }
+    const ctx = document.getElementById('expensePieChart');
+    if (!ctx) return;
+    if (expensePieChart) expensePieChart.destroy();
+
+    const expenses = getFilteredExpenses();
+    const trips = getFilteredTrips();
+
+    const categoryTotals = {
+        'Diesel': 0,
+        'Maintenance': 0,
+        'Manpower': 0,
+        'Documentation': 0,
+        'Other': 0
+    };
+
+    expenses.forEach(e => {
+        if (e.category === 'Diesel') categoryTotals['Diesel'] += e.amount;
+        else if (e.category === 'Maintenance') categoryTotals['Maintenance'] += e.amount;
+        else categoryTotals['Other'] += e.amount;
+    });
+
+    const dates = [...new Set(trips.map(t => t.deliveryDate))];
+    dates.forEach(date => {
+        const manpower = getManpowerExpensesForDate(date);
+        const documentation = getDocumentationExpensesForDate(date);
+        categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
+        categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
+    });
+
+    const labels = Object.keys(categoryTotals).filter(k => categoryTotals[k] > 0);
+    const data = labels.map(k => categoryTotals[k]);
+
+    const colors = {
+        'Diesel': '#f59e0b',
+        'Maintenance': '#ef4444',
+        'Manpower': '#10b981',
+        'Documentation': '#3b82f6',
+        'Other': '#8b5cf6'
+    };
+
+    expensePieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: labels.map(l => colors[l]),
+                borderWidth: 0
+            }]
         },
-        tooltip: {
-          callbacks: {
-            label: (context) => context.label + ': ' + formatCurrency(context.parsed)
-          }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 9, weight: '600' },
+                        usePointStyle: true,
+                        padding: 8
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => context.label + ': ' + formatCurrency(context.parsed)
+                    }
+                }
+            }
         }
-      }
-    }
-  });
+    });
 }
 
 function renderFleetBarChart() {
-  const ctx = document.getElementById('fleetBarChart');
-  if (!ctx) return;
-  
-  if (fleetBarChart) fleetBarChart.destroy();
-  
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  // Group by truck
-  const truckData = {};
-  
-  trips.forEach(trip => {
-    if (!truckData[trip.truck]) {
-      truckData[trip.truck] = {
-        revenue: 0,
-        expenses: 0,
-        dates: new Set()
-      };
-    }
-    
-    truckData[trip.truck].revenue += trip.rate;
-    truckData[trip.truck].dates.add(trip.deliveryDate);
-  });
-  
-  // Add operational expenses
-  expenses.forEach(expense => {
-    if (truckData[expense.truck]) {
-      truckData[expense.truck].expenses += expense.amount;
-    }
-  });
-  
-  // Add manpower and documentation
-  Object.keys(truckData).forEach(truck => {
-    const dates = Array.from(truckData[truck].dates);
-    
-    dates.forEach(date => {
-      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
-      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
-      
-      manpower.forEach(m => truckData[truck].expenses += m.amount);
-      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    const ctx = document.getElementById('fleetBarChart');
+    if (!ctx) return;
+    if (fleetBarChart) fleetBarChart.destroy();
+
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    // Group by truck
+    const truckData = {};
+    trips.forEach(trip => {
+        if (!truckData[trip.truck]) {
+            truckData[trip.truck] = {
+                revenue: 0,
+                expenses: 0,
+                dates: new Set()
+            };
+        }
+        truckData[trip.truck].revenue += trip.rate;
+        truckData[trip.truck].dates.add(trip.deliveryDate);
     });
-  });
-  
-  // Calculate profit and sort
-  const truckArray = Object.entries(truckData).map(([truck, data]) => {
-    const profit = data.revenue - data.expenses;
-    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
-    
-    return { truck, profit, margin };
-  }).sort((a, b) => b.margin - a.margin).slice(0, 5);
-  
-  fleetBarChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: truckArray.map(t => t.truck),
-      datasets: [{
-        label: 'Profit Margin (%)',
-        data: truckArray.map(t => t.margin),
-        backgroundColor: truckArray.map(t => 
-          t.margin >= 30 ? '#16a34a' : t.margin >= 20 ? '#f59e0b' : '#ef4444'
-        ),
-        borderRadius: 6,
-        borderSkipped: false
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (context) => context.parsed.y.toFixed(1) + '%'
-          }
+
+    // Add operational expenses
+    expenses.forEach(expense => {
+        if (truckData[expense.truck]) {
+            truckData[expense.truck].expenses += expense.amount;
         }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 50,
-          ticks: {
-            callback: (value) => value + '%',
-            font: { size: 10 }
-          },
-          grid: { color: 'rgba(0,0,0,0.05)' }
+    });
+
+    // Add manpower and documentation
+    Object.keys(truckData).forEach(truck => {
+        const dates = Array.from(truckData[truck].dates);
+        dates.forEach(date => {
+            const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+            const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+            manpower.forEach(m => truckData[truck].expenses += m.amount);
+            documentation.forEach(d => truckData[truck].expenses += d.amount);
+        });
+    });
+
+    // Calculate profit and sort
+    const truckArray = Object.entries(truckData).map(([truck, data]) => {
+        const profit = data.revenue - data.expenses;
+        const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+        return { truck, profit, margin };
+    }).sort((a, b) => b.margin - a.margin).slice(0, 5);
+
+    fleetBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: truckArray.map(t => t.truck),
+            datasets: [{
+                label: 'Profit Margin (%)',
+                data: truckArray.map(t => t.margin),
+                backgroundColor: truckArray.map(t => 
+                    t.margin >= 30 ? '#16a34a' : t.margin >= 20 ? '#f59e0b' : '#ef4444'
+                ),
+                borderRadius: 6,
+                borderSkipped: false
+            }]
         },
-        x: {
-          ticks: { font: { size: 10, weight: '600' } },
-          grid: { display: false }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => context.parsed.y.toFixed(1) + '%'
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 50,
+                    ticks: {
+                        callback: (value) => value + '%',
+                        font: { size: 10 }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: {
+                    ticks: { font: { size: 10, weight: '600' } },
+                    grid: { display: false }
+                }
+            }
         }
-      }
-    }
-  });
+    });
 }
 
 // ═══════════════════════════════════════
 // PROFIT MODAL — FULL SCREEN
 // ═══════════════════════════════════════
 function showProfitModal() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
-  
-  const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
-  let manpowerTotal = 0;
-  let documentationTotal = 0;
-  const manpowerDetails = [];
-  const documentationDetails = [];
-  
-  tripDates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    manpower.forEach(m => {
-      manpowerTotal += m.amount;
-      manpowerDetails.push({ date, ...m });
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+
+    const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+    let manpowerTotal = 0;
+    let documentationTotal = 0;
+    const manpowerDetails = [];
+    const documentationDetails = [];
+
+    tripDates.forEach(date => {
+        const manpower = getManpowerExpensesForDate(date);
+        const documentation = getDocumentationExpensesForDate(date);
+        manpower.forEach(m => {
+            manpowerTotal += m.amount;
+            manpowerDetails.push({ date, ...m });
+        });
+        documentation.forEach(d => {
+            documentationTotal += d.amount;
+            documentationDetails.push({ date, ...d });
+        });
     });
-    
-    documentation.forEach(d => {
-      documentationTotal += d.amount;
-      documentationDetails.push({ date, ...d });
+
+    const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+    const netProfit = totalRevenue - totalExpenses;
+    const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+
+    // Update summary
+    document.getElementById('modal-revenue').textContent = formatCurrency(totalRevenue);
+    document.getElementById('modal-expenses').textContent = formatCurrency(totalExpenses);
+    document.getElementById('modal-profit').textContent = formatCurrency(netProfit);
+    document.getElementById('modal-margin').textContent = margin.toFixed(1) + '%';
+
+    // Revenue sources
+    const revenueByTruck = {};
+    trips.forEach(t => {
+        if (!revenueByTruck[t.truck]) revenueByTruck[t.truck] = 0;
+        revenueByTruck[t.truck] += t.rate;
     });
-  });
-  
-  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
-  const netProfit = totalRevenue - totalExpenses;
-  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
-  
-  // Update summary
-  document.getElementById('modal-revenue').textContent = formatCurrency(totalRevenue);
-  document.getElementById('modal-expenses').textContent = formatCurrency(totalExpenses);
-  document.getElementById('modal-profit').textContent = formatCurrency(netProfit);
-  document.getElementById('modal-margin').textContent = margin.toFixed(1) + '%';
-  
-  // Revenue sources
-  const revenueByTruck = {};
-  trips.forEach(t => {
-    if (!revenueByTruck[t.truck]) revenueByTruck[t.truck] = 0;
-    revenueByTruck[t.truck] += t.rate;
-  });
-  
-  const revenueList = Object.entries(revenueByTruck)
-    .sort((a, b) => b[1] - a[1])
-    .map(([truck, amount]) => {
-      const tripCount = trips.filter(t => t.truck === truck).length;
-      return `<div class="modal-list-item">
-        <div class="modal-list-label">🚛 ${truck} (${tripCount} trip${tripCount !== 1 ? 's' : ''})</div>
-        <div class="modal-list-value">${formatCurrency(amount)}</div>
-      </div>`;
-    }).join('');
-  
-  document.getElementById('modal-revenue-list').innerHTML = revenueList;
-  
-  // Expense breakdown
-  const expenseByCategory = {
-    'Diesel': 0,
-    'Maintenance': 0,
-    'Manpower': manpowerTotal,
-    'Documentation': documentationTotal,
-    'Other': 0
-  };
-  
-  expenses.forEach(e => {
-    if (e.category === 'Diesel') expenseByCategory['Diesel'] += e.amount;
-    else if (e.category === 'Maintenance') expenseByCategory['Maintenance'] += e.amount;
-    else expenseByCategory['Other'] += e.amount;
-  });
-  
-  const expenseList = Object.entries(expenseByCategory)
-    .filter(([cat, amt]) => amt > 0)
-    .sort((a, b) => b[1] - a[1])
-    .map(([cat, amt]) => {
-      const percent = totalExpenses > 0 ? (amt / totalExpenses * 100).toFixed(1) : 0;
-      const icons = {
-        'Diesel': '⛽',
-        'Maintenance': '🔧',
-        'Manpower': '👷',
-        'Documentation': '📄',
-        'Other': '📦'
-      };
-      
-      return `<div class="modal-list-item">
-        <div class="modal-list-label">${icons[cat]} ${cat} (${percent}%)</div>
-        <div class="modal-list-value">${formatCurrency(amt)}</div>
-      </div>`;
-    }).join('');
-  
-  document.getElementById('modal-expense-list').innerHTML = expenseList;
-  
-  // Formula
-  const formula = `<strong>Net Profit Calculation:</strong><br><br>
-    
-    Revenue = ${formatCurrency(totalRevenue)}<br>
-    &nbsp;&nbsp;↳ ${trips.length} trip${trips.length !== 1 ? 's' : ''} × average rate<br><br>
-    
-    Expenses = ${formatCurrency(totalExpenses)}<br>
-    &nbsp;&nbsp;↳ Operational: ${formatCurrency(operationalExpenses)}<br>
-    &nbsp;&nbsp;↳ Manpower: ${formatCurrency(manpowerTotal)} (${manpowerDetails.length} worker-days)<br>
-    &nbsp;&nbsp;↳ Documentation: ${formatCurrency(documentationTotal)} (${documentationDetails.length} truck-days × ₱${DOCUMENTATION_DAILY_RATE.toFixed(2)}/day)<br><br>
-    
-    <strong>Net Profit = Revenue - Expenses</strong><br>
-    <strong>${formatCurrency(netProfit)} = ${formatCurrency(totalRevenue)} - ${formatCurrency(totalExpenses)}</strong><br><br>
-    
-    <strong>Profit Margin = (Net Profit / Revenue) × 100</strong><br>
-    <strong>${margin.toFixed(2)}% = (${formatCurrency(netProfit)} / ${formatCurrency(totalRevenue)}) × 100</strong>`;
-  
-  document.getElementById('modal-formula').innerHTML = formula;
-  
-  document.getElementById('profitModal').classList.add('show');
+
+    const revenueList = Object.entries(revenueByTruck)
+        .sort((a, b) => b[1] - a[1])
+        .map(([truck, amount]) => {
+            const tripCount = trips.filter(t => t.truck === truck).length;
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">🚛 ${truck} (${tripCount} trip${tripCount !== 1 ? 's' : ''})</div>
+                <div class="modal-list-value">${formatCurrency(amount)}</div>
+            </div>`;
+        }).join('');
+    document.getElementById('modal-revenue-list').innerHTML = revenueList;
+
+    // Expense breakdown
+    const expenseByCategory = {
+        'Diesel': 0,
+        'Maintenance': 0,
+        'Manpower': manpowerTotal,
+        'Documentation': documentationTotal,
+        'Other': 0
+    };
+
+    expenses.forEach(e => {
+        if (e.category === 'Diesel') expenseByCategory['Diesel'] += e.amount;
+        else if (e.category === 'Maintenance') expenseByCategory['Maintenance'] += e.amount;
+        else expenseByCategory['Other'] += e.amount;
+    });
+
+    const expenseList = Object.entries(expenseByCategory)
+        .filter(([cat, amt]) => amt > 0)
+        .sort((a, b) => b[1] - a[1])
+        .map(([cat, amt]) => {
+            const percent = totalExpenses > 0 ? (amt / totalExpenses * 100).toFixed(1) : 0;
+            const icons = {
+                'Diesel': '⛽',
+                'Maintenance': '🔧',
+                'Manpower': '👷',
+                'Documentation': '📄',
+                'Other': '📦'
+            };
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">${icons[cat]} ${cat} (${percent}%)</div>
+                <div class="modal-list-value">${formatCurrency(amt)}</div>
+            </div>`;
+        }).join('');
+    document.getElementById('modal-expense-list').innerHTML = expenseList;
+
+    // Formula
+    const formula = `<strong>Net Profit Calculation:</strong><br><br>
+Revenue = ${formatCurrency(totalRevenue)}<br>
+&nbsp;&nbsp;↳ ${trips.length} trip${trips.length !== 1 ? 's' : ''} × average rate<br><br>
+Expenses = ${formatCurrency(totalExpenses)}<br>
+&nbsp;&nbsp;↳ Operational: ${formatCurrency(operationalExpenses)}<br>
+&nbsp;&nbsp;↳ Manpower: ${formatCurrency(manpowerTotal)} (${manpowerDetails.length} worker-days)<br>
+&nbsp;&nbsp;↳ Documentation: ${formatCurrency(documentationTotal)} (${documentationDetails.length} truck-days × ₱${DOCUMENTATION_DAILY_RATE.toFixed(2)}/day)<br><br>
+<strong>Net Profit = Revenue - Expenses</strong><br>
+<strong>${formatCurrency(netProfit)} = ${formatCurrency(totalRevenue)} - ${formatCurrency(totalExpenses)}</strong><br><br>
+<strong>Profit Margin = (Net Profit / Revenue) × 100</strong><br>
+<strong>${margin.toFixed(2)}% = (${formatCurrency(netProfit)} / ${formatCurrency(totalRevenue)}) × 100</strong>`;
+
+    document.getElementById('modal-formula').innerHTML = formula;
+
+    document.getElementById('profitModal').classList.add('show');
 }
 
 function closeProfitModal() {
-  document.getElementById('profitModal').classList.remove('show');
+    document.getElementById('profitModal').classList.remove('show');
 }
 
 // ═══════════════════════════════════════
 // VAT MODAL — FULL SCREEN
 // ═══════════════════════════════════════
 function showVATModal() {
-  const trips = getFilteredTrips();
-  
-  const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
-  const vatableSales = grossSales / 1.12;
-  const outputVAT = vatableSales * 0.12;
-  const netOfVAT = grossSales - outputVAT;
-  
-  document.getElementById('vat-modal-gross').textContent = formatCurrency(grossSales);
-  document.getElementById('vat-modal-vatable').textContent = formatCurrency(vatableSales);
-  document.getElementById('vat-modal-output').textContent = formatCurrency(outputVAT);
-  document.getElementById('vat-modal-net').textContent = formatCurrency(netOfVAT);
-  
-  // Sales by truck
-  const salesByTruck = {};
-  trips.forEach(t => {
-    if (!salesByTruck[t.truck]) salesByTruck[t.truck] = 0;
-    salesByTruck[t.truck] += t.rate;
-  });
-  
-  const truckList = Object.entries(salesByTruck)
-    .sort((a, b) => b[1] - a[1])
-    .map(([truck, amount]) => {
-      const vatable = amount / 1.12;
-      const vat = vatable * 0.12;
-      
-      return `<div class="modal-list-item">
-        <div class="modal-list-label">🚛 ${truck}</div>
-        <div class="modal-list-value">
-          ${formatCurrency(amount)}<br>
-          <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
-        </div>
-      </div>`;
+    const trips = getFilteredTrips();
+    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
+    const vatableSales = grossSales / 1.12;
+    const outputVAT = vatableSales * 0.12;
+    const netOfVAT = grossSales - outputVAT;
+
+    document.getElementById('vat-modal-gross').textContent = formatCurrency(grossSales);
+    document.getElementById('vat-modal-vatable').textContent = formatCurrency(vatableSales);
+    document.getElementById('vat-modal-output').textContent = formatCurrency(outputVAT);
+    document.getElementById('vat-modal-net').textContent = formatCurrency(netOfVAT);
+
+    // Sales by truck
+    const salesByTruck = {};
+    trips.forEach(t => {
+        if (!salesByTruck[t.truck]) salesByTruck[t.truck] = 0;
+        salesByTruck[t.truck] += t.rate;
+    });
+
+    const truckList = Object.entries(salesByTruck)
+        .sort((a, b) => b[1] - a[1])
+        .map(([truck, amount]) => {
+            const vatable = amount / 1.12;
+            const vat = vatable * 0.12;
+            return `<div class="modal-list-item">
+                <div class="modal-list-label">🚛 ${truck}</div>
+                <div class="modal-list-value">
+                    ${formatCurrency(amount)}<br>
+                    <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
+                </div>
+            </div>`;
+        }).join('');
+    document.getElementById('vat-modal-trucks').innerHTML = truckList;
+
+    // Source documents
+    const sourceList = trips.slice(0, 10).map(t => {
+        const vatable = t.rate / 1.12;
+        const vat = vatable * 0.12;
+        return `<div class="modal-list-item">
+            <div class="modal-list-label">
+                📄 ${t.shipmentNumber || t.id}<br>
+                <span style="font-size:10px;color:var(--text3)">${t.deliveryDate} • ${t.truck}</span>
+            </div>
+            <div class="modal-list-value">
+                ${formatCurrency(t.rate)}<br>
+                <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
+            </div>
+        </div>`;
     }).join('');
-  
-  document.getElementById('vat-modal-trucks').innerHTML = truckList;
-  
-  // Source documents
-  const sourceList = trips.slice(0, 10).map(t => {
-    const vatable = t.rate / 1.12;
-    const vat = vatable * 0.12;
-    
-    return `<div class="modal-list-item">
-      <div class="modal-list-label">
-        📄 ${t.shipmentNumber || t.id}<br>
-        <span style="font-size:10px;color:var(--text3)">${t.deliveryDate} • ${t.truck}</span>
-      </div>
-      <div class="modal-list-value">
-        ${formatCurrency(t.rate)}<br>
-        <span style="font-size:10px;color:var(--text3)">VAT: ${formatCurrency(vat)}</span>
-      </div>
-    </div>`;
-  }).join('');
-  
-  const remaining = trips.length - 10;
-  const remainingText = remaining > 0 
-    ? `<div class="modal-list-item"><div class="modal-list-label" style="text-align:center;width:100%;opacity:0.5">+ ${remaining} more trip${remaining !== 1 ? 's' : ''}</div></div>` 
-    : '';
-  
-  document.getElementById('vat-modal-sources').innerHTML = sourceList + remainingText;
-  
-  document.getElementById('vatModal').classList.add('show');
+
+    const remaining = trips.length - 10;
+    const remainingText = remaining > 0 
+        ? `<div class="modal-list-item"><div class="modal-list-label" style="text-align:center;width:100%;opacity:0.5">+ ${remaining} more trip${remaining !== 1 ? 's' : ''}</div></div>`
+        : '';
+
+    document.getElementById('vat-modal-sources').innerHTML = sourceList + remainingText;
+
+    document.getElementById('vatModal').classList.add('show');
 }
 
 function closeVATModal() {
-  document.getElementById('vatModal').classList.remove('show');
+    document.getElementById('vatModal').classList.remove('show');
 }
 
 // ═══════════════════════════════════════
 // BY TRUCK VIEW
 // ═══════════════════════════════════════
 function renderTrucksView() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  // Group by truck
-  const truckData = {};
-  
-  trips.forEach(trip => {
-    if (!truckData[trip.truck]) {
-      truckData[trip.truck] = {
-        revenue: 0,
-        expenses: 0,
-        trips: 0,
-        dates: new Set()
-      };
-    }
-    
-    truckData[trip.truck].revenue += trip.rate;
-    truckData[trip.truck].trips += 1;
-    truckData[trip.truck].dates.add(trip.deliveryDate);
-  });
-  
-  // Add operational expenses
-  expenses.forEach(expense => {
-    if (truckData[expense.truck]) {
-      truckData[expense.truck].expenses += expense.amount;
-    }
-  });
-  
-  // Add manpower and documentation
-  Object.keys(truckData).forEach(truck => {
-    const dates = Array.from(truckData[truck].dates);
-    
-    dates.forEach(date => {
-      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
-      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
-      
-      manpower.forEach(m => truckData[truck].expenses += m.amount);
-      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    // Group by truck
+    const truckData = {};
+    trips.forEach(trip => {
+        if (!truckData[trip.truck]) {
+            truckData[trip.truck] = {
+                revenue: 0,
+                expenses: 0,
+                trips: 0,
+                dates: new Set()
+            };
+        }
+        truckData[trip.truck].revenue += trip.rate;
+        truckData[trip.truck].trips += 1;
+        truckData[trip.truck].dates.add(trip.deliveryDate);
     });
-  });
-  
-  // Calculate profit and sort
-  const truckArray = Object.entries(truckData).map(([truck, data]) => {
-    const profit = data.revenue - data.expenses;
-    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
-    
-    return {
-      truck,
-      revenue: data.revenue,
-      expenses: data.expenses,
-      profit,
-      margin,
-      trips: data.trips,
-      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
-    };
-  }).sort((a, b) => b.margin - a.margin);
-  
-  // Render
-  const container = document.getElementById('trucks-list');
-  
-  if (truckArray.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚛</div><p>No trip data for selected period</p></div>';
-    return;
-  }
-  
-  container.innerHTML = truckArray.map(t => {
-    const marginClass = t.margin >= 30 ? 'profitable' : t.margin >= 20 ? 'warning' : 'loss';
-    
-    return `<div class="truck-card ${marginClass}">
-      <div class="truck-header">
-        <div class="truck-name">🚛 ${t.truck}</div>
-        <div class="truck-margin ${marginClass}">${t.margin.toFixed(1)}%</div>
-      </div>
-      <div class="truck-stats">
-        <div class="truck-stat">
-          <div class="truck-stat-label">Revenue</div>
-          <div class="truck-stat-value">${formatCompact(t.revenue)}</div>
-        </div>
-        <div class="truck-stat">
-          <div class="truck-stat-label">Expenses</div>
-          <div class="truck-stat-value">${formatCompact(t.expenses)}</div>
-        </div>
-        <div class="truck-stat">
-          <div class="truck-stat-label">Net Profit</div>
-          <div class="truck-stat-value">${formatCompact(t.profit)}</div>
-        </div>
-        <div class="truck-stat">
-          <div class="truck-stat-label">Avg/Trip</div>
-          <div class="truck-stat-value">${formatCompact(t.avgPerTrip)}</div>
-        </div>
-      </div>
-      <div class="truck-breakdown">
-        ${t.trips} trip${t.trips !== 1 ? 's' : ''} completed
-      </div>
-    </div>`;
-  }).join('');
+
+    // Add operational expenses
+    expenses.forEach(expense => {
+        if (truckData[expense.truck]) {
+            truckData[expense.truck].expenses += expense.amount;
+        }
+    });
+
+    // Add manpower and documentation
+    Object.keys(truckData).forEach(truck => {
+        const dates = Array.from(truckData[truck].dates);
+        dates.forEach(date => {
+            const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+            const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+            manpower.forEach(m => truckData[truck].expenses += m.amount);
+            documentation.forEach(d => truckData[truck].expenses += d.amount);
+        });
+    });
+
+    // Calculate profit and sort
+    const truckArray = Object.entries(truckData).map(([truck, data]) => {
+        const profit = data.revenue - data.expenses;
+        const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+        return {
+            truck,
+            revenue: data.revenue,
+            expenses: data.expenses,
+            profit,
+            margin,
+            trips: data.trips,
+            avgPerTrip: data.trips > 0 ? profit / data.trips : 0
+        };
+    }).sort((a, b) => b.margin - a.margin);
+
+    // Render
+    const container = document.getElementById('trucks-list');
+    if (truckArray.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🚛</div><p>No trip data for selected period</p></div>';
+        return;
+    }
+
+    container.innerHTML = truckArray.map(t => {
+        const marginClass = t.margin >= 30 ? 'profitable' : t.margin >= 20 ? 'warning' : 'loss';
+        return `<div class="truck-card ${marginClass}">
+            <div class="truck-header">
+                <div class="truck-name">🚛 ${t.truck}</div>
+                <div class="truck-margin ${marginClass}">${t.margin.toFixed(1)}%</div>
+            </div>
+            <div class="truck-stats">
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Revenue</div>
+                    <div class="truck-stat-value">${formatCompact(t.revenue)}</div>
+                </div>
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Expenses</div>
+                    <div class="truck-stat-value">${formatCompact(t.expenses)}</div>
+                </div>
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Net Profit</div>
+                    <div class="truck-stat-value">${formatCompact(t.profit)}</div>
+                </div>
+                <div class="truck-stat">
+                    <div class="truck-stat-label">Avg/Trip</div>
+                    <div class="truck-stat-value">${formatCompact(t.avgPerTrip)}</div>
+                </div>
+            </div>
+            <div class="truck-breakdown">
+                ${t.trips} trip${t.trips !== 1 ? 's' : ''} completed
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ═══════════════════════════════════════
 // BY ROUTE VIEW
 // ═══════════════════════════════════════
 function renderRoutesView() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  // Group by route
-  const routeData = {};
-  
-  trips.forEach(trip => {
-    if (!trip.route) return;
-    
-    if (!routeData[trip.route]) {
-      routeData[trip.route] = {
-        revenue: 0,
-        expenses: 0,
-        trips: 0,
-        trucks: new Set(),
-        dates: new Set()
-      };
-    }
-    
-    routeData[trip.route].revenue += trip.rate;
-    routeData[trip.route].trips += 1;
-    routeData[trip.route].trucks.add(trip.truck);
-    routeData[trip.route].dates.add(trip.deliveryDate);
-  });
-  
-  // Add expenses for trips on this route
-  trips.forEach(trip => {
-    if (!trip.route) return;
-    
-    const tripExpenses = expenses.filter(e => 
-      e.truck === trip.truck && e.date === trip.deliveryDate
-    );
-    
-    tripExpenses.forEach(e => {
-      routeData[trip.route].expenses += e.amount;
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    // Group by route
+    const routeData = {};
+    trips.forEach(trip => {
+        if (!trip.route) return;
+        if (!routeData[trip.route]) {
+            routeData[trip.route] = {
+                revenue: 0,
+                expenses: 0,
+                trips: 0,
+                trucks: new Set(),
+                dates: new Set()
+            };
+        }
+        routeData[trip.route].revenue += trip.rate;
+        routeData[trip.route].trips += 1;
+        routeData[trip.route].trucks.add(trip.truck);
+        routeData[trip.route].dates.add(trip.deliveryDate);
     });
-    
-    // Add manpower and documentation
-    const manpower = getManpowerExpensesForDate(trip.deliveryDate)
-      .filter(m => m.truck === trip.truck);
-    const documentation = getDocumentationExpensesForDate(trip.deliveryDate)
-      .filter(d => d.truck === trip.truck);
-    
-    manpower.forEach(m => routeData[trip.route].expenses += m.amount);
-    documentation.forEach(d => routeData[trip.route].expenses += d.amount);
-  });
-  
-  // Calculate profit and sort
-  const routeArray = Object.entries(routeData).map(([route, data]) => {
-    const profit = data.revenue - data.expenses;
-    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
-    
-    return {
-      route,
-      revenue: data.revenue,
-      expenses: data.expenses,
-      profit,
-      margin,
-      trips: data.trips,
-      trucks: data.trucks.size,
-      avgPerTrip: data.trips > 0 ? profit / data.trips : 0
-    };
-  }).sort((a, b) => b.margin - a.margin);
-  
-  // Render
-  const container = document.getElementById('routes-list');
-  
-  if (routeArray.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><p>No route data for selected period</p></div>';
-    return;
-  }
-  
-  container.innerHTML = routeArray.map(r => {
-    return `<div class="route-card">
-      <div class="route-name">📍 ${r.route}</div>
-      <div class="route-meta">${r.trips} trip${r.trips !== 1 ? 's' : ''} • ${r.trucks} truck${r.trucks !== 1 ? 's' : ''}</div>
-      <div class="route-stats">
-        <div class="route-stat">
-          <div class="route-stat-value">${formatCompact(r.profit)}</div>
-          <div class="route-stat-label">Total Profit</div>
-        </div>
-        <div class="route-stat">
-          <div class="route-stat-value">${formatCompact(r.avgPerTrip)}</div>
-          <div class="route-stat-label">Avg/Trip</div>
-        </div>
-        <div class="route-stat">
-          <div class="route-stat-value" style="color:${r.margin >= 30 ? 'var(--green)' : r.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${r.margin.toFixed(1)}%</div>
-          <div class="route-stat-label">Margin</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+
+    // Add expenses for trips on this route
+    trips.forEach(trip => {
+        if (!trip.route) return;
+        const tripExpenses = expenses.filter(e => 
+            e.truck === trip.truck && e.date === trip.deliveryDate
+        );
+        tripExpenses.forEach(e => {
+            routeData[trip.route].expenses += e.amount;
+        });
+
+        // Add manpower and documentation
+        const manpower = getManpowerExpensesForDate(trip.deliveryDate)
+            .filter(m => m.truck === trip.truck);
+        const documentation = getDocumentationExpensesForDate(trip.deliveryDate)
+            .filter(d => d.truck === trip.truck);
+        manpower.forEach(m => routeData[trip.route].expenses += m.amount);
+        documentation.forEach(d => routeData[trip.route].expenses += d.amount);
+    });
+
+    // Calculate profit and sort
+    const routeArray = Object.entries(routeData).map(([route, data]) => {
+        const profit = data.revenue - data.expenses;
+        const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+        return {
+            route,
+            revenue: data.revenue,
+            expenses: data.expenses,
+            profit,
+            margin,
+            trips: data.trips,
+            trucks: data.trucks.size,
+            avgPerTrip: data.trips > 0 ? profit / data.trips : 0
+        };
+    }).sort((a, b) => b.margin - a.margin);
+
+    // Render
+    const container = document.getElementById('routes-list');
+    if (routeArray.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📍</div><p>No route data for selected period</p></div>';
+        return;
+    }
+
+    container.innerHTML = routeArray.map(r => {
+        return `<div class="route-card">
+            <div class="route-name">📍 ${r.route}</div>
+            <div class="route-meta">${r.trips} trip${r.trips !== 1 ? 's' : ''} • ${r.trucks} truck${r.trucks !== 1 ? 's' : ''}</div>
+            <div class="route-stats">
+                <div class="route-stat">
+                    <div class="route-stat-value">${formatCompact(r.profit)}</div>
+                    <div class="route-stat-label">Total Profit</div>
+                </div>
+                <div class="route-stat">
+                    <div class="route-stat-value">${formatCompact(r.avgPerTrip)}</div>
+                    <div class="route-stat-label">Avg/Trip</div>
+                </div>
+                <div class="route-stat">
+                    <div class="route-stat-value" style="color:${r.margin >= 30 ? 'var(--green)' : r.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${r.margin.toFixed(1)}%</div>
+                    <div class="route-stat-label">Margin</div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ═══════════════════════════════════════
 // TRENDS VIEW
 // ═══════════════════════════════════════
 function renderTrendsView() {
-  renderProfitTrendChart();
-  renderMonthlyBreakdown();
-  renderWeeklyHeatmap();
-  renderExpenseBreakdown();
+    renderProfitTrendChart();
+    renderMonthlyBreakdown();
+    renderWeeklyHeatmap();
+    renderExpenseBreakdown();
 }
 
 function renderProfitTrendChart() {
-  const ctx = document.getElementById('profitTrendChart');
-  if (!ctx) return;
-  
-  if (profitTrendChart) profitTrendChart.destroy();
-  
-  // Get last 30 days
-  const last30Days = [];
-  const now = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    last30Days.push(date.toISOString().split('T')[0]);
-  }
-  
-  const dailyData = last30Days.map(dateStr => {
-    const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
-    const dayExpenses = allExpenses.filter(e => e.date === dateStr);
-    
-    const revenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
-    
-    const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
-    const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
-    
-    const expenses = operationalExpenses + manpower + documentation;
-    const profit = revenue - expenses;
-    
-    return { revenue, expenses, profit };
-  });
-  
-  profitTrendChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: last30Days.map(d => new Date(d).getDate()),
-      datasets: [
-        {
-          label: 'Revenue',
-          data: dailyData.map(d => d.revenue),
-          borderColor: '#2563eb',
-          backgroundColor: 'rgba(37, 99, 235, 0.1)',
-          tension: 0.4,
-          fill: false
-        },
-        {
-          label: 'Expenses',
-          data: dailyData.map(d => d.expenses),
-          borderColor: '#f59e0b',
-          backgroundColor: 'rgba(245, 158, 11, 0.1)',
-          tension: 0.4,
-          fill: false
-        },
-        {
-          label: 'Profit',
-          data: dailyData.map(d => d.profit),
-          borderColor: '#16a34a',
-          backgroundColor: 'rgba(22, 163, 74, 0.1)',
-          tension: 0.4,
-          fill: true
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom'
-        },
-        tooltip: {
-          callbacks: {
-            label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: (value) => formatCompact(value)
-          }
-        }
-      }
+    const ctx = document.getElementById('profitTrendChart');
+    if (!ctx) return;
+    if (profitTrendChart) profitTrendChart.destroy();
+
+    // Get last 30 days
+    const last30Days = [];
+    const now = new Date();
+    for (let i = 29; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+        last30Days.push(date.toISOString().split('T')[0]);
     }
-  });
+
+    const dailyData = last30Days.map(dateStr => {
+        const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
+        const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+
+        const revenue = dayTrips.reduce((sum, t) => sum + t.rate, 0);
+        const operationalExpenses = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+        const manpower = getManpowerExpensesForDate(dateStr).reduce((sum, m) => sum + m.amount, 0);
+        const documentation = getDocumentationExpensesForDate(dateStr).reduce((sum, d) => sum + d.amount, 0);
+        const expenses = operationalExpenses + manpower + documentation;
+        const profit = revenue - expenses;
+
+        return { revenue, expenses, profit };
+    });
+
+    profitTrendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: last30Days.map(d => new Date(d).getDate()),
+            datasets: [
+                {
+                    label: 'Revenue',
+                    data: dailyData.map(d => d.revenue),
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4,
+                    fill: false
+                },
+                {
+                    label: 'Expenses',
+                    data: dailyData.map(d => d.expenses),
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.4,
+                    fill: false
+                },
+                {
+                    label: 'Profit',
+                    data: dailyData.map(d => d.profit),
+                    borderColor: '#16a34a',
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: (value) => formatCompact(value)
+                    }
+                }
+            }
+        }
+    });
 }
 
 function renderMonthlyBreakdown() {
-  // Get last 6 months
-  const months = [];
-  const now = new Date();
-  for (let i = 5; i >= 0; i--) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    months.push({
-      key: `${date.getFullYear()}-${pad(date.getMonth() + 1)}`,
-      label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-    });
-  }
-  
-  const monthlyData = months.map(month => {
-    const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
-    const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
-    
-    const revenue = monthTrips.reduce((sum, t) => sum + t.rate, 0);
-    
-    const dates = [...new Set(monthTrips.map(t => t.deliveryDate))];
-    let manpowerTotal = 0;
-    let documentationTotal = 0;
-    
-    dates.forEach(date => {
-      const manpower = getManpowerExpensesForDate(date);
-      const documentation = getDocumentationExpensesForDate(date);
-      
-      manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
-      documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
-    });
-    
-    const operationalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const expenses = operationalExpenses + manpowerTotal + documentationTotal;
-    const profit = revenue - expenses;
-    const margin = revenue > 0 ? (profit / revenue * 100) : 0;
-    
-    return { ...month, revenue, expenses, profit, margin };
-  }).filter(m => m.revenue > 0);
-  
-  const container = document.getElementById('monthly-breakdown');
-  
-  if (monthlyData.length === 0) {
-    container.innerHTML = '<div class="empty-state"><p>No monthly data available</p></div>';
-    return;
-  }
-  
-  container.innerHTML = monthlyData.reverse().map((m, i) => {
-    const prevMonth = monthlyData[i + 1];
-    let changeText = '';
-    
-    if (prevMonth && prevMonth.profit > 0) {
-      const change = ((m.profit - prevMonth.profit) / prevMonth.profit * 100);
-      const changeClass = change > 0 ? 'up' : 'down';
-      changeText = `<div class="breakdown-meta stat-change ${changeClass}">
-        ${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}% vs previous month
-      </div>`;
+    // Get last 6 months
+    const months = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({
+            key: `${date.getFullYear()}-${pad(date.getMonth() + 1)}`,
+            label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+        });
     }
-    
-    return `<div class="breakdown-item">
-      <div class="breakdown-left">
-        <div class="breakdown-icon">📅</div>
-        <div class="breakdown-info">
-          <div class="breakdown-label">${m.label}</div>
-          ${changeText}
-        </div>
-      </div>
-      <div class="breakdown-right">
-        <div class="breakdown-amount">${formatCompact(m.profit)}</div>
-        <div class="breakdown-percent" style="color:${m.margin >= 30 ? 'var(--green)' : m.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${m.margin.toFixed(1)}%</div>
-      </div>
-    </div>`;
-  }).join('');
+
+    const monthlyData = months.map(month => {
+        const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
+        const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
+
+        const revenue = monthTrips.reduce((sum, t) => sum + t.rate, 0);
+
+        const dates = [...new Set(monthTrips.map(t => t.deliveryDate))];
+        let manpowerTotal = 0;
+        let documentationTotal = 0;
+
+        dates.forEach(date => {
+            const manpower = getManpowerExpensesForDate(date);
+            const documentation = getDocumentationExpensesForDate(date);
+            manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+            documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+        });
+
+        const operationalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+        const expenses = operationalExpenses + manpowerTotal + documentationTotal;
+        const profit = revenue - expenses;
+        const margin = revenue > 0 ? (profit / revenue * 100) : 0;
+
+        return { ...month, revenue, expenses, profit, margin };
+    }).filter(m => m.revenue > 0);
+
+    const container = document.getElementById('monthly-breakdown');
+    if (monthlyData.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No monthly data available</p></div>';
+        return;
+    }
+
+    container.innerHTML = monthlyData.reverse().map((m, i) => {
+        const prevMonth = monthlyData[i + 1];
+        let changeText = '';
+        if (prevMonth && prevMonth.profit > 0) {
+            const change = ((m.profit - prevMonth.profit) / prevMonth.profit * 100);
+            const changeClass = change > 0 ? 'up' : 'down';
+            changeText = `<div class="breakdown-meta stat-change ${changeClass}">
+                ${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}% vs previous month
+            </div>`;
+        }
+
+        return `<div class="breakdown-item">
+            <div class="breakdown-left">
+                <div class="breakdown-icon">📅</div>
+                <div class="breakdown-info">
+                    <div class="breakdown-label">${m.label}</div>
+                    ${changeText}
+                </div>
+            </div>
+            <div class="breakdown-right">
+                <div class="breakdown-amount">${formatCompact(m.profit)}</div>
+                <div class="breakdown-percent" style="color:${m.margin >= 30 ? 'var(--green)' : m.margin >= 20 ? 'var(--orange)' : 'var(--red)'}">${m.margin.toFixed(1)}%</div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 function renderWeeklyHeatmap() {
-  const trucks = [...new Set(allTrips.map(t => t.truck))].sort();
-  
-  // Get last 4 weeks
-  const weeks = [];
-  const now = new Date();
-  for (let i = 3; i >= 0; i--) {
-    const weekStart = new Date(now);
-    weekStart.setDate(weekStart.getDate() - (i * 7) - now.getDay());
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    
-    weeks.push({
-      label: `W${i + 1}`,
-      start: weekStart.toISOString().split('T')[0],
-      end: weekEnd.toISOString().split('T')[0]
+    const trucks = [...new Set(allTrips.map(t => t.truck))].sort();
+
+    // Get last 4 weeks
+    const weeks = [];
+    const now = new Date();
+    for (let i = 3; i >= 0; i--) {
+        const weekStart = new Date(now);
+        weekStart.setDate(weekStart.getDate() - (i * 7) - now.getDay());
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        weeks.push({
+            label: `W${i + 1}`,
+            start: weekStart.toISOString().split('T')[0],
+            end: weekEnd.toISOString().split('T')[0]
+        });
+    }
+
+    const container = document.getElementById('heatmap-grid');
+    let html = '<div class="heatmap-header"></div>';
+    weeks.forEach(w => {
+        html += `<div class="heatmap-header">${w.label}</div>`;
     });
-  }
-  
-  const container = document.getElementById('heatmap-grid');
-  
-  let html = '<div class="heatmap-header"></div>';
-  weeks.forEach(w => {
-    html += `<div class="heatmap-header">${w.label}</div>`;
-  });
-  
-  trucks.forEach(truck => {
-    html += `<div class="heatmap-row-label">${truck}</div>`;
-    
-    weeks.forEach(week => {
-      const weekTrips = allTrips.filter(t => 
-        t.truck === truck && 
-        t.deliveryDate >= week.start && 
-        t.deliveryDate <= week.end
-      );
-      
-      const weekExpenses = allExpenses.filter(e => 
-        e.truck === truck && 
-        e.date >= week.start && 
-        e.date <= week.end
-      );
-      
-      const revenue = weekTrips.reduce((sum, t) => sum + t.rate, 0);
-      
-      const dates = [...new Set(weekTrips.map(t => t.deliveryDate))];
-      let manpowerTotal = 0;
-      let documentationTotal = 0;
-      
-      dates.forEach(date => {
-        const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
-        const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
-        
-        manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
-        documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
-      });
-      
-      const operationalExpenses = weekExpenses.reduce((sum, e) => sum + e.amount, 0);
-      const expenses = operationalExpenses + manpowerTotal + documentationTotal;
-      const profit = revenue - expenses;
-      const margin = revenue > 0 ? (profit / revenue * 100) : 0;
-      
-      let cellClass = '';
-      if (margin >= 35) cellClass = 'excellent';
-      else if (margin >= 30) cellClass = 'good';
-      else if (margin >= 20) cellClass = 'acceptable';
-      else if (margin > 0) cellClass = 'poor';
-      
-      const displayText = margin > 0 ? `${margin.toFixed(0)}%` : '—';
-      
-      html += `<div class="heatmap-cell ${cellClass}">${displayText}</div>`;
+
+    trucks.forEach(truck => {
+        html += `<div class="heatmap-row-label">${truck}</div>`;
+        weeks.forEach(week => {
+            const weekTrips = allTrips.filter(t => 
+                t.truck === truck && 
+                t.deliveryDate >= week.start && 
+                t.deliveryDate <= week.end
+            );
+            const weekExpenses = allExpenses.filter(e => 
+                e.truck === truck && 
+                e.date >= week.start && 
+                e.date <= week.end
+            );
+
+            const revenue = weekTrips.reduce((sum, t) => sum + t.rate, 0);
+
+            const dates = [...new Set(weekTrips.map(t => t.deliveryDate))];
+            let manpowerTotal = 0;
+            let documentationTotal = 0;
+
+            dates.forEach(date => {
+                const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+                const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+                manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+                documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+            });
+
+            const operationalExpenses = weekExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const expenses = operationalExpenses + manpowerTotal + documentationTotal;
+            const profit = revenue - expenses;
+            const margin = revenue > 0 ? (profit / revenue * 100) : 0;
+
+            let cellClass = '';
+            if (margin >= 35) cellClass = 'excellent';
+            else if (margin >= 30) cellClass = 'good';
+            else if (margin >= 20) cellClass = 'acceptable';
+            else if (margin > 0) cellClass = 'poor';
+
+            const displayText = margin > 0 ? `${margin.toFixed(0)}%` : '—';
+            html += `<div class="heatmap-cell ${cellClass}">${displayText}</div>`;
+        });
     });
-  });
-  
-  container.innerHTML = html;
+
+    container.innerHTML = html;
 }
 
 function renderExpenseBreakdown() {
-  const expenses = getFilteredExpenses();
-  const trips = getFilteredTrips();
-  
-  const categoryTotals = {
-    'Diesel': 0,
-    'Maintenance': 0,
-    'Documentation': 0,
-    'Miscellaneous': 0,
-    'Manpower': 0
-  };
-  
-  expenses.forEach(e => {
-    if (categoryTotals[e.category] !== undefined) {
-      categoryTotals[e.category] += e.amount;
-    }
-  });
-  
-  // Add auto-generated manpower and documentation
-  const dates = [...new Set(trips.map(t => t.deliveryDate))];
-  
-  dates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
-    categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
-  });
-  
-  const total = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
-  
-  // Render pie chart
-  const ctx = document.getElementById('expenseChart');
-  if (ctx) {
-    if (expenseChart) expenseChart.destroy();
-    
-    const labels = Object.keys(categoryTotals).filter(k => categoryTotals[k] > 0);
-    const data = labels.map(k => categoryTotals[k]);
-    const colors = {
-      'Diesel': '#f59e0b',
-      'Maintenance': '#ef4444',
-      'Documentation': '#3b82f6',
-      'Miscellaneous': '#8b5cf6',
-      'Manpower': '#10b981'
+    const expenses = getFilteredExpenses();
+    const trips = getFilteredTrips();
+
+    const categoryTotals = {
+        'Diesel': 0,
+        'Maintenance': 0,
+        'Documentation': 0,
+        'Miscellaneous': 0,
+        'Manpower': 0
     };
-    
-    expenseChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: data,
-          backgroundColor: labels.map(l => colors[l]),
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (context) => context.label + ': ' + formatCurrency(context.parsed)
-            }
-          }
+
+    expenses.forEach(e => {
+        if (categoryTotals[e.category] !== undefined) {
+            categoryTotals[e.category] += e.amount;
         }
-      }
     });
-  }
-  
-  // Render breakdown list
-  const container = document.getElementById('expense-breakdown');
-  
-  const icons = {
-    'Diesel': '⛽',
-    'Maintenance': '🔧',
-    'Documentation': '📄',
-    'Miscellaneous': '📦',
-    'Manpower': '👷'
-  };
-  
-  container.innerHTML = Object.entries(categoryTotals)
-    .filter(([cat, amt]) => amt > 0)
-    .sort((a, b) => b[1] - a[1])
-    .map(([cat, amt]) => {
-      const percent = total > 0 ? (amt / total * 100).toFixed(1) : 0;
-      
-      return `<div class="breakdown-item">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">${icons[cat]}</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label">${cat}</div>
-          </div>
-        </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount">${formatCompact(amt)}</div>
-          <div class="breakdown-percent">${percent}%</div>
-        </div>
-      </div>`;
-    }).join('');
+
+    // Add auto-generated manpower and documentation
+    const dates = [...new Set(trips.map(t => t.deliveryDate))];
+    dates.forEach(date => {
+        const manpower = getManpowerExpensesForDate(date);
+        const documentation = getDocumentationExpensesForDate(date);
+        categoryTotals['Manpower'] += manpower.reduce((sum, m) => sum + m.amount, 0);
+        categoryTotals['Documentation'] += documentation.reduce((sum, d) => sum + d.amount, 0);
+    });
+
+    const total = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
+
+    // Render pie chart
+    const ctx = document.getElementById('expenseChart');
+    if (ctx) {
+        if (expenseChart) expenseChart.destroy();
+
+        const labels = Object.keys(categoryTotals).filter(k => categoryTotals[k] > 0);
+        const data = labels.map(k => categoryTotals[k]);
+
+        const colors = {
+            'Diesel': '#f59e0b',
+            'Maintenance': '#ef4444',
+            'Documentation': '#3b82f6',
+            'Miscellaneous': '#8b5cf6',
+            'Manpower': '#10b981'
+        };
+
+        expenseChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: labels.map(l => colors[l]),
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => context.label + ': ' + formatCurrency(context.parsed)
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Render breakdown list
+    const container = document.getElementById('expense-breakdown');
+    const icons = {
+        'Diesel': '⛽',
+        'Maintenance': '🔧',
+        'Documentation': '📄',
+        'Miscellaneous': '📦',
+        'Manpower': '👷'
+    };
+
+    container.innerHTML = Object.entries(categoryTotals)
+        .filter(([cat, amt]) => amt > 0)
+        .sort((a, b) => b[1] - a[1])
+        .map(([cat, amt]) => {
+            const percent = total > 0 ? (amt / total * 100).toFixed(1) : 0;
+            return `<div class="breakdown-item">
+                <div class="breakdown-left">
+                    <div class="breakdown-icon">${icons[cat]}</div>
+                    <div class="breakdown-info">
+                        <div class="breakdown-label">${cat}</div>
+                    </div>
+                </div>
+                <div class="breakdown-right">
+                    <div class="breakdown-amount">${formatCompact(amt)}</div>
+                    <div class="breakdown-percent">${percent}%</div>
+                </div>
+            </div>`;
+        }).join('');
 }
 
 // ═══════════════════════════════════════
 // INSIGHTS VIEW
 // ═══════════════════════════════════════
 function renderInsightsView() {
-  renderKPIs();
-  renderAlerts();
-  renderTopPerformers();
+    renderKPIs();
+    renderAlerts();
+    renderTopPerformers();
 }
 
 function renderKPIs() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  if (trips.length === 0) {
-    document.getElementById('kpi-avg-trip').textContent = '—';
-    document.getElementById('kpi-avg-day').textContent = '—';
-    document.getElementById('kpi-utilization').textContent = '—';
-    document.getElementById('kpi-margin').textContent = '—';
-    return;
-  }
-  
-  const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
-  
-  const dates = [...new Set(trips.map(t => t.deliveryDate))];
-  let manpowerTotal = 0;
-  let documentationTotal = 0;
-  
-  dates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
-    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
-  });
-  
-  const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
-  const netProfit = totalRevenue - totalExpenses;
-  const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
-  
-  const avgProfitPerTrip = trips.length > 0 ? netProfit / trips.length : 0;
-  const avgProfitPerDay = dates.length > 0 ? netProfit / dates.length : 0;
-  
-  // Fleet utilization (simplified: trips per truck per day)
-  const trucks = [...new Set(trips.map(t => t.truck))];
-  const utilization = trucks.length > 0 && dates.length > 0 
-    ? (trips.length / (trucks.length * dates.length) * 100) 
-    : 0;
-  
-  document.getElementById('kpi-avg-trip').textContent = formatCompact(avgProfitPerTrip);
-  document.getElementById('kpi-avg-day').textContent = formatCompact(avgProfitPerDay);
-  document.getElementById('kpi-utilization').textContent = utilization.toFixed(0) + '%';
-  document.getElementById('kpi-margin').textContent = margin.toFixed(1) + '%';
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    if (trips.length === 0) {
+        document.getElementById('kpi-avg-trip').textContent = '—';
+        document.getElementById('kpi-avg-day').textContent = '—';
+        document.getElementById('kpi-utilization').textContent = '—';
+        document.getElementById('kpi-margin').textContent = '—';
+        return;
+    }
+
+    const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+
+    const dates = [...new Set(trips.map(t => t.deliveryDate))];
+    let manpowerTotal = 0;
+    let documentationTotal = 0;
+
+    dates.forEach(date => {
+        const manpower = getManpowerExpensesForDate(date);
+        const documentation = getDocumentationExpensesForDate(date);
+        manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+        documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+    });
+
+    const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+    const netProfit = totalRevenue - totalExpenses;
+    const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+
+    const avgProfitPerTrip = trips.length > 0 ? netProfit / trips.length : 0;
+    const avgProfitPerDay = dates.length > 0 ? netProfit / dates.length : 0;
+
+    // Fleet utilization (simplified: trips per truck per day)
+    const trucks = [...new Set(trips.map(t => t.truck))];
+    const utilization = trucks.length > 0 && dates.length > 0 
+        ? (trips.length / (trucks.length * dates.length) * 100)
+        : 0;
+
+    document.getElementById('kpi-avg-trip').textContent = formatCompact(avgProfitPerTrip);
+    document.getElementById('kpi-avg-day').textContent = formatCompact(avgProfitPerDay);
+    document.getElementById('kpi-utilization').textContent = utilization.toFixed(0) + '%';
+    document.getElementById('kpi-margin').textContent = margin.toFixed(1) + '%';
 }
 
 function renderAlerts() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  const alerts = [];
-  
-  // Check for low-margin trucks
-  const truckData = {};
-  
-  trips.forEach(trip => {
-    if (!truckData[trip.truck]) {
-      truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
-    }
-    truckData[trip.truck].revenue += trip.rate;
-    truckData[trip.truck].dates.add(trip.deliveryDate);
-  });
-  
-  expenses.forEach(expense => {
-    if (truckData[expense.truck]) {
-      truckData[expense.truck].expenses += expense.amount;
-    }
-  });
-  
-  Object.keys(truckData).forEach(truck => {
-    const dates = Array.from(truckData[truck].dates);
-    
-    dates.forEach(date => {
-      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
-      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
-      
-      manpower.forEach(m => truckData[truck].expenses += m.amount);
-      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    const alerts = [];
+
+    // Check for low-margin trucks
+    const truckData = {};
+    trips.forEach(trip => {
+        if (!truckData[trip.truck]) {
+            truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
+        }
+        truckData[trip.truck].revenue += trip.rate;
+        truckData[trip.truck].dates.add(trip.deliveryDate);
     });
-  });
-  
-  Object.entries(truckData).forEach(([truck, data]) => {
-    const profit = data.revenue - data.expenses;
-    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
-    
-    if (margin < 20 && margin > 0) {
-      alerts.push({
-        type: 'warning',
-        icon: '⚠️',
-        text: `<strong>${truck}</strong> profit margin dropped to ${margin.toFixed(1)}% — investigate costs`
-      });
+
+    expenses.forEach(expense => {
+        if (truckData[expense.truck]) {
+            truckData[expense.truck].expenses += expense.amount;
+        }
+    });
+
+    Object.keys(truckData).forEach(truck => {
+        const dates = Array.from(truckData[truck].dates);
+        dates.forEach(date => {
+            const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+            const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+            manpower.forEach(m => truckData[truck].expenses += m.amount);
+            documentation.forEach(d => truckData[truck].expenses += d.amount);
+        });
+    });
+
+    Object.entries(truckData).forEach(([truck, data]) => {
+        const profit = data.revenue - data.expenses;
+        const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+
+        if (margin < 20 && margin > 0) {
+            alerts.push({
+                type: 'warning',
+                icon: '⚠️',
+                text: `<strong>${truck}</strong> profit margin dropped to ${margin.toFixed(1)}% — investigate costs`
+            });
+        }
+    });
+
+    // Check for high performers
+    Object.entries(truckData).forEach(([truck, data]) => {
+        const profit = data.revenue - data.expenses;
+        const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+
+        if (margin >= 40) {
+            alerts.push({
+                type: 'success',
+                icon: '✅',
+                text: `<strong>${truck}</strong> is performing excellently at ${margin.toFixed(1)}% margin`
+            });
+        }
+    });
+
+    // Check for expense spikes
+    const categoryTotals = {};
+    expenses.forEach(e => {
+        if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
+        categoryTotals[e.category] += e.amount;
+    });
+
+    const totalExpenses = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
+
+    Object.entries(categoryTotals).forEach(([category, amount]) => {
+        const percent = totalExpenses > 0 ? (amount / totalExpenses * 100) : 0;
+        if (category === 'Maintenance' && percent > 15) {
+            alerts.push({
+                type: 'info',
+                icon: '📊',
+                text: `Maintenance costs are ${percent.toFixed(1)}% of expenses — consider preventive maintenance`
+            });
+        }
+    });
+
+    const container = document.getElementById('alerts-list');
+    if (alerts.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No alerts at this time. All systems operating normally.</p></div>';
+        return;
     }
-  });
-  
-  // Check for high performers
-  Object.entries(truckData).forEach(([truck, data]) => {
-    const profit = data.revenue - data.expenses;
-    const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
-    
-    if (margin >= 40) {
-      alerts.push({
-        type: 'success',
-        icon: '✅',
-        text: `<strong>${truck}</strong> is performing excellently at ${margin.toFixed(1)}% margin`
-      });
-    }
-  });
-  
-  // Check for expense spikes
-  const categoryTotals = {};
-  expenses.forEach(e => {
-    if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
-    categoryTotals[e.category] += e.amount;
-  });
-  
-  const totalExpenses = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
-  
-  Object.entries(categoryTotals).forEach(([category, amount]) => {
-    const percent = totalExpenses > 0 ? (amount / totalExpenses * 100) : 0;
-    
-    if (category === 'Maintenance' && percent > 15) {
-      alerts.push({
-        type: 'info',
-        icon: '📊',
-        text: `Maintenance costs are ${percent.toFixed(1)}% of expenses — consider preventive maintenance`
-      });
-    }
-  });
-  
-  const container = document.getElementById('alerts-list');
-  
-  if (alerts.length === 0) {
-    container.innerHTML = '<div class="empty-state"><p>No alerts at this time. All systems operating normally.</p></div>';
-    return;
-  }
-  
-  container.innerHTML = alerts.map(a => {
-    return `<div class="alert-item ${a.type}">
-      <div class="alert-icon">${a.icon}</div>
-      <div class="alert-text">${a.text}</div>
-    </div>`;
-  }).join('');
+
+    container.innerHTML = alerts.map(a => {
+        return `<div class="alert-item ${a.type}">
+            <div class="alert-icon">${a.icon}</div>
+            <div class="alert-text">${a.text}</div>
+        </div>`;
+    }).join('');
 }
 
 function renderTopPerformers() {
-  const trips = getFilteredTrips();
-  const expenses = getFilteredExpenses();
-  
-  // Calculate truck performance
-  const truckData = {};
-  
-  trips.forEach(trip => {
-    if (!truckData[trip.truck]) {
-      truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
-    }
-    truckData[trip.truck].revenue += trip.rate;
-    truckData[trip.truck].dates.add(trip.deliveryDate);
-  });
-  
-  expenses.forEach(expense => {
-    if (truckData[expense.truck]) {
-      truckData[expense.truck].expenses += expense.amount;
-    }
-  });
-  
-  Object.keys(truckData).forEach(truck => {
-    const dates = Array.from(truckData[truck].dates);
-    
-    dates.forEach(date => {
-      const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
-      const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
-      
-      manpower.forEach(m => truckData[truck].expenses += m.amount);
-      documentation.forEach(d => truckData[truck].expenses += d.amount);
+    const trips = getFilteredTrips();
+    const expenses = getFilteredExpenses();
+
+    // Calculate truck performance
+    const truckData = {};
+    trips.forEach(trip => {
+        if (!truckData[trip.truck]) {
+            truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
+        }
+        truckData[trip.truck].revenue += trip.rate;
+        truckData[trip.truck].dates.add(trip.deliveryDate);
     });
-  });
-  
-  const topTrucks = Object.entries(truckData)
-    .map(([truck, data]) => {
-      const profit = data.revenue - data.expenses;
-      const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
-      return { truck, profit, margin };
-    })
-    .sort((a, b) => b.margin - a.margin)
-    .slice(0, 3);
-  
-  const container = document.getElementById('top-performers');
-  
-  if (topTrucks.length === 0) {
-    container.innerHTML = '<div class="empty-state"><p>No data available</p></div>';
-    return;
-  }
-  
-  container.innerHTML = topTrucks.map((t, i) => {
-    const medals = ['🥇', '🥈', '🥉'];
-    
-    return `<div class="breakdown-item">
-      <div class="breakdown-left">
-        <div class="breakdown-icon">${medals[i]}</div>
-        <div class="breakdown-info">
-          <div class="breakdown-label">${t.truck}</div>
-          <div class="breakdown-meta">Most profitable truck</div>
-        </div>
-      </div>
-      <div class="breakdown-right">
-        <div class="breakdown-amount">${formatCompact(t.profit)}</div>
-        <div class="breakdown-percent" style="color:var(--green)">${t.margin.toFixed(1)}%</div>
-      </div>
-    </div>`;
-  }).join('');
+
+    expenses.forEach(expense => {
+        if (truckData[expense.truck]) {
+            truckData[expense.truck].expenses += expense.amount;
+        }
+    });
+
+    Object.keys(truckData).forEach(truck => {
+        const dates = Array.from(truckData[truck].dates);
+        dates.forEach(date => {
+            const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+            const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+            manpower.forEach(m => truckData[truck].expenses += m.amount);
+            documentation.forEach(d => truckData[truck].expenses += d.amount);
+        });
+    });
+
+    const topTrucks = Object.entries(truckData)
+        .map(([truck, data]) => {
+            const profit = data.revenue - data.expenses;
+            const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+            return { truck, profit, margin };
+        })
+        .sort((a, b) => b.margin - a.margin)
+        .slice(0, 3);
+
+    const container = document.getElementById('top-performers');
+    if (topTrucks.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No data available</p></div>';
+        return;
+    }
+
+    container.innerHTML = topTrucks.map((t, i) => {
+        const medals = ['🥇', '🥈', '🥉'];
+        return `<div class="breakdown-item">
+            <div class="breakdown-left">
+                <div class="breakdown-icon">${medals[i]}</div>
+                <div class="breakdown-info">
+                    <div class="breakdown-label">${t.truck}</div>
+                    <div class="breakdown-meta">Most profitable truck</div>
+                </div>
+            </div>
+            <div class="breakdown-right">
+                <div class="breakdown-amount">${formatCompact(t.profit)}</div>
+                <div class="breakdown-percent" style="color:var(--green)">${t.margin.toFixed(1)}%</div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ═══════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════
 function formatCurrency(amount) {
-  return '₱ ' + parseFloat(amount).toLocaleString('en-PH', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+    return '₱ ' + parseFloat(amount).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 }
 
 function formatCompact(amount) {
-  if (amount >= 1000000) {
-    return '₱' + (amount / 1000000).toFixed(1) + 'M';
-  } else if (amount >= 1000) {
-    return '₱' + (amount / 1000).toFixed(1) + 'k';
-  } else {
-    return '₱' + amount.toFixed(0);
-  }
+    if (amount >= 1000000) {
+        return '₱' + (amount / 1000000).toFixed(1) + 'M';
+    } else if (amount >= 1000) {
+        return '₱' + (amount / 1000).toFixed(1) + 'k';
+    } else {
+        return '₱' + amount.toFixed(0);
+    }
 }
 
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 // ═══════════════════════════════════════
 // PULL TO REFRESH
 // ═══════════════════════════════════════
 function initPullToRefresh(scrollEl, onRefresh) {
-  let startY = 0;
-  let pulling = false;
-  const threshold = 70;
-  
-  const indicator = document.createElement('div');
-  indicator.className = 'ptr-indicator';
-  indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
-  document.body.appendChild(indicator);
+    let startY = 0;
+    let pulling = false;
+    const threshold = 70;
 
-  scrollEl.addEventListener('touchstart', function(e) {
-    if (scrollEl.scrollTop === 0) {
-      startY = e.touches[0].clientY;
-      pulling = true;
-    }
-  }, { passive: true });
+    const indicator = document.createElement('div');
+    indicator.className = 'ptr-indicator';
+    indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+    document.body.appendChild(indicator);
 
-  scrollEl.addEventListener('touchmove', function(e) {
-    if (!pulling) return;
-    const dist = e.touches[0].clientY - startY;
-    if (dist < 0) { pulling = false; return; }
+    scrollEl.addEventListener('touchstart', function(e) {
+        if (scrollEl.scrollTop === 0) {
+            startY = e.touches[0].clientY;
+            pulling = true;
+        }
+    }, { passive: true });
 
-    const progress = Math.min(dist / threshold, 1);
-    indicator.classList.add('visible');
+    scrollEl.addEventListener('touchmove', function(e) {
+        if (!pulling) return;
+        const dist = e.touches[0].clientY - startY;
+        if (dist < 0) { pulling = false; return; }
 
-    const arrow = document.getElementById('ptr-arrow');
-    if (arrow) {
-      arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
-      arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
-    }
-  }, { passive: true });
+        const progress = Math.min(dist / threshold, 1);
+        indicator.classList.add('visible');
 
-  scrollEl.addEventListener('touchend', function(e) {
-    if (!pulling) return;
-    pulling = false;
+        const arrow = document.getElementById('ptr-arrow');
+        if (arrow) {
+            arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
+            arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
+        }
+    }, { passive: true });
 
-    const dist = e.changedTouches[0].clientY - startY;
-    if (dist >= threshold) {
-      indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
-      onRefresh(function() {
-        indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
-        indicator.classList.remove('visible');
-      });
-    } else {
-      indicator.classList.remove('visible');
-    }
-  });
+    scrollEl.addEventListener('touchend', function(e) {
+        if (!pulling) return;
+        pulling = false;
+        const dist = e.changedTouches[0].clientY - startY;
+
+        if (dist >= threshold) {
+            indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
+            onRefresh(function() {
+                indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+                indicator.classList.remove('visible');
+            });
+        } else {
+            indicator.classList.remove('visible');
+        }
+    });
 }
 </script>
 
