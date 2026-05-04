@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#e0e0e5">
+<title>Submit Expense | PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
+  --text:#2a2a2e;--text2:#777;--text3:#aaa;--red:#B32533;
+  --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+}
+body.dark {
+  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
+  --text:#e8e8ec;--text2:#888;--text3:#555;
+  --neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background 0.4s,color 0.4s}
+
+/* TOPBAR */
+.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);flex-shrink:0;position:relative;z-index:50}
+body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
+.tb-back{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:22px;font-weight:400;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:1}
+.tb-back:active{box-shadow:var(--neu-in);transform:scale(0.95)}
+.tb-title{font-size:17px;font-weight:700;letter-spacing:-0.4px;color:var(--text);position:absolute;left:50%;transform:translateX(-50%)}
+
+/* PAGE */
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px));height:calc(100vh - 68px)}
+
+/* INFO CARD */
+.info-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:20px;border-left:4px solid var(--red)}
+.info-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.info-text{font-size:12px;color:var(--text2);line-height:1.6}
+
+/* FORM */
+.form-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:13px 16px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:box-shadow 0.15s}
+.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,0.3)}
+textarea.fi{resize:none;min-height:80px}
+
+/* COMPUTED FIELDS */
+.computed-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.computed-card{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-in);padding:14px;text-align:center}
+.computed-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.computed-value{font-size:20px;font-weight:700;color:var(--red);line-height:1}
+
+/* PHOTO UPLOAD */
+.photo-upload{width:100%;height:160px;border-radius:16px;background:var(--bg);box-shadow:var(--neu-in);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;margin-bottom:16px}
+.photo-upload input[type=file]{display:none}
+.photo-upload img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.photo-ph{text-align:center;pointer-events:none}
+.photo-ph-icon{font-size:48px;opacity:0.25;margin-bottom:8px}
+.photo-ph-text{font-size:13px;color:var(--text3)}
+
+/* BUTTON */
+.btn-submit{width:100%;padding:16px;border-radius:14px;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none;background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);transition:transform 0.1s}
+.btn-submit:active{transform:scale(0.98)}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;max-width:90%;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.toast.show{opacity:1}
+
+/* SAVING OVERLAY */
+.saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
+.saving-overlay.show{display:flex}
+.saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.saving-text{font-size:14px;color:var(--text2);font-weight:500}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tb-back" onclick="location.href='index.html'">✕</button>
+  <span class="tb-title">Submit Diesel Expense</span>
+</div>
+
+<div class="page-wrap">
+  <!-- INFO CARD -->
+  <div class="info-card">
+    <div class="info-title">⛽ Diesel Purchase Entry</div>
+    <div class="info-text">Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.</div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-section">
+    <div class="section-title">📝 Receipt Details</div>
+    
+    <div class="fg">
+      <label class="fl">Date of Purchase *</label>
+      <input class="fi" id="f-date" type="date" onchange="updateQuarter()">
+    </div>
+
+    <div class="fg">
+      <label class="fl">Current Quarter</label>
+      <input class="fi" id="f-quarter" type="text" readonly style="background:var(--bg2);color:var(--text3)">
+    </div>
+
+    <div class="fg">
+      <label class="fl">Name of Payee (Gas Station) *</label>
+      <input class="fi" id="f-payee" type="text" placeholder="e.g. Shell Station Caloocan">
+    </div>
+
+    <div class="fg">
+      <label class="fl">Address *</label>
+      <input class="fi" id="f-address" type="text" placeholder="Gas station address">
+    </div>
+
+    <div class="fg">
+      <label class="fl">TIN Number *</label>
+      <input class="fi" id="f-tin" type="text" placeholder="000-000-000-000">
+    </div>
+
+    <div class="fg">
+      <label class="fl">OR Number (Official Receipt) *</label>
+      <input class="fi" id="f-or" type="text" placeholder="Receipt number">
+    </div>
+
+    <div class="fg">
+      <label class="fl">Gross Amount (₱) *</label>
+      <input class="fi" id="f-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal" oninput="computeVAT()">
+    </div>
+
+    <!-- COMPUTED VALUES -->
+    <div class="computed-grid">
+      <div class="computed-card">
+        <div class="computed-label">Vatable Purchase</div>
+        <div class="computed-value" id="vatable">₱0.00</div>
+      </div>
+      <div class="computed-card">
+        <div class="computed-label">Input VAT</div>
+        <div class="computed-value" id="input-vat">₱0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO UPLOAD -->
+  <div class="form-section">
+    <div class="section-title">📸 Receipt Photo (Optional)</div>
+    <label class="photo-upload" onclick="document.getElementById('f-photo').click()">
+      <input type="file" id="f-photo" accept="image/*" onchange="handlePhotoChange(this)">
+      <img id="photo-preview" style="display:none">
+      <div class="photo-ph" id="photo-ph">
+        <div class="photo-ph-icon">📷</div>
+        <div class="photo-ph-text">Tap to upload receipt photo</div>
+      </div>
+    </label>
+  </div>
+
+  <button class="btn-submit" onclick="submitExpense()">Submit Diesel Expense</button>
+</div>
+
+<!-- SAVING OVERLAY -->
+<div class="saving-overlay" id="saving-overlay">
+  <div class="saving-box">
+    <div class="saving-spinner"></div>
+    <div class="saving-text" id="saving-text">Saving...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ CONFIG ═══════════════════════════════════════════
+const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const DIESEL_SHEET_PREFIX = 'Expenses_Diesel';
+
+let token = '';
+let photoBase64 = '';
+
+// ═══ INIT ═════════════════════════════════════════════
+(function init() {
+  const dark = localStorage.getItem('pedroex-theme') === 'dark';
+  document.body.classList.toggle('dark', dark);
+
+  token = localStorage.getItem('pedroex-token') || '';
+  const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  if (!token || Date.now() >= expiry) {
+    location.href = 'index.html';
+    return;
+  }
+
+  // Set default date to today
+  document.getElementById('f-date').valueAsDate = new Date();
+  updateQuarter();
+})();
+
+// ═══ QUARTER DETECTION ════════════════════════════════
+function updateQuarter() {
+  const dateStr = document.getElementById('f-date').value;
+  if (!dateStr) {
+    document.getElementById('f-quarter').value = '';
+    return;
+  }
+
+  const date = new Date(dateStr);
+  const month = date.getMonth() + 1; // 1-12
+  const year = date.getFullYear();
+
+  let quarter = '';
+  if (month >= 1 && month <= 3) {
+    quarter = `Purchases (Jan-Mar ${year}) -Diesel`;
+  } else if (month >= 4 && month <= 6) {
+    quarter = `Purchases (Apr-Jun ${year}) -Diesel`;
+  } else if (month >= 7 && month <= 9) {
+    quarter = `Purchases (Jul-Sep ${year}) -Diesel`;
+  } else {
+    quarter = `Purchases (Oct-Dec ${year}) -Diesel`;
+  }
+
+  document.getElementById('f-quarter').value = quarter;
+}
+
+// ═══ VAT COMPUTATION ══════════════════════════════════
+function computeVAT() {
+  const amount = parseFloat(document.getElementById('f-amount').value) || 0;
+  
+  const vatable = amount * 0.88;
+  const inputVat = amount * 0.12;
+
+  document.getElementById('vatable').textContent = '₱' + vatable.toFixed(2);
+  document.getElementById('input-vat').textContent = '₱' + inputVat.toFixed(2);
+}
+
+// ═══ PHOTO HANDLING ═══════════════════════════════════
+function handlePhotoChange(input) {
+  if (!input.files || !input.files[0]) return;
+  
+  const file = input.files[0];
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('❌ Photo must be under 5MB');
+    input.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    photoBase64 = e.target.result;
+    document.getElementById('photo-preview').src = photoBase64;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-ph').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══ SUBMIT EXPENSE ═══════════════════════════════════
+function submitExpense() {
+  // Validate
+  const date = document.getElementById('f-date').value.trim();
+  const payee = document.getElementById('f-payee').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  const tin = document.getElementById('f-tin').value.trim();
+  const orNum = document.getElementById('f-or').value.trim();
+  const amount = parseFloat(document.getElementById('f-amount').value) || 0;
+
+  if (!date || !payee || !address || !tin || !orNum || amount <= 0) {
+    showToast('❌ Please fill all required fields');
+    return;
+  }
+
+  const quarter = document.getElementById('f-quarter').value;
+  const vatable = amount * 0.88;
+  const inputVat = amount * 0.12;
+  const userName = localStorage.getItem('pedroex-name') || 'Unknown';
+
+  showSaving('Checking quarterly sheet...');
+
+  // Step 1: Check if quarterly sheet exists
+  checkOrCreateSheet(quarter).then(() => {
+    showSaving('Saving expense...');
+    
+    // Step 2: Append data to sheet
+    const row = [
+      date,           // A: DATE
+      payee,          // B: NAME OF PAYEE
+      address,        // C: ADDRESS
+      tin,            // D: TIN NUMBER
+      '',             // E: AR/DR (blank)
+      orNum,          // F: OR
+      '',             // G: SI (blank)
+      '',             // H: ZERO RATED SALE (blank)
+      amount,         // I: AMOUNT
+      '',             // J: NON VATABLE (blank)
+      vatable,        // K: VATABLE PURCHASES
+      inputVat,       // L: INPUT VAT
+      amount,         // M: GROSS PURCHASES
+      userName        // N: USER
+    ];
+
+    return apiAppend(quarter + '!A8:N8', [row]);
+  })
+  .then(() => {
+    hideSaving();
+    showToast('✅ Diesel expense submitted!');
+    
+    // Reset form
+    setTimeout(() => {
+      document.getElementById('f-payee').value = '';
+      document.getElementById('f-address').value = '';
+      document.getElementById('f-tin').value = '';
+      document.getElementById('f-or').value = '';
+      document.getElementById('f-amount').value = '';
+      document.getElementById('f-photo').value = '';
+      document.getElementById('photo-preview').style.display = 'none';
+      document.getElementById('photo-ph').style.display = 'block';
+      photoBase64 = '';
+      computeVAT();
+    }, 1000);
+  })
+  .catch(err => {
+    hideSaving();
+    showToast('❌ Submit failed: ' + err.message);
+    console.error(err);
+  });
+}
+
+// ═══ SHEET MANAGEMENT ═════════════════════════════════
+function checkOrCreateSheet(quarterName) {
+  // Get all sheets
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`, {
+    headers: { Authorization: 'Bearer ' + token }
+  })
+  .then(r => {
+    if (!r.ok) throw new Error('Cannot access spreadsheet');
+    return r.json();
+  })
+  .then(data => {
+    const sheets = data.sheets || [];
+    const exists = sheets.some(s => s.properties.title === quarterName);
+
+    if (exists) {
+      return Promise.resolve(); // Sheet exists, continue
+    }
+
+    // Sheet doesn't exist, create it
+    showSaving('Creating new quarterly sheet...');
+    return createQuarterlySheet(quarterName);
+  });
+}
+
+function createQuarterlySheet(quarterName) {
+  // Step 1: Create sheet
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      requests: [{
+        addSheet: {
+          properties: { title: quarterName }
+        }
+      }]
+    })
+  })
+  .then(r => {
+    if (!r.ok) throw new Error('Cannot create sheet');
+    return r.json();
+  })
+  .then(() => {
+    // Step 2: Add headers
+    const headers = [
+      ['PEDROEX Transport Services'],
+      ['Summary of Purchases', quarterName],
+      [],
+      [],
+      [],
+      [],
+      ['DATE', 'NAME OF PAYEE', 'ADDRESS', 'TIN NUMBER', 'AR/DR', 'OR', 'SI', 'ZERO RATED SALE', 'AMOUNT', 'NON VATABLE', 'VATABLE PURCHASES', 'INPUT VAT', 'GROSS PURCHASES', 'USER']
+    ];
+
+    return apiUpdate(quarterName + '!A1:N7', headers);
+  });
+}
+
+// ═══ API HELPERS ══════════════════════════════════════
+function apiUpdate(range, values) {
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
+    method: 'PUT',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ values })
+  }).then(r => {
+    if (!r.ok) throw new Error('Update failed');
+    return r.json();
+  });
+}
+
+function apiAppend(range, values) {
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ values })
+  }).then(r => {
+    if (!r.ok) throw new Error('Append failed');
+    return r.json();
+  });
+}
+
+// ═══ UI HELPERS ═══════════════════════════════════════
+function showSaving(msg) {
+  document.getElementById('saving-text').textContent = msg || 'Saving...';
+  document.getElementById('saving-overlay').classList.add('show');
+}
+
+function hideSaving() {
+  document.getElementById('saving-overlay').classList.remove('show');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+</script>
+</body>
+</html>
