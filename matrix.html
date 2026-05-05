@@ -641,8 +641,40 @@
             font-size: 18px;
             font-weight: 700;
             color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+            flex: 1; /* Para hindi ma-push yung margin */
         }
 
+        /* Optional: Tooltip on hover */
+        .truck-name[data-full-name]:hover {
+            position: relative;
+        }
+
+        .truck-name[data-full-name]:hover::after {
+            content: attr(data-full-name);
+            position: absolute;
+            left: 0;
+            top: 100%;
+            background: var(--bg2);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 8px;
+            box-shadow: var(--neu-out);
+            white-space: normal;
+            z-index: 100;
+            font-size: 14px;
+            font-weight: 600;
+            max-width: 300px;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        body.dark .truck-name[data-full-name]:hover::after {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
         .truck-margin {
             font-size: 20px;
             font-weight: 700;
@@ -2666,7 +2698,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 const marginClass = t.margin >= 30 ? 'profitable' : t.margin >= 20 ? 'warning' : 'loss';
                 return `<div class="truck-card ${marginClass}">
                     <div class="truck-header">
-                        <div class="truck-name">🚛 ${t.truck}</div>
+                        <div class="truck-name" data-full-name="${t.truck}" title="${t.truck}">🚛 ${t.truck}</div>
                         <div class="truck-margin ${marginClass}">${t.margin.toFixed(1)}%</div>
                     </div>
                     <div class="truck-stats">
@@ -2753,7 +2785,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 const marginClass = r.margin >= 30 ? 'profitable' : r.margin >= 20 ? 'warning' : 'loss';
                 return `<div class="truck-card ${marginClass}">
                     <div class="truck-header">
-                        <div class="truck-name">📍 ${r.route}</div>
+                        <div class="truck-name" data-full-name="${r.route}" title="${r.route}">📍 ${r.route}</div>
                         <div class="truck-margin ${marginClass}">${r.margin.toFixed(1)}%</div>
                     </div>
                     <div class="truck-stats">
