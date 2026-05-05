@@ -44,7 +44,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .back-btn:active{box-shadow:var(--neu-in)}
 .page-title{font-size:20px;font-weight:700;color:var(--text)}
 
-/* ══ REPORT TAB STYLES ══ */
+/* REPORT TAB STYLES */
 .rpt-period-btn{flex:1;padding:10px 8px;border:none;background:var(--bg);border-radius:10px;box-shadow:var(--neu-sm);font-size:12px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all 0.2s}
 .rpt-period-btn.active{box-shadow:var(--neu-in);color:var(--red)}
 .rpt-stat{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;text-align:center}
@@ -63,6 +63,10 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .rpt-emp-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);box-shadow:var(--neu-xs);color:var(--text2)}
 .rpt-emp-pill.ok{background:var(--green);color:#fff;box-shadow:none}
 .rpt-emp-pill.missing{background:var(--red);color:#fff;box-shadow:none}
+.rpt-flag-box{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:8px;border:1px solid rgba(179,37,51,0.2)}
+.rpt-flag-title{font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px}
+.rpt-flag-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.rpt-flag-fix{font-size:11px;color:var(--green);margin-top:4px;font-weight:600}
 
 /* TABS */
 .tabs{display:flex;gap:8px;margin-bottom:16px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px}
@@ -90,7 +94,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 select.fi{cursor:pointer}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* TOGGLE (Yes/No) */
+/* TOGGLE */
 .toggle-group{display:flex;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);overflow:hidden}
 .tg-btn{flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all 0.2s}
 .tg-btn.active-yes{background:var(--green);color:#fff;box-shadow:none}
@@ -135,7 +139,7 @@ body.dark .dt-row{border-bottom-color:rgba(255,255,255,0.04)}
 .cal-day.selected{box-shadow:var(--neu-in)}
 .cal-day.other-month{opacity:0.3}
 .cal-names{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;width:100%}
-.cal-name-dot{font-size:8px;color:var(--green);font-weight:700;letter-spacing:0;line-height:1.2;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cal-name-pill{font-size:8px;font-weight:700;padding:1px 5px;border-radius:6px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-bottom:1px;line-height:1.4}
 
 /* DAY DETAIL PANEL */
 .day-panel{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-top:12px;display:none}
@@ -214,72 +218,19 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 .nr-sub{font-size:13px;color:var(--text2);line-height:1.7}
 
 /* FILTER TAGS */
-.filter-tag{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);
-  padding:4px 10px;font-size:11px;font-weight:600;color:var(--red);
-}
-.filter-tag button{
-  background:none;border:none;color:var(--text3);
-  font-size:14px;cursor:pointer;padding:0;line-height:1;font-family:Inter,sans-serif;
-}
+.filter-tag{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);padding:4px 10px;font-size:11px;font-weight:600;color:var(--red)}
+.filter-tag button{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:0;line-height:1;font-family:Inter,sans-serif}
 
-/* LEGEND DOT */
-.legend-item{
-  display:flex;align-items:center;gap:6px;
-  background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);
-  padding:4px 10px;font-size:11px;font-weight:600;color:var(--text);
-}
-.legend-dot{
-  width:10px;height:10px;border-radius:50%;flex-shrink:0;
-}
-
-/* CAL NAME PILLS */
-.cal-name-pill{
-  font-size:8px;font-weight:700;
-  padding:1px 5px;border-radius:6px;
-  color:#fff;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;
-  max-width:100%;margin-bottom:1px;
-  line-height:1.4;
-}
+/* LEGEND */
+.legend-item{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:20px;box-shadow:var(--neu-xs);padding:4px 10px;font-size:11px;font-weight:600;color:var(--text)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
 /* PULL TO REFRESH */
-.ptr-indicator {
-  position: fixed;
-  top: calc(env(safe-area-inset-top,0px) + 10px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-80px);
-  background: var(--bg);
-  border-radius: 50%;
-  width: 40px; height: 40px;
-  box-shadow: var(--neu-out);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 200;
-  transition: transform 0.2s ease;
-  pointer-events: none;
-}
-.ptr-indicator.visible {
-  transform: translateX(-50%) translateY(0px);
-}
-.ptr-spinner {
-  width: 18px; height: 18px;
-  border: 2px solid var(--text3);
-  border-top-color: var(--red);
-  border-radius: 50%;
-}
-.ptr-spinner.spinning {
-  animation: spin 0.7s linear infinite;
-}
-.ptr-arrow {
-  width: 18px; height: 18px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--red);
-  font-size: 18px;
-  transition: transform 0.2s ease;
-}
-
-
+.ptr-indicator{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%) translateY(-80px);background:var(--bg);border-radius:50%;width:40px;height:40px;box-shadow:var(--neu-out);display:flex;align-items:center;justify-content:center;z-index:200;transition:transform 0.2s ease;pointer-events:none}
+.ptr-indicator.visible{transform:translateX(-50%) translateY(0px)}
+.ptr-spinner{width:18px;height:18px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%}
+.ptr-spinner.spinning{animation:spin 0.7s linear infinite}
+.ptr-arrow{width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:var(--red);font-size:18px;transition:transform 0.2s ease}
 </style>
 </head>
 <body>
@@ -322,10 +273,8 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       </div>
     </div>
 
-    <!-- ══ TAB: CHECK-IN ══ -->
+    <!-- TAB: CHECK-IN -->
     <div id="tab-content-checkin" style="display:none">
-
-      <!-- Employee header -->
       <div class="neu-card" style="padding:16px">
         <div class="emp-header">
           <img class="emp-avatar" id="emp-avatar" src="" alt="">
@@ -337,7 +286,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         </div>
       </div>
 
-      <!-- Already checked in -->
       <div id="wrap-done" style="display:none">
         <div class="neu-card success-card">
           <div class="success-icon">✅</div>
@@ -347,11 +295,9 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         </div>
       </div>
 
-      <!-- Check-in form -->
       <div id="wrap-form" style="display:none">
         <div class="neu-card">
           <div class="card-title">Today's Check-in</div>
-
           <div class="fg">
             <label class="fl">2-Man Team</label>
             <div class="toggle-group">
@@ -359,12 +305,10 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
               <button class="tg-btn" id="team-yes" onclick="setTeam('Yes')">Yes</button>
             </div>
           </div>
-
           <div class="fg">
             <label class="fl">Crates</label>
             <input class="fi" id="f-crates" type="number" placeholder="0" min="0" value="0">
           </div>
-
           <div class="fg">
             <label class="fl">Meal Allowance</label>
             <select class="fi" id="f-meal">
@@ -373,14 +317,10 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
               <option value="No">No</option>
             </select>
           </div>
-
           <div class="fg">
             <label class="fl">Assigned Truck</label>
-            <select class="fi" id="f-truck">
-              <option value="">— Select Truck —</option>
-            </select>
+            <select class="fi" id="f-truck"><option value="">— Select Truck —</option></select>
           </div>
-
           <div class="fg">
             <label class="fl">Location</label>
             <div class="loc-box">
@@ -389,118 +329,70 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
               <button class="loc-retry" id="loc-retry" onclick="getLocation()" style="display:none">Retry</button>
             </div>
           </div>
-
-          <button class="checkin-btn" id="checkin-btn" onclick="submitAttendance()" disabled>
-            Check In Now
-          </button>
+          <button class="checkin-btn" id="checkin-btn" onclick="submitAttendance()" disabled>Check In Now</button>
         </div>
       </div>
-
-    </div><!-- end checkin tab -->
-
-    <!-- ══ TAB: CALENDAR ══ -->
-    <!-- ══ TAB: CALENDAR ══ -->
-<div id="tab-content-calendar" style="display:none">
-
-  <!-- FILTER BAR -->
-  <div class="neu-card" style="padding:14px;margin-bottom:14px">
-    <div class="card-title" style="margin-bottom:10px">Filter Attendance</div>
-
-    <div class="fg" style="margin-bottom:10px">
-      <label class="fl">Employee</label>
-      <select class="fi" id="filter-name" onchange="applyFilters()">
-        <option value="">All Employees</option>
-      </select>
     </div>
 
-    <div class="row2" style="margin-bottom:10px">
-      <div>
-        <label class="fl">2-Man Team</label>
-        <select class="fi" id="filter-team" onchange="applyFilters()">
-          <option value="">All</option>
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-        </select>
+    <!-- TAB: CALENDAR -->
+    <div id="tab-content-calendar" style="display:none">
+      <div class="neu-card" style="padding:14px;margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:10px">Filter Attendance</div>
+        <div class="fg" style="margin-bottom:10px">
+          <label class="fl">Employee</label>
+          <select class="fi" id="filter-name" onchange="applyFilters()"><option value="">All Employees</option></select>
+        </div>
+        <div class="row2" style="margin-bottom:10px">
+          <div>
+            <label class="fl">2-Man Team</label>
+            <select class="fi" id="filter-team" onchange="applyFilters()">
+              <option value="">All</option><option value="Yes">Yes</option><option value="No">No</option>
+            </select>
+          </div>
+          <div>
+            <label class="fl">Meal Allowance</label>
+            <select class="fi" id="filter-meal" onchange="applyFilters()">
+              <option value="">All</option><option value="Yes">Full Allowance</option>
+              <option value="Meals Only">Meals Only</option><option value="No">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:10px">
+          <label class="fl">Assigned Truck</label>
+          <select class="fi" id="filter-truck" onchange="applyFilters()"><option value="">All Trucks</option></select>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="fl">Min Crates</label>
+          <input class="fi" id="filter-crates" type="number" min="0" placeholder="e.g. 5" oninput="applyFilters()">
+        </div>
+        <div id="filter-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+        <button onclick="clearFilters()" id="clear-filters-btn" style="display:none;width:100%;margin-top:10px;padding:10px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Clear All Filters</button>
       </div>
-      <div>
-        <label class="fl">Meal Allowance</label>
-        <select class="fi" id="filter-meal" onchange="applyFilters()">
-          <option value="">All</option>
-          <option value="Yes">Full Allowance</option>
-          <option value="Meals Only">Meals Only</option>
-          <option value="No">No</option>
-        </select>
+      <div class="neu-card" style="padding:14px;margin-bottom:14px" id="color-legend">
+        <div class="card-title" style="margin-bottom:10px">Employee Colors</div>
+        <div id="legend-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+      </div>
+      <div class="neu-card">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+          <div class="cal-title" id="cal-title"></div>
+          <button class="cal-nav" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <div class="day-panel" id="day-panel">
+        <div class="day-panel-title" id="day-panel-title"></div>
+        <div id="day-panel-list"></div>
       </div>
     </div>
 
-    <div class="fg" style="margin-bottom:10px">
-      <label class="fl">Assigned Truck</label>
-      <select class="fi" id="filter-truck" onchange="applyFilters()">
-        <option value="">All Trucks</option>
-      </select>
-    </div>
-
-    <div class="fg" style="margin-bottom:0">
-      <label class="fl">Min Crates</label>
-      <input class="fi" id="filter-crates" type="number" min="0" placeholder="e.g. 5" oninput="applyFilters()">
-    </div>
-
-    <!-- Active filter tags -->
-    <div id="filter-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
-
-    <button onclick="clearFilters()" id="clear-filters-btn"
-      style="display:none;width:100%;margin-top:10px;padding:10px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">
-      Clear All Filters
-    </button>
-  </div>
-
-  <!-- COLOR LEGEND -->
-  <div class="neu-card" style="padding:14px;margin-bottom:14px" id="color-legend">
-    <div class="card-title" style="margin-bottom:10px">Employee Colors</div>
-    <div id="legend-list" style="display:flex;flex-wrap:wrap;gap:8px"></div>
-  </div>
-
-  <!-- CALENDAR -->
-  <div class="neu-card">
-    <div class="cal-header">
-      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
-      <div class="cal-title" id="cal-title"></div>
-      <button class="cal-nav" onclick="changeMonth(1)">›</button>
-    </div>
-    <div class="cal-grid" id="cal-grid"></div>
-  </div>
-
-  <!-- Day detail panel -->
-  <div class="day-panel" id="day-panel">
-    <div class="day-panel-title" id="day-panel-title"></div>
-    <div id="day-panel-list"></div>
-  </div>
-
-</div>
-
-        <!-- ══ TAB: ADMIN MANAGE ══ -->
+    <!-- TAB: ADMIN MANAGE -->
     <div id="tab-content-admin" style="display:none">
-
-      <!-- Manual Attendance Entry -->
       <div class="section-label">Add Attendance for Employee</div>
       <div class="add-emp-form">
-        <div class="fg">
-          <label class="fl">Select Employee</label>
-          <select class="fi" id="manual-emp">
-            <option value="">— Select Employee —</option>
-          </select>
-        </div>
-
-        <div class="fg">
-          <label class="fl">Date</label>
-          <input class="fi" id="manual-date" type="date">
-        </div>
-
-        <div class="fg">
-          <label class="fl">Time</label>
-          <input class="fi" id="manual-time" type="time" value="08:00">
-        </div>
-
+        <div class="fg"><label class="fl">Select Employee</label><select class="fi" id="manual-emp"><option value="">— Select Employee —</option></select></div>
+        <div class="fg"><label class="fl">Date</label><input class="fi" id="manual-date" type="date"></div>
+        <div class="fg"><label class="fl">Time</label><input class="fi" id="manual-time" type="time" value="08:00"></div>
         <div class="fg">
           <label class="fl">2-Man Team</label>
           <div class="toggle-group">
@@ -508,39 +400,18 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
             <button class="tg-btn" id="manual-team-yes" onclick="setManualTeam('Yes')">Yes</button>
           </div>
         </div>
-
-        <div class="fg">
-          <label class="fl">Crates</label>
-          <input class="fi" id="manual-crates" type="number" placeholder="0" min="0" value="0">
-        </div>
-
-        <div class="fg">
-          <label class="fl">Meal Allowance</label>
+        <div class="fg"><label class="fl">Crates</label><input class="fi" id="manual-crates" type="number" placeholder="0" min="0" value="0"></div>
+        <div class="fg"><label class="fl">Meal Allowance</label>
           <select class="fi" id="manual-meal">
             <option value="Yes" selected>Yes — Full Allowance</option>
-            <option value="Meals Only">Meals Only</option>
-            <option value="No">No</option>
+            <option value="Meals Only">Meals Only</option><option value="No">No</option>
           </select>
         </div>
-
-        <div class="fg">
-          <label class="fl">Assigned Truck</label>
-          <select class="fi" id="manual-truck">
-            <option value="">— Select Truck —</option>
-          </select>
-        </div>
-
-        <div class="fg">
-          <label class="fl">Location (Optional)</label>
-          <input class="fi" id="manual-location" placeholder="e.g., Warehouse, Client Site">
-        </div>
-
-        <button class="checkin-btn" onclick="addManualAttendance()" style="margin-top:0">
-          ➕ Add Attendance
-        </button>
+        <div class="fg"><label class="fl">Assigned Truck</label><select class="fi" id="manual-truck"><option value="">— Select Truck —</option></select></div>
+        <div class="fg"><label class="fl">Location (Optional)</label><input class="fi" id="manual-location" placeholder="e.g., Warehouse, Client Site"></div>
+        <button class="checkin-btn" onclick="addManualAttendance()" style="margin-top:0">➕ Add Attendance</button>
       </div>
 
-      <!-- Add Employee -->
       <div class="section-label" style="margin-top:24px">Add Employee</div>
       <div class="add-emp-form">
         <div class="fg"><label class="fl">Email</label><input class="fi" id="ae-email" type="email" placeholder="employee@gmail.com"></div>
@@ -549,33 +420,23 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
           <div class="fg"><label class="fl">Last Name</label><input class="fi" id="ae-lname" placeholder="Last Name"></div>
         </div>
         <div class="fg"><label class="fl">Role</label>
-          <select class="fi" id="ae-role">
-            <option value="Employee">Employee</option>
-            <option value="Admin">Admin</option>
-          </select>
+          <select class="fi" id="ae-role"><option value="Employee">Employee</option><option value="Admin">Admin</option></select>
         </div>
         <button class="checkin-btn" onclick="addEmployee()" style="margin-top:0">Add Employee</button>
       </div>
 
-
-      <!-- Employee List -->
       <div class="section-label">Registered Employees</div>
-      <div id="emp-list-wrap">
-        <div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
-      </div>
+      <div id="emp-list-wrap"><div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div></div>
 
-      <!-- Admin: Edit Attendance -->
       <div class="section-label" style="margin-top:20px">Edit Attendance Record</div>
       <div class="neu-card" style="padding:16px">
         <div style="font-size:13px;color:var(--text2);margin-bottom:12px">Select a date from the Calendar tab, then tap an attendance record to edit it.</div>
         <button class="icon-btn" onclick="switchTab('calendar')">Go to Calendar →</button>
       </div>
+    </div>
 
-    </div><!-- end admin tab -->
-
-  <!-- ══ TAB: REPORT ══ -->
+    <!-- TAB: REPORT -->
     <div id="tab-content-report" style="display:none">
-
       <div class="neu-card" style="padding:14px;margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Report Period</div>
         <div style="display:flex;gap:8px">
@@ -595,12 +456,11 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       <div id="rpt-loading" class="loading-wrap" style="display:none"><div class="spinner"></div>&nbsp;Generating report...</div>
 
       <div id="rpt-summary" style="display:none">
-
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" id="rpt-stat-grid"></div>
 
         <div class="neu-card" id="rpt-flags-card" style="margin-bottom:14px;display:none">
           <div class="card-title" style="margin-bottom:6px;color:var(--red)">⚠ Flagged Trips</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Fresh trips (non-Masbate) na may kulang na attendance, 2-Man Team, o Crates record.</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Fresh trips (non-Masbate) with missing attendance, helper, or Crates record.</div>
           <div id="rpt-flags-list"></div>
         </div>
 
@@ -618,18 +478,17 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
         <div class="neu-card" style="margin-bottom:14px">
           <div class="card-title" style="margin-bottom:4px">Crates Return Compliance</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Mula sa Employee Records — % ng crates na naireturno/na-liquidate</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">From Employee Records — percentage of crates returned/liquidated per helper.</div>
           <div id="rpt-crates-list"></div>
         </div>
 
         <div class="neu-card" style="margin-bottom:14px">
           <div class="card-title" style="margin-bottom:12px">Other Trip Attendance</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Frozen at Masbate trips — walang 2-man team requirement</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Frozen and Masbate trips — no 2-man team requirement.</div>
           <div id="rpt-other-list"></div>
         </div>
-
       </div>
-    </div><!-- end report tab -->
+    </div>
 
   </div><!-- end page-wrap -->
 
@@ -683,31 +542,53 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
 <div class="toast" id="toast"></div>
 
-<!-- ══ TAB: REPORT ══ -->
-
 <script>
 // ═══ CONFIG ═══════════════════════════════════════════
-const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-const TAB_ATTENDANCE = 'Attendance';
-const TAB_EMPLOYEES  = 'Employees';
-const TAB_TRUCKS     = 'Truck Roster';
-const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
+var SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+var TAB_ATTENDANCE = 'Attendance';
+var TAB_EMPLOYEES  = 'Employees';
+var TAB_TRUCKS     = 'Truck Roster';
 
 // ═══ STATE ════════════════════════════════════════════
-var token        = '';
-var isAdmin      = false;
-var currentUser  = null;
-var allAttendance = [];  // all records from sheet
-var myRecords    = [];   // current user's records
-var allEmployees = [];
-var allTrucks    = [];
-var locationData = null;
+var token         = '';
+var isAdmin       = false;
+var currentUser   = null;
+var allAttendance = [];
+var myRecords     = [];
+var allEmployees  = [];  // raw rows from sheet [email, fname, lname, role, position]
+var allTrucks     = [];
+var positionMap   = {};  // email -> 'Driver' or 'Helper'
+var locationData  = null;
 var calYear, calMonth;
-var todayStr     = '';
-var teamValue    = 'No';
-var selectedAtt  = null; // for edit
-var confirmCb    = null;
-var firstLoad    = true;
+var todayStr      = '';
+var teamValue     = 'No';
+var selectedAtt   = null;
+var firstLoad     = true;
+var activeFilters = { name:'', team:'', meal:'', truck:'', crates:'' };
+var filteredAttendance = [];
+var selectedDay   = null;
+var allRecords    = [];  // employee records (crates etc.)
+var rptPeriod     = 'week';
+
+// ═══ EMPLOYEE COLOR MAP ═══════════════════════════════
+var EMP_COLORS = [
+  {bg:'#B32533',text:'#fff'},{bg:'#c0392b',text:'#fff'},{bg:'#8e44ad',text:'#fff'},
+  {bg:'#2980b9',text:'#fff'},{bg:'#16a085',text:'#fff'},{bg:'#d35400',text:'#fff'},
+  {bg:'#27ae60',text:'#fff'},{bg:'#7f8c8d',text:'#fff'},{bg:'#8e2de2',text:'#fff'},
+  {bg:'#e91e8c',text:'#fff'},{bg:'#00796b',text:'#fff'},{bg:'#5d4037',text:'#fff'}
+];
+var empColorMap = {};
+
+function getEmpColor(name) {
+  if (!empColorMap[name]) { empColorMap[name] = EMP_COLORS[Object.keys(empColorMap).length % EMP_COLORS.length]; }
+  return empColorMap[name];
+}
+function buildColorMap() {
+  var names = [];
+  allAttendance.forEach(function(r){ if (r.name && names.indexOf(r.name)===-1) names.push(r.name); });
+  names.sort();
+  names.forEach(function(n,i){ empColorMap[n] = EMP_COLORS[i % EMP_COLORS.length]; });
+}
 
 // ═══ INIT ═════════════════════════════════════════════
 (function init() {
@@ -716,43 +597,28 @@ var firstLoad    = true;
   var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
   if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
 
-  var now = new Date();
+  var now   = new Date();
   todayStr  = fmtDate(now);
   calYear   = now.getFullYear();
   calMonth  = now.getMonth();
 
   document.getElementById('today-label').textContent =
-    now.toLocaleDateString('en-PH', { weekday:'short', month:'short', day:'numeric' });
+    now.toLocaleDateString('en-PH', {weekday:'short',month:'short',day:'numeric'});
 
   var pic = localStorage.getItem('pedroex-picture') || '';
-  if (pic) {
-    document.getElementById('user-avatar').src = pic;
-    document.getElementById('emp-avatar').src  = pic;
-  }
+  if (pic) { document.getElementById('user-avatar').src = pic; document.getElementById('emp-avatar').src = pic; }
 
-  setTeam('No'); // default
+  setTeam('No');
   loadAll();
-      initPullToRefresh(
-      document.querySelector('.page-wrap'),
-      function(done) {
-        loadAll();
-        setTimeout(done, 1500);
-      }
-    );
-
-    initAutoRefresh(function(done) {
-      loadAll();
-      done();
-    });
+  initPullToRefresh(document.querySelector('.page-wrap'), function(done){ loadAll(); setTimeout(done,1500); });
+  initAutoRefresh(function(done){ loadAll(); done(); });
 })();
 
 // ═══ LOAD ALL ═════════════════════════════════════════
-// ═══ LOAD ALL ═════════════════════════════════════════
 function loadAll() {
-
   var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
   isAdmin   = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
-  // Reset dropdowns bago mag-load para hindi mag-duplicate
+
   var fTruck = document.getElementById('f-truck');
   var mTruck = document.getElementById('manual-truck');
   var mEmp   = document.getElementById('manual-emp');
@@ -761,46 +627,42 @@ function loadAll() {
   if (mEmp)   while (mEmp.options.length > 1)   mEmp.remove(1);
 
   Promise.all([
-    apiGet(TAB_EMPLOYEES  + '!A2:D'),
+    apiGet(TAB_EMPLOYEES  + '!A2:E'),   // now fetching column E (Position)
     apiGet(TAB_TRUCKS     + '!A2:B'),
     apiGet(TAB_ATTENDANCE + '!A2:K')
   ]).then(function(res) {
-    allEmployees  = (res[0].values || []).filter(function(r){ return r[0]; });
+    allEmployees = (res[0].values || []).filter(function(r){ return r[0]; });
     var truckRows = res[1].values || [];
     var attRows   = res[2].values || [];
 
-    allTrucks = truckRows.filter(function(r){ return r[1]; }).map(function(r){ return r[1]; });
-
-    // Populate truck dropdowns
-    allTrucks.forEach(function(p) {
-      var o1 = document.createElement('option'); o1.value = p; o1.textContent = p;
-      fTruck.appendChild(o1);
-      if (mTruck) {
-        var o2 = document.createElement('option'); o2.value = p; o2.textContent = p;
-        mTruck.appendChild(o2);
-      }
+    // Build positionMap: fullName -> 'Driver' or 'Helper'
+    positionMap = {};
+    allEmployees.forEach(function(r) {
+      var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
+      var position = (r[4]||'Helper'); // column E = Position
+      positionMap[fullName.toLowerCase()] = position;
     });
 
-    // Populate manual employee dropdown
+    allTrucks = truckRows.filter(function(r){ return r[1]; }).map(function(r){ return r[1]; });
+
+    allTrucks.forEach(function(p) {
+      var o1 = document.createElement('option'); o1.value = p; o1.textContent = p; fTruck.appendChild(o1);
+      if (mTruck) { var o2 = document.createElement('option'); o2.value = p; o2.textContent = p; mTruck.appendChild(o2); }
+    });
+
     if (mEmp) {
       allEmployees.forEach(function(r) {
         var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
         if (!fullName) return;
-        var o = document.createElement('option');
-        o.value = fullName; o.textContent = fullName;
+        var o = document.createElement('option'); o.value = fullName; o.textContent = fullName;
         mEmp.appendChild(o);
       });
     }
 
-    // Build attendance records
     allAttendance = attRows.map(function(r, i) {
-      return {
-        rowIndex: i + 2,
-        id: r[0]||'', date: r[1]||'', name: r[2]||'',
-        team: r[3]||'', crates: r[4]||'', meal: r[5]||'',
-        truck: r[6]||'', location: r[7]||'',
-        lat: r[8]||'', lng: r[9]||'', time: r[10]||''
-      };
+      return { rowIndex:i+2, id:r[0]||'', date:r[1]||'', name:r[2]||'',
+        team:r[3]||'', crates:r[4]||'', meal:r[5]||'',
+        truck:r[6]||'', location:r[7]||'', lat:r[8]||'', lng:r[9]||'', time:r[10]||'' };
     }).filter(function(r){ return r.date; });
 
     buildColorMap();
@@ -808,11 +670,7 @@ function loadAll() {
     buildFilterDropdowns();
     filteredAttendance = allAttendance.slice();
 
-    // Find current user
-    var empRow = allEmployees.find(function(r){
-      return (r[0]||'').toLowerCase() === email;
-    });
-
+    var empRow = allEmployees.find(function(r){ return (r[0]||'').toLowerCase() === email; });
     if (!empRow) {
       document.getElementById('wrap-loading').style.display = 'none';
       document.getElementById('wrap-not-reg').style.display = 'block';
@@ -820,32 +678,26 @@ function loadAll() {
     }
 
     currentUser = {
-      email:     empRow[0]||'',
-      firstName: empRow[1]||'',
-      lastName:  empRow[2]||'',
-      fullName:  ((empRow[1]||'') + ' ' + (empRow[2]||'')).trim(),
-      role:      empRow[3]||'Employee'
+      email:    empRow[0]||'',
+      fullName: ((empRow[1]||'') + ' ' + (empRow[2]||'')).trim(),
+      role:     empRow[3]||'Employee',
+      position: empRow[4]||'Helper'
     };
 
     document.getElementById('emp-name').textContent = currentUser.fullName;
-    document.getElementById('emp-role').textContent = currentUser.role;
+    document.getElementById('emp-role').textContent = currentUser.role + ' · ' + currentUser.position;
 
-    myRecords = allAttendance.filter(function(r){
-      return r.name.toLowerCase() === currentUser.fullName.toLowerCase();
-    });
+    myRecords = allAttendance.filter(function(r){ return r.name.toLowerCase() === currentUser.fullName.toLowerCase(); });
 
-    // Admin tab
     if (isAdmin) {
       document.getElementById('tab-admin').style.display = '';
-      renderEmployeeList();
       document.getElementById('tab-report').style.display = '';
+      renderEmployeeList();
     }
 
-    // Check today
     var todayRec = myRecords.find(function(r){ return r.date === todayStr; });
-    if (todayRec) {
-      showDoneState(todayRec);
-    } else {
+    if (todayRec) { showDoneState(todayRec); }
+    else {
       document.getElementById('wrap-form').style.display = 'block';
       document.getElementById('status-pill').textContent = 'Not checked in';
       document.getElementById('status-pill').className   = 'status-pill pill-pending';
@@ -853,18 +705,10 @@ function loadAll() {
     }
 
     renderCalendar();
-
     document.getElementById('wrap-loading').style.display = 'none';
 
-      // ✅ FIXED: Always show appropriate tab after loading
-      if (firstLoad) {
-        firstLoad = false;
-        switchTab('checkin'); // First load: default to checkin
-      } else {
-        // Refresh: re-render current active tab
-        var activeTab = document.querySelector('.tab.active').id.replace('tab-', '');
-        switchTab(activeTab);
-      }
+    if (firstLoad) { firstLoad = false; switchTab('checkin'); }
+    else { switchTab(document.querySelector('.tab.active').id.replace('tab-','')); }
 
   }).catch(function(err) {
     document.getElementById('wrap-loading').style.display = 'none';
@@ -873,17 +717,21 @@ function loadAll() {
   });
 }
 
+// Helper: get position for a name from positionMap
+function getPosition(name) {
+  return positionMap[(name||'').toLowerCase()] || 'Helper';
+}
 
 function switchTab(name) {
   ['checkin','calendar','admin','report'].forEach(function(t) {
-    document.getElementById('tab-' + t).classList.toggle('active', t === name);
-    var el = document.getElementById('tab-content-' + t);
-    if (el) el.style.display = (t === name ? 'block' : 'none');
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+    var el = document.getElementById('tab-content-'+t);
+    if (el) el.style.display = (t===name ? 'block' : 'none');
   });
-  if (name === 'admin' && isAdmin) renderEmployeeList();
-  if (name === 'report' && isAdmin) {
-    if (document.getElementById('rpt-summary').style.display === 'none'
-        && document.getElementById('rpt-loading').style.display === 'none') {
+  if (name==='admin' && isAdmin) renderEmployeeList();
+  if (name==='report' && isAdmin) {
+    if (document.getElementById('rpt-summary').style.display==='none'
+     && document.getElementById('rpt-loading').style.display==='none') {
       generateReport();
     }
   }
@@ -896,264 +744,136 @@ function setTeam(val) {
   document.getElementById('team-yes').className = 'tg-btn' + (val==='Yes' ? ' active-yes' : '');
 }
 
-// ═══ SHOW DONE STATE ══════════════════════════════════
+// ═══ DONE STATE ═══════════════════════════════════════
 function showDoneState(rec) {
   document.getElementById('status-pill').textContent = 'Present ✓';
   document.getElementById('status-pill').className   = 'status-pill pill-present';
   document.getElementById('wrap-done').style.display = 'block';
   document.getElementById('wrap-form').style.display = 'none';
-
   document.getElementById('today-detail').innerHTML = [
-    ['Date', rec.date], ['Time', rec.time],
-    ['2-Man Team', rec.team||'No'], ['Crates', rec.crates||'0'],
-    ['Meal Allowance', rec.meal], ['Truck', rec.truck||'—'],
-    ['Location', rec.location||'—']
-  ].map(function(r) {
-    return '<div class="dt-row"><span class="dt-label">' + r[0] +
-      '</span><span class="dt-val">' + r[1] + '</span></div>';
+    ['Date',rec.date],['Time',rec.time],['2-Man Team',rec.team||'No'],
+    ['Crates',rec.crates||'0'],['Meal Allowance',rec.meal],
+    ['Truck',rec.truck||'—'],['Location',rec.location||'—']
+  ].map(function(r){
+    return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';
   }).join('');
 }
 
 // ═══ GEOLOCATION ══════════════════════════════════════
 function getLocation() {
-  var lt = document.getElementById('loc-text');
-  var lr = document.getElementById('loc-retry');
-  lt.textContent = 'Getting location...'; lt.className = 'loc-text';
-  lr.style.display = 'none';
-  document.getElementById('checkin-btn').disabled = true;
-  locationData = null;
-
+  var lt=document.getElementById('loc-text'), lr=document.getElementById('loc-retry');
+  lt.textContent='Getting location...'; lt.className='loc-text';
+  lr.style.display='none'; document.getElementById('checkin-btn').disabled=true; locationData=null;
   if (!navigator.geolocation) {
-    lt.textContent = 'GPS not supported.'; lr.style.display = 'block';
-    locationData = { lat:'', lng:'', address:'Not available' };
-    document.getElementById('checkin-btn').disabled = false; return;
+    lt.textContent='GPS not supported.'; lr.style.display='block';
+    locationData={lat:'',lng:'',address:'Not available'};
+    document.getElementById('checkin-btn').disabled=false; return;
   }
-
   navigator.geolocation.getCurrentPosition(function(pos) {
-    var lat = pos.coords.latitude, lng = pos.coords.longitude;
+    var lat=pos.coords.latitude, lng=pos.coords.longitude;
     fetch('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lng+'&format=json')
       .then(function(r){ return r.json(); })
-      .then(function(d) {
-        locationData = { lat:lat, lng:lng, address: d.display_name || (lat.toFixed(5)+','+lng.toFixed(5)) };
-        lt.textContent = locationData.address; lt.className = 'loc-text got';
-        document.getElementById('checkin-btn').disabled = false;
-      }).catch(function() {
-        locationData = { lat:lat, lng:lng, address: lat.toFixed(5)+', '+lng.toFixed(5) };
-        lt.textContent = locationData.address; lt.className = 'loc-text got';
-        document.getElementById('checkin-btn').disabled = false;
+      .then(function(d){
+        locationData={lat:lat,lng:lng,address:d.display_name||(lat.toFixed(5)+','+lng.toFixed(5))};
+        lt.textContent=locationData.address; lt.className='loc-text got';
+        document.getElementById('checkin-btn').disabled=false;
+      }).catch(function(){
+        locationData={lat:lat,lng:lng,address:lat.toFixed(5)+', '+lng.toFixed(5)};
+        lt.textContent=locationData.address; lt.className='loc-text got';
+        document.getElementById('checkin-btn').disabled=false;
       });
-  }, function(err) {
-    lt.textContent = err.code===1 ? 'Location denied. Allow GPS.' : 'Cannot get location.';
-    lr.style.display = 'block';
-    locationData = { lat:'', lng:'', address:'Location not available' };
-    document.getElementById('checkin-btn').disabled = false;
-  }, { timeout:12000, enableHighAccuracy:true });
+  }, function(err){
+    lt.textContent=err.code===1?'Location denied. Allow GPS.':'Cannot get location.';
+    lr.style.display='block';
+    locationData={lat:'',lng:'',address:'Location not available'};
+    document.getElementById('checkin-btn').disabled=false;
+  }, {timeout:12000,enableHighAccuracy:true});
 }
 
+// ═══ SUBMIT ATTENDANCE ════════════════════════════════
 function submitAttendance() {
   if (!currentUser) { showToast('No user loaded.'); return; }
-
-  // Local check muna — mabilis
-  var localExists = myRecords.find(function(r){ return r.date === todayStr; });
-  if (localExists) {
-    showToast('⚠️ Naka-attendance ka na ngayon!');
-    showDoneState(localExists);
-    document.getElementById('wrap-form').style.display = 'none';
-    document.getElementById('wrap-done').style.display = 'block';
-    return;
-  }
-
+  var localExists = myRecords.find(function(r){ return r.date===todayStr; });
+  if (localExists) { showToast('⚠️ Naka-attendance ka na ngayon!'); showDoneState(localExists); return; }
   showSaving('Checking attendance...');
-
-  // Server-side double check
-  apiGet(TAB_ATTENDANCE + '!A2:K').then(function(res) {
+  apiGet(TAB_ATTENDANCE+'!A2:K').then(function(res) {
     var rows = res.values || [];
-
-    // Rebuild allAttendance mula sa fresh data
-    allAttendance = rows.map(function(r, i) {
-      return {
-        rowIndex: i + 2,
-        id: r[0]||'', date: r[1]||'', name: r[2]||'',
-        team: r[3]||'', crates: r[4]||'', meal: r[5]||'',
-        truck: r[6]||'', location: r[7]||'',
-        lat: r[8]||'', lng: r[9]||'', time: r[10]||''
-      };
+    allAttendance = rows.map(function(r,i){
+      return {rowIndex:i+2,id:r[0]||'',date:r[1]||'',name:r[2]||'',
+        team:r[3]||'',crates:r[4]||'',meal:r[5]||'',
+        truck:r[6]||'',location:r[7]||'',lat:r[8]||'',lng:r[9]||'',time:r[10]||''};
     }).filter(function(r){ return r.date; });
-
-    // Rebuild myRecords
-    myRecords = allAttendance.filter(function(r){
-      return r.name.toLowerCase() === currentUser.fullName.toLowerCase();
-    });
-
-    // Check muli mula sa fresh data
-    var serverExists = myRecords.find(function(r){ return r.date === todayStr; });
-
+    myRecords = allAttendance.filter(function(r){ return r.name.toLowerCase()===currentUser.fullName.toLowerCase(); });
+    var serverExists = myRecords.find(function(r){ return r.date===todayStr; });
     if (serverExists) {
-      hideSaving();
-      // Show existing record details at mag-offer na i-edit/delete
-      showDoneState(serverExists);
-      document.getElementById('wrap-form').style.display = 'none';
-      document.getElementById('wrap-done').style.display = 'block';
-      document.getElementById('status-pill').textContent = 'Present ✓';
-      document.getElementById('status-pill').className   = 'status-pill pill-present';
-
-      // Show notification na may record na
-      showAttExistsNotif(serverExists);
-      return;
+      hideSaving(); showDoneState(serverExists);
+      document.getElementById('wrap-form').style.display='none';
+      document.getElementById('wrap-done').style.display='block';
+      document.getElementById('status-pill').textContent='Present ✓';
+      document.getElementById('status-pill').className='status-pill pill-present';
+      showAttExistsNotif(serverExists); return;
     }
-
-    // Walang existing — proceed save
-    var crates = document.getElementById('f-crates').value.trim() || '0';
-    var meal   = document.getElementById('f-meal').value;
-    var truck  = document.getElementById('f-truck').value;
-    var loc    = locationData || { lat:'', lng:'', address:'' };
-    var now    = new Date();
-    var time   = now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true});
-    var id     = 'ATT-' + todayStr.replace(/-/g,'') + '-' + pad(allAttendance.length+1);
-
-    var row = [id, todayStr, currentUser.fullName, teamValue, crates, meal,
-               truck, loc.address, String(loc.lat), String(loc.lng), time];
-
-    document.getElementById('saving-text').textContent = 'Recording attendance...';
-
-    apiAppend(TAB_ATTENDANCE + '!A:K', [row]).then(function() {
+    var crates=document.getElementById('f-crates').value.trim()||'0';
+    var meal=document.getElementById('f-meal').value;
+    var truck=document.getElementById('f-truck').value;
+    var loc=locationData||{lat:'',lng:'',address:''};
+    var now=new Date();
+    var time=now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true});
+    var id='ATT-'+todayStr.replace(/-/g,'')+'-'+pad(allAttendance.length+1);
+    var row=[id,todayStr,currentUser.fullName,teamValue,crates,meal,truck,loc.address,String(loc.lat),String(loc.lng),time];
+    document.getElementById('saving-text').textContent='Recording attendance...';
+    apiAppend(TAB_ATTENDANCE+'!A:K',[row]).then(function(){
       hideSaving();
-      var rec = {
-        rowIndex: allAttendance.length + 2,
-        id: id, date: todayStr,
-        name: currentUser.fullName, team: teamValue,
-        crates: crates, meal: meal, truck: truck,
-        location: loc.address,
-        lat: String(loc.lat), lng: String(loc.lng), time: time
-      };
-      allAttendance.push(rec);
-      myRecords.push(rec);
-      filteredAttendance = allAttendance.slice();
-      buildColorMap();
-      renderLegend();
-      showDoneState(rec);
-      renderCalendar();
+      var rec={rowIndex:allAttendance.length+2,id:id,date:todayStr,name:currentUser.fullName,
+        team:teamValue,crates:crates,meal:meal,truck:truck,location:loc.address,
+        lat:String(loc.lat),lng:String(loc.lng),time:time};
+      allAttendance.push(rec); myRecords.push(rec);
+      filteredAttendance=allAttendance.slice();
+      buildColorMap(); renderLegend(); showDoneState(rec); renderCalendar();
       showToast('✅ Attendance recorded!');
-    }).catch(function(err) {
-      hideSaving();
-      showToast('❌ Save failed. Try again.');
-      console.error(err);
-    });
-
-  }).catch(function(err) {
-    hideSaving();
-    showToast('❌ Connection error. Try again.');
-    console.error(err);
-  });
+    }).catch(function(err){ hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err); });
+  }).catch(function(err){ hideSaving(); showToast('❌ Connection error. Try again.'); console.error(err); });
 }
 
-// Notification kapag may existing attendance na
 function showAttExistsNotif(rec) {
-  // I-show ang confirm dialog
-  document.getElementById('confirm-title').textContent = '⚠️ Already Checked In';
-  document.getElementById('confirm-msg').innerHTML =
-    'Mayroon ka nang attendance ngayon.<br><br>'
-    + '<strong>' + rec.date + ' · ' + (rec.time||'') + '</strong><br>'
-    + 'Truck: ' + (rec.truck||'—') + '<br>'
-    + 'Location: ' + (rec.location||'—') + '<br><br>'
-    + 'Gusto mo bang i-edit o i-delete ang record na ito?';
-
-  document.getElementById('confirm-ok').textContent = 'View Record';
-  document.getElementById('confirm-ok').onclick = function() {
-    closeConfirm();
-    // Reset button text
-    document.getElementById('confirm-ok').textContent = 'Confirm';
-    // Open detail sheet para sa record
+  document.getElementById('confirm-title').textContent='⚠️ Already Checked In';
+  document.getElementById('confirm-msg').innerHTML=
+    'You already have an attendance record today.<br><br>'
+    +'<strong>'+rec.date+' · '+(rec.time||'')+'</strong><br>'
+    +'Truck: '+(rec.truck||'—')+'<br>Location: '+(rec.location||'—')+'<br><br>'
+    +'Would you like to view or edit this record?';
+  document.getElementById('confirm-ok').textContent='View Record';
+  document.getElementById('confirm-ok').onclick=function(){
+    closeConfirm(); document.getElementById('confirm-ok').textContent='Confirm';
     openAttDetail(rec.rowIndex);
   };
-
-  // Override cancel button text
   document.getElementById('confirm-overlay').classList.add('open');
 }
 
-// ═══ EMPLOYEE COLORS (red-adjacent gradients) ═════════
-var EMP_COLORS = [
-  { bg:'#B32533', text:'#fff' },  // Red (brand)
-  { bg:'#c0392b', text:'#fff' },  // Crimson
-  { bg:'#8e44ad', text:'#fff' },  // Purple
-  { bg:'#2980b9', text:'#fff' },  // Blue
-  { bg:'#16a085', text:'#fff' },  // Teal
-  { bg:'#d35400', text:'#fff' },  // Orange
-  { bg:'#27ae60', text:'#fff' },  // Green
-  { bg:'#7f8c8d', text:'#fff' },  // Gray
-  { bg:'#8e2de2', text:'#fff' },  // Violet
-  { bg:'#e91e8c', text:'#fff' },  // Pink
-  { bg:'#00796b', text:'#fff' },  // Dark teal
-  { bg:'#5d4037', text:'#fff' },  // Brown
-];
-
-var empColorMap = {}; // name -> color object
-
-function getEmpColor(name) {
-  if (!empColorMap[name]) {
-    var keys  = Object.keys(empColorMap).length;
-    empColorMap[name] = EMP_COLORS[keys % EMP_COLORS.length];
-  }
-  return empColorMap[name];
-}
-
-function buildColorMap() {
-  // Pre-assign colors in consistent order
-  var names = [];
-  allAttendance.forEach(function(r) {
-    if (r.name && names.indexOf(r.name) === -1) names.push(r.name);
-  });
-  names.sort();
-  names.forEach(function(n, i) {
-    empColorMap[n] = EMP_COLORS[i % EMP_COLORS.length];
-  });
-}
-
+// ═══ LEGEND ═══════════════════════════════════════════
 function renderLegend() {
-  var list = document.getElementById('legend-list');
-  var names = Object.keys(empColorMap).sort();
-  if (!names.length) { document.getElementById('color-legend').style.display = 'none'; return; }
-  document.getElementById('color-legend').style.display = '';
-  list.innerHTML = names.map(function(n) {
-    var c = empColorMap[n];
-    return '<div class="legend-item">'
-      + '<div class="legend-dot" style="background:' + c.bg + '"></div>'
-      + n.split(' ')[0]
-      + '</div>';
+  var list=document.getElementById('legend-list');
+  var names=Object.keys(empColorMap).sort();
+  if (!names.length) { document.getElementById('color-legend').style.display='none'; return; }
+  document.getElementById('color-legend').style.display='';
+  list.innerHTML=names.map(function(n){
+    var c=empColorMap[n];
+    return '<div class="legend-item"><div class="legend-dot" style="background:'+c.bg+'"></div>'+n.split(' ')[0]+'</div>';
   }).join('');
 }
 
-// ═══ FILTER STATE ═════════════════════════════════════
-var activeFilters = { name:'', team:'', meal:'', truck:'', crates:'' };
-var filteredAttendance = [];
-
+// ═══ FILTERS ══════════════════════════════════════════
 function buildFilterDropdowns() {
-  // Employee names from Employees sheet — hindi mula sa attendance
-  var nameSel = document.getElementById('filter-name');
-  // Clear existing options except first
-  while (nameSel.options.length > 1) nameSel.remove(1);
-
-  allEmployees.forEach(function(r) {
-    var firstName = r[1] || '';
-    var lastName  = r[2] || '';
-    var fullName  = (firstName + ' ' + lastName).trim();
-    if (!fullName) return;
-    var o = document.createElement('option');
-    o.value = fullName;
-    o.textContent = fullName;
-    nameSel.appendChild(o);
+  var nameSel=document.getElementById('filter-name');
+  while (nameSel.options.length>1) nameSel.remove(1);
+  allEmployees.forEach(function(r){
+    var fullName=((r[1]||'')+' '+(r[2]||'')).trim(); if (!fullName) return;
+    var o=document.createElement('option'); o.value=fullName; o.textContent=fullName; nameSel.appendChild(o);
   });
-
-  // Trucks
-  var truckSel = document.getElementById('filter-truck');
-  while (truckSel.options.length > 1) truckSel.remove(1);
-  allTrucks.forEach(function(p) {
-    var o = document.createElement('option');
-    o.value = p; o.textContent = p;
-    truckSel.appendChild(o);
-  });
+  var truckSel=document.getElementById('filter-truck');
+  while (truckSel.options.length>1) truckSel.remove(1);
+  allTrucks.forEach(function(p){ var o=document.createElement('option'); o.value=p; o.textContent=p; truckSel.appendChild(o); });
 }
-
 
 function applyFilters() {
   activeFilters.name   = document.getElementById('filter-name').value;
@@ -1161,8 +881,7 @@ function applyFilters() {
   activeFilters.meal   = document.getElementById('filter-meal').value;
   activeFilters.truck  = document.getElementById('filter-truck').value;
   activeFilters.crates = document.getElementById('filter-crates').value;
-
-  filteredAttendance = allAttendance.filter(function(r) {
+  filteredAttendance = allAttendance.filter(function(r){
     if (activeFilters.name   && r.name  !== activeFilters.name)   return false;
     if (activeFilters.team   && r.team  !== activeFilters.team)   return false;
     if (activeFilters.meal   && r.meal  !== activeFilters.meal)   return false;
@@ -1170,488 +889,294 @@ function applyFilters() {
     if (activeFilters.crates && parseInt(r.crates||0) < parseInt(activeFilters.crates)) return false;
     return true;
   });
-
-  renderFilterTags();
-  renderCalendar();
+  renderFilterTags(); renderCalendar();
   if (selectedDay) selectDay(selectedDay);
 }
 
 function renderFilterTags() {
-  var tags   = document.getElementById('filter-tags');
-  var clearB = document.getElementById('clear-filters-btn');
-  var active = [];
-
-  if (activeFilters.name)   active.push({ label: activeFilters.name,                key:'name'   });
-  if (activeFilters.team)   active.push({ label: '2-Man: ' + activeFilters.team,    key:'team'   });
-  if (activeFilters.meal)   active.push({ label: 'Meal: ' + activeFilters.meal,     key:'meal'   });
-  if (activeFilters.truck)  active.push({ label: '🚛 ' + activeFilters.truck,       key:'truck'  });
-  if (activeFilters.crates) active.push({ label: '≥' + activeFilters.crates + ' crates', key:'crates' });
-
-  clearB.style.display = active.length ? '' : 'none';
-
-  tags.innerHTML = active.map(function(a) {
-    return '<div class="filter-tag">' + a.label
-      + '<button onclick="removeFilter(\'' + a.key + '\')">×</button></div>';
-  }).join('');
+  var tags=document.getElementById('filter-tags'), clearB=document.getElementById('clear-filters-btn'), active=[];
+  if (activeFilters.name)   active.push({label:activeFilters.name,key:'name'});
+  if (activeFilters.team)   active.push({label:'2-Man: '+activeFilters.team,key:'team'});
+  if (activeFilters.meal)   active.push({label:'Meal: '+activeFilters.meal,key:'meal'});
+  if (activeFilters.truck)  active.push({label:'🚛 '+activeFilters.truck,key:'truck'});
+  if (activeFilters.crates) active.push({label:'≥'+activeFilters.crates+' crates',key:'crates'});
+  clearB.style.display=active.length?'':'none';
+  tags.innerHTML=active.map(function(a){ return '<div class="filter-tag">'+a.label+'<button onclick="removeFilter(\''+a.key+'\')">×</button></div>'; }).join('');
 }
-
 function removeFilter(key) {
-  activeFilters[key] = '';
-  if (key === 'name')   document.getElementById('filter-name').value   = '';
-  if (key === 'team')   document.getElementById('filter-team').value   = '';
-  if (key === 'meal')   document.getElementById('filter-meal').value   = '';
-  if (key === 'truck')  document.getElementById('filter-truck').value  = '';
-  if (key === 'crates') document.getElementById('filter-crates').value = '';
+  activeFilters[key]='';
+  if (key==='name')   document.getElementById('filter-name').value='';
+  if (key==='team')   document.getElementById('filter-team').value='';
+  if (key==='meal')   document.getElementById('filter-meal').value='';
+  if (key==='truck')  document.getElementById('filter-truck').value='';
+  if (key==='crates') document.getElementById('filter-crates').value='';
   applyFilters();
 }
-
 function clearFilters() {
-  activeFilters = { name:'', team:'', meal:'', truck:'', crates:'' };
-  document.getElementById('filter-name').value   = '';
-  document.getElementById('filter-team').value   = '';
-  document.getElementById('filter-meal').value   = '';
-  document.getElementById('filter-truck').value  = '';
-  document.getElementById('filter-crates').value = '';
+  activeFilters={name:'',team:'',meal:'',truck:'',crates:''};
+  ['filter-name','filter-team','filter-meal','filter-truck'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('filter-crates').value='';
   applyFilters();
 }
+function hasActiveFilter() { return activeFilters.name||activeFilters.team||activeFilters.meal||activeFilters.truck||activeFilters.crates; }
 
 // ═══ CALENDAR ═════════════════════════════════════════
-var MONTHS = ['January','February','March','April','May','June',
-              'July','August','September','October','November','December'];
-var DAYS   = ['S','M','T','W','T','F','S'];
-var selectedDay = null;
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAYS=['S','M','T','W','T','F','S'];
 
 function changeMonth(d) {
-  calMonth += d;
-  if (calMonth < 0)  { calMonth=11; calYear--; }
-  if (calMonth > 11) { calMonth=0;  calYear++; }
-  renderCalendar();
-  document.getElementById('day-panel').classList.remove('show');
+  calMonth+=d;
+  if (calMonth<0){calMonth=11;calYear--;} if (calMonth>11){calMonth=0;calYear++;}
+  renderCalendar(); document.getElementById('day-panel').classList.remove('show');
 }
-
 function renderCalendar() {
-  document.getElementById('cal-title').textContent = MONTHS[calMonth] + ' ' + calYear;
-  var grid  = document.getElementById('cal-grid');
-  var days  = new Date(calYear, calMonth+1, 0).getDate();
-  var first = new Date(calYear, calMonth, 1).getDay();
-
-  // Use filteredAttendance if any filter active, else allAttendance
-  var source = hasActiveFilter() ? filteredAttendance : allAttendance;
-
-  // Map: day -> [{name, color}]
-  var dayMap = {};
-  source.forEach(function(r) {
-    if (!r.date || !r.name) return;
-    var parts = r.date.split('-');
-    if (parseInt(parts[0]) !== calYear || parseInt(parts[1])-1 !== calMonth) return;
-    var day = parseInt(parts[2]);
-    if (!dayMap[day]) dayMap[day] = [];
-    dayMap[day].push({ name: r.name, color: getEmpColor(r.name) });
+  document.getElementById('cal-title').textContent=MONTHS[calMonth]+' '+calYear;
+  var grid=document.getElementById('cal-grid');
+  var days=new Date(calYear,calMonth+1,0).getDate(), first=new Date(calYear,calMonth,1).getDay();
+  var source=hasActiveFilter()?filteredAttendance:allAttendance;
+  var dayMap={};
+  source.forEach(function(r){
+    if (!r.date||!r.name) return;
+    var parts=r.date.split('-');
+    if (parseInt(parts[0])!==calYear||parseInt(parts[1])-1!==calMonth) return;
+    var day=parseInt(parts[2]);
+    if (!dayMap[day]) dayMap[day]=[];
+    dayMap[day].push({name:r.name,color:getEmpColor(r.name)});
   });
-
-  var html = DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
-  for (var i=0; i<first; i++) html += '<div class="cal-day other-month"></div>';
-
-  for (var d=1; d<=days; d++) {
-    var dateStr  = calYear + '-' + pad(calMonth+1) + '-' + pad(d);
-    var entries  = dayMap[d] || [];
-    var cls      = 'cal-day';
-    if (dateStr === todayStr)    cls += ' today';
-    if (entries.length)          cls += ' has-att';
-    if (dateStr === selectedDay) cls += ' selected';
-
-    var pillsHtml = '';
+  var html=DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
+  for (var i=0;i<first;i++) html+='<div class="cal-day other-month"></div>';
+  for (var d=1;d<=days;d++) {
+    var dateStr=calYear+'-'+pad(calMonth+1)+'-'+pad(d);
+    var entries=dayMap[d]||[];
+    var cls='cal-day';
+    if (dateStr===todayStr) cls+=' today';
+    if (entries.length)     cls+=' has-att';
+    if (dateStr===selectedDay) cls+=' selected';
+    var pillsHtml='';
     if (entries.length) {
-      var shown = entries.slice(0, 3);
-      pillsHtml = '<div class="cal-names">'
-        + shown.map(function(e) {
-            var firstName = e.name.split(' ')[0];
-            return '<div class="cal-name-pill" style="background:' + e.color.bg + ';color:' + e.color.text + '">'
-              + firstName + '</div>';
-          }).join('')
-        + (entries.length > 3
-            ? '<div class="cal-name-pill" style="background:var(--text3);color:#fff">+' + (entries.length-3) + '</div>'
-            : '')
-        + '</div>';
+      var shown=entries.slice(0,3);
+      pillsHtml='<div class="cal-names">'+shown.map(function(e){
+        return '<div class="cal-name-pill" style="background:'+e.color.bg+';color:'+e.color.text+'">'+e.name.split(' ')[0]+'</div>';
+      }).join('')+(entries.length>3?'<div class="cal-name-pill" style="background:var(--text3);color:#fff">+'+(entries.length-3)+'</div>':'')+'</div>';
     }
-
-    html += '<div class="' + cls + '" onclick="selectDay(\'' + dateStr + '\')">'
-      + '<div class="cal-day-num">' + d + '</div>'
-      + pillsHtml + '</div>';
+    html+='<div class="'+cls+'" onclick="selectDay(\''+dateStr+'\')"><div class="cal-day-num">'+d+'</div>'+pillsHtml+'</div>';
   }
-  grid.innerHTML = html;
-}
-
-function hasActiveFilter() {
-  return activeFilters.name || activeFilters.team || activeFilters.meal
-      || activeFilters.truck || activeFilters.crates;
+  grid.innerHTML=html;
 }
 
 function selectDay(dateStr) {
-  selectedDay = dateStr;
-  renderCalendar();
-
-  var source = hasActiveFilter() ? filteredAttendance : allAttendance;
-  var recs   = source.filter(function(r){ return r.date === dateStr; });
-  var panel  = document.getElementById('day-panel');
-  var d      = new Date(dateStr + 'T00:00:00');
-  var label  = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-
-  document.getElementById('day-panel-title').textContent = label + ' — ' + recs.length + ' employee(s)';
-
+  selectedDay=dateStr; renderCalendar();
+  var source=hasActiveFilter()?filteredAttendance:allAttendance;
+  var recs=source.filter(function(r){ return r.date===dateStr; });
+  var panel=document.getElementById('day-panel');
+  var d=new Date(dateStr+'T00:00:00');
+  var label=d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('day-panel-title').textContent=label+' — '+recs.length+' employee(s)';
   if (!recs.length) {
-    document.getElementById('day-panel-list').innerHTML =
-      '<div class="empty-hint">No attendance' + (hasActiveFilter() ? ' matching filters' : '') + ' for this day.</div>';
+    document.getElementById('day-panel-list').innerHTML='<div class="empty-hint">No attendance'+(hasActiveFilter()?' matching filters':'')+' for this day.</div>';
   } else {
-    document.getElementById('day-panel-list').innerHTML = recs.map(function(r) {
-      var c        = getEmpColor(r.name);
-      var mealBadge = r.meal==='Yes'        ? '<span class="badge green">Full Allowance</span>'
-                    : r.meal==='Meals Only' ? '<span class="badge orange">Meals Only</span>'
-                    :                         '<span class="badge">No Allowance</span>';
-      var teamBadge = r.team==='Yes' ? '<span class="badge green">2-Man Team</span>' : '';
-
-      return '<div class="att-item" onclick="openAttDetail(' + r.rowIndex + ')" '
-        + 'style="border-left:4px solid ' + c.bg + '">'
-        + '<div class="att-name" style="color:' + c.bg + '">' + r.name + '</div>'
-        + '<div class="att-meta">' + (r.time||'') + (r.truck ? ' · 🚛 ' + r.truck : '') + '</div>'
-        + '<div class="att-badges">'
-        + (r.crates ? '<span class="badge">' + r.crates + ' crates</span>' : '')
-        + mealBadge + teamBadge
-        + '</div></div>';
+    document.getElementById('day-panel-list').innerHTML=recs.map(function(r){
+      var c=getEmpColor(r.name);
+      var pos=getPosition(r.name);
+      var mealBadge=r.meal==='Yes'?'<span class="badge green">Full Allowance</span>':r.meal==='Meals Only'?'<span class="badge orange">Meals Only</span>':'<span class="badge">No Allowance</span>';
+      var teamBadge=r.team==='Yes'?'<span class="badge green">2-Man Team</span>':'';
+      var posBadge='<span class="badge">'+(pos||'Helper')+'</span>';
+      return '<div class="att-item" onclick="openAttDetail('+r.rowIndex+')" style="border-left:4px solid '+c.bg+'">'
+        +'<div class="att-name" style="color:'+c.bg+'">'+r.name+'</div>'
+        +'<div class="att-meta">'+(r.time||'')+(r.truck?' · 🚛 '+r.truck:'')+'</div>'
+        +'<div class="att-badges">'+(r.crates?'<span class="badge">'+r.crates+' crates</span>':'')+mealBadge+teamBadge+posBadge+'</div></div>';
     }).join('');
   }
-
   panel.classList.add('show');
-  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); },100);
 }
 
 // ═══ ATTENDANCE DETAIL / EDIT ═════════════════════════
 function openAttDetail(rowIndex) {
-  var rec = allAttendance.find(function(r){ return r.rowIndex===rowIndex; });
-  if (!rec) return;
-  selectedAtt = rec;
-
-  var sheet = document.getElementById('att-sheet');
-  document.getElementById('att-sheet-title').textContent = rec.name;
-  document.getElementById('att-sheet-sub').textContent   = rec.date + (rec.time ? ' · ' + rec.time : '');
-
-  var body = document.getElementById('att-sheet-body');
-
+  var rec=allAttendance.find(function(r){ return r.rowIndex===rowIndex; });
+  if (!rec) return; selectedAtt=rec;
+  var sheet=document.getElementById('att-sheet');
+  document.getElementById('att-sheet-title').textContent=rec.name;
+  document.getElementById('att-sheet-sub').textContent=rec.date+(rec.time?' · '+rec.time:'');
+  var body=document.getElementById('att-sheet-body');
   if (isAdmin) {
-    // Admin: show edit form
-    body.innerHTML = '<div class="fg"><label class="fl">2-Man Team</label>'
-      + '<div class="toggle-group">'
-      + '<button class="tg-btn'+(rec.team!=='Yes'?' active-no':'')+'" id="edit-team-no" onclick="setEditTeam(\'No\')">No</button>'
-      + '<button class="tg-btn'+(rec.team==='Yes'?' active-yes':'')+'" id="edit-team-yes" onclick="setEditTeam(\'Yes\')">Yes</button>'
-      + '</div></div>'
-      + '<div class="fg"><label class="fl">Crates</label><input class="fi" id="edit-crates" type="number" value="'+(rec.crates||0)+'" min="0"></div>'
-      + '<div class="fg"><label class="fl">Meal Allowance</label><select class="fi" id="edit-meal">'
-      + ['Yes','Meals Only','No'].map(function(v){
-          return '<option value="'+v+'"'+(rec.meal===v?' selected':'')+'>'+v+'</option>';
-        }).join('')
-      + '</select></div>'
-      + '<div class="fg"><label class="fl">Assigned Truck</label><select class="fi" id="edit-truck">'
-      + '<option value="">— None —</option>'
-      + allTrucks.map(function(p){
-          return '<option value="'+p+'"'+(rec.truck===p?' selected':'')+'>'+p+'</option>';
-        }).join('')
-      + '</select></div>'
-      + '<div class="fg"><label class="fl">Location</label><input class="fi" id="edit-loc" value="'+(rec.location||'')+'"></div>'
-      + '<div class="btn-row" style="margin-top:8px">'
-      + '<button class="btn btn-ghost cb cb-cancel" onclick="closeAttSheet()" style="padding:14px;border-radius:14px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;border:none;background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)">Cancel</button>'
-      + '<button class="cb cb-confirm" onclick="saveEditAtt()" style="padding:14px;border-radius:14px;font-size:14px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:none">Save</button>'
-      + '</div>'
-      + '<button onclick="promptDeleteAtt()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Delete Record</button>';
+    body.innerHTML='<div class="fg"><label class="fl">2-Man Team</label><div class="toggle-group">'
+      +'<button class="tg-btn'+(rec.team!=='Yes'?' active-no':'')+'" id="edit-team-no" onclick="setEditTeam(\'No\')">No</button>'
+      +'<button class="tg-btn'+(rec.team==='Yes'?' active-yes':'')+'" id="edit-team-yes" onclick="setEditTeam(\'Yes\')">Yes</button>'
+      +'</div></div>'
+      +'<div class="fg"><label class="fl">Crates</label><input class="fi" id="edit-crates" type="number" value="'+(rec.crates||0)+'" min="0"></div>'
+      +'<div class="fg"><label class="fl">Meal Allowance</label><select class="fi" id="edit-meal">'
+      +['Yes','Meals Only','No'].map(function(v){ return '<option value="'+v+'"'+(rec.meal===v?' selected':'')+'>'+v+'</option>'; }).join('')
+      +'</select></div>'
+      +'<div class="fg"><label class="fl">Assigned Truck</label><select class="fi" id="edit-truck"><option value="">— None —</option>'
+      +allTrucks.map(function(p){ return '<option value="'+p+'"'+(rec.truck===p?' selected':'')+'>'+p+'</option>'; }).join('')
+      +'</select></div>'
+      +'<div class="fg"><label class="fl">Location</label><input class="fi" id="edit-loc" value="'+(rec.location||'')+'"></div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">'
+      +'<button style="padding:14px;border-radius:14px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;border:none;background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)" onclick="closeAttSheet()">Cancel</button>'
+      +'<button style="padding:14px;border-radius:14px;font-size:14px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;border:none;background:var(--red);color:#fff" onclick="saveEditAtt()">Save</button>'
+      +'</div>'
+      +'<button onclick="promptDeleteAtt()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Delete Record</button>';
   } else {
-    // User: view only
-    body.innerHTML = [
-      ['Date', rec.date], ['Time', rec.time||'—'],
-      ['2-Man Team', rec.team||'No'], ['Crates', rec.crates||'0'],
-      ['Meal Allowance', rec.meal], ['Truck', rec.truck||'—'],
-      ['Location', rec.location||'—']
-    ].map(function(r){
-      return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';
-    }).join('')
-    + '<div style="height:16px"></div>'
-    + '<button onclick="closeAttSheet()" style="width:100%;padding:14px;background:var(--bg);border:none;border-radius:14px;box-shadow:var(--neu-sm);font-size:15px;font-weight:600;font-family:Inter,sans-serif;color:var(--text2);cursor:pointer">Close</button>';
+    body.innerHTML=[['Date',rec.date],['Time',rec.time||'—'],['Position',getPosition(rec.name)],
+      ['2-Man Team',rec.team||'No'],['Crates',rec.crates||'0'],
+      ['Meal Allowance',rec.meal],['Truck',rec.truck||'—'],['Location',rec.location||'—']]
+      .map(function(r){ return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>'; }).join('')
+      +'<div style="height:16px"></div>'
+      +'<button onclick="closeAttSheet()" style="width:100%;padding:14px;background:var(--bg);border:none;border-radius:14px;box-shadow:var(--neu-sm);font-size:15px;font-weight:600;font-family:Inter,sans-serif;color:var(--text2);cursor:pointer">Close</button>';
   }
-
   sheet.classList.add('open');
 }
 
-var editTeamVal = 'No';
+var editTeamVal='No';
 function setEditTeam(v) {
-  editTeamVal = v;
-  document.getElementById('edit-team-no').className  = 'tg-btn'+(v==='No' ?' active-no' :'');
-  document.getElementById('edit-team-yes').className = 'tg-btn'+(v==='Yes'?' active-yes':'');
+  editTeamVal=v;
+  document.getElementById('edit-team-no').className='tg-btn'+(v==='No'?' active-no':'');
+  document.getElementById('edit-team-yes').className='tg-btn'+(v==='Yes'?' active-yes':'');
 }
-
 function saveEditAtt() {
-  if (!selectedAtt || !isAdmin) return;
-  var crates = document.getElementById('edit-crates').value.trim()||'0';
-  var meal   = document.getElementById('edit-meal').value;
-  var truck  = document.getElementById('edit-truck').value;
-  var loc    = document.getElementById('edit-loc').value.trim();
-  var row    = [selectedAtt.id, selectedAtt.date, selectedAtt.name,
-                editTeamVal, crates, meal, truck, loc,
-                selectedAtt.lat, selectedAtt.lng, selectedAtt.time];
-
+  if (!selectedAtt||!isAdmin) return;
+  var crates=document.getElementById('edit-crates').value.trim()||'0';
+  var meal=document.getElementById('edit-meal').value;
+  var truck=document.getElementById('edit-truck').value;
+  var loc=document.getElementById('edit-loc').value.trim();
+  var row=[selectedAtt.id,selectedAtt.date,selectedAtt.name,editTeamVal,crates,meal,truck,loc,selectedAtt.lat,selectedAtt.lng,selectedAtt.time];
   showSaving('Updating...');
-  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex, [row])
-    .then(function() {
-      hideSaving();
-      // Update local
-      Object.assign(selectedAtt, {team:editTeamVal,crates:crates,meal:meal,truck:truck,location:loc});
-      closeAttSheet();
-      renderCalendar();
-      if (selectedDay) selectDay(selectedDay);
-      // If it's my own record update done state
-      if (selectedAtt.name.toLowerCase()===currentUser.fullName.toLowerCase() && selectedAtt.date===todayStr) {
-        showDoneState(selectedAtt);
-      }
-      showToast('✅ Updated!');
-    }).catch(function(err){ hideSaving(); showToast('❌ Update failed.'); console.error(err); });
+  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex,[row]).then(function(){
+    hideSaving(); Object.assign(selectedAtt,{team:editTeamVal,crates:crates,meal:meal,truck:truck,location:loc});
+    closeAttSheet(); renderCalendar(); if (selectedDay) selectDay(selectedDay);
+    if (selectedAtt.name.toLowerCase()===currentUser.fullName.toLowerCase()&&selectedAtt.date===todayStr) showDoneState(selectedAtt);
+    showToast('✅ Updated!');
+  }).catch(function(err){ hideSaving(); showToast('❌ Update failed.'); console.error(err); });
 }
-
 function promptDeleteAtt() {
-  document.getElementById('confirm-title').textContent = 'Delete Record?';
-  document.getElementById('confirm-msg').textContent   =
-    'Delete attendance of ' + selectedAtt.name + ' on ' + selectedAtt.date + '?';
-  document.getElementById('confirm-ok').onclick = doDeleteAtt;
-  closeAttSheet();
-  document.getElementById('confirm-overlay').classList.add('open');
+  document.getElementById('confirm-title').textContent='Delete Record?';
+  document.getElementById('confirm-msg').textContent='Delete attendance of '+selectedAtt.name+' on '+selectedAtt.date+'?';
+  document.getElementById('confirm-ok').onclick=doDeleteAtt;
+  closeAttSheet(); document.getElementById('confirm-overlay').classList.add('open');
 }
-
 function doDeleteAtt() {
-  if (!selectedAtt || !isAdmin) return;
-  closeConfirm();
-  showSaving('Deleting...');
-  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex,
-    [['','','','','','','','','','','']])
-    .then(function() {
+  if (!selectedAtt||!isAdmin) return;
+  closeConfirm(); showSaving('Deleting...');
+  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex,[['','','','','','','','','','','']])
+    .then(function(){
       hideSaving();
-      allAttendance = allAttendance.filter(function(r){ return r.rowIndex!==selectedAtt.rowIndex; });
-      myRecords     = myRecords.filter(function(r){ return r.rowIndex!==selectedAtt.rowIndex; });
-      selectedAtt = null;
-      renderCalendar();
-      if (selectedDay) selectDay(selectedDay);
+      allAttendance=allAttendance.filter(function(r){ return r.rowIndex!==selectedAtt.rowIndex; });
+      myRecords=myRecords.filter(function(r){ return r.rowIndex!==selectedAtt.rowIndex; });
+      selectedAtt=null; renderCalendar(); if (selectedDay) selectDay(selectedDay);
       showToast('✅ Record deleted.');
     }).catch(function(err){ hideSaving(); showToast('❌ Delete failed.'); console.error(err); });
 }
-
 function closeAttSheet() { document.getElementById('att-sheet').classList.remove('open'); }
 
 // ═══ MANUAL ATTENDANCE (ADMIN) ════════════════════════
-var manualTeamValue = 'No';
-
+var manualTeamValue='No';
 function setManualTeam(val) {
-  manualTeamValue = val;
-  document.getElementById('manual-team-no').className  = 'tg-btn' + (val==='No'  ? ' active-no'  : '');
-  document.getElementById('manual-team-yes').className = 'tg-btn' + (val==='Yes' ? ' active-yes' : '');
+  manualTeamValue=val;
+  document.getElementById('manual-team-no').className='tg-btn'+(val==='No'?' active-no':'');
+  document.getElementById('manual-team-yes').className='tg-btn'+(val==='Yes'?' active-yes':'');
 }
-
 function addManualAttendance() {
   if (!isAdmin) { showToast('Admin only.'); return; }
-
-  var empName  = document.getElementById('manual-emp').value;
-  var date     = document.getElementById('manual-date').value;
-  var time     = document.getElementById('manual-time').value;
-  var crates   = document.getElementById('manual-crates').value.trim() || '0';
-  var meal     = document.getElementById('manual-meal').value;
-  var truck    = document.getElementById('manual-truck').value;
-  var location = document.getElementById('manual-location').value.trim() || 'Added by admin';
-
-  if (!empName || !date) {
-    showToast('Select employee and date.');
-    return;
-  }
-
-  // Check if attendance already exists
-  var exists = allAttendance.find(function(r) {
-    return r.date === date && r.name.toLowerCase() === empName.toLowerCase();
-  });
-
-  if (exists) {
-    showToast('⚠️ Attendance already exists for this employee on ' + date);
-    return;
-  }
-
-  // Format time to 12-hour AM/PM
-  var timeFormatted = time;
+  var empName=document.getElementById('manual-emp').value;
+  var date=document.getElementById('manual-date').value;
+  var time=document.getElementById('manual-time').value;
+  var crates=document.getElementById('manual-crates').value.trim()||'0';
+  var meal=document.getElementById('manual-meal').value;
+  var truck=document.getElementById('manual-truck').value;
+  var location=document.getElementById('manual-location').value.trim()||'Added by admin';
+  if (!empName||!date) { showToast('Select employee and date.'); return; }
+  var exists=allAttendance.find(function(r){ return r.date===date&&r.name.toLowerCase()===empName.toLowerCase(); });
+  if (exists) { showToast('⚠️ Attendance already exists for this employee on '+date); return; }
+  var timeFormatted=time;
   if (time) {
-    var parts = time.split(':');
-    var h = parseInt(parts[0]);
-    var m = parts[1];
-    var ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    timeFormatted = h + ':' + m + ' ' + ampm;
+    var parts=time.split(':'), h=parseInt(parts[0]), m=parts[1], ampm=h>=12?'PM':'AM';
+    h=h%12||12; timeFormatted=h+':'+m+' '+ampm;
   }
-
   showSaving('Adding attendance...');
-
-  var id  = 'ATT-' + date.replace(/-/g,'') + '-' + pad(allAttendance.length+1);
-  var row = [id, date, empName, manualTeamValue, crates, meal,
-             truck, location, '', '', timeFormatted];
-
-  apiAppend(TAB_ATTENDANCE + '!A:K', [row]).then(function() {
+  var id='ATT-'+date.replace(/-/g,'')+'-'+pad(allAttendance.length+1);
+  var row=[id,date,empName,manualTeamValue,crates,meal,truck,location,'','',timeFormatted];
+  apiAppend(TAB_ATTENDANCE+'!A:K',[row]).then(function(){
     hideSaving();
-
-    var rec = {
-      rowIndex: allAttendance.length + 2,
-      id: id,
-      date: date,
-      name: empName,
-      team: manualTeamValue,
-      crates: crates,
-      meal: meal,
-      truck: truck,
-      location: location,
-      lat: '',
-      lng: '',
-      time: timeFormatted
-    };
-
-    allAttendance.push(rec);
-    filteredAttendance = allAttendance.slice();
-    buildColorMap();
-    renderLegend();
-    renderCalendar();
-
-    // Reset form
-    document.getElementById('manual-emp').value      = '';
-    document.getElementById('manual-date').value     = '';
-    document.getElementById('manual-time').value     = '08:00';
-    document.getElementById('manual-crates').value   = '0';
-    document.getElementById('manual-meal').value     = 'Yes';
-    document.getElementById('manual-truck').value    = '';
-    document.getElementById('manual-location').value = '';
-    setManualTeam('No');
-
-    showToast('✅ Attendance added for ' + empName + '!');
-
-    // Auto-switch to calendar to show result
-    switchTab('calendar');
-    
-    // Auto-select the date
-    setTimeout(function() {
-      selectDay(date);
-    }, 300);
-
-  }).catch(function(err) {
-    hideSaving();
-    showToast('❌ Failed to add attendance.');
-    console.error(err);
-  });
+    var rec={rowIndex:allAttendance.length+2,id:id,date:date,name:empName,team:manualTeamValue,
+      crates:crates,meal:meal,truck:truck,location:location,lat:'',lng:'',time:timeFormatted};
+    allAttendance.push(rec); filteredAttendance=allAttendance.slice();
+    buildColorMap(); renderLegend(); renderCalendar();
+    document.getElementById('manual-emp').value=''; document.getElementById('manual-date').value='';
+    document.getElementById('manual-time').value='08:00'; document.getElementById('manual-crates').value='0';
+    document.getElementById('manual-meal').value='Yes'; document.getElementById('manual-truck').value='';
+    document.getElementById('manual-location').value=''; setManualTeam('No');
+    showToast('✅ Attendance added for '+empName+'!');
+    switchTab('calendar'); setTimeout(function(){ selectDay(date); },300);
+  }).catch(function(err){ hideSaving(); showToast('❌ Failed to add attendance.'); console.error(err); });
 }
 
-
-// ═══ ADMIN: EMPLOYEE MANAGEMENT ══════════════════════
+// ═══ EMPLOYEE MANAGEMENT (ADMIN) ══════════════════════
 function renderEmployeeList() {
-  var wrap = document.getElementById('emp-list-wrap');
-  
-  if (!allEmployees.length) {
-    wrap.innerHTML = '<div class="empty-hint">No employees yet.</div>';
-    return;
-  }
-  
-  wrap.innerHTML = allEmployees.map(function(r, i) {
-    var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
-    return '<div class="emp-list-item">'
-      + '<div class="eli-info">'
-      + '<div class="eli-name">' + fullName + '</div>'
-      + '<div class="eli-email">' + r[0] + '  ·  ' + (r[3]||'Employee') + '</div>'
-      + '</div>'
-      + '<button class="eli-del" onclick="promptDeleteEmp(' + i + ')" title="Remove">×</button>'
-      + '</div>';
+  var wrap=document.getElementById('emp-list-wrap');
+  if (!allEmployees.length) { wrap.innerHTML='<div class="empty-hint">No employees yet.</div>'; return; }
+  wrap.innerHTML=allEmployees.map(function(r,i){
+    var fullName=((r[1]||'')+' '+(r[2]||'')).trim();
+    var position=r[4]||'—';
+    return '<div class="emp-list-item"><div class="eli-info">'
+      +'<div class="eli-name">'+fullName+'</div>'
+      +'<div class="eli-email">'+r[0]+'  ·  '+(r[3]||'Employee')+' · '+position+'</div>'
+      +'</div><button class="eli-del" onclick="promptDeleteEmp('+i+')" title="Remove">×</button></div>';
   }).join('');
-
-  // Repopulate manual attendance employee dropdown
-  var manualEmpSel = document.getElementById('manual-emp');
+  var manualEmpSel=document.getElementById('manual-emp');
   if (manualEmpSel) {
-    var currentValue = manualEmpSel.value;
-    while (manualEmpSel.options.length > 1) manualEmpSel.remove(1);
-    
-    allEmployees.forEach(function(r) {
-      var firstName = r[1] || '';
-      var lastName  = r[2] || '';
-      var fullName  = (firstName + ' ' + lastName).trim();
-      if (!fullName) return;
-      var o = document.createElement('option');
-      o.value = fullName;
-      o.textContent = fullName;
-      manualEmpSel.appendChild(o);
+    var currentValue=manualEmpSel.value;
+    while (manualEmpSel.options.length>1) manualEmpSel.remove(1);
+    allEmployees.forEach(function(r){
+      var fullName=((r[1]||'')+' '+(r[2]||'')).trim(); if (!fullName) return;
+      var o=document.createElement('option'); o.value=fullName; o.textContent=fullName; manualEmpSel.appendChild(o);
     });
-    
-    manualEmpSel.value = currentValue;
+    manualEmpSel.value=currentValue;
   }
 }
-
 function addEmployee() {
-  var email  = document.getElementById('ae-email').value.trim().toLowerCase();
-  var fname  = document.getElementById('ae-fname').value.trim();
-  var lname  = document.getElementById('ae-lname').value.trim();
-  var role   = document.getElementById('ae-role').value;
-
-  if (!email || !fname || !lname) { showToast('Fill in all fields.'); return; }
-  if (allEmployees.find(function(r){ return (r[0]||'').toLowerCase()===email; })) {
-    showToast('Email already registered.'); return;
-  }
-
+  var email=document.getElementById('ae-email').value.trim().toLowerCase();
+  var fname=document.getElementById('ae-fname').value.trim();
+  var lname=document.getElementById('ae-lname').value.trim();
+  var role=document.getElementById('ae-role').value;
+  if (!email||!fname||!lname) { showToast('Fill in all fields.'); return; }
+  if (allEmployees.find(function(r){ return (r[0]||'').toLowerCase()===email; })) { showToast('Email already registered.'); return; }
   showSaving('Adding employee...');
-  apiAppend(TAB_EMPLOYEES+'!A:D', [[email, fname, lname, role]])
-    .then(function() {
-      hideSaving();
-      allEmployees.push([email, fname, lname, role]);
-      renderEmployeeList();
-      document.getElementById('ae-email').value  = '';
-      document.getElementById('ae-fname').value  = '';
-      document.getElementById('ae-lname').value  = '';
-      showToast('✅ Employee added!');
-    }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
+  apiAppend(TAB_EMPLOYEES+'!A:D',[[email,fname,lname,role]]).then(function(){
+    hideSaving(); allEmployees.push([email,fname,lname,role,'Helper']);
+    renderEmployeeList();
+    document.getElementById('ae-email').value=''; document.getElementById('ae-fname').value=''; document.getElementById('ae-lname').value='';
+    showToast('✅ Employee added!');
+  }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
 }
-
 function promptDeleteEmp(idx) {
-  var r = allEmployees[idx];
-  if (!r) return;
-  document.getElementById('confirm-title').textContent = 'Remove Employee?';
-  document.getElementById('confirm-msg').textContent   =
-    'Remove ' + ((r[1]||'')+' '+(r[2]||'')).trim() + ' from the system?';
-  document.getElementById('confirm-ok').onclick = function() { doDeleteEmp(idx); };
+  var r=allEmployees[idx]; if (!r) return;
+  document.getElementById('confirm-title').textContent='Remove Employee?';
+  document.getElementById('confirm-msg').textContent='Remove '+((r[1]||'')+' '+(r[2]||'')).trim()+' from the system?';
+  document.getElementById('confirm-ok').onclick=function(){ doDeleteEmp(idx); };
   document.getElementById('confirm-overlay').classList.add('open');
 }
-
 function doDeleteEmp(idx) {
-  var rowIndex = idx + 2; // header is row 1
-  closeConfirm();
-  showSaving('Removing...');
-  apiUpdate(TAB_EMPLOYEES+'!A'+rowIndex+':D'+rowIndex, [['','','','']])
-    .then(function() {
-      hideSaving();
-      allEmployees.splice(idx, 1);
-      renderEmployeeList();
-      showToast('✅ Employee removed.');
-    }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
+  var rowIndex=idx+2; closeConfirm(); showSaving('Removing...');
+  apiUpdate(TAB_EMPLOYEES+'!A'+rowIndex+':D'+rowIndex,[['','','','']]).then(function(){
+    hideSaving(); allEmployees.splice(idx,1); renderEmployeeList(); showToast('✅ Employee removed.');
+  }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
 }
 
 // ═══ API ══════════════════════════════════════════════
 function apiGet(range) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
-    '/values/'+encodeURIComponent(range),
-    { headers:{ Authorization:'Bearer '+token } })
-    .then(function(r){ if(r.status===401){location.href='index.html';throw new Error('Auth');}return r.json(); });
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range),
+    {headers:{Authorization:'Bearer '+token}})
+    .then(function(r){ if(r.status===401){location.href='index.html';throw new Error('Auth');} return r.json(); });
 }
 function apiAppend(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
-    '/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
-    { method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
-      body:JSON.stringify({values:values}) })
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
     .then(function(r){ if(!r.ok) throw new Error('Append failed '+r.status); return r.json(); });
 }
 function apiUpdate(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
-    '/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
-    { method:'PUT', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
-      body:JSON.stringify({values:values}) })
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
+    {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
     .then(function(r){ if(!r.ok) throw new Error('Update failed '+r.status); return r.json(); });
 }
 
@@ -1661,389 +1186,296 @@ function pad(n) { return n<10?'0'+n:String(n); }
 function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
 function showSaving(m) { document.getElementById('saving-text').textContent=m||'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
 function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
-
 var _tt;
-function showToast(m) {
-  var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show');
-  clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },3000);
-}
+function showToast(m) { var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },3000); }
 
-// Close overlays on backdrop tap
 ['att-sheet','confirm-overlay'].forEach(function(id){
   var el=document.getElementById(id);
   if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
 });
 
-// ═══ PULL TO REFRESH + AUTO REFRESH ══════════════════
-
+// ═══ PULL TO REFRESH ══════════════════════════════════
 function initPullToRefresh(scrollEl, onRefresh) {
-  var startY      = 0;
-  var pulling     = false;
-  var threshold   = 70;
-  var indicator   = document.createElement('div');
-  indicator.className = 'ptr-indicator';
-  indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+  var startY=0, pulling=false, threshold=70;
+  var indicator=document.createElement('div'); indicator.className='ptr-indicator';
+  indicator.innerHTML='<div class="ptr-arrow" id="ptr-arrow">↓</div>';
   document.body.appendChild(indicator);
-
-  scrollEl.addEventListener('touchstart', function(e) {
-    if (scrollEl.scrollTop === 0) {
-      startY  = e.touches[0].clientY;
-      pulling = true;
-    }
-  }, { passive: true });
-
-  scrollEl.addEventListener('touchmove', function(e) {
-    if (!pulling) return;
-    var dist = e.touches[0].clientY - startY;
-    if (dist < 0) { pulling = false; return; }
-
-    var progress = Math.min(dist / threshold, 1);
-    indicator.classList.add('visible');
-
-    var arrow = document.getElementById('ptr-arrow');
-    if (arrow) {
-      arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
-      arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
-    }
-  }, { passive: true });
-
-  scrollEl.addEventListener('touchend', function(e) {
-    if (!pulling) return;
-    pulling = false;
-
-    var dist = e.changedTouches[0].clientY - startY;
-    if (dist >= threshold) {
-      // Trigger refresh
-      indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
-      onRefresh(function() {
-        // Done callback
-        indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
-        indicator.classList.remove('visible');
-      });
-    } else {
-      indicator.classList.remove('visible');
-    }
+  scrollEl.addEventListener('touchstart',function(e){ if(scrollEl.scrollTop===0){startY=e.touches[0].clientY;pulling=true;} },{passive:true});
+  scrollEl.addEventListener('touchmove',function(e){
+    if(!pulling) return; var dist=e.touches[0].clientY-startY; if(dist<0){pulling=false;return;}
+    var progress=Math.min(dist/threshold,1); indicator.classList.add('visible');
+    var arrow=document.getElementById('ptr-arrow');
+    if(arrow){arrow.style.transform='rotate('+(progress*180)+'deg)';arrow.style.color=progress>=1?'var(--red)':'var(--text3)';}
+  },{passive:true});
+  scrollEl.addEventListener('touchend',function(e){
+    if(!pulling) return; pulling=false;
+    var dist=e.changedTouches[0].clientY-startY;
+    if(dist>=threshold){
+      indicator.innerHTML='<div class="ptr-spinner spinning"></div>';
+      onRefresh(function(){ indicator.innerHTML='<div class="ptr-arrow" id="ptr-arrow">↓</div>'; indicator.classList.remove('visible'); });
+    } else { indicator.classList.remove('visible'); }
   });
 }
-
-// AUTO REFRESH every 5 minutes
 function initAutoRefresh(onRefresh) {
-  setInterval(function() {
-    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    if (!token || Date.now() >= expiry) return; // skip if not logged in
-    onRefresh(function() {}); // silent refresh
-  }, 5 * 60 * 1000);
+  setInterval(function(){
+    var expiry=parseInt(localStorage.getItem('pedroex-token-expiry')||'0');
+    if(!token||Date.now()>=expiry) return;
+    onRefresh(function(){});
+  },5*60*1000);
 }
 
 // ═══════════════════════════════════════════════════════
 // REPORT TAB
 // ═══════════════════════════════════════════════════════
-var rptPeriod  = 'week';
-var allRecords = [];
 
 function setRptPeriod(p) {
-  rptPeriod = p;
-  ['week','month','custom'].forEach(function(x){
-    document.getElementById('rpt-btn-'+x).classList.toggle('active', x===p);
-  });
-  document.getElementById('rpt-custom-range').style.display = p==='custom' ? 'block' : 'none';
-  if (p !== 'custom') generateReport();
+  rptPeriod=p;
+  ['week','month','custom'].forEach(function(x){ document.getElementById('rpt-btn-'+x).classList.toggle('active',x===p); });
+  document.getElementById('rpt-custom-range').style.display=p==='custom'?'block':'none';
+  if (p!=='custom') generateReport();
 }
 
 function generateReport() {
-  document.getElementById('rpt-loading').style.display = 'flex';
-  document.getElementById('rpt-summary').style.display = 'none';
+  document.getElementById('rpt-loading').style.display='flex';
+  document.getElementById('rpt-summary').style.display='none';
 
-  var now = new Date();
-  var from, to;
-
-  if (rptPeriod === 'week') {
-    from = new Date(now); from.setDate(now.getDate() - now.getDay());
-    to   = new Date(from); to.setDate(from.getDate() + 6);
-  } else if (rptPeriod === 'month') {
-    from = new Date(now.getFullYear(), now.getMonth(), 1);
-    to   = new Date(now.getFullYear(), now.getMonth()+1, 0);
+  var now=new Date(), from, to;
+  if (rptPeriod==='week') {
+    from=new Date(now); from.setDate(now.getDate()-now.getDay());
+    to=new Date(from); to.setDate(from.getDate()+6);
+  } else if (rptPeriod==='month') {
+    from=new Date(now.getFullYear(),now.getMonth(),1);
+    to=new Date(now.getFullYear(),now.getMonth()+1,0);
   } else {
-    from = new Date(document.getElementById('rpt-from').value);
-    to   = new Date(document.getElementById('rpt-to').value);
-    if (isNaN(from) || isNaN(to)) {
-      showToast('Select valid dates.');
-      document.getElementById('rpt-loading').style.display = 'none';
-      return;
-    }
+    from=new Date(document.getElementById('rpt-from').value);
+    to=new Date(document.getElementById('rpt-to').value);
+    if (isNaN(from)||isNaN(to)) { showToast('Select valid dates.'); document.getElementById('rpt-loading').style.display='none'; return; }
   }
 
-  var fromStr = fmtDate(from);
-  var toStr   = fmtDate(to);
+  var fromStr=fmtDate(from), toStr=fmtDate(to);
 
   Promise.all([
     apiGet('Trips!A2:I'),
     apiGet('Records!A2:K')
   ]).then(function(res) {
-    var tripRows = res[0].values || [];
-    var recRows  = res[1].values || [];
+    var tripRows=res[0].values||[], recRows=res[1].values||[];
 
-    var trips = tripRows.filter(function(r){ return r[1]; }).map(function(r){
-      return {
-        id:           r[0]||'',
-        deliveryDate: rptConvertDate(r[1]),
-        truck:        r[2]||'',
-        type:         r[4]||'',
-        shipmentNum:  r[5]||'',
-        billed:       r[6]||'',
-        route:        r[7]||'',
-        rate:         r[8]||''
-      };
-    }).filter(function(t){ return t.deliveryDate >= fromStr && t.deliveryDate <= toStr; });
+    var trips=tripRows.filter(function(r){ return r[1]; }).map(function(r){
+      return {id:r[0]||'',deliveryDate:rptConvertDate(r[1]),truck:r[2]||'',
+        type:r[4]||'',shipmentNum:r[5]||'',billed:r[6]||'',route:r[7]||'',rate:r[8]||''};
+    }).filter(function(t){ return t.deliveryDate>=fromStr && t.deliveryDate<=toStr; });
 
-    allRecords = recRows.filter(function(r){ return r[1]; }).map(function(r){
-      return {
-        empName:    r[1]||'',
-        date:       r[2]||'',
-        truck:      r[3]||'',
-        docType:    r[4]||'',
-        liquidated: r[6]||'No'
-      };
+    allRecords=recRows.filter(function(r){ return r[1]; }).map(function(r){
+      return {empName:r[1]||'',date:r[2]||'',truck:r[3]||'',docType:r[4]||'',liquidated:r[6]||'No'};
     });
 
     renderReport(trips, fromStr, toStr);
   }).catch(function(err){
-    document.getElementById('rpt-loading').style.display = 'none';
-    showToast('Failed to load report data.');
-    console.error(err);
+    document.getElementById('rpt-loading').style.display='none';
+    showToast('Failed to load report data.'); console.error(err);
   });
 }
 
 function rptConvertDate(value) {
-  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return value;
-  var num = parseFloat(value);
-  if (!isNaN(num) && num > 1000) {
-    var date = new Date(new Date(1899,11,30).getTime() + num*86400000);
+  if (typeof value==='string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return value;
+  var num=parseFloat(value);
+  if (!isNaN(num) && num>1000) {
+    var date=new Date(new Date(1899,11,30).getTime()+num*86400000);
     return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate());
   }
-  if (typeof value === 'string') {
-    var d = new Date(value);
-    if (!isNaN(d.getTime())) return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-  }
+  if (typeof value==='string') { var d=new Date(value); if (!isNaN(d.getTime())) return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
   return '';
 }
 
 function renderReport(trips, fromStr, toStr) {
-  document.getElementById('rpt-loading').style.display = 'none';
-  document.getElementById('rpt-summary').style.display = 'block';
+  document.getElementById('rpt-loading').style.display='none';
+  document.getElementById('rpt-summary').style.display='block';
 
-  // Separate trips by type
-  // Fresh (non-Masbate) = strict compliance check
-  // Masbate = exception — no 2-man team requirement regardless of headcount
-  // Frozen = no 2-man team requirement
+  // Separate trips by type:
+  // Fresh (non-Masbate) — strict compliance check
+  // Masbate — exception, all can mark 2-Man Team regardless of count
+  // Frozen — no 2-man team requirement
   var freshTrips   = trips.filter(function(t){ return t.type==='Fresh' && t.route.indexOf('Masbate')===-1; });
   var frozenTrips  = trips.filter(function(t){ return t.type==='Frozen'; });
   var masbateTrips = trips.filter(function(t){ return t.route.indexOf('Masbate')>-1; });
 
-  var tripResults = [];
+  var tripResults=[];
 
   freshTrips.forEach(function(trip) {
-    var date  = trip.deliveryDate;
-    var truck = (trip.truck||'').toLowerCase();
+    var date=trip.deliveryDate;
+    var truck=(trip.truck||'').toLowerCase();
 
-    // Everyone who checked in for this truck on this date
-    var attOnDay = allAttendance.filter(function(a){
+    // All attendance for this truck on this date
+    var attOnDay=allAttendance.filter(function(a){
       return a.date===date && (a.truck||'').toLowerCase()===truck;
     });
 
-    var totalAtt = attOnDay.length;
+    var totalAtt=attOnDay.length;
 
-    // Driver = marked 2-Man Team as "No" (fixed per truck, not counted as helper)
-    // Helper = marked 2-Man Team as "Yes"
-    // 2-Man Team trip = exactly 2 total attendees (1 driver + 1 helper)
-    // 3+ attendees = driver + 2 or more helpers — valid Fresh trip but NOT 2-Man Team
-    var helpers    = attOnDay.filter(function(a){ return a.team==='Yes'; });
-    var drivers    = attOnDay.filter(function(a){ return a.team==='No';  });
-    var is2ManTeam = totalAtt === 2 && helpers.length === 1 && drivers.length === 1;
+    // Classify each attendee using Position from Employees sheet
+    // Driver = Position is 'Driver', Helper = Position is 'Helper'
+    var helpers = attOnDay.filter(function(a){ return getPosition(a.name).toLowerCase()==='helper'; });
+    var drivers  = attOnDay.filter(function(a){ return getPosition(a.name).toLowerCase()==='driver'; });
+
+    // 2-Man Team = exactly 2 total attendees (1 driver + 1 helper) for Fresh trips
+    var is2ManTeam = totalAtt===2 && helpers.length===1 && drivers.length===1;
 
     // Crates records for this truck+date from Employee Records
-    var cratesRecs = allRecords.filter(function(r){
-      return r.date===date
-          && (r.truck||'').toLowerCase()===truck
-          && r.docType==='Crates';
+    var cratesRecs=allRecords.filter(function(r){
+      return r.date===date && (r.truck||'').toLowerCase()===truck && r.docType==='Crates';
     });
 
-    // Build per-person detail
-    // Only helpers are required to have Crates records — drivers are excluded
-    var empDetails = attOnDay.map(function(a){
-      var isHelper  = a.team==='Yes';
-      var hasCrates = cratesRecs.some(function(r){
-        return r.empName.toLowerCase()===a.name.toLowerCase();
+    // Per-person detail — only helpers need Crates records, drivers are excluded
+    var empDetails=attOnDay.map(function(a){
+      var isHelper=getPosition(a.name).toLowerCase()==='helper';
+      var hasCrates=cratesRecs.some(function(r){ return r.empName.toLowerCase()===a.name.toLowerCase(); });
+      return {name:a.name, isHelper:isHelper, hasCrates:hasCrates, position:getPosition(a.name)};
+    });
+
+    var missingCrates=empDetails.filter(function(e){ return e.isHelper && !e.hasCrates; });
+    var hasAllCrates=missingCrates.length===0 && helpers.length>0;
+
+    // Build issues with clear English explanations and fix instructions
+    var issues=[];
+
+    if (totalAtt===0) {
+      issues.push({
+        msg: 'No attendance recorded for this truck on this date.',
+        fix: 'Ensure the driver and helper check in and select the correct truck.'
       });
-      return { name:a.name, isHelper:isHelper, hasCrates:hasCrates };
-    });
-
-    // Helpers missing Crates records
-    var missingCrates = empDetails.filter(function(e){ return e.isHelper && !e.hasCrates; });
-    var hasAllCrates  = missingCrates.length===0 && helpers.length>0;
-
-    // Build issues list
-    var issues = [];
-
-    if (totalAtt === 0) {
-      // No one showed up for this truck
-      issues.push('No attendance recorded for this truck on this date');
-    } else if (helpers.length === 0) {
-      // Only a driver checked in, no helper marked
-      issues.push('No helper recorded — at least 1 helper required for Fresh trips');
+    } else if (helpers.length===0) {
+      issues.push({
+        msg: 'No helper checked in for this truck. Only driver(s) recorded: '+drivers.map(function(a){ return a.name.split(' ')[0]; }).join(', ')+'.',
+        fix: 'A Fresh delivery requires at least 1 helper. The helper must check in and select this truck.'
+      });
     }
 
-    // All helpers must have a Crates record (regardless of 2-man or 3-man)
-    if (helpers.length > 0 && !hasAllCrates) {
-      issues.push('Missing Crates record for: ' + missingCrates.map(function(e){
-        return e.name.split(' ')[0];
-      }).join(', '));
+    if (helpers.length>0 && !hasAllCrates) {
+      issues.push({
+        msg: 'Missing Crates record for: '+missingCrates.map(function(e){ return e.name.split(' ')[0]; }).join(', ')+'.',
+        fix: 'The helper(s) listed above must file a Crates record in Employee Records for this date and truck.'
+      });
     }
 
     tripResults.push({
-      trip:         trip,
-      attCount:     totalAtt,
-      helperCount:  helpers.length,
-      driverCount:  drivers.length,
-      is2ManTeam:   is2ManTeam,   // true only when exactly 2 attended (1 driver + 1 helper)
-      hasAllCrates: hasAllCrates,
-      empDetails:   empDetails,
-      issues:       issues,
-      ok:           issues.length === 0
+      trip:trip, attCount:totalAtt, helperCount:helpers.length, driverCount:drivers.length,
+      is2ManTeam:is2ManTeam, hasAllCrates:hasAllCrates,
+      empDetails:empDetails, issues:issues, ok:issues.length===0
     });
   });
 
-  // Crates records within the report period (for compliance bar chart)
-  var cratesInPeriod = allRecords.filter(function(r){
-    return r.date>=fromStr && r.date<=toStr && r.docType==='Crates';
-  });
+  // Crates records within the report period
+  var cratesInPeriod=allRecords.filter(function(r){ return r.date>=fromStr && r.date<=toStr && r.docType==='Crates'; });
+  var okTrips=tripResults.filter(function(t){ return t.ok; }).length;
+  var flagTrips=tripResults.filter(function(t){ return !t.ok; }).length;
 
-  var okTrips   = tripResults.filter(function(t){ return t.ok;  }).length;
-  var flagTrips = tripResults.filter(function(t){ return !t.ok; }).length;
-
-  // ── Stat grid ──────────────────────────────────────────
-  document.getElementById('rpt-stat-grid').innerHTML = [
-    { val: trips.length,       lbl: 'Total Trips',     col: 'var(--red)'    },
-    { val: freshTrips.length,  lbl: 'Fresh (checked)', col: 'var(--orange)' },
-    { val: okTrips,            lbl: 'Compliant',        col: 'var(--green)'  },
-    { val: flagTrips,          lbl: 'Flagged',          col: flagTrips>0 ? 'var(--red)' : 'var(--text3)' }
+  // Stat grid
+  document.getElementById('rpt-stat-grid').innerHTML=[
+    {val:trips.length,      lbl:'Total Trips',    col:'var(--red)'},
+    {val:freshTrips.length, lbl:'Fresh (checked)',col:'var(--orange)'},
+    {val:okTrips,           lbl:'Compliant',      col:'var(--green)'},
+    {val:flagTrips,         lbl:'Flagged',         col:flagTrips>0?'var(--red)':'var(--text3)'}
   ].map(function(s){
-    return '<div class="rpt-stat">'
-      +'<div class="rpt-stat-val" style="color:'+s.col+'">'+s.val+'</div>'
-      +'<div class="rpt-stat-lbl">'+s.lbl+'</div>'
-      +'</div>';
+    return '<div class="rpt-stat"><div class="rpt-stat-val" style="color:'+s.col+'">'+s.val+'</div><div class="rpt-stat-lbl">'+s.lbl+'</div></div>';
   }).join('');
 
-  // ── Flagged trips card ─────────────────────────────────
-  var flagCard     = document.getElementById('rpt-flags-card');
-  var allClearCard = document.getElementById('rpt-all-clear');
+  // Flagged trips card
+  var flagCard=document.getElementById('rpt-flags-card');
+  var allClearCard=document.getElementById('rpt-all-clear');
 
-  if (freshTrips.length === 0) {
-    flagCard.style.display     = 'none';
-    allClearCard.style.display = 'none';
-  } else if (flagTrips === 0) {
-    flagCard.style.display     = 'none';
-    allClearCard.style.display = 'block';
+  if (freshTrips.length===0) {
+    flagCard.style.display='none'; allClearCard.style.display='none';
+  } else if (flagTrips===0) {
+    flagCard.style.display='none'; allClearCard.style.display='block';
   } else {
-    flagCard.style.display     = 'block';
-    allClearCard.style.display = 'none';
-
-    document.getElementById('rpt-flags-list').innerHTML = tripResults
+    flagCard.style.display='block'; allClearCard.style.display='none';
+    document.getElementById('rpt-flags-list').innerHTML=tripResults
       .filter(function(t){ return !t.ok; })
       .map(function(t){
         return '<div class="rpt-trip-row has-issue">'
           +'<div class="rpt-trip-head">'
           +'<span class="rpt-trip-truck">🚛 '+t.trip.truck+'</span>'
-          +'<span class="rpt-trip-date">'+t.trip.deliveryDate
-          +(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
+          +'<span class="rpt-trip-date">'+t.trip.deliveryDate+(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
           +'</div>'
-          +'<div class="rpt-check-list">'
-          +t.issues.map(function(iss){
-            return '<div class="rpt-check">'
-              +'<span class="rpt-check-icon">✕</span>'
-              +'<span style="color:var(--red)">'+iss+'</span>'
+          +t.issues.map(function(issue){
+            return '<div class="rpt-flag-box">'
+              +'<div class="rpt-flag-title">⚠ Issue</div>'
+              +'<div class="rpt-flag-desc">'+issue.msg+'</div>'
+              +'<div class="rpt-flag-fix">✔ How to fix: '+issue.fix+'</div>'
               +'</div>';
           }).join('')
-          +'</div></div>';
+          +'</div>';
       }).join('');
   }
 
-  // ── Fresh trip compliance list ─────────────────────────
-  document.getElementById('rpt-trips-list').innerHTML = freshTrips.length === 0
+  // Fresh trip compliance list
+  document.getElementById('rpt-trips-list').innerHTML=freshTrips.length===0
     ? '<div class="empty-hint">No Fresh trips in this period.</div>'
     : tripResults.map(function(t){
-
-        // Row color: green = ok, red = has issues, orange = partial
-        var rowCls = 'rpt-trip-row' + (t.ok ? '' : (t.issues.length > 1 ? ' has-issue' : ' partial'));
+        var rowCls='rpt-trip-row'+(t.ok?'':(t.issues.length>1?' has-issue':' partial'));
 
         // Team composition label
         var teamLabel;
-        if (t.helperCount === 0) {
-          teamLabel = 'No helpers recorded';
+        if (t.helperCount===0) {
+          teamLabel='No helpers recorded — only driver(s) checked in';
         } else if (t.is2ManTeam) {
-          // Exactly 2 attendees: 1 driver + 1 helper
-          teamLabel = '2-Man Team (1 driver + 1 helper)';
+          teamLabel='2-Man Team ✓ (1 driver + 1 helper)';
         } else {
-          // 3+ attendees: driver + multiple helpers — valid but not 2-Man Team
-          teamLabel = t.attCount + ' attended (1 driver + ' + t.helperCount + ' helpers)';
+          teamLabel=t.attCount+' attended — 1 driver + '+t.helperCount+' helper(s) (not 2-Man Team)';
         }
 
-        var checks = [
-          { ok: t.helperCount >= 1,  lbl: teamLabel              },
-          { ok: t.hasAllCrates,      lbl: 'All helpers have Crates record' }
+        var checks=[
+          {ok:t.helperCount>=1, lbl:teamLabel},
+          {ok:t.hasAllCrates,   lbl:'All helpers have Crates record'}
         ];
 
         return '<div class="'+rowCls+'">'
           +'<div class="rpt-trip-head">'
           +'<span class="rpt-trip-truck">🚛 '+t.trip.truck+'</span>'
-          +'<span class="rpt-trip-date">'+t.trip.deliveryDate
-          +(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
+          +'<span class="rpt-trip-date">'+t.trip.deliveryDate+(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
           +'</div>'
           +'<div class="rpt-check-list">'
           +checks.map(function(c){
-            return '<div class="rpt-check">'
-              +'<span class="rpt-check-icon">'+(c.ok?'✓':'✕')+'</span>'
-              +'<span style="color:'+(c.ok?'var(--green)':'var(--red)')+'">'+c.lbl+'</span>'
-              +'</div>';
+            return '<div class="rpt-check"><span class="rpt-check-icon">'+(c.ok?'✓':'✕')+'</span>'
+              +'<span style="color:'+(c.ok?'var(--green)':'var(--red)')+'">'+c.lbl+'</span></div>';
           }).join('')
           +'</div>'
-          +(t.empDetails.length > 0
+          +(t.empDetails.length>0
             ? '<div class="rpt-emp-pills">'
-              + t.empDetails.map(function(e){
+              +t.empDetails.map(function(e){
                   if (!e.isHelper) {
-                    // Driver — no Crates requirement
+                    // Driver — shown in gray, no crates requirement
                     return '<span class="rpt-emp-pill" style="background:var(--text3);color:#fff">'
-                      + e.name.split(' ')[0] + ' (driver)</span>';
+                      +e.name.split(' ')[0]+' (driver)</span>';
                   }
                   // Helper — must have Crates record
                   return '<span class="rpt-emp-pill '+(e.hasCrates?'ok':'missing')+'">'
-                    + e.name.split(' ')[0]
-                    + (e.hasCrates?' ✓':' ✕ no crates')
-                    + '</span>';
+                    +e.name.split(' ')[0]+(e.hasCrates?' ✓':' ✕ no crates')+'</span>';
                 }).join('')
-              + '</div>'
+              +'</div>'
             : '<div style="font-size:11px;color:var(--red);margin-top:6px">— No attendance found —</div>')
           +'</div>';
       }).join('');
 
-  // ── Crates return compliance per employee ──────────────
-  var byEmp = {};
+  // Crates return compliance per helper
+  var byEmp={};
   cratesInPeriod.forEach(function(r){
-    if (!byEmp[r.empName]) byEmp[r.empName] = { total:0, liq:0 };
+    if (!byEmp[r.empName]) byEmp[r.empName]={total:0,liq:0};
     byEmp[r.empName].total++;
     if (r.liquidated==='Yes') byEmp[r.empName].liq++;
   });
 
-  document.getElementById('rpt-crates-list').innerHTML = Object.keys(byEmp).length === 0
+  document.getElementById('rpt-crates-list').innerHTML=Object.keys(byEmp).length===0
     ? '<div class="empty-hint">No Crates records in this period.</div>'
     : Object.keys(byEmp).sort().map(function(name){
-        var d        = byEmp[name];
-        var pct      = Math.round((d.liq / d.total) * 100);
-        var rowCls   = pct===100 ? 'rpt-trip-row' : (pct>=50 ? 'rpt-trip-row partial' : 'rpt-trip-row has-issue');
-        var barColor = pct===100 ? 'var(--green)'  : (pct>=50 ? 'var(--orange)'        : 'var(--red)');
+        var d=byEmp[name];
+        var pct=Math.round((d.liq/d.total)*100);
+        var rowCls=pct===100?'rpt-trip-row':(pct>=50?'rpt-trip-row partial':'rpt-trip-row has-issue');
+        var barColor=pct===100?'var(--green)':(pct>=50?'var(--orange)':'var(--red)');
+        var pos=getPosition(name);
         return '<div class="'+rowCls+'">'
           +'<div class="rpt-trip-head">'
-          +'<span class="rpt-trip-truck">'+name+'</span>'
+          +'<span class="rpt-trip-truck">'+name+' <span style="font-size:10px;font-weight:400;color:var(--text3)">('+pos+')</span></span>'
           +'<span class="rpt-trip-date">'+d.liq+'/'+d.total+' returned</span>'
           +'</div>'
           +'<div style="background:var(--bg);border-radius:8px;box-shadow:var(--neu-in);height:8px;margin-top:6px;overflow:hidden">'
@@ -2053,44 +1485,36 @@ function renderReport(trips, fromStr, toStr) {
           +'</div>';
       }).join('');
 
-  // ── Other trips: Frozen + Masbate (informational only) ─
-  var otherTrips = frozenTrips.concat(masbateTrips);
-  document.getElementById('rpt-other-list').innerHTML = otherTrips.length === 0
+  // Other trips: Frozen + Masbate (informational)
+  var otherTrips=frozenTrips.concat(masbateTrips);
+  document.getElementById('rpt-other-list').innerHTML=otherTrips.length===0
     ? '<div class="empty-hint">No Frozen or Masbate trips in this period.</div>'
     : otherTrips.map(function(trip){
-        var date     = trip.deliveryDate;
-        var truck    = (trip.truck||'').toLowerCase();
-        var attOnDay = allAttendance.filter(function(a){
-          return a.date===date && (a.truck||'').toLowerCase()===truck;
-        });
-        // Masbate = all attendees can mark 2-Man Team regardless of count
-        // Frozen  = no 2-man team requirement
-        var typeLabel = trip.route.indexOf('Masbate')>-1 ? '🚢 Masbate' : '🧊 Frozen';
-
+        var date=trip.deliveryDate, truck=(trip.truck||'').toLowerCase();
+        var attOnDay=allAttendance.filter(function(a){ return a.date===date && (a.truck||'').toLowerCase()===truck; });
+        var typeLabel=trip.route.indexOf('Masbate')>-1?'🚢 Masbate':'🧊 Frozen';
         return '<div class="rpt-trip-row" style="border-left-color:var(--text3)">'
           +'<div class="rpt-trip-head">'
           +'<span class="rpt-trip-truck">🚛 '+trip.truck+'</span>'
           +'<span class="rpt-trip-date">'+trip.deliveryDate+' · '+typeLabel+'</span>'
           +'</div>'
-          +'<div class="rpt-check-list">'
-          +'<div class="rpt-check">'
+          +'<div class="rpt-check-list"><div class="rpt-check">'
           +'<span class="rpt-check-icon" style="color:var(--text2)">👥</span>'
-          +'<span>'+attOnDay.length+' person(s) attended'
-          +(attOnDay.length===0?' — no attendance recorded':'')+'</span>'
-          +'</div>'
-          +'</div>'
-          +(attOnDay.length > 0
+          +'<span>'+attOnDay.length+' person(s) attended'+(attOnDay.length===0?' — no attendance recorded':'')+'</span>'
+          +'</div></div>'
+          +(attOnDay.length>0
             ? '<div class="rpt-emp-pills">'
-              + attOnDay.map(function(a){
-                  var label = a.team==='Yes' ? ' (2-man)' : ' (driver)';
-                  return '<span class="rpt-emp-pill ok">'+a.name.split(' ')[0]+label+'</span>';
+              +attOnDay.map(function(a){
+                  var pos=getPosition(a.name);
+                  var bgColor=pos.toLowerCase()==='driver'?'var(--text3)':'var(--green)';
+                  return '<span class="rpt-emp-pill" style="background:'+bgColor+';color:#fff;box-shadow:none">'
+                    +a.name.split(' ')[0]+' ('+pos.toLowerCase()+')</span>';
                 }).join('')
-              + '</div>'
+              +'</div>'
             : '')
           +'</div>';
       }).join('');
 }
-
 </script>
 </body>
 </html>
