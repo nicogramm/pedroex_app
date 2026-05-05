@@ -2457,18 +2457,25 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             chartModalChart = destroyChart(chartModalChart);
         }
 
-        function renderRevenueExpensesModal() {
-            const ctx = document.getElementById('chart-modal-canvas');
-            chartModalChart = destroyChart(chartModalChart);
-            
-            const last30Days = [];
-            const now = new Date();
-            for (let i = 29; i >= 0; i--) {
-                const date = new Date(now);
-                date.setDate(date.getDate() - i);
-                last30Days.push(date.toISOString().split('T')[0]);
-            }
+              function renderRevenueExpensesModal() {
+              const ctx = document.getElementById('chart-modal-canvas');
+              chartModalChart = destroyChart(chartModalChart);
 
+              // ✅ FIXED: Same logic
+              const last30Days = [];
+              const now = new Date();
+              
+              for (let i = 29; i >= 0; i--) {
+                  const date = new Date(now);
+                  date.setDate(date.getDate() - i);
+                  const dateStr = date.toISOString().split('T')[0];
+                  
+                  // ✅ Only include dates >= SYSTEM_START_DATE
+                  if (dateStr >= SYSTEM_START_DATE) {
+                      last30Days.push(dateStr);
+                  }
+              }
+              
             const dailyData = last30Days.map(dateStr => {
                 const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
                 const dayExpenses = allExpenses.filter(e => e.date === dateStr);
@@ -2791,11 +2798,18 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
 
             const last30Days = [];
             const now = new Date();
+            
             for (let i = 29; i >= 0; i--) {
                 const date = new Date(now);
                 date.setDate(date.getDate() - i);
-                last30Days.push(date.toISOString().split('T')[0]);
-            }
+                const dateStr = date.toISOString().split('T')[0];
+                
+                // ✅ Only include dates >= SYSTEM_START_DATE
+                if (dateStr >= SYSTEM_START_DATE) {
+                    last30Days.push(dateStr);
+                }
+              }
+
 
             const dailyData = last30Days.map(dateStr => {
                 const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
