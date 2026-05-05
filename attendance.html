@@ -44,6 +44,26 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .back-btn:active{box-shadow:var(--neu-in)}
 .page-title{font-size:20px;font-weight:700;color:var(--text)}
 
+/* ══ REPORT TAB STYLES ══ */
+.rpt-period-btn{flex:1;padding:10px 8px;border:none;background:var(--bg);border-radius:10px;box-shadow:var(--neu-sm);font-size:12px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all 0.2s}
+.rpt-period-btn.active{box-shadow:var(--neu-in);color:var(--red)}
+.rpt-stat{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;text-align:center}
+.rpt-stat-val{font-size:28px;font-weight:700;color:var(--red);line-height:1;margin-bottom:4px}
+.rpt-stat-lbl{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3)}
+.rpt-trip-row{background:var(--bg);border-radius:12px;box-shadow:var(--neu-xs);padding:12px 14px;margin-bottom:10px;border-left:4px solid var(--green)}
+.rpt-trip-row.has-issue{border-left-color:var(--red)}
+.rpt-trip-row.partial{border-left-color:var(--orange)}
+.rpt-trip-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rpt-trip-truck{font-size:14px;font-weight:700;color:var(--text)}
+.rpt-trip-date{font-size:11px;color:var(--text2)}
+.rpt-check-list{display:flex;flex-direction:column;gap:4px}
+.rpt-check{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)}
+.rpt-check-icon{font-size:13px;flex-shrink:0}
+.rpt-emp-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.rpt-emp-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);box-shadow:var(--neu-xs);color:var(--text2)}
+.rpt-emp-pill.ok{background:var(--green);color:#fff;box-shadow:none}
+.rpt-emp-pill.missing{background:var(--red);color:#fff;box-shadow:none}
+
 /* TABS */
 .tabs{display:flex;gap:8px;margin-bottom:16px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px}
 .tab{flex:1;padding:10px;border:none;background:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all 0.2s}
@@ -287,6 +307,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       <button class="tab active" id="tab-checkin" onclick="switchTab('checkin')">Check-in</button>
       <button class="tab" id="tab-calendar" onclick="switchTab('calendar')">Calendar</button>
       <button class="tab admin-only" id="tab-admin" onclick="switchTab('admin')" style="display:none">Manage</button>
+      <button class="tab admin-only" id="tab-report" onclick="switchTab('report')" style="display:none">Report</button>
     </div>
 
     <!-- LOADING -->
@@ -604,6 +625,65 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
 <div class="toast" id="toast"></div>
 
+<!-- ══ TAB: REPORT ══ -->
+<div id="tab-content-report" style="display:none">
+
+  <div class="neu-card" style="padding:14px;margin-bottom:14px">
+    <div class="card-title" style="margin-bottom:10px">Report Period</div>
+    <div style="display:flex;gap:8px">
+      <button class="rpt-period-btn active" id="rpt-btn-week" onclick="setRptPeriod('week')">This Week</button>
+      <button class="rpt-period-btn" id="rpt-btn-month" onclick="setRptPeriod('month')">This Month</button>
+      <button class="rpt-period-btn" id="rpt-btn-custom" onclick="setRptPeriod('custom')">Custom</button>
+    </div>
+    <div id="rpt-custom-range" style="display:none;margin-top:12px">
+      <div class="row2">
+        <div class="fg" style="margin-bottom:0"><label class="fl">From</label><input class="fi" id="rpt-from" type="date"></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">To</label><input class="fi" id="rpt-to" type="date"></div>
+      </div>
+      <button class="checkin-btn" onclick="generateReport()" style="margin-top:12px;padding:12px;font-size:14px">Generate Report</button>
+    </div>
+  </div>
+
+  <div id="rpt-loading" class="loading-wrap" style="display:none"><div class="spinner"></div>&nbsp;Generating report...</div>
+
+  <div id="rpt-summary" style="display:none">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" id="rpt-stat-grid"></div>
+
+    <div class="neu-card" id="rpt-flags-card" style="margin-bottom:14px;display:none">
+      <div class="card-title" style="margin-bottom:6px;color:var(--red)">⚠ Flagged Trips</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Fresh trips (non-Masbate) na may kulang na attendance, 2-Man Team, o Crates record.</div>
+      <div id="rpt-flags-list"></div>
+    </div>
+
+    <div class="neu-card" id="rpt-all-clear" style="display:none;text-align:center;padding:28px 20px;margin-bottom:14px">
+      <div style="font-size:40px;margin-bottom:10px">✅</div>
+      <div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px">All Clear!</div>
+      <div style="font-size:13px;color:var(--text2)">All fresh trips for this period are compliant.</div>
+    </div>
+
+    <div class="neu-card" style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:4px">Fresh Trip Compliance</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Checks: 2 helpers attended · 2-Man Team marked · Crates record filed</div>
+      <div id="rpt-trips-list"></div>
+    </div>
+
+    <div class="neu-card" style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:4px">Crates Return Compliance</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Mula sa Employee Records — % ng crates na naireturno/na-liquidate</div>
+      <div id="rpt-crates-list"></div>
+    </div>
+
+    <div class="neu-card" style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:12px">Other Trip Attendance</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Frozen at Masbate trips — walang 2-man team requirement</div>
+      <div id="rpt-other-list"></div>
+    </div>
+
+  </div>
+</div>
+
+
 <script>
 // ═══ CONFIG ═══════════════════════════════════════════
 const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
@@ -757,6 +837,7 @@ function loadAll() {
     if (isAdmin) {
       document.getElementById('tab-admin').style.display = '';
       renderEmployeeList();
+      document.getElementById('tab-report').style.display = '';
     }
 
     // Check today
@@ -793,14 +874,17 @@ function loadAll() {
 
 
 function switchTab(name) {
-  ['checkin','calendar','admin'].forEach(function(t) {
+  ['checkin','calendar','admin','report'].forEach(function(t) {
     document.getElementById('tab-' + t).classList.toggle('active', t === name);
     var el = document.getElementById('tab-content-' + t);
     if (el) el.style.display = (t === name ? 'block' : 'none');
   });
-  // Re-render employee list kapag pumunta sa admin tab
-  if (name === 'admin' && isAdmin) {
-    renderEmployeeList();
+  if (name === 'admin' && isAdmin) renderEmployeeList();
+  if (name === 'report' && isAdmin) {
+    if (document.getElementById('rpt-summary').style.display === 'none'
+        && document.getElementById('rpt-loading').style.display === 'none') {
+      generateReport();
+    }
   }
 }
 
@@ -1648,6 +1732,259 @@ function initAutoRefresh(onRefresh) {
     if (!token || Date.now() >= expiry) return; // skip if not logged in
     onRefresh(function() {}); // silent refresh
   }, 5 * 60 * 1000);
+}
+
+// ═══════════════════════════════════════════════════════
+// REPORT TAB
+// ═══════════════════════════════════════════════════════
+var rptPeriod  = 'week';
+var allRecords = [];
+
+function setRptPeriod(p) {
+  rptPeriod = p;
+  ['week','month','custom'].forEach(function(x){
+    document.getElementById('rpt-btn-'+x).classList.toggle('active', x===p);
+  });
+  document.getElementById('rpt-custom-range').style.display = p==='custom' ? 'block' : 'none';
+  if (p !== 'custom') generateReport();
+}
+
+function generateReport() {
+  document.getElementById('rpt-loading').style.display = 'flex';
+  document.getElementById('rpt-summary').style.display = 'none';
+
+  var now = new Date();
+  var from, to;
+
+  if (rptPeriod === 'week') {
+    from = new Date(now); from.setDate(now.getDate() - now.getDay());
+    to   = new Date(from); to.setDate(from.getDate() + 6);
+  } else if (rptPeriod === 'month') {
+    from = new Date(now.getFullYear(), now.getMonth(), 1);
+    to   = new Date(now.getFullYear(), now.getMonth()+1, 0);
+  } else {
+    from = new Date(document.getElementById('rpt-from').value);
+    to   = new Date(document.getElementById('rpt-to').value);
+    if (isNaN(from) || isNaN(to)) {
+      showToast('Select valid dates.');
+      document.getElementById('rpt-loading').style.display = 'none';
+      return;
+    }
+  }
+
+  var fromStr = fmtDate(from);
+  var toStr   = fmtDate(to);
+
+  Promise.all([
+    apiGet('Trips!A2:I'),
+    apiGet('Records!A2:K')
+  ]).then(function(res) {
+    var tripRows = res[0].values || [];
+    var recRows  = res[1].values || [];
+
+    var trips = tripRows.filter(function(r){ return r[1]; }).map(function(r){
+      return {
+        id: r[0]||'', deliveryDate: rptConvertDate(r[1]), truck: r[2]||'',
+        type: r[4]||'', shipmentNum: r[5]||'', billed: r[6]||'',
+        route: r[7]||'', rate: r[8]||''
+      };
+    }).filter(function(t){ return t.deliveryDate >= fromStr && t.deliveryDate <= toStr; });
+
+    allRecords = recRows.filter(function(r){ return r[1]; }).map(function(r){
+      return {
+        empName: r[1]||'', date: r[2]||'', truck: r[3]||'',
+        docType: r[4]||'', liquidated: r[6]||'No'
+      };
+    });
+
+    renderReport(trips, fromStr, toStr);
+  }).catch(function(err){
+    document.getElementById('rpt-loading').style.display = 'none';
+    showToast('❌ Failed to load report data.');
+    console.error(err);
+  });
+}
+
+function rptConvertDate(value) {
+  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return value;
+  var num = parseFloat(value);
+  if (!isNaN(num) && num > 1000) {
+    var date = new Date(new Date(1899,11,30).getTime() + num*86400000);
+    return date.getFullYear()+'-'+pad(date.getMonth()+1)+'-'+pad(date.getDate());
+  }
+  if (typeof value === 'string') {
+    var d = new Date(value);
+    if (!isNaN(d.getTime())) return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  }
+  return '';
+}
+
+function renderReport(trips, fromStr, toStr) {
+  document.getElementById('rpt-loading').style.display = 'none';
+  document.getElementById('rpt-summary').style.display = 'block';
+
+  var freshTrips   = trips.filter(function(t){ return t.type==='Fresh' && t.route.indexOf('Masbate')===-1; });
+  var frozenTrips  = trips.filter(function(t){ return t.type==='Frozen'; });
+  var masbateTrips = trips.filter(function(t){ return t.route.indexOf('Masbate')>-1; });
+
+  var tripResults = [];
+  var totalFlags  = 0;
+
+  freshTrips.forEach(function(trip) {
+    var date  = trip.deliveryDate;
+    var truck = (trip.truck||'').toLowerCase();
+
+    var attOnDay = allAttendance.filter(function(a){
+      return a.date===date && (a.truck||'').toLowerCase()===truck;
+    });
+
+    var totalAtt  = attOnDay.length;
+    var count2Man = attOnDay.filter(function(a){ return a.team==='Yes'; }).length;
+
+    var cratesRecs = allRecords.filter(function(r){
+      return r.date===date && (r.truck||'').toLowerCase()===truck && r.docType==='Crates';
+    });
+
+    var empDetails = attOnDay.map(function(a){
+      var hasCrates = cratesRecs.some(function(r){ return r.empName.toLowerCase()===a.name.toLowerCase(); });
+      return { name:a.name, is2Man:a.team==='Yes', hasCrates:hasCrates };
+    });
+
+    var missingCrates = empDetails.filter(function(e){ return !e.hasCrates; });
+    var hasAllCrates  = missingCrates.length===0 && totalAtt>0;
+
+    var issues = [];
+    if (totalAtt===0)               issues.push('Walang attendance recorded para sa truck na ito');
+    else if (totalAtt < 2)          issues.push('Isang helper lang ('+totalAtt+') — dapat 2 para sa Fresh trip');
+    if (count2Man<2 && totalAtt>=2) issues.push('2-Man Team hindi naka-mark ng '+(2-count2Man)+' helper(s)');
+    if (!hasAllCrates && totalAtt>0) issues.push('Missing Crates record: '+missingCrates.map(function(e){ return e.name.split(' ')[0]; }).join(', '));
+
+    totalFlags += issues.length;
+    tripResults.push({ trip:trip, attCount:totalAtt, has2Man:count2Man>=2, hasAllCrates:hasAllCrates, empDetails:empDetails, issues:issues, ok:issues.length===0 });
+  });
+
+  var cratesInPeriod = allRecords.filter(function(r){ return r.date>=fromStr && r.date<=toStr && r.docType==='Crates'; });
+  var okTrips   = tripResults.filter(function(t){ return t.ok; }).length;
+  var flagTrips = tripResults.filter(function(t){ return !t.ok; }).length;
+
+  // Stat grid
+  document.getElementById('rpt-stat-grid').innerHTML = [
+    { val:trips.length,       lbl:'Total Trips',     col:'var(--red)' },
+    { val:freshTrips.length,  lbl:'Fresh (checked)', col:'var(--orange)' },
+    { val:okTrips,            lbl:'✓ Compliant',     col:'var(--green)' },
+    { val:flagTrips,          lbl:'⚠ Flagged',       col:flagTrips>0?'var(--red)':'var(--text3)' }
+  ].map(function(s){
+    return '<div class="rpt-stat"><div class="rpt-stat-val" style="color:'+s.col+'">'+s.val+'</div><div class="rpt-stat-lbl">'+s.lbl+'</div></div>';
+  }).join('');
+
+  // Flags card
+  var flagCard     = document.getElementById('rpt-flags-card');
+  var allClearCard = document.getElementById('rpt-all-clear');
+  if (freshTrips.length===0) {
+    flagCard.style.display='none'; allClearCard.style.display='none';
+  } else if (flagTrips===0) {
+    flagCard.style.display='none'; allClearCard.style.display='block';
+  } else {
+    flagCard.style.display='block'; allClearCard.style.display='none';
+    document.getElementById('rpt-flags-list').innerHTML = tripResults.filter(function(t){ return !t.ok; }).map(function(t){
+      return '<div class="rpt-trip-row has-issue">'
+        +'<div class="rpt-trip-head">'
+        +'<span class="rpt-trip-truck">🚛 '+t.trip.truck+'</span>'
+        +'<span class="rpt-trip-date">'+t.trip.deliveryDate+(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
+        +'</div>'
+        +'<div class="rpt-check-list">'
+        +t.issues.map(function(iss){
+          return '<div class="rpt-check"><span class="rpt-check-icon">✕</span><span style="color:var(--red)">'+iss+'</span></div>';
+        }).join('')
+        +'</div></div>';
+    }).join('');
+  }
+
+  // Fresh trip compliance list
+  document.getElementById('rpt-trips-list').innerHTML = freshTrips.length===0
+    ? '<div class="empty-hint">Walang Fresh trips sa period na ito.</div>'
+    : tripResults.map(function(t){
+        var rowCls='rpt-trip-row'+(t.ok?'':(t.issues.length>1?' has-issue':' partial'));
+        var checks=[
+          { ok:t.attCount>=2, lbl:t.attCount+' helper(s) nag-attend' },
+          { ok:t.has2Man,     lbl:'2-Man Team naka-mark' },
+          { ok:t.hasAllCrates,lbl:'Lahat may Crates record' }
+        ];
+        return '<div class="'+rowCls+'">'
+          +'<div class="rpt-trip-head">'
+          +'<span class="rpt-trip-truck">🚛 '+t.trip.truck+'</span>'
+          +'<span class="rpt-trip-date">'+t.trip.deliveryDate+(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
+          +'</div>'
+          +'<div class="rpt-check-list">'
+          +checks.map(function(c){
+            return '<div class="rpt-check"><span class="rpt-check-icon">'+(c.ok?'✓':'✕')+'</span>'
+              +'<span style="color:'+(c.ok?'var(--green)':'var(--red)')+'">'+c.lbl+'</span></div>';
+          }).join('')
+          +'</div>'
+          +(t.empDetails.length>0
+            ? '<div class="rpt-emp-pills">'
+              +t.empDetails.map(function(e){
+                return '<span class="rpt-emp-pill '+(e.hasCrates?'ok':'missing')+'">'
+                  +e.name.split(' ')[0]+(e.hasCrates?' ✓':' ✕ no crates')+'</span>';
+              }).join('')+'</div>'
+            : '<div style="font-size:11px;color:var(--red);margin-top:6px">— No attendance found —</div>')
+          +'</div>';
+      }).join('');
+
+  // Crates compliance per employee
+  var byEmp={};
+  cratesInPeriod.forEach(function(r){
+    if (!byEmp[r.empName]) byEmp[r.empName]={total:0,liq:0};
+    byEmp[r.empName].total++;
+    if (r.liquidated==='Yes') byEmp[r.empName].liq++;
+  });
+
+  document.getElementById('rpt-crates-list').innerHTML = Object.keys(byEmp).length===0
+    ? '<div class="empty-hint">Walang Crates records sa period na ito.</div>'
+    : Object.keys(byEmp).sort().map(function(name){
+        var d=byEmp[name];
+        var pct=Math.round((d.liq/d.total)*100);
+        var rowCls=pct===100?'rpt-trip-row':(pct>=50?'rpt-trip-row partial':'rpt-trip-row has-issue');
+        var barColor=pct===100?'var(--green)':(pct>=50?'var(--orange)':'var(--red)');
+        return '<div class="'+rowCls+'">'
+          +'<div class="rpt-trip-head">'
+          +'<span class="rpt-trip-truck">'+name+'</span>'
+          +'<span class="rpt-trip-date">'+d.liq+'/'+d.total+' returned</span>'
+          +'</div>'
+          +'<div style="background:var(--bg);border-radius:8px;box-shadow:var(--neu-in);height:8px;margin-top:6px;overflow:hidden">'
+          +'<div style="height:100%;width:'+pct+'%;background:'+barColor+';border-radius:8px;transition:width 0.5s"></div>'
+          +'</div>'
+          +'<div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right">'+pct+'% returned</div>'
+          +'</div>';
+      }).join('');
+
+  // Frozen + Masbate attendance summary
+  var otherTrips = frozenTrips.concat(masbateTrips);
+  document.getElementById('rpt-other-list').innerHTML = otherTrips.length===0
+    ? '<div class="empty-hint">Walang Frozen o Masbate trips sa period na ito.</div>'
+    : otherTrips.map(function(trip){
+        var date  = trip.deliveryDate;
+        var truck = (trip.truck||'').toLowerCase();
+        var attOnDay = allAttendance.filter(function(a){
+          return a.date===date && (a.truck||'').toLowerCase()===truck;
+        });
+        var typeLabel = trip.route.indexOf('Masbate')>-1 ? '🚢 Masbate' : '🧊 Frozen';
+        return '<div class="rpt-trip-row" style="border-left-color:var(--text3)">'
+          +'<div class="rpt-trip-head">'
+          +'<span class="rpt-trip-truck">🚛 '+trip.truck+'</span>'
+          +'<span class="rpt-trip-date">'+trip.deliveryDate+' · '+typeLabel+'</span>'
+          +'</div>'
+          +'<div class="rpt-check-list">'
+          +'<div class="rpt-check"><span class="rpt-check-icon" style="color:var(--text2)">👥</span>'
+          +'<span>'+attOnDay.length+' helper(s) nag-attend'+(attOnDay.length===0?' — walang attendance':'')+'</span></div>'
+          +'</div>'
+          +(attOnDay.length>0
+            ? '<div class="rpt-emp-pills">'
+              +attOnDay.map(function(a){ return '<span class="rpt-emp-pill ok">'+a.name.split(' ')[0]+'</span>'; }).join('')
+              +'</div>'
+            : '')
+          +'</div>';
+      }).join('');
 }
 
 
