@@ -573,6 +573,64 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
     </div><!-- end admin tab -->
 
+  <!-- ══ TAB: REPORT ══ -->
+    <div id="tab-content-report" style="display:none">
+
+      <div class="neu-card" style="padding:14px;margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:10px">Report Period</div>
+        <div style="display:flex;gap:8px">
+          <button class="rpt-period-btn active" id="rpt-btn-week" onclick="setRptPeriod('week')">This Week</button>
+          <button class="rpt-period-btn" id="rpt-btn-month" onclick="setRptPeriod('month')">This Month</button>
+          <button class="rpt-period-btn" id="rpt-btn-custom" onclick="setRptPeriod('custom')">Custom</button>
+        </div>
+        <div id="rpt-custom-range" style="display:none;margin-top:12px">
+          <div class="row2">
+            <div class="fg" style="margin-bottom:0"><label class="fl">From</label><input class="fi" id="rpt-from" type="date"></div>
+            <div class="fg" style="margin-bottom:0"><label class="fl">To</label><input class="fi" id="rpt-to" type="date"></div>
+          </div>
+          <button class="checkin-btn" onclick="generateReport()" style="margin-top:12px;padding:12px;font-size:14px">Generate Report</button>
+        </div>
+      </div>
+
+      <div id="rpt-loading" class="loading-wrap" style="display:none"><div class="spinner"></div>&nbsp;Generating report...</div>
+
+      <div id="rpt-summary" style="display:none">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" id="rpt-stat-grid"></div>
+
+        <div class="neu-card" id="rpt-flags-card" style="margin-bottom:14px;display:none">
+          <div class="card-title" style="margin-bottom:6px;color:var(--red)">⚠ Flagged Trips</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Fresh trips (non-Masbate) na may kulang na attendance, 2-Man Team, o Crates record.</div>
+          <div id="rpt-flags-list"></div>
+        </div>
+
+        <div class="neu-card" id="rpt-all-clear" style="display:none;text-align:center;padding:28px 20px;margin-bottom:14px">
+          <div style="font-size:40px;margin-bottom:10px">✅</div>
+          <div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px">All Clear!</div>
+          <div style="font-size:13px;color:var(--text2)">All fresh trips for this period are compliant.</div>
+        </div>
+
+        <div class="neu-card" style="margin-bottom:14px">
+          <div class="card-title" style="margin-bottom:4px">Fresh Trip Compliance</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Checks: 2 helpers attended · 2-Man Team marked · Crates record filed</div>
+          <div id="rpt-trips-list"></div>
+        </div>
+
+        <div class="neu-card" style="margin-bottom:14px">
+          <div class="card-title" style="margin-bottom:4px">Crates Return Compliance</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Mula sa Employee Records — % ng crates na naireturno/na-liquidate</div>
+          <div id="rpt-crates-list"></div>
+        </div>
+
+        <div class="neu-card" style="margin-bottom:14px">
+          <div class="card-title" style="margin-bottom:12px">Other Trip Attendance</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Frozen at Masbate trips — walang 2-man team requirement</div>
+          <div id="rpt-other-list"></div>
+        </div>
+
+      </div>
+    </div><!-- end report tab -->
+
   </div><!-- end page-wrap -->
 
   <div class="bottom-nav">
@@ -626,63 +684,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 <div class="toast" id="toast"></div>
 
 <!-- ══ TAB: REPORT ══ -->
-<div id="tab-content-report" style="display:none">
-
-  <div class="neu-card" style="padding:14px;margin-bottom:14px">
-    <div class="card-title" style="margin-bottom:10px">Report Period</div>
-    <div style="display:flex;gap:8px">
-      <button class="rpt-period-btn active" id="rpt-btn-week" onclick="setRptPeriod('week')">This Week</button>
-      <button class="rpt-period-btn" id="rpt-btn-month" onclick="setRptPeriod('month')">This Month</button>
-      <button class="rpt-period-btn" id="rpt-btn-custom" onclick="setRptPeriod('custom')">Custom</button>
-    </div>
-    <div id="rpt-custom-range" style="display:none;margin-top:12px">
-      <div class="row2">
-        <div class="fg" style="margin-bottom:0"><label class="fl">From</label><input class="fi" id="rpt-from" type="date"></div>
-        <div class="fg" style="margin-bottom:0"><label class="fl">To</label><input class="fi" id="rpt-to" type="date"></div>
-      </div>
-      <button class="checkin-btn" onclick="generateReport()" style="margin-top:12px;padding:12px;font-size:14px">Generate Report</button>
-    </div>
-  </div>
-
-  <div id="rpt-loading" class="loading-wrap" style="display:none"><div class="spinner"></div>&nbsp;Generating report...</div>
-
-  <div id="rpt-summary" style="display:none">
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" id="rpt-stat-grid"></div>
-
-    <div class="neu-card" id="rpt-flags-card" style="margin-bottom:14px;display:none">
-      <div class="card-title" style="margin-bottom:6px;color:var(--red)">⚠ Flagged Trips</div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Fresh trips (non-Masbate) na may kulang na attendance, 2-Man Team, o Crates record.</div>
-      <div id="rpt-flags-list"></div>
-    </div>
-
-    <div class="neu-card" id="rpt-all-clear" style="display:none;text-align:center;padding:28px 20px;margin-bottom:14px">
-      <div style="font-size:40px;margin-bottom:10px">✅</div>
-      <div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px">All Clear!</div>
-      <div style="font-size:13px;color:var(--text2)">All fresh trips for this period are compliant.</div>
-    </div>
-
-    <div class="neu-card" style="margin-bottom:14px">
-      <div class="card-title" style="margin-bottom:4px">Fresh Trip Compliance</div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Checks: 2 helpers attended · 2-Man Team marked · Crates record filed</div>
-      <div id="rpt-trips-list"></div>
-    </div>
-
-    <div class="neu-card" style="margin-bottom:14px">
-      <div class="card-title" style="margin-bottom:4px">Crates Return Compliance</div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Mula sa Employee Records — % ng crates na naireturno/na-liquidate</div>
-      <div id="rpt-crates-list"></div>
-    </div>
-
-    <div class="neu-card" style="margin-bottom:14px">
-      <div class="card-title" style="margin-bottom:12px">Other Trip Attendance</div>
-      <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Frozen at Masbate trips — walang 2-man team requirement</div>
-      <div id="rpt-other-list"></div>
-    </div>
-
-  </div>
-</div>
-
 
 <script>
 // ═══ CONFIG ═══════════════════════════════════════════
