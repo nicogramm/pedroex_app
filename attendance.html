@@ -612,7 +612,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
         <div class="neu-card" style="margin-bottom:14px">
           <div class="card-title" style="margin-bottom:4px">Fresh Trip Compliance</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Checks: 2 helpers attended · 2-Man Team marked · Crates record filed</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">2-Man Team = exactly 2 attended (1 driver + 1 helper). All helpers must have a Crates record.</div>
           <div id="rpt-trips-list"></div>
         </div>
 
@@ -1785,23 +1785,31 @@ function generateReport() {
 
     var trips = tripRows.filter(function(r){ return r[1]; }).map(function(r){
       return {
-        id: r[0]||'', deliveryDate: rptConvertDate(r[1]), truck: r[2]||'',
-        type: r[4]||'', shipmentNum: r[5]||'', billed: r[6]||'',
-        route: r[7]||'', rate: r[8]||''
+        id:           r[0]||'',
+        deliveryDate: rptConvertDate(r[1]),
+        truck:        r[2]||'',
+        type:         r[4]||'',
+        shipmentNum:  r[5]||'',
+        billed:       r[6]||'',
+        route:        r[7]||'',
+        rate:         r[8]||''
       };
     }).filter(function(t){ return t.deliveryDate >= fromStr && t.deliveryDate <= toStr; });
 
     allRecords = recRows.filter(function(r){ return r[1]; }).map(function(r){
       return {
-        empName: r[1]||'', date: r[2]||'', truck: r[3]||'',
-        docType: r[4]||'', liquidated: r[6]||'No'
+        empName:    r[1]||'',
+        date:       r[2]||'',
+        truck:      r[3]||'',
+        docType:    r[4]||'',
+        liquidated: r[6]||'No'
       };
     });
 
     renderReport(trips, fromStr, toStr);
   }).catch(function(err){
     document.getElementById('rpt-loading').style.display = 'none';
-    showToast('❌ Failed to load report data.');
+    showToast('Failed to load report data.');
     console.error(err);
   });
 }
@@ -1824,129 +1832,215 @@ function renderReport(trips, fromStr, toStr) {
   document.getElementById('rpt-loading').style.display = 'none';
   document.getElementById('rpt-summary').style.display = 'block';
 
+  // Separate trips by type
+  // Fresh (non-Masbate) = strict compliance check
+  // Masbate = exception — no 2-man team requirement regardless of headcount
+  // Frozen = no 2-man team requirement
   var freshTrips   = trips.filter(function(t){ return t.type==='Fresh' && t.route.indexOf('Masbate')===-1; });
   var frozenTrips  = trips.filter(function(t){ return t.type==='Frozen'; });
   var masbateTrips = trips.filter(function(t){ return t.route.indexOf('Masbate')>-1; });
 
   var tripResults = [];
-  var totalFlags  = 0;
 
   freshTrips.forEach(function(trip) {
     var date  = trip.deliveryDate;
     var truck = (trip.truck||'').toLowerCase();
 
+    // Everyone who checked in for this truck on this date
     var attOnDay = allAttendance.filter(function(a){
       return a.date===date && (a.truck||'').toLowerCase()===truck;
     });
 
-    var totalAtt  = attOnDay.length;
-    var count2Man = attOnDay.filter(function(a){ return a.team==='Yes'; }).length;
+    var totalAtt = attOnDay.length;
 
+    // Driver = marked 2-Man Team as "No" (fixed per truck, not counted as helper)
+    // Helper = marked 2-Man Team as "Yes"
+    // 2-Man Team trip = exactly 2 total attendees (1 driver + 1 helper)
+    // 3+ attendees = driver + 2 or more helpers — valid Fresh trip but NOT 2-Man Team
+    var helpers    = attOnDay.filter(function(a){ return a.team==='Yes'; });
+    var drivers    = attOnDay.filter(function(a){ return a.team==='No';  });
+    var is2ManTeam = totalAtt === 2 && helpers.length === 1 && drivers.length === 1;
+
+    // Crates records for this truck+date from Employee Records
     var cratesRecs = allRecords.filter(function(r){
-      return r.date===date && (r.truck||'').toLowerCase()===truck && r.docType==='Crates';
+      return r.date===date
+          && (r.truck||'').toLowerCase()===truck
+          && r.docType==='Crates';
     });
 
+    // Build per-person detail
+    // Only helpers are required to have Crates records — drivers are excluded
     var empDetails = attOnDay.map(function(a){
-      var hasCrates = cratesRecs.some(function(r){ return r.empName.toLowerCase()===a.name.toLowerCase(); });
-      return { name:a.name, is2Man:a.team==='Yes', hasCrates:hasCrates };
+      var isHelper  = a.team==='Yes';
+      var hasCrates = cratesRecs.some(function(r){
+        return r.empName.toLowerCase()===a.name.toLowerCase();
+      });
+      return { name:a.name, isHelper:isHelper, hasCrates:hasCrates };
     });
 
-    var missingCrates = empDetails.filter(function(e){ return !e.hasCrates; });
-    var hasAllCrates  = missingCrates.length===0 && totalAtt>0;
+    // Helpers missing Crates records
+    var missingCrates = empDetails.filter(function(e){ return e.isHelper && !e.hasCrates; });
+    var hasAllCrates  = missingCrates.length===0 && helpers.length>0;
 
+    // Build issues list
     var issues = [];
-    if (totalAtt===0)               issues.push('Walang attendance recorded para sa truck na ito');
-    else if (totalAtt < 2)          issues.push('Isang helper lang ('+totalAtt+') — dapat 2 para sa Fresh trip');
-    if (count2Man<2 && totalAtt>=2) issues.push('2-Man Team hindi naka-mark ng '+(2-count2Man)+' helper(s)');
-    if (!hasAllCrates && totalAtt>0) issues.push('Missing Crates record: '+missingCrates.map(function(e){ return e.name.split(' ')[0]; }).join(', '));
 
-    totalFlags += issues.length;
-    tripResults.push({ trip:trip, attCount:totalAtt, has2Man:count2Man>=2, hasAllCrates:hasAllCrates, empDetails:empDetails, issues:issues, ok:issues.length===0 });
+    if (totalAtt === 0) {
+      // No one showed up for this truck
+      issues.push('No attendance recorded for this truck on this date');
+    } else if (helpers.length === 0) {
+      // Only a driver checked in, no helper marked
+      issues.push('No helper recorded — at least 1 helper required for Fresh trips');
+    }
+
+    // All helpers must have a Crates record (regardless of 2-man or 3-man)
+    if (helpers.length > 0 && !hasAllCrates) {
+      issues.push('Missing Crates record for: ' + missingCrates.map(function(e){
+        return e.name.split(' ')[0];
+      }).join(', '));
+    }
+
+    tripResults.push({
+      trip:         trip,
+      attCount:     totalAtt,
+      helperCount:  helpers.length,
+      driverCount:  drivers.length,
+      is2ManTeam:   is2ManTeam,   // true only when exactly 2 attended (1 driver + 1 helper)
+      hasAllCrates: hasAllCrates,
+      empDetails:   empDetails,
+      issues:       issues,
+      ok:           issues.length === 0
+    });
   });
 
-  var cratesInPeriod = allRecords.filter(function(r){ return r.date>=fromStr && r.date<=toStr && r.docType==='Crates'; });
-  var okTrips   = tripResults.filter(function(t){ return t.ok; }).length;
+  // Crates records within the report period (for compliance bar chart)
+  var cratesInPeriod = allRecords.filter(function(r){
+    return r.date>=fromStr && r.date<=toStr && r.docType==='Crates';
+  });
+
+  var okTrips   = tripResults.filter(function(t){ return t.ok;  }).length;
   var flagTrips = tripResults.filter(function(t){ return !t.ok; }).length;
 
-  // Stat grid
+  // ── Stat grid ──────────────────────────────────────────
   document.getElementById('rpt-stat-grid').innerHTML = [
-    { val:trips.length,       lbl:'Total Trips',     col:'var(--red)' },
-    { val:freshTrips.length,  lbl:'Fresh (checked)', col:'var(--orange)' },
-    { val:okTrips,            lbl:'✓ Compliant',     col:'var(--green)' },
-    { val:flagTrips,          lbl:'⚠ Flagged',       col:flagTrips>0?'var(--red)':'var(--text3)' }
+    { val: trips.length,       lbl: 'Total Trips',     col: 'var(--red)'    },
+    { val: freshTrips.length,  lbl: 'Fresh (checked)', col: 'var(--orange)' },
+    { val: okTrips,            lbl: 'Compliant',        col: 'var(--green)'  },
+    { val: flagTrips,          lbl: 'Flagged',          col: flagTrips>0 ? 'var(--red)' : 'var(--text3)' }
   ].map(function(s){
-    return '<div class="rpt-stat"><div class="rpt-stat-val" style="color:'+s.col+'">'+s.val+'</div><div class="rpt-stat-lbl">'+s.lbl+'</div></div>';
+    return '<div class="rpt-stat">'
+      +'<div class="rpt-stat-val" style="color:'+s.col+'">'+s.val+'</div>'
+      +'<div class="rpt-stat-lbl">'+s.lbl+'</div>'
+      +'</div>';
   }).join('');
 
-  // Flags card
+  // ── Flagged trips card ─────────────────────────────────
   var flagCard     = document.getElementById('rpt-flags-card');
   var allClearCard = document.getElementById('rpt-all-clear');
-  if (freshTrips.length===0) {
-    flagCard.style.display='none'; allClearCard.style.display='none';
-  } else if (flagTrips===0) {
-    flagCard.style.display='none'; allClearCard.style.display='block';
+
+  if (freshTrips.length === 0) {
+    flagCard.style.display     = 'none';
+    allClearCard.style.display = 'none';
+  } else if (flagTrips === 0) {
+    flagCard.style.display     = 'none';
+    allClearCard.style.display = 'block';
   } else {
-    flagCard.style.display='block'; allClearCard.style.display='none';
-    document.getElementById('rpt-flags-list').innerHTML = tripResults.filter(function(t){ return !t.ok; }).map(function(t){
-      return '<div class="rpt-trip-row has-issue">'
-        +'<div class="rpt-trip-head">'
-        +'<span class="rpt-trip-truck">🚛 '+t.trip.truck+'</span>'
-        +'<span class="rpt-trip-date">'+t.trip.deliveryDate+(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
-        +'</div>'
-        +'<div class="rpt-check-list">'
-        +t.issues.map(function(iss){
-          return '<div class="rpt-check"><span class="rpt-check-icon">✕</span><span style="color:var(--red)">'+iss+'</span></div>';
-        }).join('')
-        +'</div></div>';
-    }).join('');
+    flagCard.style.display     = 'block';
+    allClearCard.style.display = 'none';
+
+    document.getElementById('rpt-flags-list').innerHTML = tripResults
+      .filter(function(t){ return !t.ok; })
+      .map(function(t){
+        return '<div class="rpt-trip-row has-issue">'
+          +'<div class="rpt-trip-head">'
+          +'<span class="rpt-trip-truck">🚛 '+t.trip.truck+'</span>'
+          +'<span class="rpt-trip-date">'+t.trip.deliveryDate
+          +(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
+          +'</div>'
+          +'<div class="rpt-check-list">'
+          +t.issues.map(function(iss){
+            return '<div class="rpt-check">'
+              +'<span class="rpt-check-icon">✕</span>'
+              +'<span style="color:var(--red)">'+iss+'</span>'
+              +'</div>';
+          }).join('')
+          +'</div></div>';
+      }).join('');
   }
 
-  // Fresh trip compliance list
-  document.getElementById('rpt-trips-list').innerHTML = freshTrips.length===0
-    ? '<div class="empty-hint">Walang Fresh trips sa period na ito.</div>'
+  // ── Fresh trip compliance list ─────────────────────────
+  document.getElementById('rpt-trips-list').innerHTML = freshTrips.length === 0
+    ? '<div class="empty-hint">No Fresh trips in this period.</div>'
     : tripResults.map(function(t){
-        var rowCls='rpt-trip-row'+(t.ok?'':(t.issues.length>1?' has-issue':' partial'));
-        var checks=[
-          { ok:t.attCount>=2, lbl:t.attCount+' helper(s) nag-attend' },
-          { ok:t.has2Man,     lbl:'2-Man Team naka-mark' },
-          { ok:t.hasAllCrates,lbl:'Lahat may Crates record' }
+
+        // Row color: green = ok, red = has issues, orange = partial
+        var rowCls = 'rpt-trip-row' + (t.ok ? '' : (t.issues.length > 1 ? ' has-issue' : ' partial'));
+
+        // Team composition label
+        var teamLabel;
+        if (t.helperCount === 0) {
+          teamLabel = 'No helpers recorded';
+        } else if (t.is2ManTeam) {
+          // Exactly 2 attendees: 1 driver + 1 helper
+          teamLabel = '2-Man Team (1 driver + 1 helper)';
+        } else {
+          // 3+ attendees: driver + multiple helpers — valid but not 2-Man Team
+          teamLabel = t.attCount + ' attended (1 driver + ' + t.helperCount + ' helpers)';
+        }
+
+        var checks = [
+          { ok: t.helperCount >= 1,  lbl: teamLabel              },
+          { ok: t.hasAllCrates,      lbl: 'All helpers have Crates record' }
         ];
+
         return '<div class="'+rowCls+'">'
           +'<div class="rpt-trip-head">'
           +'<span class="rpt-trip-truck">🚛 '+t.trip.truck+'</span>'
-          +'<span class="rpt-trip-date">'+t.trip.deliveryDate+(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
+          +'<span class="rpt-trip-date">'+t.trip.deliveryDate
+          +(t.trip.route?' · '+t.trip.route.split('/')[0]:'')+'</span>'
           +'</div>'
           +'<div class="rpt-check-list">'
           +checks.map(function(c){
-            return '<div class="rpt-check"><span class="rpt-check-icon">'+(c.ok?'✓':'✕')+'</span>'
-              +'<span style="color:'+(c.ok?'var(--green)':'var(--red)')+'">'+c.lbl+'</span></div>';
+            return '<div class="rpt-check">'
+              +'<span class="rpt-check-icon">'+(c.ok?'✓':'✕')+'</span>'
+              +'<span style="color:'+(c.ok?'var(--green)':'var(--red)')+'">'+c.lbl+'</span>'
+              +'</div>';
           }).join('')
           +'</div>'
-          +(t.empDetails.length>0
+          +(t.empDetails.length > 0
             ? '<div class="rpt-emp-pills">'
-              +t.empDetails.map(function(e){
-                return '<span class="rpt-emp-pill '+(e.hasCrates?'ok':'missing')+'">'
-                  +e.name.split(' ')[0]+(e.hasCrates?' ✓':' ✕ no crates')+'</span>';
-              }).join('')+'</div>'
+              + t.empDetails.map(function(e){
+                  if (!e.isHelper) {
+                    // Driver — no Crates requirement
+                    return '<span class="rpt-emp-pill" style="background:var(--text3);color:#fff">'
+                      + e.name.split(' ')[0] + ' (driver)</span>';
+                  }
+                  // Helper — must have Crates record
+                  return '<span class="rpt-emp-pill '+(e.hasCrates?'ok':'missing')+'">'
+                    + e.name.split(' ')[0]
+                    + (e.hasCrates?' ✓':' ✕ no crates')
+                    + '</span>';
+                }).join('')
+              + '</div>'
             : '<div style="font-size:11px;color:var(--red);margin-top:6px">— No attendance found —</div>')
           +'</div>';
       }).join('');
 
-  // Crates compliance per employee
-  var byEmp={};
+  // ── Crates return compliance per employee ──────────────
+  var byEmp = {};
   cratesInPeriod.forEach(function(r){
-    if (!byEmp[r.empName]) byEmp[r.empName]={total:0,liq:0};
+    if (!byEmp[r.empName]) byEmp[r.empName] = { total:0, liq:0 };
     byEmp[r.empName].total++;
     if (r.liquidated==='Yes') byEmp[r.empName].liq++;
   });
 
-  document.getElementById('rpt-crates-list').innerHTML = Object.keys(byEmp).length===0
-    ? '<div class="empty-hint">Walang Crates records sa period na ito.</div>'
+  document.getElementById('rpt-crates-list').innerHTML = Object.keys(byEmp).length === 0
+    ? '<div class="empty-hint">No Crates records in this period.</div>'
     : Object.keys(byEmp).sort().map(function(name){
-        var d=byEmp[name];
-        var pct=Math.round((d.liq/d.total)*100);
-        var rowCls=pct===100?'rpt-trip-row':(pct>=50?'rpt-trip-row partial':'rpt-trip-row has-issue');
-        var barColor=pct===100?'var(--green)':(pct>=50?'var(--orange)':'var(--red)');
+        var d        = byEmp[name];
+        var pct      = Math.round((d.liq / d.total) * 100);
+        var rowCls   = pct===100 ? 'rpt-trip-row' : (pct>=50 ? 'rpt-trip-row partial' : 'rpt-trip-row has-issue');
+        var barColor = pct===100 ? 'var(--green)'  : (pct>=50 ? 'var(--orange)'        : 'var(--red)');
         return '<div class="'+rowCls+'">'
           +'<div class="rpt-trip-head">'
           +'<span class="rpt-trip-truck">'+name+'</span>'
@@ -1959,35 +2053,43 @@ function renderReport(trips, fromStr, toStr) {
           +'</div>';
       }).join('');
 
-  // Frozen + Masbate attendance summary
+  // ── Other trips: Frozen + Masbate (informational only) ─
   var otherTrips = frozenTrips.concat(masbateTrips);
-  document.getElementById('rpt-other-list').innerHTML = otherTrips.length===0
-    ? '<div class="empty-hint">Walang Frozen o Masbate trips sa period na ito.</div>'
+  document.getElementById('rpt-other-list').innerHTML = otherTrips.length === 0
+    ? '<div class="empty-hint">No Frozen or Masbate trips in this period.</div>'
     : otherTrips.map(function(trip){
-        var date  = trip.deliveryDate;
-        var truck = (trip.truck||'').toLowerCase();
+        var date     = trip.deliveryDate;
+        var truck    = (trip.truck||'').toLowerCase();
         var attOnDay = allAttendance.filter(function(a){
           return a.date===date && (a.truck||'').toLowerCase()===truck;
         });
+        // Masbate = all attendees can mark 2-Man Team regardless of count
+        // Frozen  = no 2-man team requirement
         var typeLabel = trip.route.indexOf('Masbate')>-1 ? '🚢 Masbate' : '🧊 Frozen';
+
         return '<div class="rpt-trip-row" style="border-left-color:var(--text3)">'
           +'<div class="rpt-trip-head">'
           +'<span class="rpt-trip-truck">🚛 '+trip.truck+'</span>'
           +'<span class="rpt-trip-date">'+trip.deliveryDate+' · '+typeLabel+'</span>'
           +'</div>'
           +'<div class="rpt-check-list">'
-          +'<div class="rpt-check"><span class="rpt-check-icon" style="color:var(--text2)">👥</span>'
-          +'<span>'+attOnDay.length+' helper(s) nag-attend'+(attOnDay.length===0?' — walang attendance':'')+'</span></div>'
+          +'<div class="rpt-check">'
+          +'<span class="rpt-check-icon" style="color:var(--text2)">👥</span>'
+          +'<span>'+attOnDay.length+' person(s) attended'
+          +(attOnDay.length===0?' — no attendance recorded':'')+'</span>'
           +'</div>'
-          +(attOnDay.length>0
+          +'</div>'
+          +(attOnDay.length > 0
             ? '<div class="rpt-emp-pills">'
-              +attOnDay.map(function(a){ return '<span class="rpt-emp-pill ok">'+a.name.split(' ')[0]+'</span>'; }).join('')
-              +'</div>'
+              + attOnDay.map(function(a){
+                  var label = a.team==='Yes' ? ' (2-man)' : ' (driver)';
+                  return '<span class="rpt-emp-pill ok">'+a.name.split(' ')[0]+label+'</span>';
+                }).join('')
+              + '</div>'
             : '')
           +'</div>';
       }).join('');
 }
-
 
 </script>
 </body>
