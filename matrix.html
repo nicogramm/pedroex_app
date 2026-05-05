@@ -1426,7 +1426,7 @@
         const TAB_EXPENSES = 'Expenses_Master';
         const TAB_ATTENDANCE = 'Attendance';
         const TAB_EMPLOYEES = 'Employees';
-        const SYSTEM_START_DATE = '2024-05-01'; // 👈 BAGUHIN MO DITO
+        const SYSTEM_START_DATE = '2026-05-01'; // 👈 BAGUHIN MO DITO
 
         // ═══════════════════════════════════════
         // STATE
@@ -2475,7 +2475,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                       last30Days.push(dateStr);
                   }
               }
-              
+
             const dailyData = last30Days.map(dateStr => {
                 const dayTrips = allTrips.filter(t => t.deliveryDate === dateStr);
                 const dayExpenses = allExpenses.filter(e => e.date === dateStr);
