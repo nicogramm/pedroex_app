@@ -3310,37 +3310,56 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             chartModalChart = destroyChart(chartModalChart);
             
             // Get last 6 months data
-            const months = [];
-            for (let i = 5; i >= 0; i--) {
-                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                months.push({
-                    key: `${date.getFullYear()}-${pad(date.getMonth() + 1)}`,
-                    label: date.toLocaleDateString('en-US', { month: 'short' })
-                });
-            }
+      // ✅ FIXED: Get months from April 2024 onwards (limited to last 12 months)
+              const months = [];
+              const startDate = new Date(2024, 3, 1); // April 2024 (month 3 = April, 0-indexed)
+              const currentDate = now;
 
-            const monthlyData = months.map(month => {
-                const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
-                const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
-                const monthDates = [...new Set(monthTrips.map(t => t.deliveryDate))];
-                
-                let manpower = 0;
-                let documentation = 0;
-                monthDates.forEach(date => {
-                    const mp = getManpowerExpensesForDate(date);
-                    const doc = getDocumentationExpensesForDate(date);
-                    manpower += mp.reduce((sum, m) => sum + m.amount, 0);
-                    documentation += doc.reduce((sum, d) => sum + d.amount, 0);
-                });
-                
-                return {
-                    diesel: monthExpenses.filter(e => e.category === 'Diesel').reduce((sum, e) => sum + e.amount, 0),
-                    maintenance: monthExpenses.filter(e => e.category === 'Maintenance').reduce((sum, e) => sum + e.amount, 0),
-                    manpower: manpower,
-                    documentation: documentation,
-                    other: monthExpenses.filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance').reduce((sum, e) => sum + e.amount, 0)
-                };
-            });
+              let date = new Date(startDate);
+              while (date <= currentDate) {
+                  const monthKey = `${date.getFullYear()}-${pad(date.getMonth() + 1)}`;
+                  const monthLabel = date.toLocaleDateString('en-US', { 
+                      month: 'short',
+                      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined 
+                  });
+                  
+                  months.push({
+                      key: monthKey,
+                      label: monthLabel
+                  });
+                  
+                  date.setMonth(date.getMonth() + 1);
+              }
+
+              // Limit to last 12 months if too many
+              if (months.length > 12) {
+                  months.splice(0, months.length - 12);
+              }
+
+              console.log('📊 Expense Mix Chart Months:', months.map(m => m.label).join(', '));
+
+              const monthlyData = months.map(month => {
+                  const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
+                  const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
+                  const monthDates = [...new Set(monthTrips.map(t => t.deliveryDate))];
+                  
+                  let manpower = 0;
+                  let documentation = 0;
+                  monthDates.forEach(date => {
+                      const mp = getManpowerExpensesForDate(date);
+                      const doc = getDocumentationExpensesForDate(date);
+                      manpower += mp.reduce((sum, m) => sum + m.amount, 0);
+                      documentation += doc.reduce((sum, d) => sum + d.amount, 0);
+                  });
+                  
+                  return {
+                      diesel: monthExpenses.filter(e => e.category === 'Diesel').reduce((sum, e) => sum + e.amount, 0),
+                      maintenance: monthExpenses.filter(e => e.category === 'Maintenance').reduce((sum, e) => sum + e.amount, 0),
+                      manpower: manpower,
+                      documentation: documentation,
+                      other: monthExpenses.filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance').reduce((sum, e) => sum + e.amount, 0)
+                  };
+              });
 
             chartModalChart = new Chart(ctx, {
                 type: 'line',
