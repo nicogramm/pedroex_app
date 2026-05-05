@@ -2617,9 +2617,372 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
         }
 
         function renderProfitMarginModal() {
-            document.getElementById('chart-modal-metrics').innerHTML = '<div class="empty-state"><p>Profit margin details</p></div>';
-            document.getElementById('chart-modal-breakdown').innerHTML = '';
-        }
+          const trips = getFilteredTrips();
+          const expenses = getFilteredExpenses();
+
+          // Calculate current margin
+          const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+          const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+          
+          let manpowerTotal = 0;
+          let documentationTotal = 0;
+          tripDates.forEach(date => {
+              const manpower = getManpowerExpensesForDate(date);
+              const documentation = getDocumentationExpensesForDate(date);
+              manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+              documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+          });
+
+          const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+          const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+          const netProfit = totalRevenue - totalExpenses;
+          const currentMargin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+
+          // Target and industry benchmarks
+          const targetMargin = 35.0;
+          const industryAverage = 25.0;
+          const gapToTarget = currentMargin - targetMargin;
+          const gapAmount = (gapToTarget / 100) * totalRevenue;
+
+          // Status determination
+          let status = '';
+          let statusIcon = '';
+          if (currentMargin >= targetMargin) {
+              status = '✅ Exceeding Target';
+              statusIcon = 'success';
+          } else if (currentMargin >= industryAverage) {
+              status = '✅ Above Industry Average';
+              statusIcon = 'success';
+          } else {
+              status = '⚠️ Below Industry Average';
+              statusIcon = 'warning';
+          }
+
+          // Hero Metrics
+          document.getElementById('chart-modal-metrics').innerHTML = `
+              <div class="modal-stat-card">
+                  <div class="modal-stat-label">Current Margin</div>
+                  <div class="modal-stat-value" style="color:${currentMargin >= 30 ? 'var(--green)' : currentMargin >= 20 ? 'var(--orange)' : 'var(--red)'}">
+                      ${currentMargin.toFixed(1)}%
+                  </div>
+              </div>
+              <div class="modal-stat-card">
+                  <div class="modal-stat-label">Target Margin</div>
+                  <div class="modal-stat-value">${targetMargin.toFixed(1)}%</div>
+              </div>
+              <div class="modal-stat-card">
+                  <div class="modal-stat-label">Industry Average</div>
+                  <div class="modal-stat-value">${industryAverage.toFixed(1)}%</div>
+              </div>
+              <div class="modal-stat-card">
+                  <div class="modal-stat-label">Gap to Target</div>
+                  <div class="modal-stat-value" style="color:${gapToTarget >= 0 ? 'var(--green)' : 'var(--red)'}">
+                      ${gapToTarget >= 0 ? '+' : ''}${gapToTarget.toFixed(1)}%
+                  </div>
+              </div>
+          `;
+
+          // Margin Breakdown
+          const dieselCost = expenses.filter(e => e.category === 'Diesel').reduce((sum, e) => sum + e.amount, 0);
+          const maintenanceCost = expenses.filter(e => e.category === 'Maintenance').reduce((sum, e) => sum + e.amount, 0);
+          const otherCost = operationalExpenses - dieselCost - maintenanceCost;
+
+          const dieselPercent = totalRevenue > 0 ? (dieselCost / totalRevenue * 100) : 0;
+          const manpowerPercent = totalRevenue > 0 ? (manpowerTotal / totalRevenue * 100) : 0;
+          const maintenancePercent = totalRevenue > 0 ? (maintenanceCost / totalRevenue * 100) : 0;
+          const documentationPercent = totalRevenue > 0 ? (documentationTotal / totalRevenue * 100) : 0;
+          const otherPercent = totalRevenue > 0 ? (otherCost / totalRevenue * 100) : 0;
+
+          // Top/Bottom Performers
+          const truckData = {};
+          trips.forEach(trip => {
+              if (!truckData[trip.truck]) {
+                  truckData[trip.truck] = { revenue: 0, expenses: 0, dates: new Set() };
+              }
+              truckData[trip.truck].revenue += trip.rate;
+              truckData[trip.truck].dates.add(trip.deliveryDate);
+          });
+
+          expenses.forEach(expense => {
+              if (truckData[expense.truck]) {
+                  truckData[expense.truck].expenses += expense.amount;
+              }
+          });
+
+          Object.keys(truckData).forEach(truck => {
+              const dates = Array.from(truckData[truck].dates);
+              dates.forEach(date => {
+                  const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+                  const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+                  manpower.forEach(m => truckData[truck].expenses += m.amount);
+                  documentation.forEach(d => truckData[truck].expenses += d.amount);
+              });
+          });
+
+          const truckMargins = Object.entries(truckData)
+              .map(([truck, data]) => {
+                  const profit = data.revenue - data.expenses;
+                  const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+                  return { truck, margin, profit };
+              })
+              .sort((a, b) => b.margin - a.margin);
+
+          const topPerformers = truckMargins.slice(0, 3);
+          const bottomPerformers = truckMargins.filter(t => t.margin < 25).slice(0, 3);
+
+          // Recommendations
+          let recommendations = [];
+          
+          if (dieselPercent > 25) {
+              recommendations.push({
+                  icon: '⛽',
+                  type: 'warning',
+                  text: `Diesel costs are ${dieselPercent.toFixed(1)}% of revenue → Consider bulk fuel discounts or route optimization`
+              });
+          }
+          
+          if (maintenancePercent > 12) {
+              recommendations.push({
+                  icon: '🔧',
+                  type: 'warning',
+                  text: `Maintenance is ${maintenancePercent.toFixed(1)}% of revenue → Schedule preventive maintenance to reduce reactive repairs`
+              });
+          }
+          
+          if (currentMargin >= targetMargin) {
+              recommendations.push({
+                  icon: '✅',
+                  type: 'success',
+                  text: `Margin exceeds target by ${(currentMargin - targetMargin).toFixed(1)}% → Current strategy is working well`
+              });
+          } else {
+              recommendations.push({
+                  icon: '📊',
+                  type: 'info',
+                  text: `Need ${Math.abs(gapAmount).toFixed(0)} more profit to reach target margin → Focus on cost reduction`
+              });
+          }
+
+          if (bottomPerformers.length > 0) {
+              recommendations.push({
+                  icon: '🚨',
+                  type: 'warning',
+                  text: `${bottomPerformers.length} truck(s) below 25% margin → Investigate high-cost trucks: ${bottomPerformers.map(t => t.truck).join(', ')}`
+              });
+          }
+
+          // Build breakdown HTML
+          let breakdownHTML = `
+              <div class="alert-item ${statusIcon}">
+                  <div class="alert-icon">${statusIcon === 'success' ? '✅' : '⚠️'}</div>
+                  <div class="alert-text">
+                      <strong>Status:</strong> ${status}<br>
+                      <span style="font-size:11px;opacity:0.7">
+                          ${gapToTarget >= 0 ? 'Exceeding' : 'Need'} ${formatCurrency(Math.abs(gapAmount))} ${gapToTarget >= 0 ? 'above' : 'to reach'} target
+                      </span>
+                  </div>
+              </div>
+
+              <div style="margin:20px 0">
+                  <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                      📊 Margin Breakdown
+                  </div>
+                  <div style="background:var(--bg2);border-radius:12px;padding:16px;box-shadow:var(--neu-in)">
+                      <div class="modal-list-item">
+                          <div class="modal-list-label">⛽ Diesel</div>
+                          <div class="modal-list-value">${dieselPercent.toFixed(1)}%<br><span style="font-size:10px;color:var(--text3)">${formatCurrency(dieselCost)}</span></div>
+                      </div>
+                      <div class="modal-list-item">
+                          <div class="modal-list-label">👷 Manpower</div>
+                          <div class="modal-list-value">${manpowerPercent.toFixed(1)}%<br><span style="font-size:10px;color:var(--text3)">${formatCurrency(manpowerTotal)}</span></div>
+                      </div>
+                      <div class="modal-list-item">
+                          <div class="modal-list-label">🔧 Maintenance</div>
+                          <div class="modal-list-value">${maintenancePercent.toFixed(1)}%<br><span style="font-size:10px;color:var(--text3)">${formatCurrency(maintenanceCost)}</span></div>
+                      </div>
+                      <div class="modal-list-item">
+                          <div class="modal-list-label">📄 Documentation</div>
+                          <div class="modal-list-value">${documentationPercent.toFixed(1)}%<br><span style="font-size:10px;color:var(--text3)">${formatCurrency(documentationTotal)}</span></div>
+                      </div>
+                      ${otherPercent > 0 ? `
+                      <div class="modal-list-item">
+                          <div class="modal-list-label">📦 Other</div>
+                          <div class="modal-list-value">${otherPercent.toFixed(1)}%<br><span style="font-size:10px;color:var(--text3)">${formatCurrency(otherCost)}</span></div>
+                      </div>
+                      ` : ''}
+                      <div class="modal-list-item" style="border-top:2px solid var(--text3);padding-top:12px;margin-top:8px">
+                          <div class="modal-list-label" style="font-weight:700">💰 Net Margin</div>
+                          <div class="modal-list-value" style="font-size:18px;color:${currentMargin >= 30 ? 'var(--green)' : currentMargin >= 20 ? 'var(--orange)' : 'var(--red)'}">
+                              ${currentMargin.toFixed(1)}%<br><span style="font-size:10px;color:var(--text3)">${formatCurrency(netProfit)}</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              ${topPerformers.length > 0 ? `
+              <div style="margin:20px 0">
+                  <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                      🏆 Top Margin Performers
+                  </div>
+                  <div style="background:var(--bg2);border-radius:12px;padding:4px;box-shadow:var(--neu-in)">
+                      ${topPerformers.map((t, i) => {
+                          const medals = ['🥇', '🥈', '🥉'];
+                          return `
+                          <div class="modal-list-item">
+                              <div class="modal-list-label">${medals[i]} ${t.truck}</div>
+                              <div class="modal-list-value" style="color:var(--green)">
+                                  ${t.margin.toFixed(1)}%<br>
+                                  <span style="font-size:10px;color:var(--text3)">${formatCurrency(t.profit)}</span>
+                              </div>
+                          </div>
+                          `;
+                      }).join('')}
+                  </div>
+              </div>
+              ` : ''}
+
+              ${bottomPerformers.length > 0 ? `
+              <div style="margin:20px 0">
+                  <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                      ⚠️ Low Margin Trucks (Need Attention)
+                  </div>
+                  <div style="background:var(--bg2);border-radius:12px;padding:4px;box-shadow:var(--neu-in)">
+                      ${bottomPerformers.map(t => `
+                      <div class="modal-list-item">
+                          <div class="modal-list-label">🚨 ${t.truck}</div>
+                          <div class="modal-list-value" style="color:var(--red)">
+                              ${t.margin.toFixed(1)}%<br>
+                              <span style="font-size:10px;color:var(--text3)">${formatCurrency(t.profit)}</span>
+                          </div>
+                      </div>
+                      `).join('')}
+                  </div>
+              </div>
+              ` : ''}
+
+              <div style="margin:20px 0">
+                  <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                      💡 Actionable Recommendations
+                  </div>
+                  ${recommendations.map(r => `
+                  <div class="alert-item ${r.type}">
+                      <div class="alert-icon">${r.icon}</div>
+                      <div class="alert-text">${r.text}</div>
+                  </div>
+                  `).join('')}
+              </div>
+          `;
+
+          document.getElementById('chart-modal-breakdown').innerHTML = breakdownHTML;
+
+          // Optional: Add a chart showing margin trend
+          const ctx = document.getElementById('chart-modal-canvas');
+          chartModalChart = destroyChart(chartModalChart);
+          
+          // Get last 6 months margin data
+          const months = [];
+          const now = new Date();
+          for (let i = 5; i >= 0; i--) {
+              const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+              months.push({
+                  key: `${date.getFullYear()}-${pad(date.getMonth() + 1)}`,
+                  label: date.toLocaleDateString('en-US', { month: 'short' })
+              });
+          }
+
+          const monthlyMargins = months.map(month => {
+              const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
+              const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
+              
+              const revenue = monthTrips.reduce((sum, t) => sum + t.rate, 0);
+              const dates = [...new Set(monthTrips.map(t => t.deliveryDate))];
+              
+              let manpower = 0;
+              let documentation = 0;
+              dates.forEach(date => {
+                  const mp = getManpowerExpensesForDate(date);
+                  const doc = getDocumentationExpensesForDate(date);
+                  manpower += mp.reduce((sum, m) => sum + m.amount, 0);
+                  documentation += doc.reduce((sum, d) => sum + d.amount, 0);
+              });
+              
+              const opEx = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+              const totalEx = opEx + manpower + documentation;
+              const profit = revenue - totalEx;
+              const margin = revenue > 0 ? (profit / revenue * 100) : 0;
+              
+              return margin;
+          });
+
+          chartModalChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: months.map(m => m.label),
+                  datasets: [
+                      {
+                          label: 'Profit Margin %',
+                          data: monthlyMargins,
+                          borderColor: '#16a34a',
+                          backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                          tension: 0.4,
+                          fill: true,
+                          borderWidth: 3,
+                          pointRadius: 5,
+                          pointHoverRadius: 7
+                      },
+                      {
+                          label: 'Target (35%)',
+                          data: Array(6).fill(targetMargin),
+                          borderColor: '#2563eb',
+                          borderDash: [5, 5],
+                          borderWidth: 2,
+                          pointRadius: 0,
+                          fill: false
+                      },
+                      {
+                          label: 'Industry Avg (25%)',
+                          data: Array(6).fill(industryAverage),
+                          borderColor: '#f59e0b',
+                          borderDash: [3, 3],
+                          borderWidth: 2,
+                          pointRadius: 0,
+                          fill: false
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                      legend: {
+                          display: true,
+                          position: 'top',
+                          labels: { font: { size: 11, weight: '600' }, usePointStyle: true }
+                      },
+                      tooltip: {
+                          callbacks: {
+                              label: (context) => context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%'
+                          }
+                      }
+                  },
+                  scales: {
+                      y: {
+                          beginAtZero: true,
+                          max: 50,
+                          ticks: {
+                              callback: (value) => value + '%',
+                              font: { size: 10 }
+                          },
+                          grid: { color: 'rgba(0,0,0,0.05)' }
+                      },
+                      x: {
+                          ticks: { font: { size: 10 } },
+                          grid: { display: false }
+                      }
+                  }
+              }
+          });
+      }
 
         function renderExpenseMixModal() {
             document.getElementById('chart-modal-metrics').innerHTML = '<div class="empty-state"><p>Expense mix details</p></div>';
