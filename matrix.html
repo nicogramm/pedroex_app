@@ -1426,6 +1426,7 @@
         const TAB_EXPENSES = 'Expenses_Master';
         const TAB_ATTENDANCE = 'Attendance';
         const TAB_EMPLOYEES = 'Employees';
+        const SYSTEM_START_DATE = '2024-05-01'; // 👈 BAGUHIN MO DITO
 
         // ═══════════════════════════════════════
         // STATE
@@ -1522,7 +1523,7 @@
                             return null;
                         }
                     })
-                    .filter(t => t !== null && t.truck && t.deliveryDate && t.rate > 0);
+                    .filter(t => t !== null && t.truck && t.deliveryDate && t.rate > 0 && t.deliveryDate >= SYSTEM_START_DATE); // ✅ ADDED FILTER
 
                 // Parse expenses
                 const expenseRows = expensesRes.values || [];
@@ -1546,7 +1547,7 @@
                             return null;
                         }
                     })
-                    .filter(e => e !== null && e.truck && e.date && e.amount > 0);
+                    .filter(e => e !== null && e.truck && e.date && e.amount > 0 && e.date >= SYSTEM_START_DATE); // ✅ ADDED FILTER
 
                 // Parse attendance
                 const attendanceRows = attendanceRes.values || [];
@@ -1558,7 +1559,8 @@
                         mealAllowance: ['yes', 'meals only'].includes((r[5] || '').toLowerCase()),
                         truck: r[6] || ''
                     }))
-                    .filter(a => a.date && a.employee && a.truck);
+                    .filter(a => a.date && a.employee && a.truck && a.date >= SYSTEM_START_DATE); // ✅ ADDED FILTER
+
 
                 // Parse employees
                 const employeeRows = employeesRes.values || [];
@@ -1574,7 +1576,7 @@
                     }
                 });
 
-                console.log('✅ Data loaded successfully:', {
+                console.log('✅ Data loaded successfully (from ' + SYSTEM_START_DATE + '):', {
                     trips: allTrips.length,
                     expenses: allExpenses.length,
                     expensesWithVAT: allExpenses.filter(e => e.hasVAT).length,
