@@ -2984,14 +2984,843 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
           });
       }
 
-        function renderExpenseMixModal() {
-            document.getElementById('chart-modal-metrics').innerHTML = '<div class="empty-state"><p>Expense mix details</p></div>';
-            document.getElementById('chart-modal-breakdown').innerHTML = '';
+              function renderExpenseMixModal() {
+            const trips = getFilteredTrips();
+            const expenses = getFilteredExpenses();
+
+            // Calculate totals
+            const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+            const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+            
+            let manpowerTotal = 0;
+            let documentationTotal = 0;
+            tripDates.forEach(date => {
+                const manpower = getManpowerExpensesForDate(date);
+                const documentation = getDocumentationExpensesForDate(date);
+                manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+                documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+            });
+
+            // Category breakdown
+            const categoryTotals = {
+                'Diesel': expenses.filter(e => e.category === 'Diesel').reduce((sum, e) => sum + e.amount, 0),
+                'Maintenance': expenses.filter(e => e.category === 'Maintenance').reduce((sum, e) => sum + e.amount, 0),
+                'Manpower': manpowerTotal,
+                'Documentation': documentationTotal,
+                'Other': expenses.filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance').reduce((sum, e) => sum + e.amount, 0)
+            };
+
+            const totalExpenses = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0);
+            const avgExpensePerTrip = trips.length > 0 ? totalExpenses / trips.length : 0;
+
+            // Find largest category
+            const largestCategory = Object.entries(categoryTotals)
+                .filter(([cat, amt]) => amt > 0)
+                .sort((a, b) => b[1] - a[1])[0];
+            
+            const largestCatName = largestCategory ? largestCategory[0] : 'N/A';
+            const largestCatPercent = largestCategory && totalExpenses > 0 
+                ? (largestCategory[1] / totalExpenses * 100) 
+                : 0;
+
+            // Hero Metrics
+            document.getElementById('chart-modal-metrics').innerHTML = `
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Total Expenses</div>
+                    <div class="modal-stat-value">${formatCompact(totalExpenses)}</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Largest Category</div>
+                    <div class="modal-stat-value" style="font-size:16px">
+                        ${largestCatName}<br>
+                        <span style="font-size:14px;color:var(--text2)">${largestCatPercent.toFixed(1)}%</span>
+                    </div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Per Trip Average</div>
+                    <div class="modal-stat-value">${formatCompact(avgExpensePerTrip)}</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Total Trips</div>
+                    <div class="modal-stat-value">${trips.length}</div>
+                </div>
+            `;
+
+            // Get last month data for comparison
+            const now = new Date();
+            const thisMonth = now.toISOString().slice(0, 7);
+            const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 7);
+            
+            const lastMonthExpenses = allExpenses.filter(e => e.date.startsWith(lastMonth));
+            const lastMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(lastMonth));
+            const lastMonthDates = [...new Set(lastMonthTrips.map(t => t.deliveryDate))];
+            
+            let lastMonthManpower = 0;
+            let lastMonthDocumentation = 0;
+            lastMonthDates.forEach(date => {
+                const manpower = getManpowerExpensesForDate(date);
+                const documentation = getDocumentationExpensesForDate(date);
+                lastMonthManpower += manpower.reduce((sum, m) => sum + m.amount, 0);
+                lastMonthDocumentation += documentation.reduce((sum, d) => sum + d.amount, 0);
+            });
+
+            const lastMonthCategoryTotals = {
+                'Diesel': lastMonthExpenses.filter(e => e.category === 'Diesel').reduce((sum, e) => sum + e.amount, 0),
+                'Maintenance': lastMonthExpenses.filter(e => e.category === 'Maintenance').reduce((sum, e) => sum + e.amount, 0),
+                'Manpower': lastMonthManpower,
+                'Documentation': lastMonthDocumentation,
+                'Other': lastMonthExpenses.filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance').reduce((sum, e) => sum + e.amount, 0)
+            };
+
+            // Calculate changes
+            const changes = {};
+            Object.keys(categoryTotals).forEach(cat => {
+                const current = categoryTotals[cat];
+                const previous = lastMonthCategoryTotals[cat] || 0;
+                changes[cat] = previous > 0 ? ((current - previous) / previous * 100) : 0;
+            });
+
+            // Category icons and colors
+            const categoryIcons = {
+                'Diesel': '⛽',
+                'Maintenance': '🔧',
+                'Manpower': '👷',
+                'Documentation': '📄',
+                'Other': '📦'
+            };
+
+            const categoryColors = {
+                'Diesel': '#f59e0b',
+                'Maintenance': '#ef4444',
+                'Manpower': '#10b981',
+                'Documentation': '#3b82f6',
+                'Other': '#8b5cf6'
+            };
+
+            // Build detailed breakdown
+            const categoryBreakdown = Object.entries(categoryTotals)
+                .filter(([cat, amt]) => amt > 0)
+                .sort((a, b) => b[1] - a[1])
+                .map(([cat, amt]) => {
+                    const percent = totalExpenses > 0 ? (amt / totalExpenses * 100) : 0;
+                    const perTrip = trips.length > 0 ? amt / trips.length : 0;
+                    const change = changes[cat];
+                    const changeIcon = change > 2 ? '↑' : change < -2 ? '↓' : '→';
+                    const changeColor = change > 2 ? 'var(--red)' : change < -2 ? 'var(--green)' : 'var(--text3)';
+                    
+                    return `
+                        <div style="margin-bottom:20px;padding:16px;background:var(--bg2);border-radius:12px;box-shadow:var(--neu-xs);border-left:4px solid ${categoryColors[cat]}">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                                <div style="font-size:16px;font-weight:700;color:var(--text)">
+                                    ${categoryIcons[cat]} ${cat}
+                                </div>
+                                <div style="font-size:20px;font-weight:700;color:${categoryColors[cat]}">
+                                    ${percent.toFixed(1)}%
+                                </div>
+                            </div>
+                            
+                            <div style="background:var(--bg);border-radius:8px;height:8px;margin-bottom:12px;overflow:hidden">
+                                <div style="background:${categoryColors[cat]};height:100%;width:${percent}%;transition:width 0.3s"></div>
+                            </div>
+                            
+                            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:11px;color:var(--text2)">
+                                <div>
+                                    <strong style="color:var(--text)">${formatCurrency(amt)}</strong><br>
+                                    Total Amount
+                                </div>
+                                <div>
+                                    <strong style="color:var(--text)">${formatCurrency(perTrip)}</strong><br>
+                                    Per Trip
+                                </div>
+                                <div>
+                                    <strong style="color:${changeColor}">${changeIcon} ${Math.abs(change).toFixed(1)}%</strong><br>
+                                    vs Last Month
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            // Truck-level expense breakdown
+            const truckExpenses = {};
+            trips.forEach(trip => {
+                if (!truckExpenses[trip.truck]) {
+                    truckExpenses[trip.truck] = 0;
+                }
+            });
+
+            expenses.forEach(expense => {
+                if (truckExpenses[expense.truck] !== undefined) {
+                    truckExpenses[expense.truck] += expense.amount;
+                }
+            });
+
+            tripDates.forEach(date => {
+                const manpower = getManpowerExpensesForDate(date);
+                const documentation = getDocumentationExpensesForDate(date);
+                
+                manpower.forEach(m => {
+                    if (truckExpenses[m.truck] !== undefined) {
+                        truckExpenses[m.truck] += m.amount;
+                    }
+                });
+                
+                documentation.forEach(d => {
+                    if (truckExpenses[d.truck] !== undefined) {
+                        truckExpenses[d.truck] += d.amount;
+                    }
+                });
+            });
+
+            const truckExpenseArray = Object.entries(truckExpenses)
+                .map(([truck, amount]) => {
+                    const percent = totalExpenses > 0 ? (amount / totalExpenses * 100) : 0;
+                    const avgExpense = totalExpenses / Object.keys(truckExpenses).length;
+                    const efficiency = amount <= avgExpense * 0.9 ? 'efficient' : amount <= avgExpense * 1.1 ? 'average' : 'high';
+                    return { truck, amount, percent, efficiency };
+                })
+                .sort((a, b) => b.amount - a.amount);
+
+            const truckBreakdown = truckExpenseArray.map(t => {
+                const icon = t.efficiency === 'efficient' ? '🟢' : t.efficiency === 'average' ? '🟡' : '🔴';
+                const label = t.efficiency === 'efficient' ? 'Efficient' : t.efficiency === 'average' ? 'Average' : 'High Cost';
+                return `
+                    <div class="modal-list-item">
+                        <div class="modal-list-label">🚛 ${t.truck}</div>
+                        <div class="modal-list-value">
+                            ${formatCurrency(t.amount)}<br>
+                            <span style="font-size:10px;color:var(--text3)">${t.percent.toFixed(1)}% • ${icon} ${label}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Generate insights
+            const insights = [];
+
+            // Diesel insight
+            if (changes['Diesel'] > 5) {
+                insights.push({
+                    icon: '⛽',
+                    type: 'warning',
+                    text: `Diesel costs increased ${changes['Diesel'].toFixed(1)}% → Check fuel prices or route efficiency`
+                });
+            } else if (changes['Diesel'] < -5) {
+                insights.push({
+                    icon: '⛽',
+                    type: 'success',
+                    text: `Diesel costs decreased ${Math.abs(changes['Diesel']).toFixed(1)}% → Good fuel management`
+                });
+            }
+
+            // Maintenance insight
+            if (changes['Maintenance'] > 10) {
+                insights.push({
+                    icon: '🔧',
+                    type: 'warning',
+                    text: `Maintenance spiked ${changes['Maintenance'].toFixed(1)}% → Investigate unexpected repairs`
+                });
+            } else if (changes['Maintenance'] < -5) {
+                insights.push({
+                    icon: '🔧',
+                    type: 'success',
+                    text: `Maintenance decreased ${Math.abs(changes['Maintenance']).toFixed(1)}% → Preventive maintenance working`
+                });
+            }
+
+            // Other expenses insight
+            if (changes['Other'] > 10) {
+                insights.push({
+                    icon: '📦',
+                    type: 'warning',
+                    text: `Other expenses increased ${changes['Other'].toFixed(1)}% → Review miscellaneous spending`
+                });
+            }
+
+            // High-cost truck insight
+            const highCostTrucks = truckExpenseArray.filter(t => t.efficiency === 'high');
+            if (highCostTrucks.length > 0) {
+                insights.push({
+                    icon: '🚨',
+                    type: 'warning',
+                    text: `${highCostTrucks.length} truck(s) with high costs → Investigate: ${highCostTrucks.map(t => t.truck).join(', ')}`
+                });
+            }
+
+            // Efficiency insight
+            const efficientTrucks = truckExpenseArray.filter(t => t.efficiency === 'efficient');
+            if (efficientTrucks.length > 0) {
+                insights.push({
+                    icon: '✅',
+                    type: 'success',
+                    text: `${efficientTrucks.length} truck(s) operating efficiently → Maintain current practices`
+                });
+            }
+
+            // Cost distribution insight
+            const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+            if (topCategory && totalExpenses > 0) {
+                const topPercent = (topCategory[1] / totalExpenses * 100);
+                if (topPercent > 40) {
+                    insights.push({
+                        icon: '📊',
+                        type: 'info',
+                        text: `${topCategory[0]} dominates at ${topPercent.toFixed(1)}% → Consider cost reduction strategies`
+                    });
+                }
+            }
+
+            // Build final HTML
+            let breakdownHTML = `
+                <div style="margin:20px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                        📊 Expense Categories
+                    </div>
+                    ${categoryBreakdown}
+                </div>
+
+                <div style="margin:20px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                        🚛 Expense by Truck
+                    </div>
+                    <div style="background:var(--bg2);border-radius:12px;padding:4px;box-shadow:var(--neu-in)">
+                        ${truckBreakdown}
+                    </div>
+                </div>
+
+                ${insights.length > 0 ? `
+                <div style="margin:20px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                        💡 Cost Optimization Insights
+                    </div>
+                    ${insights.map(i => `
+                    <div class="alert-item ${i.type}">
+                        <div class="alert-icon">${i.icon}</div>
+                        <div class="alert-text">${i.text}</div>
+                    </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('chart-modal-breakdown').innerHTML = breakdownHTML;
+
+            // Render stacked area chart showing expense trend
+            const ctx = document.getElementById('chart-modal-canvas');
+            chartModalChart = destroyChart(chartModalChart);
+            
+            // Get last 6 months data
+            const months = [];
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push({
+                    key: `${date.getFullYear()}-${pad(date.getMonth() + 1)}`,
+                    label: date.toLocaleDateString('en-US', { month: 'short' })
+                });
+            }
+
+            const monthlyData = months.map(month => {
+                const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
+                const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
+                const monthDates = [...new Set(monthTrips.map(t => t.deliveryDate))];
+                
+                let manpower = 0;
+                let documentation = 0;
+                monthDates.forEach(date => {
+                    const mp = getManpowerExpensesForDate(date);
+                    const doc = getDocumentationExpensesForDate(date);
+                    manpower += mp.reduce((sum, m) => sum + m.amount, 0);
+                    documentation += doc.reduce((sum, d) => sum + d.amount, 0);
+                });
+                
+                return {
+                    diesel: monthExpenses.filter(e => e.category === 'Diesel').reduce((sum, e) => sum + e.amount, 0),
+                    maintenance: monthExpenses.filter(e => e.category === 'Maintenance').reduce((sum, e) => sum + e.amount, 0),
+                    manpower: manpower,
+                    documentation: documentation,
+                    other: monthExpenses.filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance').reduce((sum, e) => sum + e.amount, 0)
+                };
+            });
+
+            chartModalChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months.map(m => m.label),
+                    datasets: [
+                        {
+                            label: '⛽ Diesel',
+                            data: monthlyData.map(d => d.diesel),
+                            borderColor: categoryColors['Diesel'],
+                            backgroundColor: categoryColors['Diesel'] + '40',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: '👷 Manpower',
+                            data: monthlyData.map(d => d.manpower),
+                            borderColor: categoryColors['Manpower'],
+                            backgroundColor: categoryColors['Manpower'] + '40',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: '🔧 Maintenance',
+                            data: monthlyData.map(d => d.maintenance),
+                            borderColor: categoryColors['Maintenance'],
+                            backgroundColor: categoryColors['Maintenance'] + '40',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: '📄 Documentation',
+                            data: monthlyData.map(d => d.documentation),
+                            borderColor: categoryColors['Documentation'],
+                            backgroundColor: categoryColors['Documentation'] + '40',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: '📦 Other',
+                            data: monthlyData.map(d => d.other),
+                            borderColor: categoryColors['Other'],
+                            backgroundColor: categoryColors['Other'] + '40',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { 
+                                font: { size: 10, weight: '600' }, 
+                                usePointStyle: true,
+                                padding: 8
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => context.dataset.label + ': ' + formatCurrency(context.parsed.y)
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => formatCompact(value),
+                                font: { size: 10 }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            stacked: true,
+                            ticks: { font: { size: 10 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
         }
 
-        function renderFleetPerformanceModal() {
-            document.getElementById('chart-modal-metrics').innerHTML = '<div class="empty-state"><p>Fleet performance details</p></div>';
-            document.getElementById('chart-modal-breakdown').innerHTML = '';
+              function renderFleetPerformanceModal() {
+            const trips = getFilteredTrips();
+            const expenses = getFilteredExpenses();
+
+            // Calculate truck-level data
+            const truckData = {};
+            trips.forEach(trip => {
+                if (!truckData[trip.truck]) {
+                    truckData[trip.truck] = { 
+                        revenue: 0, 
+                        expenses: 0, 
+                        trips: 0, 
+                        dates: new Set() 
+                    };
+                }
+                truckData[trip.truck].revenue += trip.rate;
+                truckData[trip.truck].trips += 1;
+                truckData[trip.truck].dates.add(trip.deliveryDate);
+            });
+
+            expenses.forEach(expense => {
+                if (truckData[expense.truck]) {
+                    truckData[expense.truck].expenses += expense.amount;
+                }
+            });
+
+            Object.keys(truckData).forEach(truck => {
+                const dates = Array.from(truckData[truck].dates);
+                dates.forEach(date => {
+                    const manpower = getManpowerExpensesForDate(date).filter(m => m.truck === truck);
+                    const documentation = getDocumentationExpensesForDate(date).filter(d => d.truck === truck);
+                    manpower.forEach(m => truckData[truck].expenses += m.amount);
+                    documentation.forEach(d => truckData[truck].expenses += d.amount);
+                });
+            });
+
+            // Calculate performance metrics
+            const truckPerformance = Object.entries(truckData).map(([truck, data]) => {
+                const profit = data.revenue - data.expenses;
+                const margin = data.revenue > 0 ? (profit / data.revenue * 100) : 0;
+                const profitPerTrip = data.trips > 0 ? profit / data.trips : 0;
+                const costPerTrip = data.trips > 0 ? data.expenses / data.trips : 0;
+                
+                return {
+                    truck,
+                    revenue: data.revenue,
+                    expenses: data.expenses,
+                    profit,
+                    margin,
+                    trips: data.trips,
+                    profitPerTrip,
+                    costPerTrip
+                };
+            }).sort((a, b) => b.margin - a.margin);
+
+            // Fleet-level metrics
+            const totalRevenue = truckPerformance.reduce((sum, t) => sum + t.revenue, 0);
+            const totalExpenses = truckPerformance.reduce((sum, t) => sum + t.expenses, 0);
+            const totalProfit = totalRevenue - totalExpenses;
+            const fleetMargin = totalRevenue > 0 ? (totalProfit / totalRevenue * 100) : 0;
+            const totalTrips = truckPerformance.reduce((sum, t) => sum + t.trips, 0);
+            const avgTripsPerTruck = truckPerformance.length > 0 ? totalTrips / truckPerformance.length : 0;
+            const bestPerformer = truckPerformance[0];
+            const worstPerformer = truckPerformance[truckPerformance.length - 1];
+
+            // Calculate utilization (assuming max 10 trips per truck per period)
+            const maxTripsPerTruck = 10;
+            const utilizationRate = (avgTripsPerTruck / maxTripsPerTruck * 100);
+
+            // Hero Metrics
+            document.getElementById('chart-modal-metrics').innerHTML = `
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Fleet Avg Margin</div>
+                    <div class="modal-stat-value" style="color:${fleetMargin >= 30 ? 'var(--green)' : fleetMargin >= 20 ? 'var(--orange)' : 'var(--red)'}">
+                        ${fleetMargin.toFixed(1)}%
+                    </div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Best Performer</div>
+                    <div class="modal-stat-value" style="font-size:14px">
+                        ${bestPerformer.truck}<br>
+                        <span style="font-size:16px;color:var(--green)">${bestPerformer.margin.toFixed(1)}%</span>
+                    </div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Avg Trips/Truck</div>
+                    <div class="modal-stat-value">${avgTripsPerTruck.toFixed(1)}</div>
+                </div>
+                <div class="modal-stat-card">
+                    <div class="modal-stat-label">Utilization Rate</div>
+                    <div class="modal-stat-value" style="color:${utilizationRate >= 70 ? 'var(--green)' : utilizationRate >= 50 ? 'var(--orange)' : 'var(--red)'}">
+                        ${utilizationRate.toFixed(0)}%
+                    </div>
+                </div>
+            `;
+
+            // Performance status determination
+            const getPerformanceStatus = (margin) => {
+                if (margin >= 35) return { icon: '🟢', label: 'Excellent Performance', color: 'var(--green)' };
+                if (margin >= 30) return { icon: '🟢', label: 'Above Target', color: 'var(--green)' };
+                if (margin >= 25) return { icon: '🟢', label: 'Meeting Target', color: 'var(--green)' };
+                if (margin >= 20) return { icon: '🟡', label: 'Below Target', color: 'var(--orange)' };
+                return { icon: '🔴', label: 'Needs Attention', color: 'var(--red)' };
+            };
+
+            // Rank medals
+            const medals = ['🥇', '🥈', '🥉'];
+
+            // Build detailed truck breakdown
+            const truckBreakdown = truckPerformance.map((t, index) => {
+                const status = getPerformanceStatus(t.margin);
+                const medal = index < 3 ? medals[index] : '';
+                const barWidth = t.margin;
+                
+                return `
+                    <div style="margin-bottom:24px;padding:18px;background:var(--bg2);border-radius:14px;box-shadow:var(--neu-xs);border-left:5px solid ${status.color}">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                            <div style="font-size:18px;font-weight:700;color:var(--text)">
+                                ${medal} ${t.truck}
+                            </div>
+                            <div style="font-size:24px;font-weight:800;color:${status.color}">
+                                ${t.margin.toFixed(1)}%
+                            </div>
+                        </div>
+                        
+                        <div style="background:var(--bg);border-radius:10px;height:12px;margin-bottom:14px;overflow:hidden;box-shadow:var(--neu-in)">
+                            <div style="background:${status.color};height:100%;width:${Math.min(barWidth, 100)}%;transition:width 0.5s ease"></div>
+                        </div>
+                        
+                        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px;font-size:12px">
+                            <div>
+                                <span style="color:var(--text3)">Revenue:</span>
+                                <strong style="color:var(--text);margin-left:4px">${formatCurrency(t.revenue)}</strong>
+                            </div>
+                            <div>
+                                <span style="color:var(--text3)">Expenses:</span>
+                                <strong style="color:var(--text);margin-left:4px">${formatCurrency(t.expenses)}</strong>
+                            </div>
+                            <div>
+                                <span style="color:var(--text3)">Net Profit:</span>
+                                <strong style="color:${status.color};margin-left:4px">${formatCurrency(t.profit)}</strong>
+                            </div>
+                            <div>
+                                <span style="color:var(--text3)">Trips:</span>
+                                <strong style="color:var(--text);margin-left:4px">${t.trips} trips</strong>
+                            </div>
+                        </div>
+                        
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(0,0,0,0.05)">
+                            <div style="font-size:11px;color:var(--text2)">
+                                Profit/Trip: <strong style="color:var(--text)">${formatCurrency(t.profitPerTrip)}</strong>
+                            </div>
+                            <div style="font-size:11px;font-weight:600;color:${status.color}">
+                                ${status.icon} ${status.label}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Utilization breakdown
+            const maxTrips = Math.max(...truckPerformance.map(t => t.trips));
+            const utilizationBreakdown = truckPerformance
+                .sort((a, b) => b.trips - a.trips)
+                .map(t => {
+                    const utilization = (t.trips / maxTrips * 100);
+                    return `
+                        <div class="modal-list-item">
+                            <div class="modal-list-label">
+                                🚛 ${t.truck}
+                                <div style="font-size:10px;color:var(--text3);margin-top:2px">${t.trips} trips</div>
+                            </div>
+                            <div style="flex:1;margin:0 12px">
+                                <div style="background:var(--bg);border-radius:6px;height:8px;overflow:hidden">
+                                    <div style="background:${utilization >= 80 ? 'var(--green)' : utilization >= 50 ? 'var(--orange)' : 'var(--red)'};height:100%;width:${utilization}%;transition:width 0.3s"></div>
+                                </div>
+                            </div>
+                            <div class="modal-list-value" style="color:${utilization >= 80 ? 'var(--green)' : utilization >= 50 ? 'var(--orange)' : 'var(--red)'}">
+                                ${utilization.toFixed(0)}%
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            // Cost efficiency comparison
+            const avgCostPerTrip = truckPerformance.reduce((sum, t) => sum + t.costPerTrip, 0) / truckPerformance.length;
+            const costEfficiency = truckPerformance
+                .sort((a, b) => a.costPerTrip - b.costPerTrip)
+                .map(t => {
+                    const efficiency = t.costPerTrip <= avgCostPerTrip * 0.9 ? 'efficient' : t.costPerTrip <= avgCostPerTrip * 1.1 ? 'average' : 'high';
+                    const icon = efficiency === 'efficient' ? '🟢' : efficiency === 'average' ? '🟡' : '🔴';
+                    const label = efficiency === 'efficient' ? 'Most Efficient' : efficiency === 'average' ? 'Average' : 'Least Efficient';
+                    
+                    return `
+                        <div class="modal-list-item">
+                            <div class="modal-list-label">🚛 ${t.truck}</div>
+                            <div class="modal-list-value">
+                                ${formatCurrency(t.costPerTrip)}/trip<br>
+                                <span style="font-size:10px;color:var(--text3)">${icon} ${label}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            // Generate recommendations
+            const recommendations = [];
+
+            // Best performer insight
+            if (bestPerformer) {
+                recommendations.push({
+                    icon: '🏆',
+                    type: 'success',
+                    title: `${bestPerformer.truck}: Best Performer`,
+                    text: `${bestPerformer.margin.toFixed(1)}% margin with ${formatCurrency(bestPerformer.profitPerTrip)}/trip → Study and replicate success factors across fleet`
+                });
+            }
+
+            // Worst performer insight
+            if (worstPerformer && worstPerformer.margin < 25) {
+                const gap = 30 - worstPerformer.margin;
+                recommendations.push({
+                    icon: '🚨',
+                    type: 'warning',
+                    title: `${worstPerformer.truck}: Underperforming`,
+                    text: `${worstPerformer.margin.toFixed(1)}% margin (${gap.toFixed(1)}% below target) → Review maintenance records, route assignments, and driver performance`
+                });
+            }
+
+            // Utilization insight
+            if (utilizationRate < 70) {
+                const idleCapacity = 100 - utilizationRate;
+                const potentialRevenue = (totalRevenue / utilizationRate) * idleCapacity;
+                recommendations.push({
+                    icon: '📊',
+                    type: 'info',
+                    title: 'Low Fleet Utilization',
+                    text: `${utilizationRate.toFixed(0)}% utilization = ${idleCapacity.toFixed(0)}% idle capacity → Increase trips by ${((maxTripsPerTruck - avgTripsPerTruck) * truckPerformance.length).toFixed(0)} total to unlock ${formatCurrency(potentialRevenue)} potential revenue`
+                });
+            }
+
+            // Cost efficiency gap
+            if (worstPerformer && bestPerformer) {
+                const costGap = ((worstPerformer.costPerTrip - bestPerformer.costPerTrip) / bestPerformer.costPerTrip * 100);
+                if (costGap > 50) {
+                    const savings = (worstPerformer.costPerTrip - bestPerformer.costPerTrip) * worstPerformer.trips;
+                    recommendations.push({
+                        icon: '⚙️',
+                        type: 'warning',
+                        title: 'Cost Efficiency Gap',
+                        text: `${worstPerformer.truck} costs ${costGap.toFixed(0)}% more per trip than ${bestPerformer.truck} → Standardize best practices to save ${formatCurrency(savings)}`
+                    });
+                }
+            }
+
+            // High performers
+            const highPerformers = truckPerformance.filter(t => t.margin >= 35);
+            if (highPerformers.length > 0) {
+                recommendations.push({
+                    icon: '✅',
+                    type: 'success',
+                    title: 'Fleet Excellence',
+                    text: `${highPerformers.length} truck(s) exceeding 35% margin → Maintain current operations and assign high-value routes`
+                });
+            }
+
+            // Build final HTML
+            let breakdownHTML = `
+                <div style="margin:20px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                        📊 Complete Fleet Breakdown
+                    </div>
+                    ${truckBreakdown}
+                </div>
+
+                <div style="margin:20px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                        ⚙️ Fleet Utilization
+                    </div>
+                    <div style="background:var(--bg2);border-radius:12px;padding:4px;box-shadow:var(--neu-in);margin-bottom:12px">
+                        ${utilizationBreakdown}
+                    </div>
+                    <div style="font-size:12px;color:var(--text2);padding:12px;background:var(--bg2);border-radius:10px">
+                        <strong style="color:var(--text)">Fleet Average:</strong> ${avgTripsPerTruck.toFixed(1)} trips/truck<br>
+                        <strong style="color:var(--text)">Utilization Rate:</strong> ${utilizationRate.toFixed(0)}%<br>
+                        <strong style="color:var(--text)">Idle Capacity:</strong> ${(100 - utilizationRate).toFixed(0)}% (potential revenue opportunity)
+                    </div>
+                </div>
+
+                <div style="margin:20px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                        💰 Cost Efficiency Analysis
+                    </div>
+                    <div style="background:var(--bg2);border-radius:12px;padding:4px;box-shadow:var(--neu-in);margin-bottom:12px">
+                        ${costEfficiency}
+                    </div>
+                    <div style="font-size:12px;color:var(--text2);padding:12px;background:var(--bg2);border-radius:10px">
+                        <strong style="color:var(--text)">Fleet Average:</strong> ${formatCurrency(avgCostPerTrip)}/trip<br>
+                        <strong style="color:var(--text)">Best Practice:</strong> ${formatCurrency(bestPerformer.costPerTrip)}/trip (${bestPerformer.truck})<br>
+                        <strong style="color:var(--text)">Improvement Potential:</strong> ${((avgCostPerTrip - bestPerformer.costPerTrip) / avgCostPerTrip * 100).toFixed(0)}% cost reduction possible
+                    </div>
+                </div>
+
+                ${recommendations.length > 0 ? `
+                <div style="margin:20px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px">
+                        💡 Fleet Optimization Recommendations
+                    </div>
+                    ${recommendations.map(r => `
+                    <div class="alert-item ${r.type}">
+                        <div class="alert-icon">${r.icon}</div>
+                        <div class="alert-text">
+                            <strong>${r.title}</strong><br>
+                            <span style="font-size:12px;opacity:0.9">${r.text}</span>
+                        </div>
+                    </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+            `;
+
+            document.getElementById('chart-modal-breakdown').innerHTML = breakdownHTML;
+
+            // Render comparison chart
+            const ctx = document.getElementById('chart-modal-canvas');
+            chartModalChart = destroyChart(chartModalChart);
+
+            // Sort by margin for chart
+            const sortedByMargin = [...truckPerformance].sort((a, b) => b.margin - a.margin);
+
+            chartModalChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedByMargin.map(t => t.truck),
+                    datasets: [
+                        {
+                            label: 'Profit Margin %',
+                            data: sortedByMargin.map(t => t.margin),
+                            backgroundColor: sortedByMargin.map(t => {
+                                if (t.margin >= 35) return '#16a34a';
+                                if (t.margin >= 30) return '#84cc16';
+                                if (t.margin >= 25) return '#eab308';
+                                if (t.margin >= 20) return '#f97316';
+                                return '#ef4444';
+                            }),
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const truck = sortedByMargin[context.dataIndex];
+                                    return [
+                                        `Margin: ${context.parsed.y.toFixed(1)}%`,
+                                        `Profit: ${formatCurrency(truck.profit)}`,
+                                        `Trips: ${truck.trips}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 50,
+                            ticks: { 
+                                callback: (value) => value + '%',
+                                font: { size: 10 }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            ticks: { font: { size: 11, weight: '600' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
         }
 
         // ═══════════════════════════════════════
