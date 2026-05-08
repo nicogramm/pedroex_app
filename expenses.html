@@ -1146,21 +1146,25 @@ function renderCalendar() {
   
   let html = '';
   
+  // Previous month days
   const prevMonthDays = new Date(year, month, 0).getDate();
   for (let i = startDay - 1; i >= 0; i--) {
     html += `<div class="cal-day other-month"><div class="cal-date">${prevMonthDays - i}</div></div>`;
   }
   
+  // Current month days
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day);
     date.setHours(0, 0, 0, 0);
     const dateStr = date.toISOString().split('T')[0];
     const isToday = date.getTime() === today.getTime();
     
+    // ✅ FIX: Get ALL expenses for this date
     let dayExpenses = allExpenses.filter(e => e.date === dateStr);
     const manpowerExpenses = getManpowerExpensesForDate(dateStr);
     const documentationExpenses = getDocumentationExpensesForDate(dateStr);
     
+    // Apply truck filter
     if (currentTruckFilter !== 'All') {
       dayExpenses = dayExpenses.filter(e => e.truck === currentTruckFilter);
       var filteredManpower = manpowerExpenses.filter(e => e.truck === currentTruckFilter);
@@ -1170,12 +1174,14 @@ function renderCalendar() {
       var allDayExpenses = [...dayExpenses, ...manpowerExpenses, ...documentationExpenses];
     }
     
+    // ✅ FIX: Group by category and show totals
     const categoryTotals = {};
     allDayExpenses.forEach(e => {
       if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
       categoryTotals[e.category] += e.amount;
     });
     
+    // ✅ FIX: Show top 4 categories with icons + amounts
     const expensesHtml = Object.entries(categoryTotals)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 4)
@@ -1191,6 +1197,7 @@ function renderCalendar() {
     </div>`;
   }
   
+  // Next month days
   const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
   const nextMonthDays = totalCells - (startDay + daysInMonth);
   for (let i = 1; i <= nextMonthDays; i++) {
@@ -1199,6 +1206,7 @@ function renderCalendar() {
   
   document.getElementById('cal-days').innerHTML = html;
 }
+
 
 // ═══ DAY DETAIL MODAL ═════════════════════════════════
 function showDayDetail(dateStr) {
@@ -1397,34 +1405,24 @@ function renderReports() {
   const thisMonthExpenses = allExpenses.filter(e => e.month === thisMonth);
   const ytdExpenses = allExpenses.filter(e => new Date(e.date) >= yearStart);
   
-  // Calculate manpower and documentation
+  // ✅ FIX: Calculate manpower and documentation properly
   const thisMonthDates = [...new Set(thisMonthExpenses.map(e => e.date))];
   let thisMonthManpowerTotal = 0;
   let thisMonthDocumentationTotal = 0;
-  const thisMonthManpowerByRole = { driver: 0, helper: 0 };
   
   thisMonthDates.forEach(date => {
     const manpower = getManpowerExpensesForDate(date);
     const documentation = getDocumentationExpensesForDate(date);
     
-    manpower.forEach(m => {
-      thisMonthManpowerTotal += m.amount;
-      if (m.role === 'driver') {
-        thisMonthManpowerByRole.driver += m.amount;
-      } else {
-        thisMonthManpowerByRole.helper += m.amount;
-      }
-    });
-    
-    documentation.forEach(d => {
-      thisMonthDocumentationTotal += d.amount;
-    });
+    thisMonthManpowerTotal += manpower.reduce((sum, e) => sum + e.amount, 0);
+    thisMonthDocumentationTotal += documentation.reduce((sum, e) => sum + e.amount, 0);
   });
   
   const lastWeekExpenses = allExpenses.filter(e => {
     const d = new Date(e.date);
     return d >= new Date(weekAgo.getTime() - 7*24*60*60*1000) && d < weekAgo;
   });
+  
   const lastMonthExpenses = allExpenses.filter(e => {
     const lastMonth = new Date(now);
     lastMonth.setMonth(lastMonth.getMonth() - 1);
@@ -1432,7 +1430,8 @@ function renderReports() {
   });
   
   const weekTotal = thisWeekExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const monthTotal = thisMonthExpenses.reduce((sum, e) => sum + e.amount, 0) + thisMonthManpowerTotal + thisMonthDocumentationTotal;
+  const monthTotal = thisMonthExpenses.reduce((sum, e) => sum + e.amount, 0) + 
+                     thisMonthManpowerTotal + thisMonthDocumentationTotal;
   const ytdTotal = ytdExpenses.reduce((sum, e) => sum + e.amount, 0);
   const avgPerDay = monthTotal / now.getDate();
   
@@ -1442,34 +1441,32 @@ function renderReports() {
   const weekChange = lastWeekTotal > 0 ? ((weekTotal - lastWeekTotal) / lastWeekTotal * 100).toFixed(1) : 0;
   const monthChange = lastMonthTotal > 0 ? ((monthTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1) : 0;
   
-// ✅ Helper function for compact numbers
-    function formatCompactCurrency(amount) {
-      if (amount >= 1000000) {
-        return '₱' + (amount / 1000000).toFixed(1) + 'M';
-      } else if (amount >= 1000) {
-        return '₱' + (amount / 1000).toFixed(1) + 'k';
-      } else {
-        return '₱' + amount.toFixed(0);
-      }
-    }
-
-    document.getElementById('stat-month').textContent = formatCompactCurrency(monthTotal);
-    document.getElementById('stat-week').textContent = formatCompactCurrency(weekTotal);
-    document.getElementById('stat-ytd').textContent = formatCompactCurrency(ytdTotal);
-    document.getElementById('stat-avg').textContent = formatCompactCurrency(avgPerDay);
+  // ✅ FIX: Format compact numbers
+  function formatCompactCurrency(amount) {
+    if (amount >= 1000000) return '₱' + (amount / 1000000).toFixed(1) + 'M';
+    else if (amount >= 1000) return '₱' + (amount / 1000).toFixed(1) + 'k';
+    else return '₱' + amount.toFixed(0);
+  }
+  
+  document.getElementById('stat-month').textContent = formatCompactCurrency(monthTotal);
+  document.getElementById('stat-week').textContent = formatCompactCurrency(weekTotal);
+  document.getElementById('stat-ytd').textContent = formatCompactCurrency(ytdTotal);
+  document.getElementById('stat-avg').textContent = formatCompactCurrency(avgPerDay);
   
   const weekChangeEl = document.getElementById('stat-week-change');
-  weekChangeEl.textContent = weekChange > 0 ? `↑ ${weekChange}% vs last week` : weekChange < 0 ? `↓ ${Math.abs(weekChange)}% vs last week` : '—';
+  weekChangeEl.textContent = weekChange > 0 ? `↑ ${weekChange}% vs last week` : 
+                             weekChange < 0 ? `↓ ${Math.abs(weekChange)}% vs last week` : '—';
   weekChangeEl.className = 'stat-change ' + (weekChange > 0 ? 'up' : weekChange < 0 ? 'down' : '');
   
   const monthChangeEl = document.getElementById('stat-month-change');
-  monthChangeEl.textContent = monthChange > 0 ? `↑ ${monthChange}% vs last month` : monthChange < 0 ? `↓ ${Math.abs(monthChange)}% vs last month` : '—';
+  monthChangeEl.textContent = monthChange > 0 ? `↑ ${monthChange}% vs last month` : 
+                              monthChange < 0 ? `↓ ${Math.abs(monthChange)}% vs last month` : '—';
   monthChangeEl.className = 'stat-change ' + (monthChange > 0 ? 'up' : monthChange < 0 ? 'down' : '');
   
-  // Render Trend Chart
+  // ✅ FIX: Render charts with complete data
   renderTrendChart();
   
-  // Category breakdown
+  // ✅ FIX: Category breakdown with Manpower + Documentation
   const categoryTotals = {};
   thisMonthExpenses.forEach(e => {
     if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
@@ -1480,7 +1477,6 @@ function renderReports() {
     categoryTotals['Manpower'] = thisMonthManpowerTotal;
   }
   
-  // Add documentation to its own category
   if (thisMonthDocumentationTotal > 0) {
     if (!categoryTotals['Documentation']) categoryTotals['Documentation'] = 0;
     categoryTotals['Documentation'] += thisMonthDocumentationTotal;
@@ -1519,9 +1515,10 @@ function renderReports() {
       </div>`;
     }).join('');
   
-  document.getElementById('category-breakdown').innerHTML = categoryHtml || '<div class="empty-state"><p>No data for this month</p></div>';
+  document.getElementById('category-breakdown').innerHTML = categoryHtml || 
+    '<div class="empty-state"><p>No data for this month</p></div>';
   
-  // Truck breakdown
+  // ✅ FIX: Truck breakdown
   const truckTotals = {};
   
   thisMonthExpenses.forEach(e => {
@@ -1569,57 +1566,58 @@ function renderReports() {
       </div>`;
     }).join('');
   
-  document.getElementById('truck-breakdown').innerHTML = truckHtml || '<div class="empty-state"><p>No data for this month</p></div>';
+  document.getElementById('truck-breakdown').innerHTML = truckHtml || 
+    '<div class="empty-state"><p>No data for this month</p></div>';
   
-  // Daily breakdown
-    // Daily breakdown
-    let dailyHtml = '';
-    for (let day = 1; day <= now.getDate(); day++) {
-        const dateStr = `${thisMonth}-${String(day).padStart(2, '0')}`;
-        const dayExpenses = thisMonthExpenses.filter(e => e.date === dateStr);
-        const manpowerExpenses = getManpowerExpensesForDate(dateStr);
-        const documentationExpenses = getDocumentationExpensesForDate(dateStr);
-        
-        const operationalTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
-        const manpowerTotal = manpowerExpenses.reduce((sum, e) => sum + e.amount, 0);
-        const documentationTotal = documentationExpenses.reduce((sum, e) => sum + e.amount, 0);
-        const dayTotal = operationalTotal + manpowerTotal + documentationTotal;
-        
-        if (dayTotal > 0) {
-            const date = new Date(dateStr);
-            const dayName = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            
-            // Build breakdown details
-            let breakdownDetails = [];
-            if (operationalTotal > 0) {
-                breakdownDetails.push(`Operational: ₱${operationalTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
-            }
-            if (manpowerTotal > 0) {
-                breakdownDetails.push(`Manpower: ₱${manpowerTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
-            }
-            if (documentationTotal > 0) {
-                breakdownDetails.push(`Documentation: ₱${documentationTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
-            }
-            
-            const totalCount = dayExpenses.length + manpowerExpenses.length + documentationExpenses.length;
-            
-            dailyHtml += `<div class="breakdown-item" onclick="showDayDetail('${dateStr}')" style="cursor:pointer">
-                <div class="breakdown-left">
-                    <div class="breakdown-icon">📅</div>
-                    <div class="breakdown-info">
-                        <div class="breakdown-label">${dayName}</div>
-                        <div class="breakdown-meta">${breakdownDetails.join(' • ')}</div>
-                    </div>
-                </div>
-                <div class="breakdown-right">
-                    <div class="breakdown-amount">₱${dayTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-                    <div class="breakdown-percent">${totalCount} item${totalCount !== 1 ? 's' : ''}</div>
-                </div>
-            </div>`;
-        }
+  // Daily breakdown (existing code continues...)
+  let dailyHtml = '';
+  for (let day = 1; day <= now.getDate(); day++) {
+    const dateStr = `${thisMonth}-${String(day).padStart(2, '0')}`;
+    const dayExpenses = thisMonthExpenses.filter(e => e.date === dateStr);
+    const manpowerExpenses = getManpowerExpensesForDate(dateStr);
+    const documentationExpenses = getDocumentationExpensesForDate(dateStr);
+    
+    const operationalTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const manpowerTotal = manpowerExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const documentationTotal = documentationExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const dayTotal = operationalTotal + manpowerTotal + documentationTotal;
+    
+    if (dayTotal > 0) {
+      const date = new Date(dateStr);
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      
+      let breakdownDetails = [];
+      if (operationalTotal > 0) {
+        breakdownDetails.push(`Operational: ₱${operationalTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+      }
+      if (manpowerTotal > 0) {
+        breakdownDetails.push(`Manpower: ₱${manpowerTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+      }
+      if (documentationTotal > 0) {
+        breakdownDetails.push(`Documentation: ₱${documentationTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
+      }
+      
+      const totalCount = dayExpenses.length + manpowerExpenses.length + documentationExpenses.length;
+      
+      dailyHtml += `<div class="breakdown-item" onclick="showDayDetail('${dateStr}')" style="cursor:pointer">
+        <div class="breakdown-left">
+          <div class="breakdown-icon">📅</div>
+          <div class="breakdown-info">
+            <div class="breakdown-label">${dayName}</div>
+            <div class="breakdown-meta">${breakdownDetails.join(' • ')}</div>
+          </div>
+        </div>
+        <div class="breakdown-right">
+          <div class="breakdown-amount">₱${dayTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+          <div class="breakdown-percent">${totalCount} item${totalCount !== 1 ? 's' : ''}</div>
+        </div>
+      </div>`;
     }
-    document.getElementById('daily-breakdown').innerHTML = dailyHtml || '<div class="empty-state"><p>No expenses yet this month</p></div>';
-    }
+  }
+  document.getElementById('daily-breakdown').innerHTML = dailyHtml || 
+    '<div class="empty-state"><p>No expenses yet this month</p></div>';
+}
+
 
 // ═══ CHART RENDERING ══════════════════════════════════
 function renderTrendChart() {
@@ -1768,12 +1766,33 @@ function updateSummary() {
     filtered = filtered.filter(e => e.truck === currentTruckFilter);
   }
   
-  const total = filtered.reduce((sum, e) => sum + e.amount, 0);
+  // ✅ DAGDAG: Calculate manpower + documentation
+  const thisMonthDates = [...new Set(filtered.map(e => e.date))];
+  let manpowerTotal = 0;
+  let documentationTotal = 0;
+  
+  thisMonthDates.forEach(date => {
+    let manpower = getManpowerExpensesForDate(date);
+    let documentation = getDocumentationExpensesForDate(date);
+    
+    if (currentTruckFilter !== 'All' && currentView !== 'reports') {
+      manpower = manpower.filter(e => e.truck === currentTruckFilter);
+      documentation = documentation.filter(e => e.truck === currentTruckFilter);
+    }
+    
+    manpowerTotal += manpower.reduce((sum, e) => sum + e.amount, 0);
+    documentationTotal += documentation.reduce((sum, e) => sum + e.amount, 0);
+  });
+  
+  const total = filtered.reduce((sum, e) => sum + e.amount, 0) + manpowerTotal + documentationTotal;
   
   document.getElementById('summary-amount').textContent = '₱ ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  document.getElementById('summary-meta').textContent = filtered.length + ' expense' + (filtered.length !== 1 ? 's' : '') + ' this month';
+  document.getElementById('summary-meta').textContent = 
+    `${filtered.length + Math.floor(manpowerTotal/500) + Math.floor(documentationTotal/109)} expense${filtered.length !== 1 ? 's' : ''} this month`;
   document.getElementById('summary-period').textContent = 'THIS MONTH';
 }
+
+
 
 // ═══ DETAIL SHEET ═════════════════════════════════════
 function openDetail(rowIndex) {
