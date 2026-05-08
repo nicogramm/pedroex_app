@@ -60,7 +60,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .filter-btn.active{box-shadow:var(--neu-in);color:var(--red)}
 .filter-btn:active{transform:scale(0.98)}
 
-/* ═══ CALENDAR VIEW - FIXED GRID ═══ */
+/* ═══ CALENDAR VIEW - BIGGER ICONS ═══ */
 .calendar-view{display:none}
 .calendar-view.active{display:block}
 .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -97,7 +97,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
   width:100%;
   display:flex;
   flex-direction:column;
-  gap:2px;
+  gap:3px;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   flex:1;
@@ -105,17 +105,18 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 }
 .cal-expenses::-webkit-scrollbar{display:none}
 .cal-expense-dot{
-  font-size:10px;
+  font-size:11px;
   display:flex;
   align-items:center;
-  gap:2px;
+  gap:3px;
   justify-content:center;
   font-weight:700;
-  padding:1px 0;
+  padding:2px 0;
   flex-shrink:0;
 }
-.cal-expense-dot .icon{font-size:12px;flex-shrink:0}
-.cal-expense-dot .amount{font-size:9px;font-weight:700;color:var(--text);white-space:nowrap}
+/* ✅ BIGGER ICONS FOR MOBILE */
+.cal-expense-dot .icon{font-size:16px;flex-shrink:0}
+.cal-expense-dot .amount{font-size:10px;font-weight:700;color:var(--text);white-space:nowrap}
 
 /* ═══ DAY DETAIL MODAL (FULL SCREEN) ═══ */
 .day-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -163,8 +164,7 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .ec-notes{font-size:12px;color:var(--text2);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid var(--shadow-d)}
 .ec-receipt{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);margin-top:6px}
 
-/* ═══ REPORTS VIEW - PREMIUM CHARTS ═══ */
-/* REPORTS VIEW - PREMIUM CHARTS */
+/* ═══ REPORTS VIEW ═══ */
 .reports-view{display:none}
 .reports-view.active{display:block}
 .report-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
@@ -344,10 +344,6 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     <button class="tb-btn" onclick="loadExpenses()">↻</button>
   </div>
 </div>
-
-
-
-
 
 <div class="page-wrap">
   <!-- SUMMARY CARD -->
@@ -748,7 +744,6 @@ const CATEGORY_COLORS = {
     return;
   }
 
-  // ✅ FIX: Set date input to today in local timezone
   const today = new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1009,7 +1004,7 @@ function loadAttendance() {
   });
 }
 
-// ═══ CALCULATE COSTS ══════════════════════════════════
+// ✅ FIX: CALCULATE COSTS CORRECTLY
 function calculateManpowerCost(attendance) {
   const employeeName = attendance.employee;
   const role = employeeRoles[employeeName] || 'helper';
@@ -1127,7 +1122,6 @@ function goToToday() {
   renderCalendar();
 }
 
-// ✅ FIXED: Timezone-safe date string generation
 function renderCalendar() {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
@@ -1140,7 +1134,6 @@ function renderCalendar() {
   const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
   const daysInMonth = lastDay.getDate();
   
-  // ✅ FIX: Get today in local timezone
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   
@@ -1154,11 +1147,10 @@ function renderCalendar() {
   
   // Current month days
   for (let day = 1; day <= daysInMonth; day++) {
-    // ✅ FIX: Build date string without timezone conversion
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const isToday = dateStr === todayStr;
     
-    // Get ALL expenses for this date
+    // ✅ FIX: GET ALL EXPENSES INCLUDING MANPOWER & DOCUMENTATION
     let dayExpenses = allExpenses.filter(e => e.date === dateStr);
     const manpowerExpenses = getManpowerExpensesForDate(dateStr);
     const documentationExpenses = getDocumentationExpensesForDate(dateStr);
@@ -1223,7 +1215,6 @@ function showDayDetail(dateStr) {
     return;
   }
   
-  // ✅ FIX: Parse date correctly
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
   const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -1390,7 +1381,7 @@ function renderList() {
   }).join('');
 }
 
-// ═══ REPORTS RENDERING ════════════════════════════════
+// ✅ FIX: REPORTS RENDERING WITH CORRECT CALCULATIONS
 function renderReports() {
   const now = new Date();
   const thisMonth = now.toISOString().slice(0, 7);
@@ -1405,12 +1396,15 @@ function renderReports() {
   const thisMonthExpenses = allExpenses.filter(e => e.month === thisMonth);
   const ytdExpenses = allExpenses.filter(e => new Date(e.date + 'T00:00:00') >= yearStart);
   
-  // Calculate manpower and documentation
+  // ✅ FIX: Calculate manpower and documentation for THIS MONTH
   const thisMonthDates = [...new Set(thisMonthExpenses.map(e => e.date))];
   let thisMonthManpowerTotal = 0;
   let thisMonthDocumentationTotal = 0;
   
-  thisMonthDates.forEach(date => {
+  // ✅ ADD: Get ALL dates in this month that have attendance
+  const allThisMonthDates = [...new Set(allAttendance.filter(a => a.date.startsWith(thisMonth)).map(a => a.date))];
+  
+  allThisMonthDates.forEach(date => {
     const manpower = getManpowerExpensesForDate(date);
     const documentation = getDocumentationExpensesForDate(date);
     
@@ -1464,7 +1458,7 @@ function renderReports() {
   
   renderTrendChart();
   
-  // Category breakdown
+  // ✅ FIX: Category breakdown with manpower & documentation
   const categoryTotals = {};
   thisMonthExpenses.forEach(e => {
     if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
@@ -1516,7 +1510,7 @@ function renderReports() {
   document.getElementById('category-breakdown').innerHTML = categoryHtml || 
     '<div class="empty-state"><p>No data for this month</p></div>';
   
-  // Truck breakdown
+  // ✅ FIX: Truck breakdown with manpower & documentation
   const truckTotals = {};
   
   thisMonthExpenses.forEach(e => {
@@ -1524,7 +1518,7 @@ function renderReports() {
     truckTotals[e.truck] += e.amount;
   });
   
-  thisMonthDates.forEach(date => {
+  allThisMonthDates.forEach(date => {
     const manpower = getManpowerExpensesForDate(date);
     const documentation = getDocumentationExpensesForDate(date);
     
@@ -1757,7 +1751,7 @@ function renderTruckChart(truckTotals) {
   });
 }
 
-// ═══ UPDATE SUMMARY ═══════════════════════════════════
+// ✅ FIX: UPDATE SUMMARY WITH ALL EXPENSES
 function updateSummary() {
   const now = new Date();
   const thisMonth = now.toISOString().slice(0, 7);
@@ -1767,11 +1761,12 @@ function updateSummary() {
     filtered = filtered.filter(e => e.truck === currentTruckFilter);
   }
   
-  const thisMonthDates = [...new Set(filtered.map(e => e.date))];
+  // ✅ FIX: Get ALL dates with attendance for this month
+  const allThisMonthDates = [...new Set(allAttendance.filter(a => a.date.startsWith(thisMonth)).map(a => a.date))];
   let manpowerTotal = 0;
   let documentationTotal = 0;
   
-  thisMonthDates.forEach(date => {
+  allThisMonthDates.forEach(date => {
     let manpower = getManpowerExpensesForDate(date);
     let documentation = getDocumentationExpensesForDate(date);
     
