@@ -338,28 +338,18 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
 const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
 const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file openid email profile';
-const ADMIN_EMAILS = ['nicolobalonzo@gmail.com'];
 
 const ALL_MODULES = [
-  // CORE OPERATIONS (2x2 grid)
   {id:'trucks',      icon:'truck',     label:'Trucks',       stat:'sv-trucks',   sub:'Fleet roster',    link:'trucks.html'},
   {id:'trips',       icon:'location',  label:'Trips',        stat:'sv-trips',    sub:'On the road',     link:'trips.html'},
   {id:'manpower',    icon:'roster',    label:'Manpower',     stat:'sv-manpower', sub:'Duty roster',     link:'manpower-roster.html'},
-  //{id:'scheduler',   icon:'sched',     label:'Scheduler',    stat:'sv-sched',    sub:'Trip planning',   link:'scheduler.html'},
-  
-  // PEOPLE MANAGEMENT (2x2 grid)
   {id:'employees',   icon:'users',     label:'Employees',    stat:'sv-emp',      sub:'Total staff',     link:'employees.html'},
   {id:'attendance',  icon:'calendar',  label:'Attendance',   stat:'sv-attend',   sub:'Daily logs',      link:'attendance.html'},
   {id:'emp-records', icon:'folder',    label:'Emp Records',  stat:'sv-records',  sub:'201 files',       link:'employee-records.html'},
   {id:'matrix',      icon:'chart',     label:'Matrix',       stat:'sv-matrix',   sub:'Performance',     link:'matrix.html'},
-  
-  // FINANCE (wide cards)
-  // ✅ ADMIN: 2 cards | EMPLOYEE: 1 card
   {id:'expenses-admin',  icon:'chart',  label:'Expenses',     stat:'sv-exp-admin', sub:'Reports & Analytics', wide:true, link:'expenses.html', adminOnly: true},
   {id:'expenses-emp',    icon:'card',   label:'Expenses',     stat:'sv-exp-emp',   sub:'Submit expense',      wide:true, link:'expenses-emp.html'},
   {id:'billing',     icon:'doc',       label:'Billing',      stat:'sv-billing',  sub:'Invoices',        wide:true, link:'billing.html'},
-  
-  // SYSTEM (wide card)
   {id:'settings',    icon:'settings',  label:'Settings',     stat:'sv-set',      sub:'App settings',    wide:true, link:'settings.html'},
 ];
 
@@ -368,25 +358,24 @@ const ICONS = {
   calendar: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><path d="M7 14l2 2 4-4" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   location: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="var(--red)" stroke-width="2"/></svg>',
   users:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="var(--red)" stroke-width="2"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="var(--red)" stroke-width="2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87" stroke="var(--red)" stroke-width="2"/></svg>',
-  folder:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',  card:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M2 10h20" stroke="var(--red)" stroke-width="2"/><path d="M6 15h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  folder:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  card:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M2 10h20" stroke="var(--red)" stroke-width="2"/><path d="M6 15h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
   doc:      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
   chart:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   roster:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="4" rx="1" stroke="var(--red)" stroke-width="2"/><path d="M6 4h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="var(--red)" stroke-width="2"/><path d="M9 12l2 2 4-4M9 17h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  //sched:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><rect x="7" y="13" width="3" height="3" rx="0.5" fill="var(--red)"/><rect x="13" y="13" width="3" height="3" rx="0.5" fill="var(--red)"/></svg>',
   settings: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
 };
 
 let token = null;
-let isDark = false;
 
 // THEME
 function applyTheme(dark) {
-  isDark = dark;
   document.body.classList.toggle('dark', dark);
   localStorage.setItem('pedroex-theme', dark ? 'dark' : 'light');
 }
 applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
+// INIT
 (function init() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -394,15 +383,12 @@ applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
   const savedToken = localStorage.getItem('pedroex-token');
   const expiry = localStorage.getItem('pedroex-token-expiry');
-  
-  // ✅ Add 5-minute buffer para ma-refresh bago mag-expire
   const bufferMs = 5 * 60 * 1000;
   
   if (savedToken && expiry && Date.now() < (parseInt(expiry) - bufferMs)) {
     token = savedToken;
     loadUser();
   } else {
-    // ✅ Clear expired token
     localStorage.removeItem('pedroex-token');
     localStorage.removeItem('pedroex-token-expiry');
     document.getElementById('s-login').classList.add('active');
@@ -410,7 +396,7 @@ applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
   }
 })();
 
-// AUTH
+// SIGN IN
 function signIn() {
   if (typeof google === 'undefined' || !google.accounts) {
     showToast('Loading Google Sign-In...');
@@ -418,7 +404,6 @@ function signIn() {
     return;
   }
 
-  // Check if this is a first-time login
   var hasGranted = localStorage.getItem('pedroex-scope-granted');
   
   google.accounts.oauth2.initTokenClient({
@@ -434,44 +419,16 @@ function signIn() {
       const expiresAt = Date.now() + (res.expires_in * 1000);
       localStorage.setItem('pedroex-token', token);
       localStorage.setItem('pedroex-token-expiry', expiresAt);
-      localStorage.setItem('pedroex-scope-granted', 'true'); // ✅ Mark as granted
+      localStorage.setItem('pedroex-scope-granted', 'true');
       
       loadUser();
     }
   }).requestAccessToken({ 
-    prompt: hasGranted ? '' : 'consent' // ✅ Consent only on first login
+    prompt: hasGranted ? '' : 'consent'
   });
 }
 
-function initAutoRefresh(onRefresh) {
-  setInterval(function() {
-    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    var bufferMs = 10 * 60 * 1000; // 10 min before expiry
-    
-    // If token expires in less than 10 minutes, re-authenticate silently
-    if (token && Date.now() >= (expiry - bufferMs)) {
-      if (typeof google !== 'undefined' && google.accounts) {
-        google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: SCOPES,
-          callback: function(res) {
-            if (!res.error) {
-              token = res.access_token;
-              const expiresAt = Date.now() + (res.expires_in * 1000);
-              localStorage.setItem('pedroex-token', token);
-              localStorage.setItem('pedroex-token-expiry', expiresAt);
-            }
-          }
-        }).requestAccessToken({ prompt: '' });
-      }
-      return;
-    }
-    
-    if (!token || Date.now() >= expiry) return;
-    onRefresh(function() {});
-  }, 5 * 60 * 1000);
-}
-
+// ✅ LOAD USER — FIXED FLOW
 function loadUser() {
   fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
     headers: { 'Authorization': 'Bearer ' + token }
@@ -481,38 +438,15 @@ function loadUser() {
     return r.json();
   })
   .then(u => {
+    // ✅ Save basic user info
     localStorage.setItem('pedroex-name', u.name || '');
     localStorage.setItem('pedroex-email', u.email || '');
     localStorage.setItem('pedroex-picture', u.picture || '');
-
     document.getElementById('user-avatar').src = u.picture || '';
 
-    // ✅ Switch screens
-    document.getElementById('s-login').classList.remove('active');
-    document.getElementById('s-app').classList.add('active');
-    
-    buildDashboard();
-    loadDashboardStats();
-
-    // Init pull to refresh
-    initPullToRefresh(
-      document.querySelector('.page-wrap'),
-      function(done) {
-        loadDashboardStats();
-        setTimeout(done, 1000);
-      }
-    );
-
-    // Auto refresh
-    initAutoRefresh(function(done) {
-      loadDashboardStats();
-      done();
-    });
-
-    // ✅ GET ROLE FROM EMPLOYEES SHEET
-    var email = (u.email || '').toLowerCase(); // ← Convert to lowercase
-    
-    console.log('🔍 Looking for email:', email); // ← Debug log
+    // ✅ FETCH EMPLOYEE DATA FIRST (before rendering dashboard)
+    var email = (u.email || '').toLowerCase();
+    console.log('🔍 Looking for email:', email);
     
     fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D', {
       headers: { 'Authorization': 'Bearer ' + token }
@@ -520,56 +454,86 @@ function loadUser() {
     .then(function(r) { return r.json(); })
     .then(function(res) {
       var rows = res.values || [];
+      console.log('📋 Employees sheet data:', rows);
       
-      console.log('📋 Employees sheet data:', rows); // ← Debug log
-      
-      // ✅ Find employee by email (case-insensitive)
       var empRow = rows.find(function(r) { 
         var sheetEmail = (r[0] || '').toLowerCase();
-        console.log('Comparing:', sheetEmail, '===', email, '?', sheetEmail === email); // ← Debug log
+        console.log('Comparing:', sheetEmail, '===', email, '?', sheetEmail === email);
         return sheetEmail === email; 
       });
       
-      console.log('✅ Found employee row:', empRow); // ← Debug log
+      console.log('✅ Found employee row:', empRow);
       
       var firstName = empRow ? (empRow[1] || u.given_name || 'team') : (u.given_name || 'team');
-      
-      // ✅ Get role from Column D (index 3)
       var role = empRow ? (empRow[3] || 'Employee') : 'Employee';
       
-      console.log('🎭 Assigned role:', role); // ← Debug log
+      console.log('🎭 Assigned role:', role);
+      console.log('👤 First name:', firstName);
       
-      // ✅ Save role to localStorage
+      // ✅ Save to localStorage
       localStorage.setItem('pedroex-role', role);
+      localStorage.setItem('pedroex-firstname', firstName); // ← Save firstName separately
+      
+      // ✅ NOW render dashboard with correct data
+      document.getElementById('s-login').classList.remove('active');
+      document.getElementById('s-app').classList.add('active');
+      
+      updateGreeting(firstName); // ← Use firstName, not email
+      buildDashboard();
+      loadDashboardStats();
 
-      updateGreeting(firstName);
+      // Init pull to refresh
+      initPullToRefresh(
+        document.querySelector('.page-wrap'),
+        function(done) {
+          loadDashboardStats();
+          setTimeout(done, 1000);
+        }
+      );
+
+      // Auto refresh with token renewal
+      initAutoRefresh();
     })
     .catch(function(err) {
-      console.error('❌ Error loading employee data:', err); // ← Debug log
-      // ✅ Default to Employee if fetch fails
+      console.error('❌ Error loading employee data:', err);
+      
+      // ✅ Fallback: use Google name
       localStorage.setItem('pedroex-role', 'Employee');
+      localStorage.setItem('pedroex-firstname', u.given_name || 'team');
+      
+      document.getElementById('s-login').classList.remove('active');
+      document.getElementById('s-app').classList.add('active');
+      
       updateGreeting(u.given_name || 'team');
+      buildDashboard();
+      loadDashboardStats();
+
+      initPullToRefresh(
+        document.querySelector('.page-wrap'),
+        function(done) {
+          loadDashboardStats();
+          setTimeout(done, 1000);
+        }
+      );
+
+      initAutoRefresh();
     });
   })
   .catch(function(err) { 
     console.error('Load user error:', err);
-    
-    // ✅ Clear invalid token and show login
     localStorage.removeItem('pedroex-token');
     localStorage.removeItem('pedroex-token-expiry');
-    
     document.getElementById('s-login').classList.add('active');
     document.getElementById('s-app').classList.remove('active');
-    
     showToast('❌ Session expired. Please sign in again.');
   });
 }
 
-
+// UPDATE GREETING
 function updateGreeting(firstName) {
   var now = new Date();
-  var h   = now.getHours();
-  var gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var h = now.getHours();
+  var gr = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   
   document.getElementById('dash-name').textContent = gr + ', ' + firstName + '!';
   document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
@@ -577,12 +541,13 @@ function updateGreeting(firstName) {
   });
 }
 
-// DASHBOARD
+// BUILD DASHBOARD
 function buildDashboard() {
   const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
   const isAdmin = userRole === 'admin';
   
-  // ✅ Filter modules based on role
+  console.log('🏗️ Building dashboard for role:', userRole, '(isAdmin:', isAdmin, ')');
+  
   const visibleModules = ALL_MODULES.filter(m => {
     if (m.adminOnly && !isAdmin) return false;
     return true;
@@ -612,6 +577,7 @@ function buildDashboard() {
   }).join('');
 }
 
+// LOAD DASHBOARD STATS
 function loadDashboardStats() {
   if (!token) return;
   
@@ -642,7 +608,7 @@ function loadDashboardStats() {
     updateStatError('sv-trucks');
   });
 
-  // 2️⃣ TRIPS (today's trips)
+  // 2️⃣ TRIPS
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:B', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -658,7 +624,7 @@ function loadDashboardStats() {
     updateStatError('sv-trips');
   });
 
-  // 3️⃣ MANPOWER ROSTER (today's assignments)
+  // 3️⃣ MANPOWER
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Manpower%20Roster!A2:D', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -674,7 +640,7 @@ function loadDashboardStats() {
     updateStatError('sv-manpower');
   });
 
-  // 4️⃣ EMPLOYEES (total count)
+  // 4️⃣ EMPLOYEES
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -688,7 +654,7 @@ function loadDashboardStats() {
     updateStatError('sv-emp');
   });
 
-  // 5️⃣ ATTENDANCE (today's logs) — ✅ FIXED
+  // 5️⃣ ATTENDANCE
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:K', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -719,7 +685,7 @@ function loadDashboardStats() {
     updateStatError('sv-attend');
   });
 
-  // 6️⃣ EMPLOYEE RECORDS — ✅ FIXED
+  // 6️⃣ EMPLOYEE RECORDS
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Records!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -733,7 +699,7 @@ function loadDashboardStats() {
     updateStatError('sv-records');
   });
 
-  // 7️⃣ MATRIX (total entries)
+  // 7️⃣ MATRIX
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Matrix!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -779,7 +745,7 @@ function loadDashboardStats() {
     });
   }
 
-  // 9️⃣ BILLING (unpaid invoices)
+  // 9️⃣ BILLING
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:G', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -798,29 +764,53 @@ function loadDashboardStats() {
   updateStat('sv-set', '⚙️');
 }
 
-// TOAST
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+// ✅ AUTO REFRESH WITH TOKEN RENEWAL
+function initAutoRefresh() {
+  setInterval(function() {
+    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    var bufferMs = 10 * 60 * 1000; // 10 min before expiry
+    
+    // Renew token if expiring soon
+    if (token && Date.now() >= (expiry - bufferMs)) {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: function(res) {
+            if (!res.error) {
+              token = res.access_token;
+              const expiresAt = Date.now() + (res.expires_in * 1000);
+              localStorage.setItem('pedroex-token', token);
+              localStorage.setItem('pedroex-token-expiry', expiresAt);
+              console.log('🔄 Token renewed');
+            }
+          }
+        }).requestAccessToken({ prompt: '' });
+      }
+      return;
+    }
+    
+    // Refresh dashboard stats
+    if (token && Date.now() < expiry) {
+      console.log('🔄 Auto-refresh dashboard stats');
+      loadDashboardStats();
+    }
+  }, 5 * 60 * 1000); // Every 5 minutes
 }
 
-// ═══ PULL TO REFRESH + AUTO REFRESH ══════════════════
+// PULL TO REFRESH
 function initPullToRefresh(scrollEl, onRefresh) {
-  var startY      = 0;
-  var pulling     = false;
-  var threshold   = 70;
-  var indicator   = document.createElement('div');
+  var startY = 0;
+  var pulling = false;
+  var threshold = 70;
+  var indicator = document.createElement('div');
   indicator.className = 'ptr-indicator';
   indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
   document.body.appendChild(indicator);
 
   scrollEl.addEventListener('touchstart', function(e) {
     if (scrollEl.scrollTop === 0) {
-      startY  = e.touches[0].clientY;
+      startY = e.touches[0].clientY;
       pulling = true;
     }
   }, { passive: true });
@@ -857,14 +847,15 @@ function initPullToRefresh(scrollEl, onRefresh) {
   });
 }
 
-function initAutoRefresh(onRefresh) {
-  setInterval(function() {
-    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    if (!token || Date.now() >= expiry) return;
-    onRefresh(function() {});
-  }, 5 * 60 * 1000);
+// TOAST
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
-
 </script>
 </body>
 </html>
