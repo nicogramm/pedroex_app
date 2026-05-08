@@ -472,16 +472,21 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   letter-spacing:0.5px;
 }
 .cal-day {
-  min-height:90px;
-  max-height:90px;
-  border-radius:10px;
+  min-height: 90px;
+  max-height: 90px;
   overflow: hidden;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  display:flex; flex-direction:column; 
-  align-items:center; 
-  padding:8px 4px;
-  font-size:14px; font-weight:600; color:var(--text2);
-  cursor:pointer; position:relative;
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: var(--neu-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  position: relative;
 }
 .cal-day:active { box-shadow:var(--neu-in) }
 .cal-day.today { 
@@ -497,9 +502,14 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 }
 
 .cal-day-entries {
-  display:flex; flex-direction:column; gap:3px;
-  width:100%;
-  align-items:center;
+  display: flex; 
+  flex-direction: column; 
+  gap: 2px;  /* ⬇️ Bawasan from 3px */
+  width: 100%;
+  align-items: center;
+  overflow: hidden;  /* ✨ Nandito na to */
+  flex: 1;           /* ✨ KAILANGAN ITO - take remaining space */
+  min-height: 0;     /* ✨ BAGO - critical for overflow to work */
 }
 .cal-entry {
   font-size:7px; font-weight:700;
