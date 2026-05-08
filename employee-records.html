@@ -2071,6 +2071,7 @@ function updateNotifications() {
 
 function checkReminders() {
   const now = new Date();
+  // ✅ BAGO: Filter pending records FIRST
   const pending = records.filter(r => r.liquidated === 'No');
   
   let podCount = 0;
@@ -2110,8 +2111,11 @@ function checkReminders() {
   }
 }
 
+
+
 function showNotifications() {
   const now = new Date();
+  // ✅ BAGO: Filter pending records FIRST
   const pending = records.filter(r => r.liquidated === 'No');
   
   let messages = [];
@@ -2166,6 +2170,7 @@ function showNotifications() {
   document.getElementById('notif-list').innerHTML = listHTML;
   document.getElementById('notif-modal').classList.add('active');
 }
+
 
 let toastTimer;
 function showToast(msg) {
