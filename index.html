@@ -511,7 +511,7 @@ function loadUser() {
 
     // Get firstName from Employees sheet
     var email = (u.email || '').toLowerCase();
-    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D', {
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:A', {
       headers: { 'Authorization': 'Bearer ' + token }
     })
     .then(function(r) { return r.json(); })
@@ -597,7 +597,6 @@ function loadDashboardStats() {
   const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
   const isAdmin = userRole === 'admin';
   
-  // Helper function
   function updateStat(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value > 0 ? value : '—';
@@ -668,15 +667,30 @@ function loadDashboardStats() {
     updateStatError('sv-emp');
   });
 
-  // 5️⃣ ATTENDANCE (today's logs)
-  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:B', {
+  // 5️⃣ ATTENDANCE (today's logs) — ✅ FIXED
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:K', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
   .then(res => {
     const today = new Date().toISOString().split('T')[0];
     const rows = res.values || [];
-    const todayLogs = rows.filter(row => row[0] === today).length;
+    
+    const todayLogs = rows.filter(row => {
+      if (!row[1]) return false;
+      
+      let rowDate = row[1];
+      if (!isNaN(rowDate) && rowDate > 1000) {
+        const excelEpoch = new Date(1899, 11, 30);
+        const date = new Date(excelEpoch.getTime() + parseFloat(rowDate) * 86400000);
+        rowDate = date.getFullYear() + '-' + 
+                  String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                  String(date.getDate()).padStart(2, '0');
+      }
+      
+      return rowDate === today;
+    }).length;
+    
     updateStat('sv-attend', todayLogs);
   })
   .catch(err => {
@@ -684,8 +698,8 @@ function loadDashboardStats() {
     updateStatError('sv-attend');
   });
 
-  // 6️⃣ EMPLOYEE RECORDS (total 201 files)
-  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Records!A2:A', {
+  // 6️⃣ EMPLOYEE RECORDS — ✅ FIXED
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Records!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
@@ -712,9 +726,8 @@ function loadDashboardStats() {
     updateStatError('sv-matrix');
   });
 
-  // 8️⃣ EXPENSES (Admin: pending count | Employee: user's total)
+  // 8️⃣ EXPENSES
   if (isAdmin) {
-    // Admin: Count pending expenses
     fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
       headers: {'Authorization': 'Bearer ' + token}
     })
@@ -729,7 +742,6 @@ function loadDashboardStats() {
       updateStatError('sv-exp-admin');
     });
   } else {
-    // Employee: Count own expenses
     const userEmail = (localStorage.getItem('pedroex-email') || '').toLowerCase();
     fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
       headers: {'Authorization': 'Bearer ' + token}
@@ -761,7 +773,7 @@ function loadDashboardStats() {
     updateStatError('sv-billing');
   });
 
-  // 🔟 SETTINGS (just show a static icon or user count)
+  // 🔟 SETTINGS
   updateStat('sv-set', '⚙️');
 }
 
