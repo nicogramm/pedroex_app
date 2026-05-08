@@ -683,14 +683,14 @@ const EXPENSES_SHEET = 'Expenses_Master';
 const CATEGORIES_SHEET = 'Expense_Categories';
 const ATTENDANCE_SHEET = 'Attendance';
 const EMPLOYEES_SHEET = 'Employees';
-const SETTINGS_SHEET = 'Expense_Categories'; // or 'Settings' if you created new sheet
+const SETTINGS_SHEET = 'Expense_Categories';
 
 // ═══ MANPOWER & DOCUMENTATION RATES ═══════════════════
-const DRIVER_DAILY_RATE = 500;
-const HELPER_DAILY_RATE = 350;
-const TWO_MAN_BONUS = 280;
-const MEAL_ALLOWANCE = 210;
-const DOCUMENTATION_DAILY_RATE = 40000 / 365; // ₱40,000/year ÷ 365 days ≈ ₱109.59/day
+let DOCUMENTATION_DAILY_RATE = 40000 / 365;
+let DRIVER_DAILY_RATE = 500;
+let HELPER_DAILY_RATE = 350;
+let TWO_MAN_BONUS = 280;
+let MEAL_ALLOWANCE = 210;
 
 // ═══ STATE ════════════════════════════════════════════
 let token = '';
@@ -748,7 +748,13 @@ const CATEGORY_COLORS = {
     return;
   }
 
-  document.getElementById('f-date').valueAsDate = new Date();
+  // ✅ FIX: Set date input to today in local timezone
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
+
   loadSettings();
   loadCategories();
   loadEmployeeRoles();
@@ -887,68 +893,58 @@ function handlePhotoChange(input) {
 }
 
 // ═══ LOAD EMPLOYEE ROLES ══════════════════════════════
-// ═══ LOAD EMPLOYEE ROLES ══════════════════════════════
 function loadEmployeeRoles() {
-  apiGet(EMPLOYEES_SHEET + '!A2:E').then(res => {  // ✅ A2:E (hanggang Position)
+  apiGet(EMPLOYEES_SHEET + '!A2:E').then(res => {
     const rows = res.values || [];
     employeeRoles = {};
     rows.forEach(r => {
       const firstName = (r[1] || '').trim();
       const lastName = (r[2] || '').trim();
-      const position = (r[4] || '').toLowerCase().trim(); // ✅ Column E = Position
+      const position = (r[4] || '').toLowerCase().trim();
       
       if (firstName && position) {
-        // Store by full name (matching Attendance sheet format)
         const fullName = `${firstName} ${lastName}`;
         employeeRoles[fullName] = position;
-        
-        // Also store by first name only (fallback)
         employeeRoles[firstName] = position;
       }
     });
-    console.log('Employee roles loaded:', employeeRoles);
+    console.log('✅ Employee roles loaded:', Object.keys(employeeRoles).length);
   }).catch(err => {
-    console.error('Employee roles load failed:', err);
+    console.error('❌ Employee roles load failed:', err);
     employeeRoles = {};
   });
 }
 
 // ═══ LOAD SETTINGS ════════════════════════════════════
 function loadSettings() {
-    apiGet(SETTINGS_SHEET + '!A2:B').then(res => {
-        const rows = res.values || [];
-        rows.forEach(r => {
-            const setting = r[0];
-            const value = parseFloat(r[1]) || 0;
-            
-            switch(setting) {
-                case 'Documentation_Daily_Rate':
-                    DOCUMENTATION_DAILY_RATE = value;
-                    break;
-                case 'Driver_Daily_Rate':
-                    DRIVER_DAILY_RATE = value;
-                    break;
-                case 'Helper_Daily_Rate':
-                    HELPER_DAILY_RATE = value;
-                    break;
-                case 'Two_Man_Bonus':
-                    TWO_MAN_BONUS = value;
-                    break;
-                case 'Meal_Allowance':
-                    MEAL_ALLOWANCE = value;
-                    break;
-            }
-        });
-        console.log('Settings loaded:', {
-            DOCUMENTATION_DAILY_RATE,
-            DRIVER_DAILY_RATE,
-            HELPER_DAILY_RATE,
-            TWO_MAN_BONUS,
-            MEAL_ALLOWANCE
-        });
-    }).catch(err => {
-        console.warn('Settings load failed, using defaults:', err);
+  apiGet(SETTINGS_SHEET + '!A2:B').then(res => {
+    const rows = res.values || [];
+    rows.forEach(r => {
+      const setting = r[0];
+      const value = parseFloat(r[1]) || 0;
+      
+      switch(setting) {
+        case 'Documentation_Daily_Rate':
+          DOCUMENTATION_DAILY_RATE = value;
+          break;
+        case 'Driver_Daily_Rate':
+          DRIVER_DAILY_RATE = value;
+          break;
+        case 'Helper_Daily_Rate':
+          HELPER_DAILY_RATE = value;
+          break;
+        case 'Two_Man_Bonus':
+          TWO_MAN_BONUS = value;
+          break;
+        case 'Meal_Allowance':
+          MEAL_ALLOWANCE = value;
+          break;
+      }
     });
+    console.log('✅ Settings loaded');
+  }).catch(err => {
+    console.warn('⚠️ Settings load failed, using defaults:', err);
+  });
 }
 
 // ═══ LOAD CATEGORIES ══════════════════════════════════
@@ -962,8 +958,9 @@ function loadCategories() {
       if (!categories[cat]) categories[cat] = [];
       categories[cat].push(sub);
     });
+    console.log('✅ Categories loaded');
   }).catch(err => {
-    console.error('Categories load failed:', err);
+    console.error('❌ Categories load failed:', err);
     categories = {
       'Diesel': ['Fuel'],
       'Maintenance': ['Engine', 'Tires', 'Brakes', 'Oil Change', 'Electrical', 'Body/Paint'],
@@ -1005,9 +1002,9 @@ function loadAttendance() {
       timestamp: r[10] || ''
     })).filter(a => a.date && a.employee);
     
-    console.log('Attendance loaded:', allAttendance.length, 'records');
+    console.log('✅ Attendance loaded:', allAttendance.length, 'records');
   }).catch(err => {
-    console.error('Attendance load failed:', err);
+    console.error('❌ Attendance load failed:', err);
     allAttendance = [];
   });
 }
@@ -1083,6 +1080,7 @@ function loadExpenses() {
       photo: r[12] || ''
     })).filter(e => e.truck);
 
+    console.log('✅ Expenses loaded:', allExpenses.length);
     document.getElementById('expenses-loading').style.display = 'none';
     renderCurrentView();
   }).catch(err => {
@@ -1129,6 +1127,7 @@ function goToToday() {
   renderCalendar();
 }
 
+// ✅ FIXED: Timezone-safe date string generation
 function renderCalendar() {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
@@ -1141,8 +1140,9 @@ function renderCalendar() {
   const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
   const daysInMonth = lastDay.getDate();
   
+  // ✅ FIX: Get today in local timezone
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   
   let html = '';
   
@@ -1154,12 +1154,11 @@ function renderCalendar() {
   
   // Current month days
   for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(year, month, day);
-    date.setHours(0, 0, 0, 0);
-    const dateStr = date.toISOString().split('T')[0];
-    const isToday = date.getTime() === today.getTime();
+    // ✅ FIX: Build date string without timezone conversion
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isToday = dateStr === todayStr;
     
-    // ✅ FIX: Get ALL expenses for this date
+    // Get ALL expenses for this date
     let dayExpenses = allExpenses.filter(e => e.date === dateStr);
     const manpowerExpenses = getManpowerExpensesForDate(dateStr);
     const documentationExpenses = getDocumentationExpensesForDate(dateStr);
@@ -1174,14 +1173,14 @@ function renderCalendar() {
       var allDayExpenses = [...dayExpenses, ...manpowerExpenses, ...documentationExpenses];
     }
     
-    // ✅ FIX: Group by category and show totals
+    // Group by category and show totals
     const categoryTotals = {};
     allDayExpenses.forEach(e => {
       if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
       categoryTotals[e.category] += e.amount;
     });
     
-    // ✅ FIX: Show top 4 categories with icons + amounts
+    // Show top 4 categories with icons + amounts
     const expensesHtml = Object.entries(categoryTotals)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 4)
@@ -1207,7 +1206,6 @@ function renderCalendar() {
   document.getElementById('cal-days').innerHTML = html;
 }
 
-
 // ═══ DAY DETAIL MODAL ═════════════════════════════════
 function showDayDetail(dateStr) {
   let dayExpenses = allExpenses.filter(e => e.date === dateStr);
@@ -1225,7 +1223,9 @@ function showDayDetail(dateStr) {
     return;
   }
   
-  const date = new Date(dateStr);
+  // ✅ FIX: Parse date correctly
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
   const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   
   document.getElementById('day-detail-title').textContent = dateText;
@@ -1370,7 +1370,7 @@ function renderList() {
   container.innerHTML = filtered.map(e => {
     const icon = CATEGORY_ICONS[e.category] || '💰';
     const catClass = e.category.toLowerCase();
-    const dateStr = new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const dateStr = new Date(e.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
     return `<div class="expense-card ${catClass}" onclick="openDetail(${e.rowIndex})">
       <div class="ec-head">
@@ -1390,7 +1390,7 @@ function renderList() {
   }).join('');
 }
 
-// ═══ REPORTS RENDERING WITH CHARTS ════════════════════
+// ═══ REPORTS RENDERING ════════════════════════════════
 function renderReports() {
   const now = new Date();
   const thisMonth = now.toISOString().slice(0, 7);
@@ -1401,11 +1401,11 @@ function renderReports() {
   
   const yearStart = new Date(thisYear, 0, 1);
   
-  const thisWeekExpenses = allExpenses.filter(e => new Date(e.date) >= weekAgo);
+  const thisWeekExpenses = allExpenses.filter(e => new Date(e.date + 'T00:00:00') >= weekAgo);
   const thisMonthExpenses = allExpenses.filter(e => e.month === thisMonth);
-  const ytdExpenses = allExpenses.filter(e => new Date(e.date) >= yearStart);
+  const ytdExpenses = allExpenses.filter(e => new Date(e.date + 'T00:00:00') >= yearStart);
   
-  // ✅ FIX: Calculate manpower and documentation properly
+  // Calculate manpower and documentation
   const thisMonthDates = [...new Set(thisMonthExpenses.map(e => e.date))];
   let thisMonthManpowerTotal = 0;
   let thisMonthDocumentationTotal = 0;
@@ -1419,7 +1419,7 @@ function renderReports() {
   });
   
   const lastWeekExpenses = allExpenses.filter(e => {
-    const d = new Date(e.date);
+    const d = new Date(e.date + 'T00:00:00');
     return d >= new Date(weekAgo.getTime() - 7*24*60*60*1000) && d < weekAgo;
   });
   
@@ -1441,7 +1441,6 @@ function renderReports() {
   const weekChange = lastWeekTotal > 0 ? ((weekTotal - lastWeekTotal) / lastWeekTotal * 100).toFixed(1) : 0;
   const monthChange = lastMonthTotal > 0 ? ((monthTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1) : 0;
   
-  // ✅ FIX: Format compact numbers
   function formatCompactCurrency(amount) {
     if (amount >= 1000000) return '₱' + (amount / 1000000).toFixed(1) + 'M';
     else if (amount >= 1000) return '₱' + (amount / 1000).toFixed(1) + 'k';
@@ -1463,10 +1462,9 @@ function renderReports() {
                               monthChange < 0 ? `↓ ${Math.abs(monthChange)}% vs last month` : '—';
   monthChangeEl.className = 'stat-change ' + (monthChange > 0 ? 'up' : monthChange < 0 ? 'down' : '');
   
-  // ✅ FIX: Render charts with complete data
   renderTrendChart();
   
-  // ✅ FIX: Category breakdown with Manpower + Documentation
+  // Category breakdown
   const categoryTotals = {};
   thisMonthExpenses.forEach(e => {
     if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
@@ -1518,7 +1516,7 @@ function renderReports() {
   document.getElementById('category-breakdown').innerHTML = categoryHtml || 
     '<div class="empty-state"><p>No data for this month</p></div>';
   
-  // ✅ FIX: Truck breakdown
+  // Truck breakdown
   const truckTotals = {};
   
   thisMonthExpenses.forEach(e => {
@@ -1569,7 +1567,7 @@ function renderReports() {
   document.getElementById('truck-breakdown').innerHTML = truckHtml || 
     '<div class="empty-state"><p>No data for this month</p></div>';
   
-  // Daily breakdown (existing code continues...)
+  // Daily breakdown
   let dailyHtml = '';
   for (let day = 1; day <= now.getDate(); day++) {
     const dateStr = `${thisMonth}-${String(day).padStart(2, '0')}`;
@@ -1583,7 +1581,8 @@ function renderReports() {
     const dayTotal = operationalTotal + manpowerTotal + documentationTotal;
     
     if (dayTotal > 0) {
-      const date = new Date(dateStr);
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const date = new Date(y, m - 1, d);
       const dayName = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       
       let breakdownDetails = [];
@@ -1618,7 +1617,6 @@ function renderReports() {
     '<div class="empty-state"><p>No expenses yet this month</p></div>';
 }
 
-
 // ═══ CHART RENDERING ══════════════════════════════════
 function renderTrendChart() {
   const ctx = document.getElementById('trendChart');
@@ -1631,7 +1629,10 @@ function renderTrendChart() {
   for (let i = 29; i >= 0; i--) {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
-    last30Days.push(date.toISOString().split('T')[0]);
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    last30Days.push(`${yyyy}-${mm}-${dd}`);
   }
   
   const dailyTotals = last30Days.map(dateStr => {
@@ -1646,7 +1647,7 @@ function renderTrendChart() {
   trendChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: last30Days.map(d => new Date(d).getDate()),
+      labels: last30Days.map(d => parseInt(d.split('-')[2])),
       datasets: [{
         label: 'Daily Expenses',
         data: dailyTotals,
@@ -1766,7 +1767,6 @@ function updateSummary() {
     filtered = filtered.filter(e => e.truck === currentTruckFilter);
   }
   
-  // ✅ DAGDAG: Calculate manpower + documentation
   const thisMonthDates = [...new Set(filtered.map(e => e.date))];
   let manpowerTotal = 0;
   let documentationTotal = 0;
@@ -1787,12 +1787,14 @@ function updateSummary() {
   const total = filtered.reduce((sum, e) => sum + e.amount, 0) + manpowerTotal + documentationTotal;
   
   document.getElementById('summary-amount').textContent = '₱ ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  document.getElementById('summary-meta').textContent = 
-    `${filtered.length + Math.floor(manpowerTotal/500) + Math.floor(documentationTotal/109)} expense${filtered.length !== 1 ? 's' : ''} this month`;
+  
+  const totalItems = filtered.length + 
+    allAttendance.filter(a => a.date.startsWith(thisMonth) && (currentTruckFilter === 'All' || a.truck === currentTruckFilter)).length +
+    (documentationTotal > 0 ? Math.ceil(documentationTotal / DOCUMENTATION_DAILY_RATE) : 0);
+  
+  document.getElementById('summary-meta').textContent = `${totalItems} expense${totalItems !== 1 ? 's' : ''} this month`;
   document.getElementById('summary-period').textContent = 'THIS MONTH';
 }
-
-
 
 // ═══ DETAIL SHEET ═════════════════════════════════════
 function openDetail(rowIndex) {
@@ -1804,7 +1806,11 @@ function openDetail(rowIndex) {
 
   document.getElementById('detail-category').textContent = icon + ' ' + e.category;
   document.getElementById('d-truck').textContent = e.truck;
-  document.getElementById('d-date').textContent = new Date(e.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  
+  const [y, m, d] = e.date.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  document.getElementById('d-date').textContent = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  
   document.getElementById('d-amount').textContent = '₱ ' + e.amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   document.getElementById('d-subcategory').textContent = e.subcategory;
 
@@ -1846,7 +1852,13 @@ function openAddDrawer() {
   document.getElementById('drawer-title').textContent = 'Add Expense';
   document.getElementById('drawer-sub').textContent = 'Record a new expense';
   document.getElementById('f-truck').value = '';
-  document.getElementById('f-date').valueAsDate = new Date();
+  
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
+  
   document.getElementById('f-category').value = '';
   document.getElementById('f-subcategory').innerHTML = '<option value="">Select category first</option>';
   document.getElementById('f-amount').value = '';
@@ -1934,9 +1946,9 @@ function saveExpense() {
 
   photoPromise.then(photoUrl => {
     const timestamp = new Date().toISOString();
-    const dateObj = new Date(date);
+    const dateObj = new Date(date + 'T00:00:00');
     const weekNumber = getWeekNumber(dateObj);
-    const month = dateObj.toISOString().slice(0, 7);
+    const month = date.slice(0, 7);
     const email = localStorage.getItem('pedroex-email') || 'admin';
 
     let row;
@@ -1999,46 +2011,6 @@ function doDelete() {
     });
 }
 
-// ═══ HELPERS ══════════════════════════════════════════
-function getWeekNumber(date) {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-}
-
-function showSaving(msg) {
-  document.getElementById('saving-text').textContent = msg || 'Saving...';
-  document.getElementById('saving-overlay').classList.add('show');
-}
-
-function hideSaving() {
-  document.getElementById('saving-overlay').classList.remove('show');
-}
-
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.style.whiteSpace = 'pre-line';
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
-}
-
-['add-drawer', 'detail-overlay', 'confirm-overlay'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('click', e => {
-    if (e.target === el) {
-      el.classList.remove('open');
-      if (id === 'detail-overlay') closeDetail();
-      if (id === 'add-drawer') closeAddDrawer();
-    }
-  });
-});
-
-
 // ═══ SETTINGS DRAWER ══════════════════════════════════
 function openSettingsDrawer() {
   document.getElementById('s-doc-rate').value = DOCUMENTATION_DAILY_RATE.toFixed(2);
@@ -2089,7 +2061,34 @@ function saveSettings() {
     });
 }
 
-// Add settings-drawer to overlay click handlers
+// ═══ HELPERS ══════════════════════════════════════════
+function getWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+function showSaving(msg) {
+  document.getElementById('saving-text').textContent = msg || 'Saving...';
+  document.getElementById('saving-overlay').classList.add('show');
+}
+
+function hideSaving() {
+  document.getElementById('saving-overlay').classList.remove('show');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.style.whiteSpace = 'pre-line';
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
 ['add-drawer', 'detail-overlay', 'confirm-overlay', 'settings-drawer'].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.addEventListener('click', e => {
@@ -2101,7 +2100,6 @@ function saveSettings() {
     }
   });
 });
-
 </script>
 </body>
 </html>
