@@ -591,26 +591,54 @@ function buildDashboard() {
   }).join('');
 }
 
-// LOAD DASHBOARD STATS
 function loadDashboardStats() {
   if (!token) return;
   
-  // Employee Records
-  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Records!A2:A', {
+  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+  const isAdmin = userRole === 'admin';
+  
+  // Helper function
+  function updateStat(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value > 0 ? value : '—';
+  }
+  
+  function updateStatError(id) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  }
+
+  // 1️⃣ TRUCKS
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Truck%20Roster!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
   .then(res => {
-    const count = (res.values || []).length;
-    const el = document.getElementById('sv-records');
-    if (el) el.textContent = count > 0 ? count : '—';  // ← Show dash if empty
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-trucks', count);
   })
-  .catch(() => {
-    const el = document.getElementById('sv-records');
-    if (el) el.textContent = '—';  // ← Show dash on error
+  .catch(err => {
+    console.error('❌ Trucks load error:', err);
+    updateStatError('sv-trucks');
   });
 
-  // Manpower Roster
+  // 2️⃣ TRIPS (today's trips)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:B', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    const rows = res.values || [];
+    const todayTrips = rows.filter(row => row[1] === today).length;
+    updateStat('sv-trips', todayTrips);
+  })
+  .catch(err => {
+    console.error('❌ Trips load error:', err);
+    updateStatError('sv-trips');
+  });
+
+  // 3️⃣ MANPOWER ROSTER (today's assignments)
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Manpower%20Roster!A2:D', {
     headers: {'Authorization': 'Bearer ' + token}
   })
@@ -619,14 +647,122 @@ function loadDashboardStats() {
     const today = new Date().toISOString().split('T')[0];
     const rows = res.values || [];
     const activeToday = rows.filter(row => row[0] === today).length;
-    
-    const el = document.getElementById('sv-manpower');
-    if (el) el.textContent = activeToday > 0 ? activeToday : '—';  // ← Show dash if none today
+    updateStat('sv-manpower', activeToday);
   })
-  .catch(() => {
-    const el = document.getElementById('sv-manpower');
-    if (el) el.textContent = '—';  // ← Show dash on error
+  .catch(err => {
+    console.error('❌ Manpower load error:', err);
+    updateStatError('sv-manpower');
   });
+
+  // 4️⃣ EMPLOYEES (total count)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-emp', count);
+  })
+  .catch(err => {
+    console.error('❌ Employees load error:', err);
+    updateStatError('sv-emp');
+  });
+
+  // 5️⃣ ATTENDANCE (today's logs)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:B', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    const rows = res.values || [];
+    const todayLogs = rows.filter(row => row[0] === today).length;
+    updateStat('sv-attend', todayLogs);
+  })
+  .catch(err => {
+    console.error('❌ Attendance load error:', err);
+    updateStatError('sv-attend');
+  });
+
+  // 6️⃣ EMPLOYEE RECORDS (total 201 files)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employee%20Records!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-records', count);
+  })
+  .catch(err => {
+    console.error('❌ Employee Records load error:', err);
+    updateStatError('sv-records');
+  });
+
+  // 7️⃣ MATRIX (total entries)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Matrix!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-matrix', count);
+  })
+  .catch(err => {
+    console.error('❌ Matrix load error:', err);
+    updateStatError('sv-matrix');
+  });
+
+  // 8️⃣ EXPENSES (Admin: pending count | Employee: user's total)
+  if (isAdmin) {
+    // Admin: Count pending expenses
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const rows = res.values || [];
+      const pending = rows.filter(row => (row[4] || '').toLowerCase() === 'pending').length;
+      updateStat('sv-exp-admin', pending);
+    })
+    .catch(err => {
+      console.error('❌ Expenses (admin) load error:', err);
+      updateStatError('sv-exp-admin');
+    });
+  } else {
+    // Employee: Count own expenses
+    const userEmail = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const rows = res.values || [];
+      const myExpenses = rows.filter(row => (row[1] || '').toLowerCase() === userEmail).length;
+      updateStat('sv-exp-emp', myExpenses);
+    })
+    .catch(err => {
+      console.error('❌ Expenses (employee) load error:', err);
+      updateStatError('sv-exp-emp');
+    });
+  }
+
+  // 9️⃣ BILLING (unpaid invoices)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:G', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const rows = res.values || [];
+    const unpaid = rows.filter(row => (row[6] || '').toLowerCase() === 'no').length;
+    updateStat('sv-billing', unpaid);
+  })
+  .catch(err => {
+    console.error('❌ Billing load error:', err);
+    updateStatError('sv-billing');
+  });
+
+  // 🔟 SETTINGS (just show a static icon or user count)
+  updateStat('sv-set', '⚙️');
 }
 
 // TOAST
