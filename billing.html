@@ -1074,8 +1074,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th><th>Valid</th></tr></thead>
-      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td>${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td>${r.soa}</td><td>${r.truck}</td><td>₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔ No</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅ Yes</span>'}</td></tr>`;}).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:18%"><col style="width:24%"><col style="width:20%"><col style="width:16%"><col style="width:14%"><col style="width:8%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th><th></th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td style="white-space:nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.soa}">${r.soa}</td><td style="white-space:nowrap">${r.truck}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   // Per Truck — Billed
@@ -1087,8 +1087,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th><th>Valid</th></tr></thead>
-      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td>${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td>${r.soa}</td><td>₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔ No</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅ Yes</span>'}</td></tr>`;}).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:20%"><col style="width:30%"><col style="width:36%"><col style="width:10%"><col style="width:4%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th><th></th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td style="white-space:nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.soa}">${r.soa}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   // Per Month — Unbilled
@@ -1098,8 +1098,8 @@ function renderReport(){
     <div class="grp" style="margin-top:14px">
       <div class="grp-hd">${label}</div>
       <div class="grp-tally"><div class="tally o">${items.length} unbilled</div></div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>Truck</th><th>Route</th><th>Rate</th></tr></thead>
-      <tbody>${items.map(r=>`<tr><td>${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td>${r.truck}</td><td>${r.route||'—'}</td><td>₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:18%"><col style="width:24%"><col style="width:16%"><col style="width:28%"><col style="width:14%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>Truck</th><th>Route</th><th>Rate</th></tr></thead>
+      <tbody>${items.map(r=>`<tr><td style="white-space:nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td style="white-space:nowrap">${r.truck}</td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.route||''}">${r.route||'—'}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
   // Per Truck — Unbilled
@@ -1108,8 +1108,8 @@ function renderReport(){
     <div class="grp" style="margin-top:14px">
       <div class="grp-hd">🚛 ${key}</div>
       <div class="grp-tally"><div class="tally o">${items.length} unbilled</div></div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>Route</th><th>Rate</th></tr></thead>
-      <tbody>${items.map(r=>`<tr><td>${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td>${r.route||'—'}</td><td>₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:22%"><col style="width:28%"><col style="width:35%"><col style="width:15%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>Route</th><th>Rate</th></tr></thead>
+      <tbody>${items.map(r=>`<tr><td style="white-space:nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.route||''}">${r.route||'—'}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
   // Cross-check in report
