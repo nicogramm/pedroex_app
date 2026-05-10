@@ -668,7 +668,7 @@ async function saveToSheet(){
   try{
     const ex=await apiGet(SHEET_BILLING+'!A2:A');
     let nid=(ex.values||[]).filter(r=>r[0]).length+1;
-    await apiAppend(SHEET_BILLING+'!A:F',parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate]));
+    await apiAppend(SHEET_BILLING+'!A:G',parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes']));
     showLoad(false);
     showToast(parsed.length+' rows saved!','ok');
     hide('preview-card');hide('save-btn');
@@ -870,9 +870,10 @@ async function loadBilled(){
   if(!token) return;
   showLoad(true,'Loading billed records...');
   try{
-    const res=await apiGet(SHEET_BILLING+'!A2:F');
+    const res=await apiGet(SHEET_BILLING+'!A2:G');
     master=(res.values||[]).filter(r=>r[0]).map(r=>({
-      id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||''
+      id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
+      valid:(r[6]||'Yes').trim()  // G = Valid column; default Yes for old records
     }));
     showLoad(false);
     buildBFilters();renderBStats();renderBilled();
@@ -892,10 +893,12 @@ function renderBStats(){
   const total=master.length;
   const soas=new Set(master.map(r=>r.soa).filter(Boolean)).size;
   const amt=master.reduce((s,r)=>s+Number(r.rate||0),0);
+  const invalidCount=master.filter(r=>r.valid==='No').length;
   document.getElementById('billed-stats').innerHTML=`
     <div class="sc"><div class="sv green">${total}</div><div class="sl">Shipments</div></div>
     <div class="sc"><div class="sv red">${soas}</div><div class="sl">SOA Bills</div></div>
-    <div class="sc"><div class="sv green" style="font-size:13px">₱${(amt/1000).toFixed(1)}K</div><div class="sl">Total</div></div>`;
+    <div class="sc"><div class="sv green" style="font-size:13px">₱${(amt/1000).toFixed(1)}K</div><div class="sl">Total</div></div>
+    ${invalidCount?`<div class="sc"><div class="sv red">${invalidCount}</div><div class="sl">Invalid #</div></div>`:''}`;
 }
 
 function bSub(s){bSt=s;['all','soa','month','truck'].forEach(x=>document.getElementById('bsub-'+x).classList.toggle('active',x===s));renderBilled();}
@@ -914,10 +917,19 @@ function renderBilled(){
   });
   const list=document.getElementById('billed-list');
   if(!rows.length){list.innerHTML=emptyH('No billed records','Try adjusting your filters.');return;}
-  const cardFn=r=>`<div class="ic" style="margin-bottom:8px">
-    <div class="ic-top"><div><div class="ic-ship">${r.shipment}</div><span class="pill billed">✅ Billed</span></div><div class="ic-rate g">₱${Number(r.rate||0).toLocaleString()}</div></div>
-    <div class="ic-meta"><div class="ic-chip">📅 ${r.date}</div><div class="ic-chip">🚛 ${r.truck}</div><div class="ic-soa">${r.soa}</div></div>
-  </div>`;
+  const cardFn=r=>{
+    const isInvalid=r.valid==='No';
+    return `<div class="ic" style="margin-bottom:8px${isInvalid?';border-left:3px solid var(--red);background:rgba(179,37,51,0.05)':''}">
+      <div class="ic-top">
+        <div>
+          <div class="ic-ship" style="${isInvalid?'color:var(--red)':''}">${r.shipment}${isInvalid?' ⛔':''}</div>
+          ${isInvalid?'<span class="pill unbilled" style="background:rgba(179,37,51,0.12);color:var(--red)">⛔ Invalid # — not 10 digits</span>':'<span class="pill billed">✅ Billed</span>'}
+        </div>
+        <div class="ic-rate ${isInvalid?'o':'g'}">₱${Number(r.rate||0).toLocaleString()}</div>
+      </div>
+      <div class="ic-meta"><div class="ic-chip">📅 ${r.date}</div><div class="ic-chip">🚛 ${r.truck}</div><div class="ic-soa">${r.soa}</div></div>
+    </div>`;
+  };
   if(bSt==='all') list.innerHTML=rows.map(cardFn).join('');
   else if(bSt==='soa') list.innerHTML=grpBy(rows,'soa').map(({key,items})=>grpHTML(key,items,cardFn,'SOA: ','green')).join('');
   else if(bSt==='month') list.innerHTML=grpByMonth(rows).map(({label,items})=>grpHTML(label,items,cardFn,'','green')).join('');
@@ -929,7 +941,7 @@ async function loadUnbilled(){
   if(!token) return;
   showLoad(true,'Loading unbilled trips...');
   try{
-    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:F'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:G'),apiGet(SHEET_TRIPS+'!A2:I')]);
     const billedSet=new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
     trips=(tRes.values||[]).filter(r=>r[0]).map((r,i)=>({
       rowIndex:i+2,deliveryDate:r[1]||'',truck:r[2]||'',
@@ -985,9 +997,10 @@ async function loadReport(){
   if(!token) return;
   showLoad(true,'Loading full report...');
   try{
-    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:F'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:G'),apiGet(SHEET_TRIPS+'!A2:I')]);
     master=(bRes.values||[]).filter(r=>r[0]).map(r=>({
-      id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||''
+      id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
+      valid:(r[6]||'Yes').trim()  // G = Valid column; default Yes for old records
     }));
     const billedSet=new Set(master.map(r=>r.shipment.trim()));
     trips=(tRes.values||[]).filter(r=>r[0]).map((r,i)=>({
@@ -1013,10 +1026,12 @@ function buildRFilters(){
 
 function renderRStats(){
   const bAmt=master.reduce((s,r)=>s+Number(r.rate||0),0);
+  const invalidCount=master.filter(r=>r.valid==='No').length;
   document.getElementById('rpt-stats').innerHTML=`
     <div class="sc"><div class="sv green">${master.length}</div><div class="sl">Billed</div></div>
     <div class="sc"><div class="sv orange">${unbilled.length}</div><div class="sl">Unbilled</div></div>
-    <div class="sc"><div class="sv green" style="font-size:12px">₱${(bAmt/1000).toFixed(1)}K</div><div class="sl">Billed Amt</div></div>`;
+    <div class="sc"><div class="sv green" style="font-size:12px">₱${(bAmt/1000).toFixed(1)}K</div><div class="sl">Billed Amt</div></div>
+    ${invalidCount?`<div class="sc"><div class="sv red">${invalidCount}</div><div class="sl">Invalid #</div></div>`:''}`;
 }
 
 function renderReport(){
@@ -1059,8 +1074,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th></tr></thead>
-      <tbody>${items.map(r=>`<tr><td>${r.date}</td><td><b>${r.shipment}</b></td><td>${r.soa}</td><td>${r.truck}</td><td>₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th><th>Valid</th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td>${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td>${r.soa}</td><td>${r.truck}</td><td>₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔ No</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅ Yes</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   // Per Truck — Billed
@@ -1072,8 +1087,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th></tr></thead>
-      <tbody>${items.map(r=>`<tr><td>${r.date}</td><td><b>${r.shipment}</b></td><td>${r.soa}</td><td>₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th><th>Valid</th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td>${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td>${r.soa}</td><td>₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔ No</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅ Yes</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   // Per Month — Unbilled
