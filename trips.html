@@ -211,6 +211,61 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 /* USER EDITABLE FIELDS */
 .user-edit-label{font-size:9px;color:var(--orange);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 
+/* COMPLIANCE VIEW */
+.view-toggle-btn{
+  flex:1;padding:10px;background:transparent;border:none;border-radius:10px;
+  font-size:13px;font-weight:600;font-family:'Inter',sans-serif;
+  color:var(--text3);cursor:pointer;transition:all 0.2s;
+}
+.view-toggle-btn.active{
+  background:var(--bg);box-shadow:var(--neu-sm);color:var(--red);
+}
+.compliance-rank-item{
+  display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg2);
+  border-radius:12px;margin-bottom:10px;position:relative;overflow:hidden;
+}
+.rank-number{
+  font-size:24px;font-weight:800;color:var(--text3);min-width:40px;text-align:center;
+}
+.rank-number.top{color:var(--red)}
+.rank-info{flex:1}
+.rank-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.rank-stats{font-size:11px;color:var(--text2)}
+.rank-score{text-align:right}
+.rank-percentage{font-size:28px;font-weight:700;color:var(--text);line-height:1}
+.rank-label{font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-top:2px}
+.compliance-bar{
+  position:absolute;bottom:0;left:0;height:4px;
+  background:linear-gradient(90deg, var(--red), var(--green));transition:width 0.3s ease;
+}
+.missing-trips-section{background:var(--bg2);border-radius:12px;padding:14px;margin-top:12px}
+.missing-trips-title{
+  font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.missing-trip-item{
+  background:var(--bg);border-radius:8px;padding:10px 12px;margin-bottom:6px;
+  display:flex;justify-content:space-between;align-items:center;border-left:3px solid var(--red);
+}
+.missing-trip-date{font-size:13px;font-weight:600;color:var(--text)}
+.missing-trip-details{font-size:11px;color:var(--text2)}
+.missing-trip-truck{font-size:12px;font-weight:600;color:var(--text2)}
+.compliance-badge{
+  display:inline-block;padding:4px 10px;border-radius:12px;font-size:10px;
+  font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+}
+.compliance-badge.excellent{background:#10b981;color:#fff}
+.compliance-badge.good{background:#3b82f6;color:#fff}
+.compliance-badge.fair{background:#f59e0b;color:#fff}
+.compliance-badge.poor{background:#ef4444;color:#fff}
+.trend-indicator{
+  display:inline-flex;align-items:center;gap:4px;font-size:11px;
+  font-weight:600;padding:4px 8px;border-radius:8px;
+}
+.trend-indicator.up{background:rgba(16,185,129,0.15);color:#10b981}
+.trend-indicator.down{background:rgba(239,68,68,0.15);color:#ef4444}
+.trend-indicator.stable{background:rgba(59,130,246,0.15);color:#3b82f6}
+
 /* PULL TO REFRESH */
 .ptr-indicator {
   position: fixed;
@@ -322,6 +377,18 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       </div>
     </div>
 
+    <!-- VIEW TOGGLE -->
+    <div class="neu-card" style="padding:14px;margin-bottom:14px;display:none" id="view-toggle-card">
+      <div style="display:flex;gap:8px;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:4px">
+        <button class="view-toggle-btn active" onclick="switchToView('calendar')" id="view-calendar-btn" style="flex:1;padding:10px;background:var(--bg);border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--red);cursor:pointer;box-shadow:var(--neu-sm)">
+          📅 Calendar
+        </button>
+        <button class="view-toggle-btn" onclick="switchToView('compliance')" id="view-compliance-btn" style="flex:1;padding:10px;background:transparent;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text3);cursor:pointer">
+          ✅ Compliance
+        </button>
+      </div>
+    </div>
+
     <!-- FILTER BAR -->
     <div id="filter-bar" class="neu-card" style="padding:14px;margin-bottom:14px;display:none">
       <div class="card-title" style="margin-bottom:10px">Filter Trips</div>
@@ -395,6 +462,63 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       <div class="day-panel-title" id="day-panel-title"></div>
       <div id="day-panel-list"></div>
     </div>
+
+          <!-- ═══ COMPLIANCE VIEW ═══ -->
+      <div id="compliance-view" style="display:none">
+        <!-- Month Selector -->
+        <div class="neu-card" style="padding:16px;margin-bottom:14px">
+          <div class="card-title">Compliance Period</div>
+          <div class="row2" style="margin-bottom:0">
+            <div class="fg" style="margin-bottom:0">
+              <select class="fi" id="compliance-month" onchange="renderComplianceReport()">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <button class="btn btn-red" onclick="exportComplianceReport()" style="width:100%;padding:13px">
+                📥 Export
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overall Stats -->
+        <div class="neu-card" style="padding:16px;margin-bottom:14px">
+          <div class="card-title">Overall Compliance</div>
+          <div class="row2" style="margin-bottom:10px">
+            <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+              <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">TOTAL TRIPS</div>
+              <div style="font-size:24px;font-weight:700;color:var(--text)" id="comp-total">0</div>
+            </div>
+            <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+              <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">WITH SHIPMENT #</div>
+              <div style="font-size:24px;font-weight:700;color:var(--green)" id="comp-compliant">0</div>
+            </div>
+          </div>
+          <div class="row2">
+            <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+              <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">MISSING</div>
+              <div style="font-size:24px;font-weight:700;color:var(--red)" id="comp-missing">0</div>
+            </div>
+            <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+              <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">COMPLIANCE RATE</div>
+              <div style="font-size:24px;font-weight:700;color:var(--text)" id="comp-rate">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Truck Ranking -->
+        <div class="neu-card" style="padding:16px;margin-bottom:14px">
+          <div class="card-title">🏆 Truck Compliance Ranking</div>
+          <div id="compliance-ranking"></div>
+        </div>
+
+        <!-- Detailed Breakdown -->
+        <div id="compliance-details"></div>
+      </div>
+
+
+
 
   </div><!-- end page-wrap -->
 
@@ -493,6 +617,7 @@ var selectedTrip = null;
 var selectedDay  = null;
 var activeFilters = { truck:'', type:'', billed:'', route:'', shipment:'' };
 var filteredTrips = [];
+var currentView = 'calendar'; // ✅ NEW
 
 // ═══ TRUCK COLORS (red gradient) ══════════════════════
 var TRUCK_COLORS = [
@@ -711,6 +836,7 @@ function loadAll() {
     renderCalendar();
 
     document.getElementById('wrap-loading').style.display = 'none';
+    document.getElementById('view-toggle-card').style.display = ''; // ✅ DAGDAG
     document.getElementById('filter-bar').style.display = '';
     document.getElementById('calendar-card').style.display = '';
 
@@ -833,6 +959,312 @@ function clearFilters() {
   document.getElementById('filter-route').value  = '';
   applyFilters();
 }
+
+// ═══ VIEW SWITCHING ═══════════════════════════════════
+function switchToView(view) {
+  currentView = view;
+  
+  // Update buttons
+  var calBtn = document.getElementById('view-calendar-btn');
+  var compBtn = document.getElementById('view-compliance-btn');
+  
+  calBtn.className = 'view-toggle-btn' + (view === 'calendar' ? ' active' : '');
+  compBtn.className = 'view-toggle-btn' + (view === 'compliance' ? ' active' : '');
+  
+  if (view === 'calendar') {
+    calBtn.style.background = 'var(--bg)';
+    calBtn.style.boxShadow = 'var(--neu-sm)';
+    calBtn.style.color = 'var(--red)';
+    compBtn.style.background = 'transparent';
+    compBtn.style.boxShadow = 'none';
+    compBtn.style.color = 'var(--text3)';
+  } else {
+    compBtn.style.background = 'var(--bg)';
+    compBtn.style.boxShadow = 'var(--neu-sm)';
+    compBtn.style.color = 'var(--red)';
+    calBtn.style.background = 'transparent';
+    calBtn.style.boxShadow = 'none';
+    calBtn.style.color = 'var(--text3)';
+  }
+  
+  // Show/hide views
+  if (view === 'calendar') {
+    document.getElementById('filter-bar').style.display = '';
+    document.getElementById('color-legend').style.display = '';
+    document.getElementById('calendar-card').style.display = '';
+    document.getElementById('day-panel').style.display = 'none';
+    document.getElementById('compliance-view').style.display = 'none';
+  } else if (view === 'compliance') {
+    document.getElementById('filter-bar').style.display = 'none';
+    document.getElementById('color-legend').style.display = 'none';
+    document.getElementById('calendar-card').style.display = 'none';
+    document.getElementById('day-panel').style.display = 'none';
+    document.getElementById('compliance-view').style.display = 'block';
+    populateComplianceMonthSelector();
+    renderComplianceReport();
+  }
+}
+
+// ═══ SHIPMENT COMPLIANCE TRACKING ═════════════════════
+
+function calculateComplianceData(selectedMonth) {
+  var monthTrips = allTrips.filter(function(t) {
+    return t.deliveryDate.startsWith(selectedMonth);
+  });
+  
+  // Group by truck
+  var truckData = {};
+  
+  monthTrips.forEach(function(t) {
+    if (!t.truck) return;
+    
+    if (!truckData[t.truck]) {
+      truckData[t.truck] = {
+        name: t.truck,
+        totalTrips: 0,
+        compliantTrips: 0,
+        missingTrips: []
+      };
+    }
+    
+    var data = truckData[t.truck];
+    data.totalTrips++;
+    
+    if (t.shipmentNumber && t.shipmentNumber.trim()) {
+      data.compliantTrips++;
+    } else {
+      data.missingTrips.push({
+        date: t.deliveryDate,
+        truck: t.truck,
+        route: t.route || 'No route',
+        type: t.type || ''
+      });
+    }
+  });
+  
+  Object.keys(truckData).forEach(function(truck) {
+    var data = truckData[truck];
+    data.complianceRate = data.totalTrips > 0 
+      ? (data.compliantTrips / data.totalTrips * 100) 
+      : 0;
+  });
+  
+  return truckData;
+}
+
+function getComplianceBadge(rate) {
+  if (rate >= 95) return '<span class="compliance-badge excellent">Excellent</span>';
+  if (rate >= 80) return '<span class="compliance-badge good">Good</span>';
+  if (rate >= 60) return '<span class="compliance-badge fair">Fair</span>';
+  return '<span class="compliance-badge poor">Needs Improvement</span>';
+}
+
+function populateComplianceMonthSelector() {
+  var select = document.getElementById('compliance-month');
+  if (!select) return;
+  
+  var months = {};
+  allTrips.forEach(function(t) {
+    if (t.deliveryDate) {
+      var month = t.deliveryDate.slice(0, 7);
+      months[month] = true;
+    }
+  });
+  
+  var monthList = Object.keys(months).sort().reverse();
+  
+  select.innerHTML = monthList.map(function(m) {
+    var parts = m.split('-');
+    var date = new Date(parts[0], parts[1] - 1);
+    var label = MONTHS[date.getMonth()] + ' ' + date.getFullYear();
+    return '<option value="' + m + '">' + label + '</option>';
+  }).join('');
+  
+  if (monthList.length > 0) select.value = monthList[0];
+}
+
+function renderComplianceReport() {
+  var selectedMonth = document.getElementById('compliance-month');
+  if (!selectedMonth || !selectedMonth.value) return;
+  
+  var month = selectedMonth.value;
+  var currentData = calculateComplianceData(month);
+  var trucks = Object.keys(currentData).map(function(k) { return currentData[k]; });
+  
+  var totalTrips = trucks.reduce(function(sum, t) { return sum + t.totalTrips; }, 0);
+  var compliantTrips = trucks.reduce(function(sum, t) { return sum + t.compliantTrips; }, 0);
+  var missingTrips = totalTrips - compliantTrips;
+  var overallRate = totalTrips > 0 ? (compliantTrips / totalTrips * 100) : 0;
+  
+  // Update stats
+  document.getElementById('comp-total').textContent = totalTrips;
+  document.getElementById('comp-compliant').textContent = compliantTrips;
+  document.getElementById('comp-missing').textContent = missingTrips;
+  document.getElementById('comp-rate').textContent = overallRate.toFixed(1) + '%';
+  
+  // Previous month comparison
+  var parts = month.split('-');
+  var prevDate = new Date(parts[0], parts[1] - 2, 1);
+  var prevMonth = prevDate.getFullYear() + '-' + pad(prevDate.getMonth() + 1);
+  var previousData = calculateComplianceData(prevMonth);
+  
+  // Render ranking
+  var sortedTrucks = trucks.sort(function(a, b) { return b.complianceRate - a.complianceRate; });
+  
+  var rankingHTML = sortedTrucks.map(function(truck, index) {
+    var rank = index + 1;
+    var isTop = rank <= 3;
+    
+    var prevTruck = previousData[truck.name];
+    var prevRate = prevTruck ? prevTruck.complianceRate : 0;
+    var rateDiff = truck.complianceRate - prevRate;
+    
+    var trendHTML = '';
+    if (prevTruck) {
+      if (rateDiff > 2) {
+        trendHTML = '<span class="trend-indicator up">↑ ' + rateDiff.toFixed(1) + '%</span>';
+      } else if (rateDiff < -2) {
+        trendHTML = '<span class="trend-indicator down">↓ ' + Math.abs(rateDiff).toFixed(1) + '%</span>';
+      } else {
+        trendHTML = '<span class="trend-indicator stable">→ Stable</span>';
+      }
+    }
+    
+    return '<div class="compliance-rank-item">'
+      + '<div class="rank-number ' + (isTop ? 'top' : '') + '">' + rank + '</div>'
+      + '<div class="rank-info">'
+      + '<div class="rank-name">🚛 ' + truck.name + '</div>'
+      + '<div class="rank-stats">'
+      + truck.compliantTrips + '/' + truck.totalTrips + ' trips • '
+      + truck.missingTrips.length + ' missing ' + trendHTML
+      + '</div></div>'
+      + '<div class="rank-score">'
+      + '<div class="rank-percentage">' + truck.complianceRate.toFixed(1) + '%</div>'
+      + '<div class="rank-label">Compliance</div>'
+      + '</div>'
+      + '<div class="compliance-bar" style="width:' + truck.complianceRate + '%"></div>'
+      + '</div>';
+  }).join('');
+  
+  document.getElementById('compliance-ranking').innerHTML = rankingHTML || 
+    '<div class="empty-hint">No data for this month</div>';
+  
+  // Render details
+  var detailsHTML = sortedTrucks.map(function(truck) {
+    var badge = getComplianceBadge(truck.complianceRate);
+    var color = getTruckColor(truck.name);
+    
+    return '<div class="neu-card" style="padding:16px;margin-bottom:14px;border-left:4px solid ' + color.bg + '">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      + '<div style="font-size:16px;font-weight:700;color:' + color.bg + '">🚛 ' + truck.name + '</div>'
+      + badge
+      + '</div>'
+      + '<div class="row3" style="margin-bottom:10px">'
+      + '<div style="text-align:center">'
+      + '<div style="font-size:10px;color:var(--text3);font-weight:600">TOTAL</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--text)">' + truck.totalTrips + '</div>'
+      + '</div>'
+      + '<div style="text-align:center">'
+      + '<div style="font-size:10px;color:var(--text3);font-weight:600">COMPLIANT</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--green)">' + truck.compliantTrips + '</div>'
+      + '</div>'
+      + '<div style="text-align:center">'
+      + '<div style="font-size:10px;color:var(--text3);font-weight:600">MISSING</div>'
+      + '<div style="font-size:20px;font-weight:700;color:var(--red)">' + truck.missingTrips.length + '</div>'
+      + '</div></div>'
+      + (truck.missingTrips.length > 0 ? 
+        '<div class="missing-trips-section">'
+        + '<div class="missing-trips-title"><span>⚠️</span>Missing Shipment Numbers (' + truck.missingTrips.length + ')</div>'
+        + truck.missingTrips.slice(0, 10).map(function(trip) {
+            var parts = trip.date.split('-');
+            var d = new Date(parts[0], parts[1] - 1, parts[2]);
+            var dateStr = d.toLocaleDateString('en-PH', { 
+              weekday: 'short', month: 'short', day: 'numeric' 
+            });
+            
+            return '<div class="missing-trip-item">'
+              + '<div>'
+              + '<div class="missing-trip-date">' + dateStr + '</div>'
+              + '<div class="missing-trip-details">' + trip.route + (trip.type ? ' • ' + trip.type : '') + '</div>'
+              + '</div>'
+              + '<div class="missing-trip-truck">' + trip.truck + '</div>'
+              + '</div>';
+          }).join('')
+        + (truck.missingTrips.length > 10 ? 
+          '<div style="text-align:center;padding:8px;font-size:11px;color:var(--text3)">'
+          + '+ ' + (truck.missingTrips.length - 10) + ' more missing entries'
+          + '</div>' : '')
+        + '</div>' 
+        : '<div style="text-align:center;padding:20px;color:var(--green);font-size:13px">'
+        + '✅ Perfect! All trips have shipment numbers.'
+        + '</div>')
+      + '</div>';
+  }).join('');
+  
+  document.getElementById('compliance-details').innerHTML = detailsHTML;
+}
+
+function exportComplianceReport() {
+  var selectedMonth = document.getElementById('compliance-month');
+  if (!selectedMonth || !selectedMonth.value) return;
+  
+  var month = selectedMonth.value;
+  showSaving('Preparing report...');
+  
+  var truckData = calculateComplianceData(month);
+  var trucks = Object.keys(truckData).map(function(k) { return truckData[k]; })
+    .sort(function(a, b) { return b.complianceRate - a.complianceRate; });
+  
+  var csv = 'SHIPMENT NUMBER COMPLIANCE REPORT\n';
+  csv += 'Period: ' + month + '\n';
+  csv += 'Generated: ' + new Date().toLocaleString() + '\n\n';
+  
+  var totalTrips = trucks.reduce(function(sum, t) { return sum + t.totalTrips; }, 0);
+  var compliantTrips = trucks.reduce(function(sum, t) { return sum + t.compliantTrips; }, 0);
+  var overallRate = totalTrips > 0 ? (compliantTrips / totalTrips * 100).toFixed(1) : 0;
+  
+  csv += 'SUMMARY\n';
+  csv += 'Total Trips,' + totalTrips + '\n';
+  csv += 'With Shipment Number,' + compliantTrips + '\n';
+  csv += 'Missing Shipment Number,' + (totalTrips - compliantTrips) + '\n';
+  csv += 'Overall Compliance Rate,' + overallRate + '%\n\n';
+  
+  csv += 'TRUCK COMPLIANCE RANKING\n';
+  csv += 'Rank,Truck,Total Trips,Compliant,Missing,Compliance Rate,Status\n';
+  
+  trucks.forEach(function(truck, index) {
+    var status = truck.complianceRate >= 95 ? 'Excellent' :
+                 truck.complianceRate >= 80 ? 'Good' :
+                 truck.complianceRate >= 60 ? 'Fair' : 'Needs Improvement';
+    
+    csv += (index + 1) + ',"' + truck.name + '",' + truck.totalTrips + ',' 
+      + truck.compliantTrips + ',' + truck.missingTrips.length + ',' 
+      + truck.complianceRate.toFixed(1) + '%,' + status + '\n';
+  });
+  
+  csv += '\n\nDETAILED MISSING ENTRIES\n';
+  csv += 'Truck,Date,Route,Type\n';
+  
+  trucks.forEach(function(truck) {
+    truck.missingTrips.forEach(function(trip) {
+      csv += '"' + truck.name + '","' + trip.date + '","' + trip.route + '","' + (trip.type || '') + '"\n';
+    });
+  });
+  
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var link = document.createElement('a');
+  var url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'Shipment_Compliance_Report_' + month + '.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  hideSaving();
+  showToast('✅ Compliance report exported!');
+}
+
 
 // ═══ CALENDAR ═════════════════════════════════════════
 var MONTHS = ['January','February','March','April','May','June',
