@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#e0e0e5">
+<link rel="manifest" href="manifest.json">
+<title>PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ═══════════════════════════════════════
+   NEUMORPHIC THEME VARIABLES
+═══════════════════════════════════════ */
+:root {
+  /* LIGHT NEUMORPHIC */
+  --bg:       #e0e0e5;
+  --bg2:      #e8e8ed;
+  --shadow-d: #b8b9be;
+  --shadow-l: #ffffff;
+  --text:     #2a2a2e;
+  --text2:    #777;
+  --text3:    #aaa;
+  --red:      #B32533;
+  --red-d:    #8f1e29;
+  --card:     #e0e0e5;
+
+  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+}
+
+body.dark {
+  --bg:       #2a2a2f;
+  --bg2:      #313137;
+  --shadow-d: #16161a;
+  --shadow-l: #3e3e46;
+  --text:     #e8e8ec;
+  --text2:    #888;
+  --text3:    #555;
+  --card:     #2a2a2f;
+
+  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
+}
+
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
+
+.screen { display:none; flex-direction:column; height:100dvh; width:100%; position:absolute; top:0; left:0 }
+.screen.active { display:flex }
+
+/* ═══════════════════════════════════════
+   LOGIN / WELCOME
+═══════════════════════════════════════ */
+#s-login {
+  background: #B32533;
+  overflow: hidden;
+  justify-content: flex-end;
+}
+#s-login::before {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(-55deg,transparent 0,transparent 38px,rgba(0,0,0,0.05) 38px,rgba(0,0,0,0.05) 40px);
+  z-index:0; pointer-events:none;
+}
+
+.truck-stage { position:absolute; top:0; left:0; right:0; height:48%; overflow:hidden; z-index:1 }
+.road-base { position:absolute; bottom:0; left:0; right:0; height:6px; background:rgba(0,0,0,0.2) }
+.road-marks { position:absolute; bottom:6px; left:0; right:0; height:3px; background:repeating-linear-gradient(90deg,rgba(255,255,255,0.3) 0,rgba(255,255,255,0.3) 30px,transparent 30px,transparent 60px); animation:roadScroll 0.35s linear infinite }
+@keyframes roadScroll { to { background-position:-60px 0 } }
+
+.truck-wrap { position:absolute; bottom:9px; left:-350px; animation:truckIn 2.2s cubic-bezier(0.16,1,0.3,1) forwards; animation-delay:0.3s; width:210px }
+@keyframes truckIn { 0%{left:-350px} 70%{left:calc(50% - 105px)} 80%{left:calc(50% - 100px)} 90%{left:calc(50% - 103px)} 100%{left:calc(50% - 102px)} }
+.truck-wrap img { width:100%; height:auto; display:block }
+.login-card {
+  position:relative; z-index:3; width:100%;
+  background: #e0e0e5;
+  border-radius: 28px 28px 0 0;
+  padding: 32px 28px calc(44px + env(safe-area-inset-bottom,0px));
+  opacity:0; transform:translateY(50px);
+  animation:cardUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation-delay:2.5s;
+  margin-bottom: 60px; /* ✅ DAGDAG ITO — i-adjust ang value */
+}
+@keyframes cardUp { to { opacity:1; transform:translateY(0) } }
+
+.login-card h2 { font-size:24px; font-weight:700; color:#2a2a2e; letter-spacing:-0.5px; margin-bottom:6px }
+.login-card p  { font-size:14px; color:#777; line-height:1.65; margin-bottom:28px }
+
+.google-btn {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  width:100%; padding:15px 20px;
+  background: #e0e0e5;
+  color: #2a2a2e;
+  border: none; border-radius:16px;
+  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
+  cursor:pointer;
+  box-shadow: var(--neu-out);
+  transition: box-shadow 0.15s;
+}
+.google-btn:active { box-shadow: var(--neu-in) }
+.google-btn svg { width:20px; height:20px; flex-shrink:0 }
+
+/* ═══════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════ */
+#s-app { background:var(--bg); flex-direction:column }
+
+/* TOPBAR */
+.topbar {
+  background: var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
+  flex-shrink:0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
+
+.tb-brand { display:flex; align-items:center; gap:2px }
+.tb-brand-text { font-size:16px; font-weight:700; letter-spacing:0.5px; color:var(--text) }
+.tb-brand-red { color:var(--red) }
+
+.tb-right { display:flex; align-items:center; gap:12px }
+.tb-title { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text3) }
+.tb-avatar {
+  width:32px; height:32px; border-radius:50%;
+  border:2px solid var(--red); object-fit:cover;
+  box-shadow: var(--neu-xs);
+}
+
+/* PAGE WRAP */
+.page-wrap { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; padding-bottom:90px }
+
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+.dash-header { margin-bottom:22px; padding: 0 2px }
+.dash-eyebrow { font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--text3); margin-bottom:5px }
+.dash-name { font-size:24px; font-weight:700; color:var(--text); letter-spacing:-0.5px; line-height:1.2 }
+.dash-date { font-size:12px; color:var(--text2); margin-top:4px }
+
+/* MODULE GRID */
+.mod-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
+
+.mod-card {
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: var(--neu-out);
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+.mod-card:active {
+  box-shadow: var(--neu-in);
+  transform: scale(0.98);
+}
+.mod-card.wide { grid-column:span 2; display:flex; align-items:center; gap:16px; padding:16px 18px }
+.mod-card.wide .mod-icon-box { margin-bottom:0; flex-shrink:0 }
+.mod-card.wide .mod-value { font-size:22px }
+
+.mod-icon-box {
+  width:38px; height:38px;
+  border-radius:12px;
+  background: var(--bg);
+  box-shadow: var(--neu-xs);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:12px;
+}
+.mod-icon-box svg { width:18px; height:18px }
+
+.mod-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:5px }
+.mod-value { font-size:28px; font-weight:700; color:var(--red); line-height:1; letter-spacing:-1px }
+.mod-sub { font-size:10px; color:var(--text3); margin-top:2px }
+
+/* ═══════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════ */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--bg);
+  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex; align-items:center; justify-content:space-around;
+  box-shadow: 0 -3px 14px rgba(0,0,0,0.07);
+  z-index:40;
+}
+body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
+
+.bnav {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+  color:var(--text3); cursor:pointer; border:none; background:none;
+  font-family:'Inter',sans-serif;
+}
+.bnav.active { color:var(--red) }
+
+.bnav-icon {
+  width:42px; height:42px;
+  border-radius:14px;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  transition: box-shadow 0.2s;
+}
+.bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm) }
+.bnav.active .bnav-icon { box-shadow: var(--neu-in) }
+
+/* ═══════════════════════════════════════
+   STATES
+═══════════════════════════════════════ */
+.toast {
+  position:fixed;
+  bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  left:50%; transform:translateX(-50%);
+  background:var(--bg); border-radius:14px;
+  box-shadow: var(--neu-out);
+  border-left:3px solid var(--red);
+  padding:13px 22px; font-size:13px; font-weight:500; color:var(--text);
+  z-index:300; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity 0.25s;
+}
+.toast.show { opacity:1 }
+
+/* PULL TO REFRESH */
+.ptr-indicator {
+  position: fixed;
+  top: calc(env(safe-area-inset-top,0px) + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--bg);
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  box-shadow: var(--neu-out);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+.ptr-indicator.visible {
+  transform: translateX(-50%) translateY(0px);
+}
+.ptr-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--text3);
+  border-top-color: var(--red);
+  border-radius: 50%;
+}
+.ptr-spinner.spinning {
+  animation: spin 0.7s linear infinite;
+}
+.ptr-arrow {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--red);
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="screen active" id="s-login">
+  <div class="truck-stage">
+    <div class="road-base"></div>
+    <div class="road-marks"></div>
+    <div class="truck-wrap"><img src="truck.jpg" alt="PedroEX Truck"></div>
+  </div>
+  <div class="login-card">
+    <h2>Fleet Management</h2>
+    <p>Sign in with your Google account to access the PedroEX operations dashboard.</p>
+    <button class="google-btn" onclick="signIn()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="screen" id="s-app">
+  <div class="topbar">
+    <div class="tb-brand">
+      <img src="logo2.png" alt="PedroEX" style="height:22px;width:auto;object-fit:contain">
+    </div>
+    <div class="tb-right">
+      <span class="tb-title">Dashboard</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="dash-header">
+      <div class="dash-eyebrow">PedroEX Operations</div>
+      <div class="dash-name" id="dash-name">Good day!</div>
+      <div class="dash-date" id="dash-date"></div>
+    </div>
+    <div class="mod-grid" id="mod-grid"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="bnav active">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
+      Home
+    </button>
+    <button class="bnav" onclick="location.href='trucks.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trucks
+    </button>
+    <button class="bnav" onclick="location.href='trips.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trips
+    </button>
+    <button class="bnav" onclick="location.href='billing.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Billing
+    </button>
+    <button class="bnav" onclick="location.href='settings.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Settings
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file openid email profile';
+
+const ALL_MODULES = [
+  {id:'trucks',      icon:'truck',     label:'Trucks',       stat:'sv-trucks',   sub:'Fleet roster',    link:'trucks.html'},
+  {id:'trips',       icon:'location',  label:'Trips',        stat:'sv-trips',    sub:'On the road',     link:'trips.html'},
+  {id:'manpower',    icon:'roster',    label:'Manpower',     stat:'sv-manpower', sub:'Duty roster',     link:'manpower-roster.html'},
+  {id:'employees',   icon:'users',     label:'Employees',    stat:'sv-emp',      sub:'Total staff',     link:'employees.html'},
+  {id:'attendance',  icon:'calendar',  label:'Attendance',   stat:'sv-attend',   sub:'Daily logs',      link:'attendance.html'},
+  {id:'emp-records', icon:'folder',    label:'Emp Records',  stat:'sv-records',  sub:'201 files',       link:'employee-records.html'},
+  {id:'matrix',      icon:'chart',     label:'Matrix',       stat:'sv-matrix',   sub:'Performance',     link:'matrix.html'},
+  {id:'expenses-admin',  icon:'chart',  label:'Expenses',     stat:'sv-exp-admin', sub:'Reports & Analytics', wide:true, link:'expenses.html', adminOnly: true},
+  {id:'expenses-emp',    icon:'card',   label:'Expenses',     stat:'sv-exp-emp',   sub:'Submit expense',      wide:true, link:'expenses-emp.html'},
+  {id:'billing',     icon:'doc',       label:'Billing',      stat:'sv-billing',  sub:'Invoices',        wide:true, link:'billing.html'},
+  {id:'settings',    icon:'settings',  label:'Settings',     stat:'sv-set',      sub:'App settings',    wide:true, link:'settings.html'},
+];
+
+const ICONS = {
+  truck:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="var(--red)" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="var(--red)" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="var(--red)" stroke-width="2"/></svg>',
+  calendar: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><path d="M7 14l2 2 4-4" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  location: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="var(--red)" stroke-width="2"/></svg>',
+  users:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="var(--red)" stroke-width="2"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="var(--red)" stroke-width="2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87" stroke="var(--red)" stroke-width="2"/></svg>',
+  folder:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  card:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M2 10h20" stroke="var(--red)" stroke-width="2"/><path d="M6 15h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  doc:      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  chart:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  roster:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="4" rx="1" stroke="var(--red)" stroke-width="2"/><path d="M6 4h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="var(--red)" stroke-width="2"/><path d="M9 12l2 2 4-4M9 17h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  settings: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+};
+
+let token = null;
+
+// THEME
+function applyTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+  localStorage.setItem('pedroex-theme', dark ? 'dark' : 'light');
+}
+applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
+
+// INIT
+(function init() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
+  const savedToken = localStorage.getItem('pedroex-token');
+  const expiry = localStorage.getItem('pedroex-token-expiry');
+  const bufferMs = 5 * 60 * 1000;
+  
+  if (savedToken && expiry && Date.now() < (parseInt(expiry) - bufferMs)) {
+    token = savedToken;
+    loadUser();
+  } else {
+    localStorage.removeItem('pedroex-token');
+    localStorage.removeItem('pedroex-token-expiry');
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('s-app').classList.remove('active');
+  }
+})();
+
+// SIGN IN
+function signIn() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    showToast('Loading Google Sign-In...');
+    setTimeout(signIn, 800);
+    return;
+  }
+
+  var hasGranted = localStorage.getItem('pedroex-scope-granted');
+  
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: function(res) {
+      if (res.error) { 
+        showToast('❌ Login error: ' + res.error); 
+        return; 
+      }
+      
+      token = res.access_token;
+      const expiresAt = Date.now() + (res.expires_in * 1000);
+      localStorage.setItem('pedroex-token', token);
+      localStorage.setItem('pedroex-token-expiry', expiresAt);
+      localStorage.setItem('pedroex-scope-granted', 'true');
+      
+      loadUser();
+    }
+  }).requestAccessToken({ 
+    prompt: hasGranted ? '' : 'consent'
+  });
+}
+
+// ✅ LOAD USER — FIXED FLOW
+function loadUser() {
+  fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(r => {
+    if (!r.ok) throw new Error('Auth failed');
+    return r.json();
+  })
+  .then(u => {
+    // ✅ Save basic user info
+    localStorage.setItem('pedroex-name', u.name || '');
+    localStorage.setItem('pedroex-email', u.email || '');
+    localStorage.setItem('pedroex-picture', u.picture || '');
+    document.getElementById('user-avatar').src = u.picture || '';
+
+    // ✅ FETCH EMPLOYEE DATA FIRST (before rendering dashboard)
+    var email = (u.email || '').toLowerCase();
+    console.log('🔍 Looking for email:', email);
+    
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      var rows = res.values || [];
+      console.log('📋 Employees sheet data:', rows);
+      
+      var empRow = rows.find(function(r) { 
+        var sheetEmail = (r[0] || '').toLowerCase();
+        console.log('Comparing:', sheetEmail, '===', email, '?', sheetEmail === email);
+        return sheetEmail === email; 
+      });
+      
+      console.log('✅ Found employee row:', empRow);
+      
+      var firstName = empRow ? (empRow[1] || u.given_name || 'team') : (u.given_name || 'team');
+      var role = empRow ? (empRow[3] || 'Employee') : 'Employee';
+      
+      console.log('🎭 Assigned role:', role);
+      console.log('👤 First name:', firstName);
+      
+      // ✅ Save to localStorage
+      localStorage.setItem('pedroex-role', role);
+      localStorage.setItem('pedroex-firstname', firstName); // ← Save firstName separately
+      
+      // ✅ NOW render dashboard with correct data
+      document.getElementById('s-login').classList.remove('active');
+      document.getElementById('s-app').classList.add('active');
+      
+      updateGreeting(firstName); // ← Use firstName, not email
+      buildDashboard();
+      loadDashboardStats();
+
+      // Init pull to refresh
+      initPullToRefresh(
+        document.querySelector('.page-wrap'),
+        function(done) {
+          loadDashboardStats();
+          setTimeout(done, 1000);
+        }
+      );
+
+      // Auto refresh with token renewal
+      initAutoRefresh();
+    })
+    .catch(function(err) {
+      console.error('❌ Error loading employee data:', err);
+      
+      // ✅ Fallback: use Google name
+      localStorage.setItem('pedroex-role', 'Employee');
+      localStorage.setItem('pedroex-firstname', u.given_name || 'team');
+      
+      document.getElementById('s-login').classList.remove('active');
+      document.getElementById('s-app').classList.add('active');
+      
+      updateGreeting(u.given_name || 'team');
+      buildDashboard();
+      loadDashboardStats();
+
+      initPullToRefresh(
+        document.querySelector('.page-wrap'),
+        function(done) {
+          loadDashboardStats();
+          setTimeout(done, 1000);
+        }
+      );
+
+      initAutoRefresh();
+    });
+  })
+  .catch(function(err) { 
+    console.error('Load user error:', err);
+    localStorage.removeItem('pedroex-token');
+    localStorage.removeItem('pedroex-token-expiry');
+    document.getElementById('s-login').classList.add('active');
+    document.getElementById('s-app').classList.remove('active');
+    showToast('❌ Session expired. Please sign in again.');
+  });
+}
+
+// UPDATE GREETING
+function updateGreeting(firstName) {
+  var now = new Date();
+  var h = now.getHours();
+  var gr = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  
+  document.getElementById('dash-name').textContent = gr + ', ' + firstName + '!';
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric'
+  });
+}
+
+// BUILD DASHBOARD
+function buildDashboard() {
+  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+  const isAdmin = userRole === 'admin';
+  
+  console.log('🏗️ Building dashboard for role:', userRole, '(isAdmin:', isAdmin, ')');
+  
+  const visibleModules = ALL_MODULES.filter(m => {
+    if (m.adminOnly && !isAdmin) return false;
+    return true;
+  });
+  
+  document.getElementById('mod-grid').innerHTML = visibleModules.map(m => {
+    const icon = ICONS[m.icon] || '';
+    const onclick = m.link ? `location.href='${m.link}'` : '';
+    
+    if (m.wide) {
+      return `<div class="mod-card wide" onclick="${onclick}">
+        <div class="mod-icon-box">${icon}</div>
+        <div>
+          <div class="mod-label">${m.label}</div>
+          <div class="mod-value" id="${m.stat}">—</div>
+          <div class="mod-sub">${m.sub}</div>
+        </div>
+      </div>`;
+    }
+    
+    return `<div class="mod-card" onclick="${onclick}">
+      <div class="mod-icon-box">${icon}</div>
+      <div class="mod-label">${m.label}</div>
+      <div class="mod-value" id="${m.stat}">—</div>
+      <div class="mod-sub">${m.sub}</div>
+    </div>`;
+  }).join('');
+}
+
+// LOAD DASHBOARD STATS
+function loadDashboardStats() {
+  if (!token) return;
+  
+  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+  const isAdmin = userRole === 'admin';
+  
+  function updateStat(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value > 0 ? value : '—';
+  }
+  
+  function updateStatError(id) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  }
+
+  // 1️⃣ TRUCKS
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Truck%20Roster!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-trucks', count);
+  })
+  .catch(err => {
+    console.error('❌ Trucks load error:', err);
+    updateStatError('sv-trucks');
+  });
+
+  // 2️⃣ TRIPS
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:B', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    const rows = res.values || [];
+    const todayTrips = rows.filter(row => row[1] === today).length;
+    updateStat('sv-trips', todayTrips);
+  })
+  .catch(err => {
+    console.error('❌ Trips load error:', err);
+    updateStatError('sv-trips');
+  });
+
+  // 3️⃣ MANPOWER
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Manpower%20Roster!A2:D', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    const rows = res.values || [];
+    const activeToday = rows.filter(row => row[0] === today).length;
+    updateStat('sv-manpower', activeToday);
+  })
+  .catch(err => {
+    console.error('❌ Manpower load error:', err);
+    updateStatError('sv-manpower');
+  });
+
+  // 4️⃣ EMPLOYEES
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-emp', count);
+  })
+  .catch(err => {
+    console.error('❌ Employees load error:', err);
+    updateStatError('sv-emp');
+  });
+
+  // 5️⃣ ATTENDANCE
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:K', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    const rows = res.values || [];
+    
+    const todayLogs = rows.filter(row => {
+      if (!row[1]) return false;
+      
+      let rowDate = row[1];
+      if (!isNaN(rowDate) && rowDate > 1000) {
+        const excelEpoch = new Date(1899, 11, 30);
+        const date = new Date(excelEpoch.getTime() + parseFloat(rowDate) * 86400000);
+        rowDate = date.getFullYear() + '-' + 
+                  String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                  String(date.getDate()).padStart(2, '0');
+      }
+      
+      return rowDate === today;
+    }).length;
+    
+    updateStat('sv-attend', todayLogs);
+  })
+  .catch(err => {
+    console.error('❌ Attendance load error:', err);
+    updateStatError('sv-attend');
+  });
+
+  // 6️⃣ EMPLOYEE RECORDS
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Records!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-records', count);
+  })
+  .catch(err => {
+    console.error('❌ Employee Records load error:', err);
+    updateStatError('sv-records');
+  });
+
+  // 7️⃣ MATRIX
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Matrix!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const count = (res.values || []).filter(row => row[0]).length;
+    updateStat('sv-matrix', count);
+  })
+  .catch(err => {
+    console.error('❌ Matrix load error:', err);
+    updateStatError('sv-matrix');
+  });
+
+  // 8️⃣ EXPENSES
+  if (isAdmin) {
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const rows = res.values || [];
+      const pending = rows.filter(row => (row[4] || '').toLowerCase() === 'pending').length;
+      updateStat('sv-exp-admin', pending);
+    })
+    .catch(err => {
+      console.error('❌ Expenses (admin) load error:', err);
+      updateStatError('sv-exp-admin');
+    });
+  } else {
+    const userEmail = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const rows = res.values || [];
+      const myExpenses = rows.filter(row => (row[1] || '').toLowerCase() === userEmail).length;
+      updateStat('sv-exp-emp', myExpenses);
+    })
+    .catch(err => {
+      console.error('❌ Expenses (employee) load error:', err);
+      updateStatError('sv-exp-emp');
+    });
+  }
+
+  // 9️⃣ BILLING
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:G', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const rows = res.values || [];
+    const unpaid = rows.filter(row => (row[6] || '').toLowerCase() === 'no').length;
+    updateStat('sv-billing', unpaid);
+  })
+  .catch(err => {
+    console.error('❌ Billing load error:', err);
+    updateStatError('sv-billing');
+  });
+
+  // 🔟 SETTINGS
+  updateStat('sv-set', '⚙️');
+}
+
+// ✅ AUTO REFRESH WITH TOKEN RENEWAL
+function initAutoRefresh() {
+  setInterval(function() {
+    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    var bufferMs = 10 * 60 * 1000; // 10 min before expiry
+    
+    // Renew token if expiring soon
+    if (token && Date.now() >= (expiry - bufferMs)) {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: function(res) {
+            if (!res.error) {
+              token = res.access_token;
+              const expiresAt = Date.now() + (res.expires_in * 1000);
+              localStorage.setItem('pedroex-token', token);
+              localStorage.setItem('pedroex-token-expiry', expiresAt);
+              console.log('🔄 Token renewed');
+            }
+          }
+        }).requestAccessToken({ prompt: '' });
+      }
+      return;
+    }
+    
+    // Refresh dashboard stats
+    if (token && Date.now() < expiry) {
+      console.log('🔄 Auto-refresh dashboard stats');
+      loadDashboardStats();
+    }
+  }, 5 * 60 * 1000); // Every 5 minutes
+}
+
+// PULL TO REFRESH
+function initPullToRefresh(scrollEl, onRefresh) {
+  var startY = 0;
+  var pulling = false;
+  var threshold = 70;
+  var indicator = document.createElement('div');
+  indicator.className = 'ptr-indicator';
+  indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+  document.body.appendChild(indicator);
+
+  scrollEl.addEventListener('touchstart', function(e) {
+    if (scrollEl.scrollTop === 0) {
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchmove', function(e) {
+    if (!pulling) return;
+    var dist = e.touches[0].clientY - startY;
+    if (dist < 0) { pulling = false; return; }
+
+    var progress = Math.min(dist / threshold, 1);
+    indicator.classList.add('visible');
+
+    var arrow = document.getElementById('ptr-arrow');
+    if (arrow) {
+      arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
+      arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    pulling = false;
+
+    var dist = e.changedTouches[0].clientY - startY;
+    if (dist >= threshold) {
+      indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
+      onRefresh(function() {
+        indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+        indicator.classList.remove('visible');
+      });
+    } else {
+      indicator.classList.remove('visible');
+    }
+  });
+}
+
+// TOAST
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
