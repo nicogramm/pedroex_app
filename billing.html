@@ -307,6 +307,10 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
             <div class="cc-st r">❌ Not Found in Trips</div>
             <div id="cc-nm-list"></div>
           </div>
+          <div id="cc-inv-wrap" style="display:none">
+            <div class="cc-st r">⛔ Invalid Shipment Numbers (not 10 digits)</div>
+            <div id="cc-inv-list"></div>
+          </div>
         </div>
       </div>
 
@@ -459,6 +463,16 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
               <table class="tbl">
                 <thead><tr><th>Billing Ship#</th><th>SOA</th><th>Truck</th><th>Date</th></tr></thead>
                 <tbody id="rpt-cc-nm-list"></tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Invalid shipment numbers -->
+          <div id="rpt-cc-inv-wrap" style="display:none;margin-top:4px">
+            <div class="cc-st r" style="padding-top:8px">⛔ Invalid Shipment Numbers (not 10 digits)</div>
+            <div class="tbl-wrap">
+              <table class="tbl">
+                <thead><tr><th>Billing Ship#</th><th>SOA</th><th>Truck</th><th>Issue</th></tr></thead>
+                <tbody id="rpt-cc-inv-list"></tbody>
               </table>
             </div>
           </div>
@@ -620,11 +634,14 @@ function parseExcel(file){
           const row=raw[i];
           const ship=String(row[cS]||'').trim();
           if(!ship||ship.toUpperCase().includes('TOTAL')||ship.length<5) continue;
+          const validShip=/^\d{10}$/.test(ship);
           rows.push({
             date:xDate(cD!==-1?row[cD]:''),
             shipment:ship, soa,
             truck:cP!==-1?String(row[cP]||'').trim():'',
-            rate:cR!==-1?String(row[cR]||'').trim():''
+            rate:cR!==-1?String(row[cR]||'').trim():'',
+            invalid:!validShip,
+            invalidReason:!validShip?ship.length+' digit(s) — must be exactly 10':''
           });
         }
         res(rows);
@@ -635,10 +652,12 @@ function parseExcel(file){
 }
 
 function renderPreview(rows){
-  document.getElementById('preview-bdg').textContent=rows.length+' rows';
-  document.getElementById('preview-body').innerHTML=rows.map(r=>
-    `<tr><td>${r.date}</td><td><b>${r.shipment}</b></td><td>${r.soa}</td><td>${r.truck}</td><td>${Number(r.rate||0).toLocaleString()}</td></tr>`
-  ).join('');
+  const invalid=rows.filter(r=>r.invalid).length;
+  document.getElementById('preview-bdg').textContent=rows.length+' rows'+(invalid?' · ⚠️ '+invalid+' invalid':'');
+  document.getElementById('preview-body').innerHTML=rows.map(r=>{
+    if(r.invalid) return `<tr style="background:rgba(179,37,51,0.07)"><td>${r.date}</td><td style="color:var(--red)"><b>${r.shipment}</b> ⚠️</td><td>${r.soa}</td><td>${r.truck}</td><td style="color:var(--red);font-size:10px">${r.invalidReason}</td></tr>`;
+    return `<tr><td>${r.date}</td><td><b>${r.shipment}</b></td><td>${r.soa}</td><td>${r.truck}</td><td>${Number(r.rate||0).toLocaleString()}</td></tr>`;
+  }).join('');
 }
 
 // ═══ SAVE ═══
@@ -686,11 +705,16 @@ async function runCC(rows){
       if(/^\d{10}$/.test(n)) byShip[n]=t;
     });
 
-    ccR={exact:[],fuzzy:[],noMatch:[]};
+    ccR={exact:[],fuzzy:[],noMatch:[],invalid:[]};
     rows.forEach(bRow=>{
       const bNum=bRow.shipment;
-      // ✅ FIXED: Exact match ONLY if billing number is also EXACTLY 10 digits AND matches
-      if(/^\d{10}$/.test(bNum)&&byShip[bNum]){
+      // ✅ FIRST: Flag invalid shipment numbers (not exactly 10 digits)
+      if(bRow.invalid){
+        ccR.invalid.push({billing:bRow});
+        return;
+      }
+      // Exact match ONLY if billing number is exactly 10 digits AND matches
+      if(byShip[bNum]){
         ccR.exact.push({billing:bRow,trip:byShip[bNum]});
         return;
       }
@@ -738,8 +762,20 @@ function fuzzyReason(a,b){
 
 function renderCC(){
   show('cc-card');
-  const {exact,fuzzy,noMatch}=ccR;
-  document.getElementById('cc-bdg').textContent=exact.length+'✅ '+fuzzy.length+'⚠️ '+noMatch.length+'❌';
+  const {exact,fuzzy,noMatch,invalid}=ccR;
+  document.getElementById('cc-bdg').textContent=exact.length+'✅ '+fuzzy.length+'⚠️ '+noMatch.length+'❌'+(invalid.length?' '+invalid.length+'⛔':'');
+
+  // Invalid shipment numbers — show first
+  const iw=document.getElementById('cc-inv-wrap');
+  if(invalid.length){
+    iw.style.display='';
+    document.getElementById('cc-inv-list').innerHTML=invalid.map(m=>`
+      <div class="cc-item nm" style="border-left-color:#b32533;background:rgba(179,37,51,0.1)">
+        <div class="cc-ship" style="color:var(--red)">${m.billing.shipment} ⛔</div>
+        <div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.billing.truck}</div>
+        <div class="cc-rsn" style="color:var(--red);font-weight:600">❌ ${m.billing.invalidReason} — please verify and correct in the Excel file</div>
+      </div>`).join('');
+  } else iw.style.display='none';
 
   const ew=document.getElementById('cc-ex-wrap');
   if(exact.length){
@@ -1063,10 +1099,12 @@ function renderReport(){
 
   // Cross-check in report
   const ccStats=document.getElementById('rpt-cc-stats');
+  const invLen=(ccR.invalid||[]).length;
   ccStats.innerHTML=`
     <div class="sc"><div class="sv green">${ccR.exact.length}</div><div class="sl">Exact</div></div>
     <div class="sc"><div class="sv orange">${ccR.fuzzy.length}</div><div class="sl">Flagged</div></div>
-    <div class="sc"><div class="sv red">${ccR.noMatch.length}</div><div class="sl">Not Found</div></div>`;
+    <div class="sc"><div class="sv red">${ccR.noMatch.length}</div><div class="sl">Not Found</div></div>
+    <div class="sc"><div class="sv red">${invLen}</div><div class="sl">Invalid #</div></div>`;
 
   const exW=document.getElementById('rpt-cc-ex-wrap');
   if(ccR.exact.length){
@@ -1091,6 +1129,16 @@ function renderReport(){
       `<tr><td><b>${m.billing.shipment}</b></td><td>${m.billing.soa}</td><td>${m.billing.truck}</td><td>${m.billing.date}</td></tr>`
     ).join('');
   } else nmW.style.display='none';
+
+  // Invalid shipment numbers in report
+  const invList=ccR.invalid||[];
+  const invW=document.getElementById('rpt-cc-inv-wrap');
+  if(invList.length){
+    invW.style.display='';
+    document.getElementById('rpt-cc-inv-list').innerHTML=invList.map(m=>
+      `<tr><td><b style="color:var(--red)">${m.billing.shipment} ⛔</b></td><td>${m.billing.soa}</td><td>${m.billing.truck}</td><td style="color:var(--red)">${m.billing.invalidReason}</td></tr>`
+    ).join('');
+  } else if(invW) invW.style.display='none';
 }
 
 // ═══ GROUPING HELPERS ═══
