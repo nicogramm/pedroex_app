@@ -1427,7 +1427,7 @@ function renderReports() {
   const yearStart = new Date(thisYear, 0, 1);
   
   const thisWeekExpenses = allExpenses.filter(e => new Date(e.date + 'T00:00:00') >= weekAgo);
-  const thisMonthExpenses = allExpenses.filter(e => e.month === thisMonth);
+  const thisMonthExpenses = allExpenses.filter(e => e.date && e.date.startsWith(thisMonth));
   const ytdExpenses = allExpenses.filter(e => new Date(e.date + 'T00:00:00') >= yearStart);
   
   // ✅ FIX: Calculate manpower and documentation for THIS MONTH
@@ -1451,11 +1451,12 @@ function renderReports() {
     return d >= new Date(weekAgo.getTime() - 7*24*60*60*1000) && d < weekAgo;
   });
   
-  const lastMonthExpenses = allExpenses.filter(e => {
-    const lastMonth = new Date(now);
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    return e.month === lastMonth.toISOString().slice(0, 7);
-  });
+    const lastMonthExpenses = allExpenses.filter(e => {
+      const lastMonth = new Date(now);
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+      const lm = lastMonth.toISOString().slice(0, 7);
+      return e.date && e.date.startsWith(lm);  // ← fixed
+    });
   
   const weekTotal = thisWeekExpenses.reduce((sum, e) => sum + e.amount, 0);
   const monthTotal = thisMonthExpenses.reduce((sum, e) => sum + e.amount, 0) + 
@@ -1790,7 +1791,7 @@ function updateSummary() {
   const now = new Date();
   const thisMonth = now.toISOString().slice(0, 7);
   
-  let filtered = allExpenses.filter(e => e.month === thisMonth);
+ let filtered = allExpenses.filter(e => e.date && e.date.startsWith(thisMonth));
   if (currentTruckFilter !== 'All' && currentView !== 'reports') {
     filtered = filtered.filter(e => e.truck === currentTruckFilter);
   }
