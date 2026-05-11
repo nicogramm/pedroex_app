@@ -1654,14 +1654,16 @@ function renderTrendChart() {
   if (trendChart) trendChart.destroy();
   
   const last30Days = [];
+  const startDate = new Date('2026-04-30');
   const now = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
+
+  let current = new Date(startDate);
+  while (current <= now) {
+    const yyyy = current.getFullYear();
+    const mm = String(current.getMonth() + 1).padStart(2, '0');
+    const dd = String(current.getDate()).padStart(2, '0');
     last30Days.push(`${yyyy}-${mm}-${dd}`);
+    current.setDate(current.getDate() + 1);
   }
   
   const dailyTotals = last30Days.map(dateStr => {
