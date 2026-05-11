@@ -448,6 +448,41 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
   </div>
 </div>
 
+<!-- REPORT MODAL -->
+<div class="sheet-overlay" id="report-modal">
+  <div class="sheet" style="max-height:90dvh">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">📊 Trip Reports</div>
+    
+    <!-- TABS -->
+    <div class="toggle-group" style="margin-bottom:16px">
+      <button class="tg-btn active-yes" id="tab-missing" onclick="switchReportTab('missing')">Missing Shipments</button>
+      <button class="tg-btn" id="tab-helpers" onclick="switchReportTab('helpers')">Helper Performance</button>
+    </div>
+
+    <!-- MONTH SELECTOR -->
+    <div class="fg">
+      <label class="fl">Select Month</label>
+      <select class="fi" id="report-month" onchange="loadReportData()">
+        <!-- Auto-populated -->
+      </select>
+    </div>
+
+    <!-- LOADING -->
+    <div id="report-loading" style="display:none;text-align:center;padding:20px;color:var(--text3)">
+      <div class="spinner" style="margin:0 auto 10px"></div>
+      Loading report...
+    </div>
+
+    <!-- TAB CONTENT -->
+    <div id="report-content-missing" style="margin-top:16px"></div>
+    <div id="report-content-helpers" style="display:none;margin-top:16px"></div>
+
+    <button class="btn btn-ghost" style="width:100%;margin-top:16px" onclick="closeReportModal()">Close</button>
+  </div>
+</div>
+
+
 <div class="saving-overlay" id="saving-overlay">
   <div class="saving-box">
     <div class="saving-spinner"></div>
@@ -1508,39 +1543,6 @@ function renderReportHelpers() {
   container.innerHTML = html;
 }
 
-<!-- REPORT MODAL -->
-<div class="sheet-overlay" id="report-modal">
-  <div class="sheet" style="max-height:90dvh">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title">📊 Trip Reports</div>
-    
-    <!-- TABS -->
-    <div class="toggle-group" style="margin-bottom:16px">
-      <button class="tg-btn active-yes" id="tab-missing" onclick="switchReportTab('missing')">Missing Shipments</button>
-      <button class="tg-btn" id="tab-helpers" onclick="switchReportTab('helpers')">Helper Performance</button>
-    </div>
-
-    <!-- MONTH SELECTOR -->
-    <div class="fg">
-      <label class="fl">Select Month</label>
-      <select class="fi" id="report-month" onchange="loadReportData()">
-        <!-- Auto-populated -->
-      </select>
-    </div>
-
-    <!-- LOADING -->
-    <div id="report-loading" style="display:none;text-align:center;padding:20px;color:var(--text3)">
-      <div class="spinner" style="margin:0 auto 10px"></div>
-      Loading report...
-    </div>
-
-    <!-- TAB CONTENT -->
-    <div id="report-content-missing" style="margin-top:16px"></div>
-    <div id="report-content-helpers" style="display:none;margin-top:16px"></div>
-
-    <button class="btn btn-ghost" style="width:100%;margin-top:16px" onclick="closeReportModal()">Close</button>
-  </div>
-</div>
 
 </script>
 
