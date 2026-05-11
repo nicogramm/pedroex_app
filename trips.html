@@ -498,6 +498,7 @@ const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const TAB_TRIPS      = 'Trips';
 const TAB_TRUCKS     = 'Truck Roster';
 const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
+const TAB_EMPLOYEES  = 'Employees';  // ✅ DAGDAG
 
 // ✅ ROUTE OPTIONS (UPDATED)
 const ROUTES = [
@@ -1371,6 +1372,7 @@ function showToast(m) {
 var reportTab = 'missing';
 var reportMonth = '';
 var attendanceData = [];
+var employeesData = [];  // ✅ DAGDAG
 
 function openReportModal() {
   // Populate month dropdown (last 6 months)
@@ -1413,30 +1415,47 @@ function loadReportData() {
   
   console.log('📊 Loading report for month:', reportMonth);
   
-  // ✅ FIXED: Get columns B (Date), C (Employee), G (Truck)
-  apiGet('Attendance!B2:G')
-    .then(function(res) {
-      var rows = res.values || [];
+  // ✅ Load BOTH Attendance AND Employees data
+  Promise.all([
+    apiGet('Attendance!B2:G'),
+    apiGet('Employees!B2:E')  // First Name, Last Name, Role, Position
+  ])
+    .then(function(results) {
+      var attendanceRows = results[0].values || [];
+      var employeeRows = results[1].values || [];
       
-      console.log('📋 Raw attendance rows:', rows.length);
-      console.log('📋 Sample row:', rows[0]);
+      console.log('📋 Raw attendance rows:', attendanceRows.length);
+      console.log('👥 Raw employee rows:', employeeRows.length);
       
-      // ✅ Map correct columns
-      attendanceData = rows.map(function(r) {
+      // ✅ Build employees lookup (Full Name → Position)
+      var employeePositions = {};
+      employeeRows.forEach(function(r) {
+        var firstName = r[0] || '';
+        var lastName = r[1] || '';
+        var position = r[3] || '';  // Column E (Position)
+        
+        if (firstName && lastName) {
+          var fullName = firstName + ' ' + lastName;
+          employeePositions[fullName] = position;
+        }
+      });
+      
+      console.log('👥 Employee positions:', employeePositions);
+      
+      // ✅ Map attendance data
+      attendanceData = attendanceRows.map(function(r) {
         return {
-          date: convertExcelDate(r[0]),      // Column B (index 0)
-          helper: r[1] || '',                 // Column C (index 1)
-          truck: r[5] || ''                   // Column G (index 5)
+          date: convertExcelDate(r[0]),      // Column B
+          helper: r[1] || '',                 // Column C
+          truck: r[5] || ''                   // Column G
         };
       }).filter(function(r) {
-        // Only keep rows with complete data
         return r.date && r.helper && r.truck;
       });
       
       console.log('✅ Processed attendance:', attendanceData.length);
-      console.log('✅ Sample:', attendanceData.slice(0, 3));
       
-      // Filter for selected month
+      // ✅ Filter for selected month
       var monthAttendance = attendanceData.filter(function(r) {
         return r.date.startsWith(reportMonth);
       });
@@ -1452,34 +1471,41 @@ function loadReportData() {
       
       // Check matches
       var matches = 0;
+      var helperMatches = 0;
+      
       monthTrips.forEach(function(trip) {
         var match = attendanceData.find(function(a) {
           return a.date === trip.deliveryDate && a.truck === trip.truck;
         });
+        
         if (match) {
           matches++;
-          console.log('✅ Match:', trip.deliveryDate, trip.truck, '→', match.helper);
+          var position = employeePositions[match.helper] || 'Unknown';
+          var isHelper = position.toLowerCase() === 'helper';
+          
+          console.log('✅ Match:', trip.deliveryDate, trip.truck, '→', 
+            match.helper, '(' + position + ')', isHelper ? '✅ HELPER' : '❌ DRIVER');
+          
+          if (isHelper) helperMatches++;
         } else {
           console.log('❌ No match:', trip.deliveryDate, trip.truck);
-          console.log('   Available trucks for this date:', 
-            attendanceData.filter(function(a) { return a.date === trip.deliveryDate; })
-              .map(function(a) { return a.truck; }).join(', ')
-          );
         }
       });
       
-      console.log('🎯 Matches:', matches, '/', monthTrips.length);
+      console.log('🎯 Total matches:', matches, '/', monthTrips.length);
+      console.log('👷 Helper matches:', helperMatches);
       
       loading.style.display = 'none';
       renderReportMissing();
-      renderReportHelpers();
+      renderReportHelpers(employeePositions);  // ✅ Pass employee data
     })
     .catch(function(err) {
       loading.style.display = 'none';
-      showToast('❌ Failed to load attendance data');
+      showToast('❌ Failed to load report data');
       console.error('❌ Error:', err);
     });
 }
+
 
 function renderReportMissing() {
   var container = document.getElementById('report-content-missing');
@@ -1533,10 +1559,10 @@ function renderReportMissing() {
   container.innerHTML = html;
 }
 
-function renderReportHelpers() {
+function renderReportHelpers(employeePositions) {
   var container = document.getElementById('report-content-helpers');
   
-  // ✅ STEP 1: Get all trips for selected month
+  // ✅ Get all trips for selected month
   var monthTrips = allTrips.filter(function(t) {
     return t.deliveryDate.startsWith(reportMonth);
   });
@@ -1546,42 +1572,70 @@ function renderReportHelpers() {
     return;
   }
   
-  // ✅ STEP 2: For each trip, find who drove it (from attendance)
+  // ✅ For each trip, find who worked on it (HELPERS ONLY)
   var tripsByHelper = {};
   
   monthTrips.forEach(function(trip) {
-    // Find matching attendance record
-    var attendance = attendanceData.find(function(a) {
+    // Find ALL attendance records for this trip (may 2-man team)
+    var attendanceMatches = attendanceData.filter(function(a) {
       return a.date === trip.deliveryDate && a.truck === trip.truck;
     });
     
-    if (attendance && attendance.helper) {
-      var helper = attendance.helper;
-      if (!tripsByHelper[helper]) {
-        tripsByHelper[helper] = {
+    attendanceMatches.forEach(function(attendance) {
+      if (!attendance.helper) return;
+      
+      var helperName = attendance.helper;
+      var position = employeePositions[helperName] || 'Unknown';
+      
+      // ✅ FILTER: Only include HELPERS (exclude drivers)
+      if (position.toLowerCase() !== 'helper') {
+        console.log('⏭️ Skipping (not helper):', helperName, '(' + position + ')');
+        return;
+      }
+      
+      // Initialize helper record
+      if (!tripsByHelper[helperName]) {
+        tripsByHelper[helperName] = {
           total: 0,
-          missing: []
+          missing: [],
+          trucks: {}
         };
       }
       
-      tripsByHelper[helper].total++;
+      tripsByHelper[helperName].total++;
       
-      // ✅ STEP 3: Check if shipment number is missing
-      if (!trip.shipmentNumber || trip.shipmentNumber.trim() === '') {
-        tripsByHelper[helper].missing.push(trip);
+      // Track trucks worked on
+      if (!tripsByHelper[helperName].trucks[trip.truck]) {
+        tripsByHelper[helperName].trucks[trip.truck] = 0;
       }
-    }
+      tripsByHelper[helperName].trucks[trip.truck]++;
+      
+      // ✅ Check if shipment number is missing
+      if (!trip.shipmentNumber || trip.shipmentNumber.trim() === '') {
+        // Avoid duplicates (if 2-man team)
+        var alreadyAdded = tripsByHelper[helperName].missing.some(function(t) {
+          return t.rowIndex === trip.rowIndex;
+        });
+        
+        if (!alreadyAdded) {
+          tripsByHelper[helperName].missing.push(trip);
+        }
+      }
+    });
   });
   
   var helpers = Object.keys(tripsByHelper).sort();
   
   if (!helpers.length) {
-    container.innerHTML = '<div class="empty-hint">No helper attendance data found for trips this month.<br><br>' +
-      '<small style="color:var(--text3)">Make sure Attendance sheet has matching Date + Truck entries.</small></div>';
+    container.innerHTML = '<div class="empty-hint">No helper data found for this month.<br><br>' +
+      '<small style="color:var(--text3)">Make sure:<br>' +
+      '1. Attendance sheet has matching Date + Truck<br>' +
+      '2. Employee names match exactly<br>' +
+      '3. Employees sheet has Position = "Helper"</small></div>';
     return;
   }
   
-  // ✅ STEP 4: Render results
+  // ✅ Render results
   var html = '';
   
   helpers.forEach(function(helper) {
@@ -1590,10 +1644,14 @@ function renderReportHelpers() {
     var completeCount = data.total - missingCount;
     var percentage = data.total > 0 ? Math.round((completeCount / data.total) * 100) : 0;
     
-    var c = getTruckColor(data.missing[0]?.truck || 'default');
+    // Truck summary
+    var truckList = Object.keys(data.trucks).map(function(truck) {
+      return truck + ' (' + data.trucks[truck] + ')';
+    }).join(', ');
     
     html += '<div class="neu-card" style="padding:14px;margin-bottom:10px">';
-    html += '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px">👤 ' + helper + '</div>';
+    html += '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px">👷 ' + helper + '</div>';
+    html += '<div style="font-size:10px;color:var(--text3);margin-bottom:8px">Trucks: ' + truckList + '</div>';
     
     // Stats bar
     html += '<div style="font-size:12px;color:var(--text2);margin-bottom:10px">';
@@ -1610,7 +1668,7 @@ function renderReportHelpers() {
     if (missingCount === 0) {
       html += '<div style="color:var(--green);font-size:12px;font-weight:600">✅ All shipment numbers complete!</div>';
     } else {
-      html += '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600">MISSING SHIPMENT NUMBERS:</div>';
+      html += '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600">⚠️ MISSING SHIPMENT NUMBERS:</div>';
       
       data.missing.forEach(function(t) {
         var truckColor = getTruckColor(t.truck);
@@ -1627,6 +1685,7 @@ function renderReportHelpers() {
   
   container.innerHTML = html;
 }
+
 
 </script>
 
