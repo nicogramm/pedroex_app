@@ -114,6 +114,30 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
   padding:2px 0;
   flex-shrink:0;
 }
+
+/* ✅ DAY INDICATOR — Shows if day has expenses */
+.cal-day-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 4px rgba(179, 37, 51, 0.6);
+  z-index: 10;
+}
+
+.cal-day.has-expenses {
+  border: 1px solid rgba(179, 37, 51, 0.2);
+}
+
+.cal-day.has-expenses .cal-date {
+  color: var(--red);
+  font-weight: 800;
+}
+
+
 /* ✅ BIGGER ICONS FOR MOBILE */
 .cal-expense-dot .icon{font-size:16px;flex-shrink:0}
 .cal-expense-dot .amount{font-size:10px;font-weight:700;color:var(--text);white-space:nowrap}
@@ -1150,7 +1174,7 @@ function renderCalendar() {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const isToday = dateStr === todayStr;
     
-    // ✅ FIX: GET ALL EXPENSES INCLUDING MANPOWER & DOCUMENTATION
+    // ✅ GET ALL EXPENSES INCLUDING MANPOWER & DOCUMENTATION
     let dayExpenses = allExpenses.filter(e => e.date === dateStr);
     const manpowerExpenses = getManpowerExpensesForDate(dateStr);
     const documentationExpenses = getDocumentationExpensesForDate(dateStr);
@@ -1164,6 +1188,9 @@ function renderCalendar() {
     } else {
       var allDayExpenses = [...dayExpenses, ...manpowerExpenses, ...documentationExpenses];
     }
+    
+    // ✅ CHECK IF DAY HAS EXPENSES
+    const hasExpenses = allDayExpenses.length > 0;
     
     // Group by category and show totals
     const categoryTotals = {};
@@ -1182,7 +1209,12 @@ function renderCalendar() {
         return `<div class="cal-expense-dot"><span class="icon">${icon}</span><span class="amount">₱${amtStr}</span></div>`;
       }).join('');
     
-    html += `<div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayDetail('${dateStr}')">
+    // ✅ ADD INDICATOR DOT & has-expenses CLASS
+    const indicatorHtml = hasExpenses ? '<div class="cal-day-indicator"></div>' : '';
+    const hasExpensesClass = hasExpenses ? 'has-expenses' : '';
+    
+    html += `<div class="cal-day ${isToday ? 'today' : ''} ${hasExpensesClass}" onclick="showDayDetail('${dateStr}')">
+      ${indicatorHtml}
       <div class="cal-date">${day}</div>
       <div class="cal-expenses">${expensesHtml}</div>
     </div>`;
@@ -1197,6 +1229,8 @@ function renderCalendar() {
   
   document.getElementById('cal-days').innerHTML = html;
 }
+
+
 
 // ═══ DAY DETAIL MODAL ═════════════════════════════════
 function showDayDetail(dateStr) {
