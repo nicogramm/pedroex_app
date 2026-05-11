@@ -1411,19 +1411,64 @@ function loadReportData() {
   var loading = document.getElementById('report-loading');
   loading.style.display = '';
   
-  // Load Attendance data
-  apiGet('Attendance!A2:C')
+  console.log('📊 Loading report for month:', reportMonth);
+  
+  // ✅ FIXED: Get columns B (Date), C (Employee), G (Truck)
+  apiGet('Attendance!B2:G')
     .then(function(res) {
       var rows = res.values || [];
+      
+      console.log('📋 Raw attendance rows:', rows.length);
+      console.log('📋 Sample row:', rows[0]);
+      
+      // ✅ Map correct columns
       attendanceData = rows.map(function(r) {
         return {
-          date: convertExcelDate(r[0]),
-          helper: r[1] || '',
-          truck: r[2] || ''
+          date: convertExcelDate(r[0]),      // Column B (index 0)
+          helper: r[1] || '',                 // Column C (index 1)
+          truck: r[5] || ''                   // Column G (index 5)
         };
       }).filter(function(r) {
+        // Only keep rows with complete data
+        return r.date && r.helper && r.truck;
+      });
+      
+      console.log('✅ Processed attendance:', attendanceData.length);
+      console.log('✅ Sample:', attendanceData.slice(0, 3));
+      
+      // Filter for selected month
+      var monthAttendance = attendanceData.filter(function(r) {
         return r.date.startsWith(reportMonth);
       });
+      
+      console.log('📅 Month attendance:', monthAttendance.length);
+      
+      // Get trips for month
+      var monthTrips = allTrips.filter(function(t) {
+        return t.deliveryDate.startsWith(reportMonth);
+      });
+      
+      console.log('🚛 Month trips:', monthTrips.length);
+      
+      // Check matches
+      var matches = 0;
+      monthTrips.forEach(function(trip) {
+        var match = attendanceData.find(function(a) {
+          return a.date === trip.deliveryDate && a.truck === trip.truck;
+        });
+        if (match) {
+          matches++;
+          console.log('✅ Match:', trip.deliveryDate, trip.truck, '→', match.helper);
+        } else {
+          console.log('❌ No match:', trip.deliveryDate, trip.truck);
+          console.log('   Available trucks for this date:', 
+            attendanceData.filter(function(a) { return a.date === trip.deliveryDate; })
+              .map(function(a) { return a.truck; }).join(', ')
+          );
+        }
+      });
+      
+      console.log('🎯 Matches:', matches, '/', monthTrips.length);
       
       loading.style.display = 'none';
       renderReportMissing();
@@ -1431,8 +1476,8 @@ function loadReportData() {
     })
     .catch(function(err) {
       loading.style.display = 'none';
-      showToast('❌ Failed to load report data');
-      console.error(err);
+      showToast('❌ Failed to load attendance data');
+      console.error('❌ Error:', err);
     });
 }
 
