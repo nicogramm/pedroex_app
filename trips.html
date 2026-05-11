@@ -732,45 +732,80 @@ body.dark .report-header {
     <div class="day-panel" id="day-panel">
       <div class="day-panel-title" id="day-panel-title"></div>
       <div id="day-panel-list"></div>
-    </div>
-
-          <!-- ═══ COMPLIANCE VIEW ═══ -->
-      <div id="compliance-view" style="display:none">
-        <!-- Month Selector -->
-        <div class="neu-card" style="padding:16px;margin-bottom:14px">
-          <div class="card-title">Compliance Period</div>
-          <div class="row2" style="margin-bottom:0">
-            <div class="fg" style="margin-bottom:0">
-              <select class="fi" id="compliance-month" onchange="renderComplianceReport()">
-                <!-- Populated by JS -->
-              </select>
-            </div>
-            <div class="fg" style="margin-bottom:0">
-              <button class="btn btn-red" onclick="exportComplianceReport()" style="width:100%;padding:13px">
-                📥 Export
-              </button>
-            </div>
-          </div>
         </div>
 
-        <!-- ═══ HELPERS VIEW ═══ -->
-<div id="helpers-view" style="display:none">
-  <!-- Month Selector -->
-  <div class="neu-card" style="padding:16px;margin-bottom:14px">
-    <div class="card-title">Helper Performance Period</div>
-    <div class="row2" style="margin-bottom:0">
-      <div class="fg" style="margin-bottom:0">
-        <select class="fi" id="helpers-month" onchange="renderHelpersReport()">
-          <!-- Populated by JS -->
-        </select>
+          <!-- ═══ COMPLIANCE VIEW ═══ -->
+    <div id="compliance-view" style="display:none">
+      <!-- Month Selector -->
+      <div class="neu-card" style="padding:16px;margin-bottom:14px">
+        <div class="card-title">Compliance Period</div>
+        <div class="row2" style="margin-bottom:0">
+          <div class="fg" style="margin-bottom:0">
+            <select class="fi" id="compliance-month" onchange="renderComplianceReport()">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <button class="btn btn-red" onclick="exportComplianceReport()" style="width:100%;padding:13px">
+              📥 Export
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="fg" style="margin-bottom:0">
-        <button class="btn btn-red" onclick="exportHelpersReport()" style="width:100%;padding:13px">
-          📥 Export
-        </button>
+
+      <!-- Overall Stats -->
+      <div class="neu-card" style="padding:16px;margin-bottom:14px">
+        <div class="card-title">Overall Compliance</div>
+        <div class="row2" style="margin-bottom:10px">
+          <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+            <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">TOTAL TRIPS</div>
+            <div style="font-size:24px;font-weight:700;color:var(--text)" id="comp-total">0</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+            <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">WITH SHIPMENT #</div>
+            <div style="font-size:24px;font-weight:700;color:var(--green)" id="comp-compliant">0</div>
+          </div>
+        </div>
+        <div class="row2">
+          <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+            <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">MISSING</div>
+            <div style="font-size:24px;font-weight:700;color:var(--red)" id="comp-missing">0</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:var(--bg2);border-radius:12px">
+            <div style="font-size:10px;font-weight:600;color:var(--text3);margin-bottom:4px">COMPLIANCE RATE</div>
+            <div style="font-size:24px;font-weight:700;color:var(--text)" id="comp-rate">0%</div>
+          </div>
+        </div>
       </div>
+
+      <!-- Truck Ranking -->
+      <div class="neu-card" style="padding:16px;margin-bottom:14px">
+        <div class="card-title">🏆 Truck Compliance Ranking</div>
+        <div id="compliance-ranking"></div>
+      </div>
+
+      <!-- Detailed Breakdown -->
+      <div id="compliance-details"></div>
     </div>
-  </div>
+
+    <!-- ═══ HELPERS VIEW ═══ -->
+    <div id="helpers-view" style="display:none">
+      <!-- Month Selector -->
+      <div class="neu-card" style="padding:16px;margin-bottom:14px">
+        <div class="card-title">Helper Performance Period</div>
+        <div class="row2" style="margin-bottom:0">
+          <div class="fg" style="margin-bottom:0">
+            <select class="fi" id="helpers-month" onchange="renderHelpersReport()">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <button class="btn btn-red" onclick="exportHelpersReport()" style="width:100%;padding:13px">
+              📥 Export
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- Overall Helper Stats -->
       <div class="neu-card" style="padding:16px;margin-bottom:14px">
@@ -796,6 +831,16 @@ body.dark .report-header {
           </div>
         </div>
       </div>
+
+      <!-- Helper Ranking -->
+      <div class="neu-card" style="padding:16px;margin-bottom:14px">
+        <div class="card-title">🏆 Helper Performance Ranking</div>
+        <div id="helpers-ranking"></div>
+      </div>
+
+      <!-- Detailed Breakdown -->
+      <div id="helpers-details"></div>
+    </div>
 
       <!-- Helper Ranking -->
       <div class="neu-card" style="padding:16px;margin-bottom:14px">
