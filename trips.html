@@ -1491,58 +1491,97 @@ function renderReportMissing() {
 function renderReportHelpers() {
   var container = document.getElementById('report-content-helpers');
   
-  // Group attendance by helper
-  var byHelper = {};
-  attendanceData.forEach(function(a) {
-    if (!byHelper[a.helper]) byHelper[a.helper] = [];
-    byHelper[a.helper].push(a);
+  // ✅ STEP 1: Get all trips for selected month
+  var monthTrips = allTrips.filter(function(t) {
+    return t.deliveryDate.startsWith(reportMonth);
   });
   
-  var html = '';
-  var helpers = Object.keys(byHelper).sort();
+  if (!monthTrips.length) {
+    container.innerHTML = '<div class="empty-hint">No trips found for this month</div>';
+    return;
+  }
   
-  if (!helpers.length) {
-    html = '<div class="empty-hint">No attendance data for this month</div>';
-  } else {
-    helpers.forEach(function(helper) {
-      var attendance = byHelper[helper];
-      
-      // Find matching trips
-      var helperTrips = attendance.map(function(a) {
-        return allTrips.find(function(t) {
-          return t.deliveryDate === a.date && t.truck === a.truck;
-        });
-      }).filter(function(t) { return t; });
-      
-      var missing = helperTrips.filter(function(t) { return !t.shipmentNumber; });
-      
-      html += '<div class="neu-card" style="padding:14px;margin-bottom:10px">';
-      html += '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px">👤 ' + helper + '</div>';
-      html += '<div style="font-size:12px;color:var(--text2);margin-bottom:10px">';
-      html += 'Worked: ' + attendance.length + ' days | Trips: ' + helperTrips.length + ' | Missing: ' + missing.length;
-      html += '</div>';
-      
-      if (missing.length === 0) {
-        html += '<div style="color:var(--green);font-size:12px;font-weight:600">✅ All shipment numbers complete!</div>';
-      } else {
-        html += '<div style="font-size:11px;color:var(--text3);margin-bottom:6px">MISSING SHIPMENT NUMBERS:</div>';
-        missing.forEach(function(t) {
-          var c = getTruckColor(t.truck);
-          html += '<div style="background:var(--bg2);border-radius:8px;padding:8px;margin-bottom:4px;font-size:12px;border-left:3px solid ' + c.bg + '">';
-          html += '<div style="font-weight:600;color:var(--text)">' + t.deliveryDate + ' · 🚛 ' + t.truck + '</div>';
-          html += '<div style="font-size:10px;color:var(--text2)">';
-          html += (t.route || 'No route') + ' · ' + (t.type || 'No type');
-          html += '</div></div>';
-        });
+  // ✅ STEP 2: For each trip, find who drove it (from attendance)
+  var tripsByHelper = {};
+  
+  monthTrips.forEach(function(trip) {
+    // Find matching attendance record
+    var attendance = attendanceData.find(function(a) {
+      return a.date === trip.deliveryDate && a.truck === trip.truck;
+    });
+    
+    if (attendance && attendance.helper) {
+      var helper = attendance.helper;
+      if (!tripsByHelper[helper]) {
+        tripsByHelper[helper] = {
+          total: 0,
+          missing: []
+        };
       }
       
-      html += '</div>';
-    });
+      tripsByHelper[helper].total++;
+      
+      // ✅ STEP 3: Check if shipment number is missing
+      if (!trip.shipmentNumber || trip.shipmentNumber.trim() === '') {
+        tripsByHelper[helper].missing.push(trip);
+      }
+    }
+  });
+  
+  var helpers = Object.keys(tripsByHelper).sort();
+  
+  if (!helpers.length) {
+    container.innerHTML = '<div class="empty-hint">No helper attendance data found for trips this month.<br><br>' +
+      '<small style="color:var(--text3)">Make sure Attendance sheet has matching Date + Truck entries.</small></div>';
+    return;
   }
+  
+  // ✅ STEP 4: Render results
+  var html = '';
+  
+  helpers.forEach(function(helper) {
+    var data = tripsByHelper[helper];
+    var missingCount = data.missing.length;
+    var completeCount = data.total - missingCount;
+    var percentage = data.total > 0 ? Math.round((completeCount / data.total) * 100) : 0;
+    
+    var c = getTruckColor(data.missing[0]?.truck || 'default');
+    
+    html += '<div class="neu-card" style="padding:14px;margin-bottom:10px">';
+    html += '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px">👤 ' + helper + '</div>';
+    
+    // Stats bar
+    html += '<div style="font-size:12px;color:var(--text2);margin-bottom:10px">';
+    html += 'Total Trips: <strong>' + data.total + '</strong> | ';
+    html += 'Complete: <strong style="color:var(--green)">' + completeCount + '</strong> | ';
+    html += 'Missing: <strong style="color:var(--red)">' + missingCount + '</strong>';
+    html += '</div>';
+    
+    // Progress bar
+    html += '<div style="background:var(--bg2);border-radius:8px;height:8px;overflow:hidden;margin-bottom:12px">';
+    html += '<div style="background:var(--green);height:100%;width:' + percentage + '%"></div>';
+    html += '</div>';
+    
+    if (missingCount === 0) {
+      html += '<div style="color:var(--green);font-size:12px;font-weight:600">✅ All shipment numbers complete!</div>';
+    } else {
+      html += '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:600">MISSING SHIPMENT NUMBERS:</div>';
+      
+      data.missing.forEach(function(t) {
+        var truckColor = getTruckColor(t.truck);
+        html += '<div style="background:var(--bg2);border-radius:8px;padding:8px;margin-bottom:4px;font-size:12px;border-left:3px solid ' + truckColor.bg + '">';
+        html += '<div style="font-weight:600;color:var(--text)">' + t.deliveryDate + ' · 🚛 ' + t.truck + '</div>';
+        html += '<div style="font-size:10px;color:var(--text2)">';
+        html += (t.route || 'No route') + ' · ' + (t.type || 'No type');
+        html += '</div></div>';
+      });
+    }
+    
+    html += '</div>';
+  });
   
   container.innerHTML = html;
 }
-
 
 </script>
 
