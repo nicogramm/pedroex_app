@@ -581,6 +581,7 @@ const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const TAB_TRIPS      = 'Trips';
 const TAB_TRUCKS     = 'Truck Roster';
 const ADMIN_EMAIL    = 'nicolobalonzo@gmail.com';
+const TAB_ATTENDANCE = 'Attendance'; // ✅ DAGDAG
 
 // ✅ ROUTE OPTIONS (UPDATED)
 const ROUTES = [
@@ -788,26 +789,25 @@ function applyRateAdjustment() {
   });
 })();
 
-// ═══ LOAD ALL ═════════════════════════════════════════
 function loadAll() {
   Promise.all([
     apiGet(TAB_TRUCKS + '!B2:B'),
-    apiGet(TAB_TRIPS  + '!A2:I')
+    apiGet(TAB_TRIPS  + '!A2:I'),
+    apiGet(TAB_ATTENDANCE + '!A2:K') // ✅ DAGDAG: Load attendance
   ]).then(function(res) {
     var truckRows = res[0].values || [];
     var tripRows  = res[1].values || [];
+    var attRows   = res[2].values || []; // ✅ DAGDAG
 
     allTrucks = truckRows.filter(function(r){ return r[0]; }).map(function(r){ return r[0]; });
 
-    // ✅ FIX: Convert Excel serial numbers to YYYY-MM-DD
+    // Process trips (existing code)
     allTrips = [];
     tripRows.forEach(function(r, i) {
-      if (!r[0] && !r[1]) return; // Skip completely empty rows
-      if (!r[1]) return; // Skip if no delivery date
+      if (!r[0] && !r[1]) return;
+      if (!r[1]) return;
       
       var actualRowIndex = i + 2;
-      
-      // ✅ Convert Excel serial number to YYYY-MM-DD
       var deliveryDate = convertExcelDate(r[1]);
       var shipmentDate = r[3] ? convertExcelDate(r[3]) : '';
       
@@ -825,8 +825,28 @@ function loadAll() {
       });
     });
 
+    // ✅ DAGDAG: Process attendance
+    allAttendance = [];
+    attRows.forEach(function(r) {
+      if (!r[1] || !r[2]) return; // Skip if no date or name
+      
+      var attDate = convertExcelDate(r[1]);
+      
+      allAttendance.push({
+        id: r[0] || '',
+        date: attDate,
+        employeeName: r[2] || '',
+        twoManTeam: r[3] || '',
+        crates: r[4] || '0',
+        mealAllowanceOnly: r[5] || '',
+        assignedTruck: r[6] || '',
+        location: r[7] || '',
+        timestamp: r[10] || ''
+      });
+    });
+
     console.log('📦 Loaded trips:', allTrips.length);
-    console.log('📅 Sample dates:', allTrips.slice(0, 3).map(t => t.deliveryDate));
+    console.log('👥 Loaded attendance:', allAttendance.length);
 
     buildColorMap();
     renderLegend();
@@ -836,7 +856,7 @@ function loadAll() {
     renderCalendar();
 
     document.getElementById('wrap-loading').style.display = 'none';
-    document.getElementById('view-toggle-card').style.display = ''; // ✅ DAGDAG
+    document.getElementById('view-toggle-card').style.display = '';
     document.getElementById('filter-bar').style.display = '';
     document.getElementById('calendar-card').style.display = '';
 
@@ -846,6 +866,8 @@ function loadAll() {
     console.error('❌ Load error:', err);
   });
 }
+
+
 
 // ✅ NEW FUNCTION: Convert Excel serial number to YYYY-MM-DD
 function convertExcelDate(value) {
@@ -1012,7 +1034,6 @@ function calculateComplianceData(selectedMonth) {
     return t.deliveryDate.startsWith(selectedMonth);
   });
   
-  // Group by truck
   var truckData = {};
   
   monthTrips.forEach(function(t) {
@@ -1033,11 +1054,18 @@ function calculateComplianceData(selectedMonth) {
     if (t.shipmentNumber && t.shipmentNumber.trim()) {
       data.compliantTrips++;
     } else {
+      // ✅ DAGDAG: Find helpers who attended on this date
+      var helpersOnDate = allAttendance.filter(function(att) {
+        return att.date === t.deliveryDate && 
+               att.assignedTruck === t.truck;
+      });
+      
       data.missingTrips.push({
         date: t.deliveryDate,
         truck: t.truck,
         route: t.route || 'No route',
-        type: t.type || ''
+        type: t.type || '',
+        helpers: helpersOnDate.map(function(h) { return h.employeeName; }) // ✅ DAGDAG
       });
     }
   });
@@ -1051,6 +1079,7 @@ function calculateComplianceData(selectedMonth) {
   
   return truckData;
 }
+
 
 function getComplianceBadge(rate) {
   if (rate >= 95) return '<span class="compliance-badge excellent">Excellent</span>';
@@ -1172,33 +1201,44 @@ function renderComplianceReport() {
       + '<div style="font-size:10px;color:var(--text3);font-weight:600">MISSING</div>'
       + '<div style="font-size:20px;font-weight:700;color:var(--red)">' + truck.missingTrips.length + '</div>'
       + '</div></div>'
-      + (truck.missingTrips.length > 0 ? 
-        '<div class="missing-trips-section">'
-        + '<div class="missing-trips-title"><span>⚠️</span>Missing Shipment Numbers (' + truck.missingTrips.length + ')</div>'
-        + truck.missingTrips.slice(0, 10).map(function(trip) {
-            var parts = trip.date.split('-');
-            var d = new Date(parts[0], parts[1] - 1, parts[2]);
-            var dateStr = d.toLocaleDateString('en-PH', { 
-              weekday: 'short', month: 'short', day: 'numeric' 
-            });
-            
-            return '<div class="missing-trip-item">'
-              + '<div>'
-              + '<div class="missing-trip-date">' + dateStr + '</div>'
-              + '<div class="missing-trip-details">' + trip.route + (trip.type ? ' • ' + trip.type : '') + '</div>'
-              + '</div>'
-              + '<div class="missing-trip-truck">' + trip.truck + '</div>'
-              + '</div>';
-          }).join('')
-        + (truck.missingTrips.length > 10 ? 
-          '<div style="text-align:center;padding:8px;font-size:11px;color:var(--text3)">'
-          + '+ ' + (truck.missingTrips.length - 10) + ' more missing entries'
-          + '</div>' : '')
-        + '</div>' 
-        : '<div style="text-align:center;padding:20px;color:var(--green);font-size:13px">'
-        + '✅ Perfect! All trips have shipment numbers.'
-        + '</div>')
-      + '</div>';
+  // Sa loob ng renderComplianceReport() function, palitan ang missing trips section:
+
++ (truck.missingTrips.length > 0 ? 
+  '<div class="missing-trips-section">'
+  + '<div class="missing-trips-title"><span>⚠️</span>Missing Shipment Numbers (' + truck.missingTrips.length + ')</div>'
+  + truck.missingTrips.slice(0, 10).map(function(trip) {
+      var parts = trip.date.split('-');
+      var d = new Date(parts[0], parts[1] - 1, parts[2]);
+      var dateStr = d.toLocaleDateString('en-PH', { 
+        weekday: 'short', month: 'short', day: 'numeric' 
+      });
+      
+      // ✅ DAGDAG: Display helpers
+      var helpersHTML = trip.helpers.length > 0 
+        ? '<div style="margin-top:4px;font-size:10px;color:var(--orange)">'
+          + '👷 Helpers: ' + trip.helpers.join(', ')
+          + '</div>'
+        : '<div style="margin-top:4px;font-size:10px;color:var(--text3)">'
+          + '⚠️ No helpers recorded'
+          + '</div>';
+      
+      return '<div class="missing-trip-item">'
+        + '<div>'
+        + '<div class="missing-trip-date">' + dateStr + '</div>'
+        + '<div class="missing-trip-details">' + trip.route + (trip.type ? ' • ' + trip.type : '') + '</div>'
+        + helpersHTML // ✅ DAGDAG
+        + '</div>'
+        + '<div class="missing-trip-truck">' + trip.truck + '</div>'
+        + '</div>';
+    }).join('')
+  + (truck.missingTrips.length > 10 ? 
+    '<div style="text-align:center;padding:8px;font-size:11px;color:var(--text3)">'
+    + '+ ' + (truck.missingTrips.length - 10) + ' more missing entries'
+    + '</div>' : '')
+  + '</div>' 
+  : '<div style="text-align:center;padding:20px;color:var(--green);font-size:13px">'
+  + '✅ Perfect! All trips have shipment numbers.'
+  + '</div>')
   }).join('');
   
   document.getElementById('compliance-details').innerHTML = detailsHTML;
@@ -1244,10 +1284,12 @@ function exportComplianceReport() {
   
   csv += '\n\nDETAILED MISSING ENTRIES\n';
   csv += 'Truck,Date,Route,Type\n';
+  csv += 'Truck,Date,Route,Type,Helpers\n'; // ✅ DAGDAG: Helpers column
+  
   
   trucks.forEach(function(truck) {
     truck.missingTrips.forEach(function(trip) {
-      csv += '"' + truck.name + '","' + trip.date + '","' + trip.route + '","' + (trip.type || '') + '"\n';
+      csv += '"' + truck.name + '","' + trip.date + '","' + trip.route + '","' + (trip.type || '')  + '","' + helpersText + '"\n';
     });
   });
   
