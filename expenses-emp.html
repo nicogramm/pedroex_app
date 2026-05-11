@@ -10,20 +10,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
---bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
---text:#2a2a2e;--text2:#777;--text3:#aaa;--red:#B32533;
---neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
---neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
---neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
---neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
+  --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
+  --text:#2a2a2e;--text2:#777;--text3:#aaa;--red:#B32533;
+  --green:#16a34a;--orange:#f59e0b;--blue:#2563eb;
+  --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
 }
 body.dark {
---bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
---text:#e8e8ec;--text2:#888;--text3:#555;
---neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
---neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
---neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
---neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
+  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
+  --text:#e8e8ec;--text2:#888;--text3:#555;
+  --neu-out:5px 5px 12px var(--shadow-d),-3px -3px 9px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background 0.4s,color 0.4s}
@@ -31,21 +32,28 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* TOPBAR */
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);flex-shrink:0;position:relative;z-index:50}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
-.tb-back{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:22px;font-weight:400;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:1}
+.tb-back{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:1}
 .tb-back:active{box-shadow:var(--neu-in);transform:scale(0.95)}
 .tb-title{font-size:17px;font-weight:700;letter-spacing:-0.4px;color:var(--text);position:absolute;left:50%;transform:translateX(-50%)}
 .tb-action{display:flex;gap:8px}
-.tb-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.tb-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
 .tb-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
 
+/* MAIN TABS */
+.main-tabs{display:flex;gap:6px;padding:12px 16px 0;flex-shrink:0;overflow-x:auto}
+.main-tabs::-webkit-scrollbar{display:none}
+.main-tab{flex-shrink:0;padding:9px 16px;border:none;background:var(--bg);border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;box-shadow:var(--neu-sm);white-space:nowrap;transition:all .2s;font-family:'Inter',sans-serif}
+.main-tab.active{color:var(--red);box-shadow:var(--neu-in)}
+
 /* PAGE */
-.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(120px + env(safe-area-inset-bottom,0px));height:calc(100vh - 68px)}
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+.pane{display:none}
+.pane.active{display:block}
 
 /* EXPENSE TYPE SELECTOR */
-.expense-type-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.expense-type-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
 .expense-type-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
 .expense-type-btn.active{box-shadow:var(--neu-in);color:var(--red)}
-.expense-type-btn:active{transform:scale(0.98)}
 
 /* VIEW TOGGLE */
 .view-toggle{display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px;margin-bottom:16px}
@@ -53,13 +61,14 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .view-btn.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
 
 /* QUARTER SELECTOR */
-.quarter-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.quarter-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
 .quarter-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
 .quarter-btn.active{box-shadow:var(--neu-in);color:var(--red)}
-.quarter-btn:active{transform:scale(0.98)}
 
 /* INFO CARD */
-.info-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:20px;border-left:4px solid var(--red)}
+.info-card{border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:20px;border-left:4px solid var(--red)}
+.info-card.warn{border-left-color:var(--orange);background:rgba(245,158,11,0.05)}
+.info-card.blue{border-left-color:var(--blue)}
 .info-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .info-text{font-size:12px;color:var(--text2);line-height:1.6}
 
@@ -75,22 +84,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
 .cal-weekday{text-align:center;font-size:9px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text3);padding:4px 0}
 .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-
-.cal-day{
-  background:var(--bg);
-  border-radius:10px;
-  box-shadow:var(--neu-xs);
-  padding:4px 2px;
-  text-align:center;
-  min-height:44px;
-  cursor:pointer;
-  transition:box-shadow 0.15s;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  position:relative;
-}
+.cal-day{background:var(--bg);border-radius:10px;box-shadow:var(--neu-xs);padding:4px 2px;text-align:center;min-height:44px;cursor:pointer;transition:box-shadow 0.15s;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative}
 .cal-day:active{box-shadow:var(--neu-in);transform:scale(0.98)}
 .cal-day.today .cal-day-num{color:var(--red);font-weight:700}
 .cal-day.has-att{box-shadow:var(--neu-xs)}
@@ -98,29 +92,8 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .cal-day.selected{box-shadow:var(--neu-in)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
 .cal-day-num{font-size:13px;font-weight:500;color:var(--text2);line-height:1.4;margin-bottom:2px}
-
-.cal-names{
-  display:flex;
-  flex-wrap:wrap;
-  gap:2px;
-  justify-content:center;
-  width:100%;
-  margin-top:2px;
-}
-
-.cal-name-pill{
-  font-size:8px;
-  font-weight:700;
-  padding:1px 4px;
-  border-radius:4px;
-  color:#fff;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:100%;
-  line-height:1.2;
-}
-
+.cal-names{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;width:100%;margin-top:2px}
+.cal-name-pill{font-size:8px;font-weight:700;padding:1px 4px;border-radius:4px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.2}
 .cal-name-pill.diesel{background:#B32533}
 .cal-name-pill.parts{background:#2563eb}
 .cal-name-pill.parking{background:#16a34a}
@@ -146,8 +119,39 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .btn-submit:active{transform:scale(0.98)}
 .btn-submit:disabled{opacity:0.5;cursor:not-allowed}
 
-/* DAY DETAIL OVERLAY */
-.day-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* MASBATE SPECIFIC */
+.byahe-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:14px}
+.byahe-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.byahe-truck{font-size:16px;font-weight:700;color:var(--text)}
+.byahe-total{font-size:20px;font-weight:700;color:var(--red)}
+.byahe-meta{font-size:12px;color:var(--text3);margin-bottom:10px}
+.byahe-items{border-top:1px solid rgba(0,0,0,0.06);padding-top:10px}
+body.dark .byahe-items{border-top-color:rgba(255,255,255,0.05)}
+.byahe-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px}
+.byahe-item-type{color:var(--text2);display:flex;align-items:center;gap:6px}
+.byahe-item-amount{font-weight:600;color:var(--text)}
+.byahe-no-ship{font-size:10px;color:var(--orange);font-weight:600;margin-top:4px}
+
+.type-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.type-badge.roro{background:rgba(37,99,235,0.12);color:var(--blue)}
+.type-badge.terminal{background:rgba(22,163,74,0.12);color:var(--green)}
+.type-badge.port{background:rgba(179,37,51,0.12);color:var(--red)}
+.type-badge.others{background:rgba(107,114,128,0.12);color:var(--text2)}
+
+/* STATS BAR */
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:13px 10px;text-align:center}
+.stat-val{font-size:20px;font-weight:700;color:var(--red);letter-spacing:-1px;line-height:1}
+.stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-top:4px}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.filter-row::-webkit-scrollbar{display:none}
+.fsel{flex-shrink:0;padding:8px 12px;border:none;border-radius:12px;background:var(--bg);box-shadow:var(--neu-sm);font-size:12px;font-weight:600;color:var(--text);font-family:'Inter',sans-serif;cursor:pointer;appearance:none;min-width:110px}
+.fsel:focus{outline:none;box-shadow:var(--neu-in)}
+
+/* DAY DETAIL */
+.day-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto}
 .day-detail-overlay.open{display:block}
 .day-detail-header{background:var(--bg);padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
 body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
@@ -177,7 +181,7 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;max-width:90%;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .toast.show{opacity:1}
 
-/* SAVING OVERLAY */
+/* SAVING */
 .saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center}
 .saving-overlay.show{display:flex}
 .saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
@@ -202,13 +206,11 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .btn-delete{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.4);margin-top:12px;width:100%}
 
 /* REPORT MODAL */
-.report-modal{display:none;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.report-modal{display:none;position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto}
 .report-modal.open{display:block}
 .report-header{background:var(--bg);padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
 body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .report-content{padding:20px;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
-.report-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px}
-.report-subtitle{font-size:14px;color:var(--text2);margin-bottom:24px}
 .report-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:20px;margin-bottom:16px}
 .report-section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .report-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bg2)}
@@ -218,887 +220,1016 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .report-total{background:var(--bg2);border-radius:12px;padding:16px;margin-top:16px}
 .report-total-label{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
 .report-total-value{font-size:28px;font-weight:700;color:var(--red)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty-icon{width:56px;height:56px;border-radius:18px;background:var(--bg);box-shadow:var(--neu-out);display:flex;align-items:center;justify-content:center;font-size:24px}
+.empty-title{font-size:14px;font-weight:600;color:var(--text)}
+.empty-sub{font-size:12px;color:var(--text3);line-height:1.6}
 </style>
 </head>
 <body>
+
+<div style="display:flex;flex-direction:column;height:100dvh">
 <div class="topbar">
-<button class="tb-back" onclick="location.href='index.html'">✕</button>
-<span class="tb-title">Expense Manager</span>
-<div class="tb-action">
-<button class="tb-btn" onclick="loadExpenses()">↻</button>
+  <button class="tb-back" onclick="location.href='index.html'">✕</button>
+  <span class="tb-title">Expense Manager</span>
+  <div class="tb-action">
+    <button class="tb-btn" onclick="refreshCurrent()">↻</button>
+  </div>
 </div>
+
+<!-- MAIN TABS -->
+<div class="main-tabs">
+  <button class="main-tab active" id="maintab-vat" onclick="switchMainTab('vat')">📋 VAT Expenses</button>
+  <button class="main-tab" id="maintab-masbate" onclick="switchMainTab('masbate')">⛴️ Masbate</button>
 </div>
+
 <div class="page-wrap">
-<!-- EXPENSE TYPE SELECTOR -->
-<div class="expense-type-selector">
-<button class="expense-type-btn active" data-type="diesel" onclick="selectExpenseType(event, 'diesel')">⛽ Diesel</button>
-<button class="expense-type-btn" data-type="parts" onclick="selectExpenseType(event, 'parts')">🔧 Parts & Repairs</button>
-<button class="expense-type-btn" data-type="parking" onclick="selectExpenseType(event, 'parking')">🅿️ Parking & Tolls</button>
-</div>
 
-<!-- VIEW TOGGLE -->
-<div class="view-toggle">
-<button class="view-btn active" onclick="switchView(event, 'calendar')">📅 Calendar</button>
-<button class="view-btn" onclick="switchView(event, 'form')">➕ Add New</button>
-</div>
+  <!-- ═══ VAT EXPENSES PANE ═══ -->
+  <div class="pane active" id="pane-vat">
 
-<!-- QUARTER SELECTOR -->
-<div class="quarter-selector" id="quarter-selector"></div>
+    <div class="expense-type-selector">
+      <button class="expense-type-btn active" data-type="diesel" onclick="selectExpenseType(event,'diesel')">⛽ Diesel</button>
+      <button class="expense-type-btn" data-type="parts" onclick="selectExpenseType(event,'parts')">🔧 Parts & Repairs</button>
+      <button class="expense-type-btn" data-type="parking" onclick="selectExpenseType(event,'parking')">🅿️ Parking & Tolls</button>
+    </div>
 
-<!-- CALENDAR VIEW -->
-<div class="calendar-view active" id="calendar-view">
-<div class="calendar-header">
-<div class="cal-nav">
-<button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
-<button class="cal-nav-btn" onclick="goToToday()">Today</button>
-<button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
-</div>
-<div class="cal-month" id="cal-month">May 2025</div>
-</div>
-<div class="calendar-grid">
-<div class="cal-weekdays">
-<div class="cal-weekday">M</div>
-<div class="cal-weekday">T</div>
-<div class="cal-weekday">W</div>
-<div class="cal-weekday">T</div>
-<div class="cal-weekday">F</div>
-<div class="cal-weekday">S</div>
-<div class="cal-weekday">S</div>
-</div>
-<div class="cal-days" id="cal-days"></div>
-</div>
-</div>
+    <div class="view-toggle">
+      <button class="view-btn active" onclick="switchView(event,'calendar')">📅 Calendar</button>
+      <button class="view-btn" onclick="switchView(event,'form')">➕ Add New</button>
+    </div>
 
-<!-- FORM VIEW -->
-<div class="form-view" id="form-view">
-<div class="info-card">
-<div class="info-title" id="form-info-title">⛽ Diesel Purchase Entry</div>
-<div class="info-text" id="form-info-text">Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.</div>
-</div>
-<div class="form-section">
-<div class="section-title">📝 Receipt Details</div>
-<div class="fg">
-<label class="fl">Date of Purchase *</label>
-<input class="fi" id="f-date" type="date" onchange="updateQuarter()">
-</div>
-<div class="fg">
-<label class="fl">Current Quarter</label>
-<input class="fi" id="f-quarter" type="text" readonly style="background:var(--bg2);color:var(--text3)">
-</div>
-<div class="fg">
-<label class="fl"><span id="payee-label">Name of Payee (Gas Station)</span> *</label>
-<input class="fi" id="f-payee" type="text" placeholder="e.g. Petron Station">
-</div>
-<div class="fg">
-<label class="fl">Address (Optional)</label>
-<input class="fi" id="f-address" type="text" placeholder="Address">
-</div>
-<div class="fg">
-<label class="fl">TIN Number (Optional)</label>
-<input class="fi" id="f-tin" type="text" placeholder="000-000-000-000">
-</div>
-<div class="fg">
-<label class="fl">OR Number (Optional)</label>
-<input class="fi" id="f-or" type="text" placeholder="Receipt number">
-</div>
-<div class="fg">
-<label class="fl">Gross Amount (₱) *</label>
-<input class="fi" id="f-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal" oninput="computeVAT()">
-</div>
-<div class="computed-grid" id="vat-computed">
-<div class="computed-card">
-<div class="computed-label">Vatable Purchase</div>
-<div class="computed-value" id="vatable">₱0.00</div>
-</div>
-<div class="computed-card">
-<div class="computed-label">Input VAT</div>
-<div class="computed-value" id="input-vat">₱0.00</div>
-</div>
-</div>
-</div>
-<button class="btn-submit" onclick="submitExpense()" id="submit-btn">Submit Diesel Expense</button>
-</div>
-</div>
+    <div class="quarter-selector" id="quarter-selector"></div>
 
-<!-- FAB BUTTONS -->
-<button class="fab fab-report" id="fab-report" onclick="openReport()" style="display:none">📊</button>
-<button class="fab" id="fab" onclick="switchView(event, 'form')" style="display:none">+</button>
+    <!-- CALENDAR VIEW -->
+    <div class="calendar-view active" id="calendar-view">
+      <div class="calendar-header">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+          <button class="cal-nav-btn" onclick="goToToday()">Today</button>
+          <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="cal-month" id="cal-month"></div>
+      </div>
+      <div class="calendar-grid">
+        <div class="cal-weekdays">
+          <div class="cal-weekday">M</div><div class="cal-weekday">T</div>
+          <div class="cal-weekday">W</div><div class="cal-weekday">T</div>
+          <div class="cal-weekday">F</div><div class="cal-weekday">S</div>
+          <div class="cal-weekday">S</div>
+        </div>
+        <div class="cal-days" id="cal-days"></div>
+      </div>
+    </div>
+
+    <!-- FORM VIEW -->
+    <div class="form-view" id="form-view">
+      <div class="info-card">
+        <div class="info-title" id="form-info-title">⛽ Diesel Purchase Entry</div>
+        <div class="info-text" id="form-info-text">Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.</div>
+      </div>
+      <div class="form-section">
+        <div class="section-title">📝 Receipt Details</div>
+        <div class="fg">
+          <label class="fl">Date of Purchase *</label>
+          <input class="fi" id="f-date" type="date" onchange="updateQuarter()">
+        </div>
+        <div class="fg">
+          <label class="fl">Current Quarter</label>
+          <input class="fi" id="f-quarter" type="text" readonly style="background:var(--bg2);color:var(--text3)">
+        </div>
+        <div class="fg">
+          <label class="fl"><span id="payee-label">Name of Payee (Gas Station)</span> *</label>
+          <input class="fi" id="f-payee" type="text" placeholder="e.g. Petron Station">
+        </div>
+        <div class="fg">
+          <label class="fl">Address (Optional)</label>
+          <input class="fi" id="f-address" type="text" placeholder="Address">
+        </div>
+        <div class="fg">
+          <label class="fl">TIN Number (Optional)</label>
+          <input class="fi" id="f-tin" type="text" placeholder="000-000-000-000">
+        </div>
+        <div class="fg">
+          <label class="fl">OR Number (Optional)</label>
+          <input class="fi" id="f-or" type="text" placeholder="Receipt number">
+        </div>
+        <div class="fg">
+          <label class="fl">Gross Amount (₱) *</label>
+          <input class="fi" id="f-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal" oninput="computeVAT()">
+        </div>
+        <div class="computed-grid" id="vat-computed">
+          <div class="computed-card">
+            <div class="computed-label">Vatable Purchase</div>
+            <div class="computed-value" id="vatable">₱0.00</div>
+          </div>
+          <div class="computed-card">
+            <div class="computed-label">Input VAT</div>
+            <div class="computed-value" id="input-vat">₱0.00</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="submitExpense()" id="submit-btn">Submit Diesel Expense</button>
+    </div>
+
+  </div><!-- /pane-vat -->
+
+  <!-- ═══ MASBATE PANE ═══ -->
+  <div class="pane" id="pane-masbate">
+
+    <!-- WARNING -->
+    <div class="info-card warn">
+      <div class="info-title">⚠️ Masbate Route Expenses Only</div>
+      <div class="info-text">
+        This section is for <strong>Masbate-specific expenses</strong> such as RORO fees, terminal fees, port fees, etc.<br><br>
+        <strong>❌ Do NOT enter diesel expenses here.</strong> Diesel should be submitted under the VAT Expenses tab (⛽ Diesel).
+      </div>
+    </div>
+
+    <!-- TOGGLE: LIST / ADD -->
+    <div class="view-toggle" id="masbate-view-toggle">
+      <button class="view-btn active" onclick="switchMasbateView(event,'list')">📋 View Byahe</button>
+      <button class="view-btn" onclick="switchMasbateView(event,'add')">➕ Add Expense</button>
+    </div>
+
+    <!-- MASBATE LIST VIEW -->
+    <div id="masbate-list-view">
+
+      <!-- STATS -->
+      <div class="stats-bar" id="masbate-stats" style="display:none">
+        <div class="stat-card"><div class="stat-val" id="ms-total-trips">—</div><div class="stat-lbl">Byahe</div></div>
+        <div class="stat-card"><div class="stat-val" id="ms-total-exp">—</div><div class="stat-lbl">Expenses</div></div>
+        <div class="stat-card"><div class="stat-val" id="ms-total-amt" style="font-size:14px">—</div><div class="stat-lbl">Total</div></div>
+      </div>
+
+      <!-- FILTER -->
+      <div class="filter-row">
+        <select class="fsel" id="ms-filter-truck" onchange="renderMasbateList()">
+          <option value="">All Trucks</option>
+        </select>
+        <select class="fsel" id="ms-filter-month" onchange="renderMasbateList()">
+          <option value="">All Months</option>
+        </select>
+      </div>
+
+      <div id="masbate-byahe-list"></div>
+    </div>
+
+    <!-- MASBATE ADD VIEW -->
+    <div id="masbate-add-view" style="display:none">
+      <div class="info-card blue">
+        <div class="info-title">🚢 Add Masbate Expense</div>
+        <div class="info-text">Enter the details of your Masbate route expense. If you have the shipment number, please include it for better tracking.</div>
+      </div>
+      <div class="form-section">
+        <div class="section-title">📝 Expense Details</div>
+        <div class="fg">
+          <label class="fl">Truck *</label>
+          <select class="fi" id="ms-truck">
+            <option value="">Select Truck</option>
+            <option value="CAH 1415">CAH 1415</option>
+            <option value="CBQ 3244">CBQ 3244</option>
+            <option value="CAN 5652">CAN 5652</option>
+            <option value="NHE 1841">NHE 1841</option>
+            <option value="CBJ 1315">CBJ 1315</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Date *</label>
+          <input class="fi" id="ms-date" type="date">
+        </div>
+        <div class="fg">
+          <label class="fl">Type of Expense *</label>
+          <select class="fi" id="ms-type">
+            <option value="">Select Type</option>
+            <option value="RORO Fee">⛴️ RORO Fee</option>
+            <option value="Terminal Fee">🏢 Terminal Fee</option>
+            <option value="Port Fee">⚓ Port Fee</option>
+            <option value="Others">📦 Others</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Shipment Number (Optional but recommended)</label>
+          <input class="fi" id="ms-shipment" type="text" placeholder="e.g. 1004764687">
+          <div style="font-size:11px;color:var(--orange);margin-top:6px;font-weight:600">
+            💡 Adding the shipment number helps group expenses from the same byahe accurately.
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Amount (₱) *</label>
+          <input class="fi" id="ms-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal">
+        </div>
+        <div class="fg">
+          <label class="fl">Notes (Optional)</label>
+          <input class="fi" id="ms-notes" type="text" placeholder="Additional details...">
+        </div>
+      </div>
+      <button class="btn-submit" onclick="submitMasbateExpense()">💾 Save Masbate Expense</button>
+    </div>
+
+  </div><!-- /pane-masbate -->
+
+</div><!-- /page-wrap -->
+</div><!-- /flex container -->
+
+<!-- FABs (VAT pane only) -->
+<button class="fab fab-report" id="fab-report" onclick="openReport()">📊</button>
+<button class="fab" id="fab" onclick="switchView(event,'form')" style="display:none">+</button>
 
 <!-- DAY DETAIL OVERLAY -->
 <div class="day-detail-overlay" id="day-detail-overlay">
-<div class="day-detail-header">
-<button class="day-detail-close" onclick="closeDayDetail()">✕</button>
-<div class="day-detail-title" id="day-detail-title">Day Expenses</div>
-<div style="width:40px"></div>
-</div>
-<div class="day-detail-content" id="day-detail-content"></div>
+  <div class="day-detail-header">
+    <button class="day-detail-close" onclick="closeDayDetail()">✕</button>
+    <div class="day-detail-title" id="day-detail-title">Day Expenses</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="day-detail-content" id="day-detail-content"></div>
 </div>
 
-<!-- EDIT DRAWER -->
+<!-- EDIT DRAWER (VAT) -->
 <div class="overlay" id="edit-drawer">
-<div class="drawer">
-<div class="drawer-handle"></div>
-<div class="drawer-title">Edit Expense</div>
-<div class="drawer-sub">Update your expense</div>
-<div class="fg">
-<label class="fl">Date of Purchase *</label>
-<input class="fi" id="e-date" type="date">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">Edit Expense</div>
+    <div class="drawer-sub">Update your expense</div>
+    <div class="fg"><label class="fl">Date *</label><input class="fi" id="e-date" type="date"></div>
+    <div class="fg"><label class="fl">Name of Payee *</label><input class="fi" id="e-payee" type="text"></div>
+    <div class="fg"><label class="fl">Address</label><input class="fi" id="e-address" type="text"></div>
+    <div class="fg"><label class="fl">TIN Number</label><input class="fi" id="e-tin" type="text"></div>
+    <div class="fg"><label class="fl">OR Number</label><input class="fi" id="e-or" type="text"></div>
+    <div class="fg">
+      <label class="fl">Gross Amount (₱) *</label>
+      <input class="fi" id="e-amount" type="number" step="0.01" oninput="computeEditVAT()">
+    </div>
+    <div class="computed-grid">
+      <div class="computed-card"><div class="computed-label">Vatable Purchase</div><div class="computed-value" id="e-vatable">₱0.00</div></div>
+      <div class="computed-card"><div class="computed-label">Input VAT</div><div class="computed-value" id="e-input-vat">₱0.00</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeEditDrawer()">Cancel</button>
+      <button class="btn btn-red" onclick="updateExpense()">Update</button>
+    </div>
+    <button class="btn btn-delete" onclick="deleteExpense()">Delete Expense</button>
+  </div>
 </div>
-<div class="fg">
-<label class="fl">Name of Payee *</label>
-<input class="fi" id="e-payee" type="text">
-</div>
-<div class="fg">
-<label class="fl">Address (Optional)</label>
-<input class="fi" id="e-address" type="text">
-</div>
-<div class="fg">
-<label class="fl">TIN Number (Optional)</label>
-<input class="fi" id="e-tin" type="text">
-</div>
-<div class="fg">
-<label class="fl">OR Number (Optional)</label>
-<input class="fi" id="e-or" type="text">
-</div>
-<div class="fg">
-<label class="fl">Gross Amount (₱) *</label>
-<input class="fi" id="e-amount" type="number" step="0.01" oninput="computeEditVAT()">
-</div>
-<div class="computed-grid" id="e-vat-computed">
-<div class="computed-card">
-<div class="computed-label">Vatable Purchase</div>
-<div class="computed-value" id="e-vatable">₱0.00</div>
-</div>
-<div class="computed-card">
-<div class="computed-label">Input VAT</div>
-<div class="computed-value" id="e-input-vat">₱0.00</div>
-</div>
-</div>
-<div class="btn-row">
-<button class="btn btn-ghost" onclick="closeEditDrawer()">Cancel</button>
-<button class="btn btn-red" onclick="updateExpense()">Update</button>
-</div>
-<button class="btn btn-delete" onclick="deleteExpense()">Delete Expense</button>
-</div>
+
+<!-- EDIT DRAWER (MASBATE) -->
+<div class="overlay" id="ms-edit-drawer">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">Edit Masbate Expense</div>
+    <div class="drawer-sub">Update expense details</div>
+    <div class="fg"><label class="fl">Truck *</label>
+      <select class="fi" id="mse-truck">
+        <option value="CAH 1415">CAH 1415</option>
+        <option value="CBQ 3244">CBQ 3244</option>
+        <option value="CAN 5652">CAN 5652</option>
+        <option value="NHE 1841">NHE 1841</option>
+        <option value="CBJ 1315">CBJ 1315</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Date *</label><input class="fi" id="mse-date" type="date"></div>
+    <div class="fg"><label class="fl">Type *</label>
+      <select class="fi" id="mse-type">
+        <option value="RORO Fee">⛴️ RORO Fee</option>
+        <option value="Terminal Fee">🏢 Terminal Fee</option>
+        <option value="Port Fee">⚓ Port Fee</option>
+        <option value="Others">📦 Others</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Shipment Number</label><input class="fi" id="mse-shipment" type="text" placeholder="Optional"></div>
+    <div class="fg"><label class="fl">Amount (₱) *</label><input class="fi" id="mse-amount" type="number" step="0.01"></div>
+    <div class="fg"><label class="fl">Notes</label><input class="fi" id="mse-notes" type="text"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeMsEditDrawer()">Cancel</button>
+      <button class="btn btn-red" onclick="updateMasbateExpense()">Update</button>
+    </div>
+    <button class="btn btn-delete" onclick="deleteMasbateExpense()">Delete</button>
+  </div>
 </div>
 
 <!-- REPORT MODAL -->
 <div class="report-modal" id="report-modal">
-<div class="report-header">
-<button class="day-detail-close" onclick="closeReport()">✕</button>
-<div class="day-detail-title">Quarterly Report</div>
-<div style="width:40px"></div>
-</div>
-<div class="report-content">
-<div class="report-title">VAT Summary Report</div>
-<div class="report-subtitle" id="report-quarter">Q1 2025</div>
-
-<div class="report-section">
-<div class="report-section-title">⛽ Diesel Expenses</div>
-<div class="report-row">
-<div class="report-label">Total Gross Amount</div>
-<div class="report-value" id="diesel-gross">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Vatable Purchases</div>
-<div class="report-value" id="diesel-vatable">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Input VAT</div>
-<div class="report-value" id="diesel-vat">₱0.00</div>
-</div>
-</div>
-
-<div class="report-section">
-<div class="report-section-title">🔧 Parts & Repairs</div>
-<div class="report-row">
-<div class="report-label">Total Gross Amount</div>
-<div class="report-value" id="parts-gross">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Vatable Purchases</div>
-<div class="report-value" id="parts-vatable">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Input VAT</div>
-<div class="report-value" id="parts-vat">₱0.00</div>
-</div>
+  <div class="report-header">
+    <button class="day-detail-close" onclick="closeReport()">✕</button>
+    <div class="day-detail-title">Quarterly Report</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="report-content">
+    <div style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:8px">VAT Summary Report</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:24px" id="report-quarter">Full Year</div>
+    <div class="report-section">
+      <div class="report-section-title">⛽ Diesel</div>
+      <div class="report-row"><div class="report-label">Total Gross</div><div class="report-value" id="diesel-gross">₱0.00</div></div>
+      <div class="report-row"><div class="report-label">Vatable Purchases</div><div class="report-value" id="diesel-vatable">₱0.00</div></div>
+      <div class="report-row"><div class="report-label">Input VAT</div><div class="report-value" id="diesel-vat">₱0.00</div></div>
+    </div>
+    <div class="report-section">
+      <div class="report-section-title">🔧 Parts & Repairs</div>
+      <div class="report-row"><div class="report-label">Total Gross</div><div class="report-value" id="parts-gross">₱0.00</div></div>
+      <div class="report-row"><div class="report-label">Vatable Purchases</div><div class="report-value" id="parts-vatable">₱0.00</div></div>
+      <div class="report-row"><div class="report-label">Input VAT</div><div class="report-value" id="parts-vat">₱0.00</div></div>
+    </div>
+    <div class="report-section">
+      <div class="report-section-title">🅿️ Parking & Tolls</div>
+      <div class="report-row"><div class="report-label">Total Gross</div><div class="report-value" id="parking-gross">₱0.00</div></div>
+      <div class="report-row"><div class="report-label">Vatable Purchases</div><div class="report-value" id="parking-vatable">₱0.00</div></div>
+      <div class="report-row"><div class="report-label">Input VAT</div><div class="report-value" id="parking-vat">₱0.00</div></div>
+    </div>
+    <div class="report-section">
+      <div class="report-section-title">📊 Grand Total</div>
+      <div class="report-total"><div class="report-total-label">Total Vatable Purchases</div><div class="report-total-value" id="grand-vatable">₱0.00</div></div>
+      <div class="report-total"><div class="report-total-label">Total Input VAT</div><div class="report-total-value" id="grand-vat">₱0.00</div></div>
+      <div class="report-total"><div class="report-total-label">Grand Total</div><div class="report-total-value" id="grand-total">₱0.00</div></div>
+    </div>
+  </div>
 </div>
 
-<div class="report-section">
-<div class="report-section-title">🅿️ Parking Fees & Tolls</div>
-<div class="report-row">
-<div class="report-label">Total Gross Amount</div>
-<div class="report-value" id="parking-gross">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Vatable Purchases</div>
-<div class="report-value" id="parking-vatable">₱0.00</div>
-</div>
-<div class="report-row">
-<div class="report-label">Input VAT</div>
-<div class="report-value" id="parking-vat">₱0.00</div>
-</div>
-</div>
-
-<div class="report-section">
-<div class="report-section-title">📊 Grand Total</div>
-<div class="report-total">
-<div class="report-total-label">Total Vatable Purchases</div>
-<div class="report-total-value" id="grand-vatable">₱0.00</div>
-</div>
-<div class="report-total">
-<div class="report-total-label">Total Input VAT</div>
-<div class="report-total-value" id="grand-vat">₱0.00</div>
-</div>
-<div class="report-total">
-<div class="report-total-label">Grand Total</div>
-<div class="report-total-value" id="grand-total">₱0.00</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- SAVING OVERLAY -->
 <div class="saving-overlay" id="saving-overlay">
-<div class="saving-box">
-<div class="saving-spinner"></div>
-<div class="saving-text" id="saving-text">Saving...</div>
-</div>
+  <div class="saving-box">
+    <div class="saving-spinner"></div>
+    <div class="saving-text" id="saving-text">Saving...</div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══ CONFIG ═══════════════════════════════════════════
+// ═══ CONFIG ═══
 const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const MASBATE_SHEET = 'Masbate_Expenses';
+
 let token = '';
 let currentUser = '';
 let allExpenses = [];
+let allMasbateExpenses = [];
 let currentQuarter = '';
 let currentMonth = new Date();
 let editingExpense = null;
+let editingMasbate = null;
 let currentExpenseType = 'diesel';
 let firstLoad = true;
 let selectedDay = null;
+let activeMainTab = 'vat';
 
-// ═══ INIT ═════════════════════════════════════════════
+// ═══ INIT ═══
 (function init() {
-const dark = localStorage.getItem('pedroex-theme') === 'dark';
-document.body.classList.toggle('dark', dark);
-token = localStorage.getItem('pedroex-token') || '';
-const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-if (!token || Date.now() >= expiry) {
-location.href = 'index.html';
-return;
-}
-currentUser = localStorage.getItem('pedroex-name') || 'Unknown';
-document.getElementById('f-date').valueAsDate = new Date();
-updateQuarter();
-detectCurrentQuarter();
-buildQuarterSelector();
-updateFormLabels();
-loadExpenses();
+  document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
+  token = localStorage.getItem('pedroex-token') || '';
+  const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
+  currentUser = localStorage.getItem('pedroex-name') || 'Unknown';
+  document.getElementById('f-date').valueAsDate = new Date();
+  document.getElementById('ms-date').valueAsDate = new Date();
+  updateQuarter();
+  detectCurrentQuarter();
+  buildQuarterSelector();
+  updateFormLabels();
+  loadExpenses();
+  loadMasbateExpenses();
 })();
 
-// ✅ FIX #3: Added event parameter
+// ═══ MAIN TAB SWITCHING ═══
+function switchMainTab(tab) {
+  activeMainTab = tab;
+  ['vat','masbate'].forEach(t => {
+    document.getElementById('maintab-' + t).classList.toggle('active', t === tab);
+    document.getElementById('pane-' + t).classList.toggle('active', t === tab);
+  });
+  // Show/hide FABs
+  document.getElementById('fab-report').style.display = tab === 'vat' ? 'flex' : 'none';
+  document.getElementById('fab').style.display = 'none';
+  if (tab === 'masbate') renderMasbateList();
+}
+
+function refreshCurrent() {
+  if (activeMainTab === 'vat') loadExpenses();
+  else loadMasbateExpenses();
+}
+
+// ═══ MASBATE VIEW SWITCHING ═══
+function switchMasbateView(event, view) {
+  document.querySelectorAll('#masbate-view-toggle .view-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('masbate-list-view').style.display = view === 'list' ? '' : 'none';
+  document.getElementById('masbate-add-view').style.display = view === 'add' ? '' : 'none';
+}
+
+// ═══ LOAD MASBATE EXPENSES ═══
+async function loadMasbateExpenses() {
+  showSaving('Loading Masbate expenses...');
+  try {
+    const res = await apiGet(MASBATE_SHEET + '!A2:G');
+    const rows = res.values || [];
+    allMasbateExpenses = rows.map((r, i) => ({
+      rowIndex: i + 2,
+      id: r[0] || '',
+      truck: r[1] || '',
+      date: r[2] || '',
+      type: r[3] || '',
+      shipmentNumber: r[4] || '',
+      amount: parseFloat(r[5]) || 0,
+      notes: r[6] || ''
+    })).filter(e => e.truck && e.date && e.amount > 0);
+    hideSaving();
+    buildMasbateFilters();
+    renderMasbateList();
+  } catch(err) {
+    hideSaving();
+    if (!err.message.includes('Unable to parse')) showToast('❌ Load failed: ' + err.message);
+    allMasbateExpenses = [];
+    renderMasbateList();
+  }
+}
+
+// ═══ BUILD MASBATE FILTERS ═══
+function buildMasbateFilters() {
+  const trucks = [...new Set(allMasbateExpenses.map(e => e.truck).filter(Boolean))].sort();
+  document.getElementById('ms-filter-truck').innerHTML = '<option value="">All Trucks</option>' +
+    trucks.map(t => `<option value="${t}">${t}</option>`).join('');
+
+  const months = [...new Set(allMasbateExpenses.map(e => {
+    if (!e.date) return null;
+    const d = new Date(e.date + 'T00:00:00');
+    return isNaN(d) ? null : d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  }).filter(Boolean))].sort().reverse();
+
+  document.getElementById('ms-filter-month').innerHTML = '<option value="">All Months</option>' +
+    months.map(m => {
+      const [y,mo] = m.split('-');
+      const label = new Date(y, mo-1, 1).toLocaleDateString('en-PH', {month:'long', year:'numeric'});
+      return `<option value="${m}">${label}</option>`;
+    }).join('');
+}
+
+// ═══ GROUP INTO BYAHE ═══
+function groupIntoByahe(expenses) {
+  // Sort by date first
+  const sorted = [...expenses].sort((a,b) => a.date.localeCompare(b.date));
+  const groups = [];
+  const used = new Set();
+
+  sorted.forEach((exp, i) => {
+    if (used.has(i)) return;
+
+    const group = {
+      truck: exp.truck,
+      dates: [exp.date],
+      shipmentNumber: exp.shipmentNumber || '',
+      items: [exp],
+      total: exp.amount
+    };
+    used.add(i);
+
+    // Find matching expenses (same truck, within ±3 days or same shipment number)
+    sorted.forEach((other, j) => {
+      if (used.has(j) || i === j) return;
+      if (other.truck !== exp.truck) return;
+
+      let isMatch = false;
+
+      // Match by shipment number (if both have one)
+      if (exp.shipmentNumber && other.shipmentNumber && exp.shipmentNumber === other.shipmentNumber) {
+        isMatch = true;
+      }
+      // Match by date proximity (±3 days) if no shipment number
+      else if (!exp.shipmentNumber || !other.shipmentNumber) {
+        const d1 = new Date(exp.date + 'T00:00:00');
+        const d2 = new Date(other.date + 'T00:00:00');
+        const diffDays = Math.abs((d2 - d1) / 86400000);
+        if (diffDays <= 3) isMatch = true;
+      }
+
+      if (isMatch) {
+        group.items.push(other);
+        group.total += other.amount;
+        group.dates.push(other.date);
+        if (other.shipmentNumber && !group.shipmentNumber) group.shipmentNumber = other.shipmentNumber;
+        used.add(j);
+      }
+    });
+
+    // Date range label
+    const uniqueDates = [...new Set(group.dates)].sort();
+    group.dateRange = uniqueDates.length === 1
+      ? fmtDate(uniqueDates[0])
+      : fmtDate(uniqueDates[0]) + ' – ' + fmtDate(uniqueDates[uniqueDates.length-1]);
+
+    groups.push(group);
+  });
+
+  return groups.sort((a,b) => b.dates[0].localeCompare(a.dates[0]));
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return '';
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('en-PH', {month:'short', day:'numeric', year:'numeric'});
+}
+
+// ═══ RENDER MASBATE LIST ═══
+function renderMasbateList() {
+  const truckFilter = document.getElementById('ms-filter-truck').value;
+  const monthFilter = document.getElementById('ms-filter-month').value;
+
+  let filtered = allMasbateExpenses.filter(e => {
+    if (truckFilter && e.truck !== truckFilter) return false;
+    if (monthFilter) {
+      const d = new Date(e.date + 'T00:00:00');
+      if (isNaN(d)) return false;
+      const ym = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      if (ym !== monthFilter) return false;
+    }
+    return true;
+  });
+
+  const groups = groupIntoByahe(filtered);
+
+  // Stats
+  const totalAmt = filtered.reduce((s,e) => s+e.amount, 0);
+  document.getElementById('ms-total-trips').textContent = groups.length;
+  document.getElementById('ms-total-exp').textContent = filtered.length;
+  document.getElementById('ms-total-amt').textContent = '₱' + (totalAmt/1000).toFixed(1) + 'k';
+  document.getElementById('masbate-stats').style.display = filtered.length ? '' : 'none';
+
+  const list = document.getElementById('masbate-byahe-list');
+
+  if (!groups.length) {
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon">⛴️</div>
+      <div class="empty-title">No Masbate expenses yet</div>
+      <div class="empty-sub">Tap "Add Expense" to record<br>RORO fees, terminal fees, etc.</div>
+    </div>`;
+    return;
+  }
+
+  const typeIcons = {'RORO Fee':'⛴️','Terminal Fee':'🏢','Port Fee':'⚓','Others':'📦'};
+  const typeBadgeClass = {'RORO Fee':'roro','Terminal Fee':'terminal','Port Fee':'port','Others':'others'};
+
+  list.innerHTML = groups.map(g => {
+    const hasNoShipment = g.items.some(it => !it.shipmentNumber);
+    const itemsHtml = g.items.map(it => `
+      <div class="byahe-item" onclick="openMsEdit(${it.rowIndex})" style="cursor:pointer">
+        <div class="byahe-item-type">
+          <span>${typeIcons[it.type] || '📦'}</span>
+          <span class="type-badge ${typeBadgeClass[it.type] || 'others'}">${it.type}</span>
+          ${it.date !== g.dates[0] ? `<span style="font-size:10px;color:var(--text3)">${fmtDate(it.date)}</span>` : ''}
+          ${it.notes ? `<span style="font-size:10px;color:var(--text3)">· ${it.notes}</span>` : ''}
+        </div>
+        <div class="byahe-item-amount">₱${it.amount.toLocaleString()}</div>
+      </div>`).join('');
+
+    return `<div class="byahe-card">
+      <div class="byahe-header">
+        <div>
+          <div class="byahe-truck">🚛 ${g.truck}</div>
+          <div class="byahe-meta">
+            📅 ${g.dateRange}
+            ${g.shipmentNumber ? ` · 🔢 ${g.shipmentNumber}` : ''}
+            · ${g.items.length} expense${g.items.length !== 1 ? 's' : ''}
+          </div>
+          ${hasNoShipment ? `<div class="byahe-no-ship">⚠️ Some entries have no shipment number</div>` : ''}
+        </div>
+        <div class="byahe-total">₱${g.total.toLocaleString()}</div>
+      </div>
+      <div class="byahe-items">${itemsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ SUBMIT MASBATE EXPENSE ═══
+async function submitMasbateExpense() {
+  const truck = document.getElementById('ms-truck').value.trim();
+  const date = document.getElementById('ms-date').value.trim();
+  const type = document.getElementById('ms-type').value.trim();
+  const shipment = document.getElementById('ms-shipment').value.trim();
+  const amount = parseFloat(document.getElementById('ms-amount').value) || 0;
+  const notes = document.getElementById('ms-notes').value.trim();
+
+  if (!truck || !date || !type || amount <= 0) {
+    showToast('❌ Please fill: Truck, Date, Type, Amount');
+    return;
+  }
+
+  showSaving('Saving Masbate expense...');
+  const id = 'MS-' + Date.now();
+  const row = [id, truck, date, type, shipment, amount, notes];
+
+  try {
+    await apiAppend(MASBATE_SHEET + '!A:G', [row]);
+    hideSaving();
+    showToast('✅ Masbate expense saved!');
+    document.getElementById('ms-truck').value = '';
+    document.getElementById('ms-date').valueAsDate = new Date();
+    document.getElementById('ms-type').value = '';
+    document.getElementById('ms-shipment').value = '';
+    document.getElementById('ms-amount').value = '';
+    document.getElementById('ms-notes').value = '';
+    await loadMasbateExpenses();
+    // Switch to list view
+    const listBtn = document.querySelector('#masbate-view-toggle .view-btn');
+    switchMasbateView({target: listBtn}, 'list');
+    listBtn.classList.add('active');
+    document.querySelectorAll('#masbate-view-toggle .view-btn')[1].classList.remove('active');
+  } catch(err) {
+    hideSaving();
+    showToast('❌ Save failed: ' + err.message);
+  }
+}
+
+// ═══ EDIT MASBATE ═══
+function openMsEdit(rowIndex) {
+  editingMasbate = allMasbateExpenses.find(e => e.rowIndex === rowIndex);
+  if (!editingMasbate) return;
+  document.getElementById('mse-truck').value = editingMasbate.truck;
+  document.getElementById('mse-date').value = editingMasbate.date;
+  document.getElementById('mse-type').value = editingMasbate.type;
+  document.getElementById('mse-shipment').value = editingMasbate.shipmentNumber;
+  document.getElementById('mse-amount').value = editingMasbate.amount;
+  document.getElementById('mse-notes').value = editingMasbate.notes;
+  document.getElementById('ms-edit-drawer').classList.add('open');
+}
+
+function closeMsEditDrawer() {
+  document.getElementById('ms-edit-drawer').classList.remove('open');
+  editingMasbate = null;
+}
+
+async function updateMasbateExpense() {
+  if (!editingMasbate) return;
+  const truck = document.getElementById('mse-truck').value;
+  const date = document.getElementById('mse-date').value;
+  const type = document.getElementById('mse-type').value;
+  const shipment = document.getElementById('mse-shipment').value;
+  const amount = parseFloat(document.getElementById('mse-amount').value) || 0;
+  const notes = document.getElementById('mse-notes').value;
+  if (!truck || !date || !type || amount <= 0) { showToast('❌ Fill required fields'); return; }
+  showSaving('Updating...');
+  try {
+    const row = [editingMasbate.id, truck, date, type, shipment, amount, notes];
+    await apiUpdate(MASBATE_SHEET + '!A' + editingMasbate.rowIndex + ':G' + editingMasbate.rowIndex, [row]);
+    hideSaving();
+    showToast('✅ Updated!');
+    closeMsEditDrawer();
+    loadMasbateExpenses();
+  } catch(err) { hideSaving(); showToast('❌ Failed: ' + err.message); }
+}
+
+async function deleteMasbateExpense() {
+  if (!editingMasbate) return;
+  if (!confirm('Delete this expense?')) return;
+  showSaving('Deleting...');
+  try {
+    await apiUpdate(MASBATE_SHEET + '!A' + editingMasbate.rowIndex + ':G' + editingMasbate.rowIndex, [['','','','','','','']]);
+    hideSaving();
+    showToast('✅ Deleted');
+    closeMsEditDrawer();
+    loadMasbateExpenses();
+  } catch(err) { hideSaving(); showToast('❌ Failed'); }
+}
+
+// ═══ VAT EXPENSE TYPE ═══
 function selectExpenseType(event, type) {
-currentExpenseType = type;
-document.querySelectorAll('.expense-type-btn').forEach(btn => btn.classList.remove('active'));
-event.target.classList.add('active');
-updateFormLabels();
-detectCurrentQuarter();
-buildQuarterSelector();
-loadExpenses();
+  currentExpenseType = type;
+  document.querySelectorAll('.expense-type-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  updateFormLabels();
+  detectCurrentQuarter();
+  buildQuarterSelector();
+  loadExpenses();
 }
 
 function updateFormLabels() {
-const labels = {
-diesel: {
-title: '⛽ Diesel Purchase Entry',
-text: 'Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.',
-payee: 'Name of Payee (Gas Station)',
-button: 'Submit Diesel Expense',
-showVAT: true
-},
-parts: {
-title: '🔧 Parts & Repairs Entry',
-text: 'Submit your parts and repair expenses here. The system will automatically compute VAT.',
-payee: 'Name of Supplier/Shop',
-button: 'Submit Parts & Repairs',
-showVAT: true
-},
-parking: {
-title: '🅿️ Parking Fees & Tolls Entry',
-text: 'Submit your parking and toll expenses here. The system will automatically compute VAT.',
-payee: 'Name of Location/Toll Gate',
-button: 'Submit Parking & Tolls',
-showVAT: true
-}
-};
-const config = labels[currentExpenseType];
-document.getElementById('form-info-title').textContent = config.title;
-document.getElementById('form-info-text').textContent = config.text;
-document.getElementById('payee-label').textContent = config.payee;
-document.getElementById('submit-btn').textContent = config.button;
-document.getElementById('vat-computed').style.display = config.showVAT ? 'grid' : 'none';
+  const labels = {
+    diesel: { title:'⛽ Diesel Purchase Entry', text:'Submit your diesel expenses here. The system will automatically detect the correct quarterly report and compute VAT.', payee:'Name of Payee (Gas Station)', button:'Submit Diesel Expense' },
+    parts:  { title:'🔧 Parts & Repairs Entry', text:'Submit your parts and repair expenses here.', payee:'Name of Supplier/Shop', button:'Submit Parts & Repairs' },
+    parking:{ title:'🅿️ Parking Fees & Tolls Entry', text:'Submit your parking and toll expenses here.', payee:'Name of Location/Toll Gate', button:'Submit Parking & Tolls' }
+  };
+  const c = labels[currentExpenseType];
+  document.getElementById('form-info-title').textContent = c.title;
+  document.getElementById('form-info-text').textContent = c.text;
+  document.getElementById('payee-label').textContent = c.payee;
+  document.getElementById('submit-btn').textContent = c.button;
 }
 
 function getSheetSuffix() {
-const suffixes = {
-diesel: '-Diesel',
-parts: '-Parts',
-parking: '-Parking'
-};
-return suffixes[currentExpenseType];
+  return {diesel:'-Diesel', parts:'-Parts', parking:'-Parking'}[currentExpenseType];
 }
 
-// ═══ QUARTER MANAGEMENT ═══════════════════════════════
 function detectCurrentQuarter() {
-const now = new Date();
-const month = now.getMonth() + 1;
-const year = now.getFullYear();
-let baseQuarter = '';
-if (month >= 1 && month <= 3) {
-baseQuarter = `Purchases (Jan-Mar ${year})`;
-} else if (month >= 4 && month <= 6) {
-baseQuarter = `Purchases (Apr-Jun ${year})`;
-} else if (month >= 7 && month <= 9) {
-baseQuarter = `Purchases (Jul-Sep ${year})`;
-} else {
-baseQuarter = `Purchases (Oct-Dec ${year})`;
-}
-currentQuarter = baseQuarter + getSheetSuffix();
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  let base = '';
+  if (month <= 3) base = `Purchases (Jan-Mar ${year})`;
+  else if (month <= 6) base = `Purchases (Apr-Jun ${year})`;
+  else if (month <= 9) base = `Purchases (Jul-Sep ${year})`;
+  else base = `Purchases (Oct-Dec ${year})`;
+  currentQuarter = base + getSheetSuffix();
 }
 
 function buildQuarterSelector() {
-const now = new Date();
-const year = now.getFullYear();
-const quarters = [
-{ label: 'Q1', base: `Purchases (Jan-Mar ${year})` },
-{ label: 'Q2', base: `Purchases (Apr-Jun ${year})` },
-{ label: 'Q3', base: `Purchases (Jul-Sep ${year})` },
-{ label: 'Q4', base: `Purchases (Oct-Dec ${year})` }
-];
-document.getElementById('quarter-selector').innerHTML = quarters.map(q => {
-const fullName = q.base + getSheetSuffix();
-return `<button class="quarter-btn ${fullName === currentQuarter ? 'active' : ''}" onclick="selectQuarter('${fullName}')">${q.label} ${year}</button>`;
-}).join('');
+  const year = new Date().getFullYear();
+  const quarters = [
+    {label:'Q1', base:`Purchases (Jan-Mar ${year})`},
+    {label:'Q2', base:`Purchases (Apr-Jun ${year})`},
+    {label:'Q3', base:`Purchases (Jul-Sep ${year})`},
+    {label:'Q4', base:`Purchases (Oct-Dec ${year})`}
+  ];
+  document.getElementById('quarter-selector').innerHTML = quarters.map(q => {
+    const full = q.base + getSheetSuffix();
+    return `<button class="quarter-btn ${full===currentQuarter?'active':''}" onclick="selectQuarter('${full}')">${q.label} ${year}</button>`;
+  }).join('');
 }
 
-function selectQuarter(quarterName) {
-currentQuarter = quarterName;
-buildQuarterSelector();
-loadExpenses();
+function selectQuarter(name) {
+  currentQuarter = name;
+  buildQuarterSelector();
+  loadExpenses();
 }
 
 function updateQuarter() {
-const dateStr = document.getElementById('f-date').value;
-if (!dateStr) {
-document.getElementById('f-quarter').value = '';
-return;
-}
-const date = new Date(dateStr);
-const month = date.getMonth() + 1;
-const year = date.getFullYear();
-let baseQuarter = '';
-if (month >= 1 && month <= 3) {
-baseQuarter = `Purchases (Jan-Mar ${year})`;
-} else if (month >= 4 && month <= 6) {
-baseQuarter = `Purchases (Apr-Jun ${year})`;
-} else if (month >= 7 && month <= 9) {
-baseQuarter = `Purchases (Jul-Sep ${year})`;
-} else {
-baseQuarter = `Purchases (Oct-Dec ${year})`;
-}
-document.getElementById('f-quarter').value = baseQuarter + getSheetSuffix();
+  const dateStr = document.getElementById('f-date').value;
+  if (!dateStr) { document.getElementById('f-quarter').value = ''; return; }
+  const d = new Date(dateStr);
+  const m = d.getMonth() + 1;
+  const y = d.getFullYear();
+  let base = '';
+  if (m<=3) base=`Purchases (Jan-Mar ${y})`;
+  else if (m<=6) base=`Purchases (Apr-Jun ${y})`;
+  else if (m<=9) base=`Purchases (Jul-Sep ${y})`;
+  else base=`Purchases (Oct-Dec ${y})`;
+  document.getElementById('f-quarter').value = base + getSheetSuffix();
 }
 
-// ✅ FIX #3: Added event parameter
 function switchView(event, view) {
-document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-event.target.classList.add('active');
-document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
-document.getElementById(view + '-view').classList.add('active');
-const showFabs = view === 'calendar';
-document.getElementById('fab').style.display = showFabs ? 'flex' : 'none';
-document.getElementById('fab-report').style.display = showFabs ? 'flex' : 'none';
+  document.querySelectorAll('#pane-vat .view-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
+  document.getElementById(view + '-view').classList.add('active');
+  const showFabs = view === 'calendar';
+  document.getElementById('fab').style.display = showFabs ? 'flex' : 'none';
+  document.getElementById('fab-report').style.display = showFabs ? 'flex' : 'none';
 }
 
-// ═══ VAT COMPUTATION ══════════════════════════════════
 function computeVAT() {
-const amount = parseFloat(document.getElementById('f-amount').value) || 0;
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-document.getElementById('vatable').textContent = '₱' + vatable.toFixed(2);
-document.getElementById('input-vat').textContent = '₱' + inputVat.toFixed(2);
+  const a = parseFloat(document.getElementById('f-amount').value) || 0;
+  const v = a / 1.12;
+  document.getElementById('vatable').textContent = '₱' + v.toFixed(2);
+  document.getElementById('input-vat').textContent = '₱' + (a - v).toFixed(2);
 }
 
 function computeEditVAT() {
-const amount = parseFloat(document.getElementById('e-amount').value) || 0;
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-document.getElementById('e-vatable').textContent = '₱' + vatable.toFixed(2);
-document.getElementById('e-input-vat').textContent = '₱' + inputVat.toFixed(2);
+  const a = parseFloat(document.getElementById('e-amount').value) || 0;
+  const v = a / 1.12;
+  document.getElementById('e-vatable').textContent = '₱' + v.toFixed(2);
+  document.getElementById('e-input-vat').textContent = '₱' + (a - v).toFixed(2);
 }
 
-// ✅ FIX #2: Filter by current expense type only
 function loadExpenses() {
-showSaving('Loading expenses...');
-
-apiGet(currentQuarter + '!A8:O1000').then(res => {
-const rows = res.values || [];
-// ✅ Filter by current expense type
-allExpenses = rows.map((r, i) => ({
-rowIndex: i + 8,
-date: r[0] || '',
-payee: r[1] || '',
-address: r[2] || '',
-tin: r[3] || '',
-orNum: r[5] || '',
-amount: parseFloat(r[8]) || 0,
-vatable: parseFloat(r[10]) || 0,
-inputVat: parseFloat(r[11]) || 0,
-user: r[13] || '',
-type: r[14] || currentExpenseType
-})).filter(e => e.date && e.payee && e.type === currentExpenseType); // ✅ Only current type
-hideSaving();
-renderCalendar();
-if (firstLoad) {
-firstLoad = false;
-switchView({ target: document.querySelector('.view-btn.active') }, 'calendar');
-}
-}).catch(err => {
-hideSaving();
-if (err.message.includes('Unable to parse range')) {
-allExpenses = [];
-renderCalendar();
-} else {
-showToast('❌ Load failed: ' + err.message);
-}
-});
+  showSaving('Loading expenses...');
+  apiGet(currentQuarter + '!A8:O1000').then(res => {
+    const rows = res.values || [];
+    allExpenses = rows.map((r, i) => ({
+      rowIndex: i + 8,
+      date: r[0] || '',
+      payee: r[1] || '',
+      address: r[2] || '',
+      tin: r[3] || '',
+      orNum: r[5] || '',
+      amount: parseFloat(r[8]) || 0,
+      vatable: parseFloat(r[10]) || 0,
+      inputVat: parseFloat(r[11]) || 0,
+      user: r[13] || '',
+      type: r[14] || currentExpenseType
+    })).filter(e => e.date && e.payee && e.type === currentExpenseType);
+    hideSaving();
+    renderCalendar();
+    if (firstLoad) { firstLoad = false; }
+  }).catch(err => {
+    hideSaving();
+    if (err.message.includes('Unable to parse range')) { allExpenses = []; renderCalendar(); }
+    else showToast('❌ Load failed: ' + err.message);
+  });
 }
 
-// ✅ FIX #1 & #2: Fixed date parsing + type filtering
 function renderCalendar() {
-const year = currentMonth.getFullYear();
-const month = currentMonth.getMonth();
-document.getElementById('cal-month').textContent =
-currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-const firstDay = new Date(year, month, 1);
-const lastDay = new Date(year, month + 1, 0);
-const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-const daysInMonth = lastDay.getDate();
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-// ✅ FIX #1: Proper date parsing without timezone issues
-const dayMap = {};
-allExpenses.forEach(r => {
-if (!r.date) return;
-// ✅ Parse as local date
-const [y, m, d] = r.date.split('-').map(Number);
-if (y !== year || m-1 !== month) return;
-if (!dayMap[d]) dayMap[d] = [];
-dayMap[d].push({ amount: r.amount, type: r.type || currentExpenseType });
-});
-
-let html = '';
-const prevMonthDays = new Date(year, month, 0).getDate();
-for (let i = startDay - 1; i >= 0; i--) {
-html += `<div class="cal-day other-month"><div class="cal-day-num">${prevMonthDays - i}</div></div>`;
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+  document.getElementById('cal-month').textContent = currentMonth.toLocaleDateString('en-US', {month:'long', year:'numeric'});
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+  const daysInMonth = lastDay.getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dayMap = {};
+  allExpenses.forEach(r => {
+    if (!r.date) return;
+    const [y,m,d] = r.date.split('-').map(Number);
+    if (y !== year || m-1 !== month) return;
+    if (!dayMap[d]) dayMap[d] = [];
+    dayMap[d].push({amount: r.amount, type: r.type || currentExpenseType});
+  });
+  let html = '';
+  const prevMonthDays = new Date(year, month, 0).getDate();
+  for (let i = startDay - 1; i >= 0; i--) html += `<div class="cal-day other-month"><div class="cal-day-num">${prevMonthDays-i}</div></div>`;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day); d.setHours(0,0,0,0);
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isToday = d.getTime() === today.getTime();
+    const entries = dayMap[day] || [];
+    const cls = 'cal-day' + (isToday?' today':'') + (entries.length?' has-att':'') + (dateStr===selectedDay?' selected':'');
+    let pillsHtml = '';
+    if (entries.length) {
+      const icons = {diesel:'⛽', parts:'🔧', parking:'🅿️'};
+      pillsHtml = '<div class="cal-names">' + entries.slice(0,3).map(e => `<div class="cal-name-pill ${e.type}">${icons[e.type]}${e.amount.toFixed(0)}</div>`).join('') + (entries.length>3?`<div class="cal-name-pill" style="background:var(--text3)">+${entries.length-3}</div>`:'') + '</div>';
+    }
+    html += `<div class="${cls}" onclick="selectDay('${dateStr}')"><div class="cal-day-num">${day}</div>${pillsHtml}</div>`;
+  }
+  const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
+  for (let i = 1; i <= totalCells - (startDay + daysInMonth); i++) html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+  document.getElementById('cal-days').innerHTML = html;
 }
 
-for (let day = 1; day <= daysInMonth; day++) {
-const date = new Date(year, month, day);
-date.setHours(0, 0, 0, 0);
-// ✅ FIX #1: Format date as YYYY-MM-DD in local timezone
-const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-const isToday = date.getTime() === today.getTime();
-const entries = dayMap[day] || [];
-const cls = 'cal-day' + (isToday ? ' today' : '') + (entries.length ? ' has-att' : '') + (dateStr === selectedDay ? ' selected' : '');
+function changeMonth(delta) { currentMonth.setMonth(currentMonth.getMonth()+delta); renderCalendar(); }
+function goToToday() { currentMonth = new Date(); renderCalendar(); }
+function selectDay(dateStr) { selectedDay = dateStr; showDayDetail(dateStr); renderCalendar(); }
 
-let pillsHtml = '';
-if (entries.length) {
-const shown = entries.slice(0, 3);
-const typeIcons = { diesel: '⛽', parts: '🔧', parking: '🅿️' };
-pillsHtml = '<div class="cal-names">'
-+ shown.map(e => {
-const typeClass = e.type || currentExpenseType;
-const icon = typeIcons[typeClass];
-return `<div class="cal-name-pill ${typeClass}">${icon}${e.amount.toFixed(0)}</div>`;
-}).join('')
-+ (entries.length > 3 ? `<div class="cal-name-pill" style="background:var(--text3)">+${entries.length-3}</div>` : '')
-+ '</div>';
-}
-
-html += `<div class="${cls}" onclick="selectDay('${dateStr}')">
-<div class="cal-day-num">${day}</div>
-${pillsHtml}
-</div>`;
-}
-
-const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
-const nextMonthDays = totalCells - (startDay + daysInMonth);
-for (let i = 1; i <= nextMonthDays; i++) {
-html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
-}
-
-document.getElementById('cal-days').innerHTML = html;
-}
-
-function changeMonth(delta) {
-currentMonth.setMonth(currentMonth.getMonth() + delta);
-renderCalendar();
-}
-
-function goToToday() {
-currentMonth = new Date();
-renderCalendar();
-}
-
-function selectDay(dateStr) {
-selectedDay = dateStr;
-showDayDetail(dateStr);
-renderCalendar();
-}
-
-// ✅ Already filtered by type from loadExpenses
 function showDayDetail(dateStr) {
-const dayExpenses = allExpenses.filter(e => e.date === dateStr);
-
-if (dayExpenses.length === 0) {
-showToast('No expenses on this date');
-return;
-}
-// ✅ FIX #1: Parse date correctly
-const [y, m, d] = dateStr.split('-').map(Number);
-const date = new Date(y, m-1, d);
-const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-document.getElementById('day-detail-title').textContent = dateText;
-
-const typeLabels = { diesel: 'Diesel', parts: 'Parts & Repairs', parking: 'Parking & Tolls' };
-const html = dayExpenses.map(e => {
-const isMine = e.user === currentUser;
-const typeClass = e.type || currentExpenseType;
-const typeLabel = typeLabels[typeClass];
-return `<div class="expense-item ${typeClass} ${isMine ? '' : 'not-mine'}" ${isMine ? `onclick="openEditDrawer(${e.rowIndex})"` : ''}>
-<div class="ei-header">
-<div class="ei-payee">${e.payee}</div>
-<div class="ei-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-</div>
-<div class="ei-details">
-${e.address ? `📍 ${e.address}<br>` : ''}
-${e.tin ? `🏢 TIN: ${e.tin}<br>` : ''}
-${e.orNum ? `🧾 OR: ${e.orNum}` : ''}
-</div>
-<div class="ei-type">${typeLabel}</div>
-<div class="ei-user">by ${e.user}</div>
-</div>`;
-}).join('');
-document.getElementById('day-detail-content').innerHTML = html;
-document.getElementById('day-detail-overlay').classList.add('open');
+  const dayExpenses = allExpenses.filter(e => e.date === dateStr);
+  if (!dayExpenses.length) { showToast('No expenses on this date'); return; }
+  const [y,m,d] = dateStr.split('-').map(Number);
+  document.getElementById('day-detail-title').textContent = new Date(y,m-1,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const typeLabels = {diesel:'Diesel', parts:'Parts & Repairs', parking:'Parking & Tolls'};
+  document.getElementById('day-detail-content').innerHTML = dayExpenses.map(e => {
+    const isMine = e.user === currentUser;
+    return `<div class="expense-item ${e.type} ${isMine?'':'not-mine'}" ${isMine?`onclick="openEditDrawer(${e.rowIndex})"`:''}>
+      <div class="ei-header"><div class="ei-payee">${e.payee}</div><div class="ei-amount">₱${e.amount.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+      <div class="ei-details">${e.address?`📍 ${e.address}<br>`:''}${e.tin?`🏢 TIN: ${e.tin}<br>`:''}${e.orNum?`🧾 OR: ${e.orNum}`:''}</div>
+      <div class="ei-type">${typeLabels[e.type]}</div>
+      <div class="ei-user">by ${e.user}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('day-detail-overlay').classList.add('open');
 }
 
-function closeDayDetail() {
-document.getElementById('day-detail-overlay').classList.remove('open');
-}
+function closeDayDetail() { document.getElementById('day-detail-overlay').classList.remove('open'); }
 
-// ═══ SUBMIT EXPENSE ═══════════════════════════════════
 function submitExpense() {
-const date = document.getElementById('f-date').value.trim();
-const payee = document.getElementById('f-payee').value.trim();
-const address = document.getElementById('f-address').value.trim();
-const tin = document.getElementById('f-tin').value.trim();
-const orNum = document.getElementById('f-or').value.trim();
-const amount = parseFloat(document.getElementById('f-amount').value) || 0;
-
-if (!date || !payee || amount <= 0) {
-showToast('❌ Please fill required fields: Date, Payee, Amount');
-return;
+  const date = document.getElementById('f-date').value.trim();
+  const payee = document.getElementById('f-payee').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  const tin = document.getElementById('f-tin').value.trim();
+  const orNum = document.getElementById('f-or').value.trim();
+  const amount = parseFloat(document.getElementById('f-amount').value) || 0;
+  if (!date || !payee || amount <= 0) { showToast('❌ Fill required fields: Date, Payee, Amount'); return; }
+  const quarter = document.getElementById('f-quarter').value;
+  const vatable = amount / 1.12;
+  showSaving('Checking quarterly sheet...');
+  checkOrCreateSheet(quarter).then(() => {
+    showSaving('Saving expense...');
+    return apiAppend(quarter + '!A8:O8', [[date, payee, address, tin, '', orNum, '', '', amount, '', vatable, amount-vatable, amount, currentUser, currentExpenseType]]);
+  }).then(() => {
+    hideSaving(); showToast('✅ Expense submitted!');
+    ['f-payee','f-address','f-tin','f-or','f-amount'].forEach(id => document.getElementById(id).value = '');
+    computeVAT();
+    setTimeout(() => { loadExpenses(); const calBtn = document.querySelector('#pane-vat .view-btn'); switchView({target:calBtn},'calendar'); }, 1000);
+  }).catch(err => { hideSaving(); showToast('❌ Submit failed: ' + err.message); });
 }
 
-const quarter = document.getElementById('f-quarter').value;
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-
-showSaving('Checking quarterly sheet...');
-checkOrCreateSheet(quarter).then(() => {
-showSaving('Saving expense...');
-const row = [
-date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, currentExpenseType
-];
-return apiAppend(quarter + '!A8:O8', [row]);
-})
-.then(() => {
-hideSaving();
-showToast('✅ Expense submitted!');
-document.getElementById('f-payee').value = '';
-document.getElementById('f-address').value = '';
-document.getElementById('f-tin').value = '';
-document.getElementById('f-or').value = '';
-document.getElementById('f-amount').value = '';
-computeVAT();
-setTimeout(() => {
-loadExpenses();
-const calBtn = document.querySelector('.view-btn[onclick*="calendar"]');
-switchView({ target: calBtn }, 'calendar');
-}, 1000);
-})
-.catch(err => {
-hideSaving();
-showToast('❌ Submit failed: ' + err.message);
-console.error(err);
-});
-}
-
-// ═══ EDIT EXPENSE ═════════════════════════════════════
 function openEditDrawer(rowIndex) {
-editingExpense = allExpenses.find(e => e.rowIndex === rowIndex);
-if (!editingExpense) return;
-if (editingExpense.user !== currentUser) {
-showToast('❌ You can only edit your own expenses');
-return;
-}
-document.getElementById('e-date').value = editingExpense.date;
-document.getElementById('e-payee').value = editingExpense.payee;
-document.getElementById('e-address').value = editingExpense.address;
-document.getElementById('e-tin').value = editingExpense.tin;
-document.getElementById('e-or').value = editingExpense.orNum;
-document.getElementById('e-amount').value = editingExpense.amount;
-computeEditVAT();
-closeDayDetail();
-document.getElementById('edit-drawer').classList.add('open');
+  editingExpense = allExpenses.find(e => e.rowIndex === rowIndex);
+  if (!editingExpense) return;
+  if (editingExpense.user !== currentUser) { showToast('❌ You can only edit your own expenses'); return; }
+  document.getElementById('e-date').value = editingExpense.date;
+  document.getElementById('e-payee').value = editingExpense.payee;
+  document.getElementById('e-address').value = editingExpense.address;
+  document.getElementById('e-tin').value = editingExpense.tin;
+  document.getElementById('e-or').value = editingExpense.orNum;
+  document.getElementById('e-amount').value = editingExpense.amount;
+  computeEditVAT();
+  closeDayDetail();
+  document.getElementById('edit-drawer').classList.add('open');
 }
 
-function closeEditDrawer() {
-document.getElementById('edit-drawer').classList.remove('open');
-editingExpense = null;
-}
+function closeEditDrawer() { document.getElementById('edit-drawer').classList.remove('open'); editingExpense = null; }
 
 function updateExpense() {
-if (!editingExpense) return;
-const date = document.getElementById('e-date').value.trim();
-const payee = document.getElementById('e-payee').value.trim();
-const address = document.getElementById('e-address').value.trim();
-const tin = document.getElementById('e-tin').value.trim();
-const orNum = document.getElementById('e-or').value.trim();
-const amount = parseFloat(document.getElementById('e-amount').value) || 0;
-
-if (!date || !payee || amount <= 0) {
-showToast('❌ Please fill required fields');
-return;
-}
-
-const vatable = amount / 1.12;
-const inputVat = amount - vatable;
-
-showSaving('Updating...');
-const row = [
-date, payee, address, tin, '', orNum, '', '', amount, '', vatable, inputVat, amount, currentUser, editingExpense.type
-];
-apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex, [row])
-.then(() => {
-hideSaving();
-showToast('✅ Expense updated!');
-closeEditDrawer();
-loadExpenses();
-})
-.catch(err => {
-hideSaving();
-showToast('❌ Update failed: ' + err.message);
-});
+  if (!editingExpense) return;
+  const date = document.getElementById('e-date').value.trim();
+  const payee = document.getElementById('e-payee').value.trim();
+  const address = document.getElementById('e-address').value.trim();
+  const tin = document.getElementById('e-tin').value.trim();
+  const orNum = document.getElementById('e-or').value.trim();
+  const amount = parseFloat(document.getElementById('e-amount').value) || 0;
+  if (!date || !payee || amount <= 0) { showToast('❌ Fill required fields'); return; }
+  const vatable = amount / 1.12;
+  showSaving('Updating...');
+  apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex,
+    [[date, payee, address, tin, '', orNum, '', '', amount, '', vatable, amount-vatable, amount, currentUser, editingExpense.type]])
+    .then(() => { hideSaving(); showToast('✅ Updated!'); closeEditDrawer(); loadExpenses(); })
+    .catch(err => { hideSaving(); showToast('❌ Failed: ' + err.message); });
 }
 
 function deleteExpense() {
-if (!editingExpense) return;
-if (!confirm('Delete this expense? This cannot be undone.')) return;
-showSaving('Deleting...');
-const emptyRow = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex, [emptyRow])
-.then(() => {
-hideSaving();
-showToast('✅ Expense deleted');
-closeEditDrawer();
-loadExpenses();
-})
-.catch(err => {
-hideSaving();
-showToast('❌ Delete failed: ' + err.message);
-});
+  if (!editingExpense) return;
+  if (!confirm('Delete this expense?')) return;
+  showSaving('Deleting...');
+  apiUpdate(currentQuarter + '!A' + editingExpense.rowIndex + ':O' + editingExpense.rowIndex,
+    [['','','','','','','','','','','','','','','']])
+    .then(() => { hideSaving(); showToast('✅ Deleted'); closeEditDrawer(); loadExpenses(); })
+    .catch(err => { hideSaving(); showToast('❌ Failed'); });
 }
 
-// ═══ REPORT MODAL ═════════════════════════════════════
-function openReport() {
-showSaving('Generating report...');
-const year = new Date().getFullYear();
-const quarters = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Oct-Dec'];
-const types = ['diesel', 'parts', 'parking'];
-
-let allPromises = [];
-quarters.forEach(q => {
-types.forEach(type => {
-const suffix = { diesel: '-Diesel', parts: '-Parts', parking: '-Parking' }[type];
-const sheetName = `Purchases (${q} ${year})${suffix}`;
-allPromises.push(
-apiGet(sheetName + '!A8:O1000')
-.then(res => ({ type, data: res.values || [] }))
-.catch(() => ({ type, data: [] }))
-);
-});
-});
-
-Promise.all(allPromises).then(results => {
-const summary = { diesel: { gross: 0, vatable: 0, vat: 0 }, parts: { gross: 0, vatable: 0, vat: 0 }, parking: { gross: 0, vatable: 0, vat: 0 } };
-results.forEach(r => {
-r.data.forEach(row => {
-if (row[0] && row[1]) {
-summary[r.type].gross += parseFloat(row[8]) || 0;
-summary[r.type].vatable += parseFloat(row[10]) || 0;
-summary[r.type].vat += parseFloat(row[11]) || 0;
-}
-});
-});
-
-document.getElementById('report-quarter').textContent = 'Full Year ' + year;
-document.getElementById('diesel-gross').textContent = '₱' + summary.diesel.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('diesel-vatable').textContent = '₱' + summary.diesel.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('diesel-vat').textContent = '₱' + summary.diesel.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-document.getElementById('parts-gross').textContent = '₱' + summary.parts.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parts-vatable').textContent = '₱' + summary.parts.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parts-vat').textContent = '₱' + summary.parts.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-document.getElementById('parking-gross').textContent = '₱' + summary.parking.gross.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parking-vatable').textContent = '₱' + summary.parking.vatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('parking-vat').textContent = '₱' + summary.parking.vat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-const grandVatable = summary.diesel.vatable + summary.parts.vatable + summary.parking.vatable;
-const grandVat = summary.diesel.vat + summary.parts.vat + summary.parking.vat;
-const grandTotal = summary.diesel.gross + summary.parts.gross + summary.parking.gross;
-
-document.getElementById('grand-vatable').textContent = '₱' + grandVatable.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('grand-vat').textContent = '₱' + grandVat.toLocaleString('en-PH', {minimumFractionDigits: 2});
-document.getElementById('grand-total').textContent = '₱' + grandTotal.toLocaleString('en-PH', {minimumFractionDigits: 2});
-
-hideSaving();
-document.getElementById('report-modal').classList.add('open');
-});
-}
-
-function closeReport() {
-document.getElementById('report-modal').classList.remove('open');
-}
-
-// ═══ SHEET MANAGEMENT ═════════════════════════════════
 function checkOrCreateSheet(quarterName) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`, {
-headers: { Authorization: 'Bearer ' + token }
-})
-.then(r => {
-if (!r.ok) throw new Error('Cannot access spreadsheet');
-return r.json();
-})
-.then(data => {
-const sheets = data.sheets || [];
-const exists = sheets.some(s => s.properties.title === quarterName);
-if (exists) return Promise.resolve();
-showSaving('Creating new quarterly sheet...');
-return createQuarterlySheet(quarterName);
-});
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`, {headers:{Authorization:'Bearer '+token}})
+    .then(r => { if (!r.ok) throw new Error('Cannot access spreadsheet'); return r.json(); })
+    .then(data => {
+      const exists = (data.sheets||[]).some(s => s.properties.title === quarterName);
+      if (exists) return;
+      showSaving('Creating new quarterly sheet...');
+      return createQuarterlySheet(quarterName);
+    });
 }
 
 function createQuarterlySheet(quarterName) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
-method: 'POST',
-headers: {
-Authorization: 'Bearer ' + token,
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({
-requests: [{
-addSheet: {
-properties: { title: quarterName }
-}
-}]
-})
-})
-.then(r => {
-if (!r.ok) throw new Error('Cannot create sheet');
-return r.json();
-})
-.then(() => {
-const headers = [
-['PEDROEX Transport Services'],
-['Summary of Purchases', quarterName],
-[], [], [], [],
-['DATE', 'NAME OF PAYEE', 'ADDRESS', 'TIN NUMBER', 'AR/DR', 'OR', 'SI', 'ZERO RATED SALE', 'AMOUNT', 'NON VATABLE', 'VATABLE PURCHASES', 'INPUT VAT', 'GROSS PURCHASES', 'USER', 'TYPE']
-];
-return apiUpdate(quarterName + '!A1:O7', headers);
-});
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
+    method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+    body: JSON.stringify({requests:[{addSheet:{properties:{title:quarterName}}}]})
+  }).then(r => { if (!r.ok) throw new Error('Cannot create sheet'); return r.json(); })
+  .then(() => apiUpdate(quarterName + '!A1:O7', [
+    ['PEDROEX Transport Services'],
+    ['Summary of Purchases', quarterName],
+    [],[],[],[],
+    ['DATE','NAME OF PAYEE','ADDRESS','TIN NUMBER','AR/DR','OR','SI','ZERO RATED SALE','AMOUNT','NON VATABLE','VATABLE PURCHASES','INPUT VAT','GROSS PURCHASES','USER','TYPE']
+  ]));
 }
 
-// ═══ API HELPERS ══════════════════════════════════════
+function openReport() {
+  showSaving('Generating report...');
+  const year = new Date().getFullYear();
+  const quarters = ['Jan-Mar','Apr-Jun','Jul-Sep','Oct-Dec'];
+  const types = ['diesel','parts','parking'];
+  let allPromises = [];
+  quarters.forEach(q => types.forEach(type => {
+    const suffix = {diesel:'-Diesel',parts:'-Parts',parking:'-Parking'}[type];
+    allPromises.push(apiGet(`Purchases (${q} ${year})${suffix}!A8:O1000`)
+      .then(res => ({type, data:res.values||[]})).catch(() => ({type, data:[]})));
+  }));
+  Promise.all(allPromises).then(results => {
+    const s = {diesel:{gross:0,vatable:0,vat:0},parts:{gross:0,vatable:0,vat:0},parking:{gross:0,vatable:0,vat:0}};
+    results.forEach(r => r.data.forEach(row => {
+      if (row[0] && row[1]) {
+        s[r.type].gross += parseFloat(row[8])||0;
+        s[r.type].vatable += parseFloat(row[10])||0;
+        s[r.type].vat += parseFloat(row[11])||0;
+      }
+    }));
+    const fmt = n => '₱' + n.toLocaleString('en-PH',{minimumFractionDigits:2});
+    document.getElementById('report-quarter').textContent = 'Full Year ' + year;
+    ['diesel','parts','parking'].forEach(t => {
+      document.getElementById(t+'-gross').textContent = fmt(s[t].gross);
+      document.getElementById(t+'-vatable').textContent = fmt(s[t].vatable);
+      document.getElementById(t+'-vat').textContent = fmt(s[t].vat);
+    });
+    const gv = s.diesel.vatable+s.parts.vatable+s.parking.vatable;
+    const gi = s.diesel.vat+s.parts.vat+s.parking.vat;
+    const gt = s.diesel.gross+s.parts.gross+s.parking.gross;
+    document.getElementById('grand-vatable').textContent = fmt(gv);
+    document.getElementById('grand-vat').textContent = fmt(gi);
+    document.getElementById('grand-total').textContent = fmt(gt);
+    hideSaving();
+    document.getElementById('report-modal').classList.add('open');
+  });
+}
+
+function closeReport() { document.getElementById('report-modal').classList.remove('open'); }
+
+// ═══ API ═══
 function apiGet(range) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
-headers: { Authorization: 'Bearer ' + token }
-}).then(r => {
-if (r.status === 401) { location.href = 'index.html'; throw new Error('Unauthorized'); }
-if (!r.ok) throw new Error('API Error');
-return r.json();
-});
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,
+    {headers:{Authorization:'Bearer '+token}})
+    .then(r => { if (r.status===401){location.href='index.html';throw new Error('Unauthorized');} if (!r.ok) throw new Error('API Error'); return r.json(); });
 }
-
 function apiUpdate(range, values) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
-method: 'PUT',
-headers: {
-Authorization: 'Bearer ' + token,
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({ values })
-}).then(r => {
-if (!r.ok) throw new Error('Update failed');
-return r.json();
-});
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
+    {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})})
+    .then(r => { if (!r.ok) throw new Error('Update failed'); return r.json(); });
 }
-
 function apiAppend(range, values) {
-return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
-method: 'POST',
-headers: {
-Authorization: 'Bearer ' + token,
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({ values })
-}).then(r => {
-if (!r.ok) throw new Error('Append failed');
-return r.json();
-});
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
+    {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})})
+    .then(r => { if (!r.ok) throw new Error('Append failed'); return r.json(); });
 }
 
-// ═══ UI HELPERS ═══════════════════════════════════════
-function showSaving(msg) {
-document.getElementById('saving-text').textContent = msg || 'Saving...';
-document.getElementById('saving-overlay').classList.add('show');
-}
-
-function hideSaving() {
-document.getElementById('saving-overlay').classList.remove('show');
-}
-
+function showSaving(msg) { document.getElementById('saving-text').textContent=msg||'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
+function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
 let toastTimer;
-function showToast(msg) {
-const t = document.getElementById('toast');
-t.textContent = msg;
-t.classList.add('show');
-clearTimeout(toastTimer);
-toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
-}
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),4000); }
 
-document.getElementById('edit-drawer').addEventListener('click', e => {
-if (e.target.id === 'edit-drawer') closeEditDrawer();
-});
+document.getElementById('edit-drawer').addEventListener('click', e => { if (e.target.id==='edit-drawer') closeEditDrawer(); });
+document.getElementById('ms-edit-drawer').addEventListener('click', e => { if (e.target.id==='ms-edit-drawer') closeMsEditDrawer(); });
 </script>
 </body>
 </html>
