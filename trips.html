@@ -328,6 +328,274 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
   font-size:14px;color:var(--text2);font-weight:600;
 }
 
+/* ═══ REPORT MODAL ═══ */
+.report-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 500;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.report-modal.open {
+  display: block;
+  animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.report-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding: 14px 18px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 14px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+  z-index: 10;
+}
+
+body.dark .report-header {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.report-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-close-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--bg);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--neu-sm);
+  color: var(--text2);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.report-close-btn:active {
+  box-shadow: var(--neu-in);
+}
+
+.report-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.report-export-btn {
+  background: var(--red);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 4px 4px 12px rgba(179, 37, 51, 0.4);
+  font-family: 'Inter', sans-serif;
+}
+
+.report-export-btn:active {
+  transform: scale(0.95);
+}
+
+.report-content {
+  padding: 16px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+.report-summary {
+  background: var(--bg);
+  border-radius: 20px;
+  box-shadow: var(--neu-out);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.report-summary-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+
+.report-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.report-stat {
+  text-align: center;
+  padding: 16px;
+  background: var(--bg2);
+  border-radius: 12px;
+}
+
+.report-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.report-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.report-stat-value.green {
+  color: var(--green);
+}
+
+.report-stat-value.red {
+  color: var(--red);
+}
+
+.report-truck-section {
+  background: var(--bg);
+  border-radius: 20px;
+  box-shadow: var(--neu-out);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.report-truck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--bg2);
+}
+
+.report-truck-name {
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-truck-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-truck-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.report-mini-stat {
+  text-align: center;
+  padding: 12px;
+  background: var(--bg2);
+  border-radius: 10px;
+}
+
+.report-mini-stat-label {
+  font-size: 9px;
+  color: var(--text3);
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-mini-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.report-missing-section {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 14px;
+  border-left: 4px solid var(--red);
+}
+
+.report-missing-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--red);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-missing-item {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.report-missing-date {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.report-missing-details {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+.report-missing-helpers {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--orange);
+}
+
+.report-perfect {
+  text-align: center;
+  padding: 20px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 </style>
 </head>
 <body>
@@ -1125,47 +1393,26 @@ function renderComplianceReport() {
   var missingTrips = totalTrips - compliantTrips;
   var overallRate = totalTrips > 0 ? (compliantTrips / totalTrips * 100) : 0;
   
-  // Update stats
+  // Update quick stats
   document.getElementById('comp-total').textContent = totalTrips;
   document.getElementById('comp-compliant').textContent = compliantTrips;
   document.getElementById('comp-missing').textContent = missingTrips;
   document.getElementById('comp-rate').textContent = overallRate.toFixed(1) + '%';
   
-  // Previous month comparison
-  var parts = month.split('-');
-  var prevDate = new Date(parts[0], parts[1] - 2, 1);
-  var prevMonth = prevDate.getFullYear() + '-' + pad(prevDate.getMonth() + 1);
-  var previousData = calculateComplianceData(prevMonth);
-  
-  // Render ranking
+  // Render ranking (existing code)
   var sortedTrucks = trucks.sort(function(a, b) { return b.complianceRate - a.complianceRate; });
   
   var rankingHTML = sortedTrucks.map(function(truck, index) {
     var rank = index + 1;
     var isTop = rank <= 3;
     
-    var prevTruck = previousData[truck.name];
-    var prevRate = prevTruck ? prevTruck.complianceRate : 0;
-    var rateDiff = truck.complianceRate - prevRate;
-    
-    var trendHTML = '';
-    if (prevTruck) {
-      if (rateDiff > 2) {
-        trendHTML = '<span class="trend-indicator up">↑ ' + rateDiff.toFixed(1) + '%</span>';
-      } else if (rateDiff < -2) {
-        trendHTML = '<span class="trend-indicator down">↓ ' + Math.abs(rateDiff).toFixed(1) + '%</span>';
-      } else {
-        trendHTML = '<span class="trend-indicator stable">→ Stable</span>';
-      }
-    }
-    
-    return '<div class="compliance-rank-item">'
+    return '<div class="compliance-rank-item" onclick="openReportModal(\'' + month + '\')" style="cursor:pointer">'
       + '<div class="rank-number ' + (isTop ? 'top' : '') + '">' + rank + '</div>'
       + '<div class="rank-info">'
       + '<div class="rank-name">🚛 ' + truck.name + '</div>'
       + '<div class="rank-stats">'
       + truck.compliantTrips + '/' + truck.totalTrips + ' trips • '
-      + truck.missingTrips.length + ' missing ' + trendHTML
+      + truck.missingTrips.length + ' missing'
       + '</div></div>'
       + '<div class="rank-score">'
       + '<div class="rank-percentage">' + truck.complianceRate.toFixed(1) + '%</div>'
@@ -1178,72 +1425,12 @@ function renderComplianceReport() {
   document.getElementById('compliance-ranking').innerHTML = rankingHTML || 
     '<div class="empty-hint">No data for this month</div>';
   
-  // Render details
-  var detailsHTML = sortedTrucks.map(function(truck) {
-    var badge = getComplianceBadge(truck.complianceRate);
-    var color = getTruckColor(truck.name);
-    
-    return '<div class="neu-card" style="padding:16px;margin-bottom:14px;border-left:4px solid ' + color.bg + '">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
-      + '<div style="font-size:16px;font-weight:700;color:' + color.bg + '">🚛 ' + truck.name + '</div>'
-      + badge
-      + '</div>'
-      + '<div class="row3" style="margin-bottom:10px">'
-      + '<div style="text-align:center">'
-      + '<div style="font-size:10px;color:var(--text3);font-weight:600">TOTAL</div>'
-      + '<div style="font-size:20px;font-weight:700;color:var(--text)">' + truck.totalTrips + '</div>'
-      + '</div>'
-      + '<div style="text-align:center">'
-      + '<div style="font-size:10px;color:var(--text3);font-weight:600">COMPLIANT</div>'
-      + '<div style="font-size:20px;font-weight:700;color:var(--green)">' + truck.compliantTrips + '</div>'
-      + '</div>'
-      + '<div style="text-align:center">'
-      + '<div style="font-size:10px;color:var(--text3);font-weight:600">MISSING</div>'
-      + '<div style="font-size:20px;font-weight:700;color:var(--red)">' + truck.missingTrips.length + '</div>'
-      + '</div></div>'
-  // Sa loob ng renderComplianceReport() function, palitan ang missing trips section:
-
-+ (truck.missingTrips.length > 0 ? 
-  '<div class="missing-trips-section">'
-  + '<div class="missing-trips-title"><span>⚠️</span>Missing Shipment Numbers (' + truck.missingTrips.length + ')</div>'
-  + truck.missingTrips.slice(0, 10).map(function(trip) {
-      var parts = trip.date.split('-');
-      var d = new Date(parts[0], parts[1] - 1, parts[2]);
-      var dateStr = d.toLocaleDateString('en-PH', { 
-        weekday: 'short', month: 'short', day: 'numeric' 
-      });
-      
-      // ✅ DAGDAG: Display helpers
-      var helpersHTML = trip.helpers.length > 0 
-        ? '<div style="margin-top:4px;font-size:10px;color:var(--orange)">'
-          + '👷 Helpers: ' + trip.helpers.join(', ')
-          + '</div>'
-        : '<div style="margin-top:4px;font-size:10px;color:var(--text3)">'
-          + '⚠️ No helpers recorded'
-          + '</div>';
-      
-      return '<div class="missing-trip-item">'
-        + '<div>'
-        + '<div class="missing-trip-date">' + dateStr + '</div>'
-        + '<div class="missing-trip-details">' + trip.route + (trip.type ? ' • ' + trip.type : '') + '</div>'
-        + helpersHTML // ✅ DAGDAG
-        + '</div>'
-        + '<div class="missing-trip-truck">' + trip.truck + '</div>'
-        + '</div>';
-    }).join('')
-  + (truck.missingTrips.length > 10 ? 
-    '<div style="text-align:center;padding:8px;font-size:11px;color:var(--text3)">'
-    + '+ ' + (truck.missingTrips.length - 10) + ' more missing entries'
-    + '</div>' : '')
-  + '</div>' 
-  : '<div style="text-align:center;padding:20px;color:var(--green);font-size:13px">'
-  + '✅ Perfect! All trips have shipment numbers.'
-  + '</div>')
-  }).join('');
-  
-  document.getElementById('compliance-details').innerHTML = detailsHTML;
+  // Clear details (will show in modal)
+  document.getElementById('compliance-details').innerHTML = 
+    '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">'
+    + 'Click any truck above to view full report'
+    + '</div>';
 }
-
 function exportComplianceReport() {
   var selectedMonth = document.getElementById('compliance-month');
   if (!selectedMonth || !selectedMonth.value) return;
@@ -1307,6 +1494,124 @@ function exportComplianceReport() {
   showToast('✅ Compliance report exported!');
 }
 
+
+function openReportModal(month) {
+  var currentData = calculateComplianceData(month);
+  var trucks = Object.keys(currentData).map(function(k) { return currentData[k]; })
+    .sort(function(a, b) { return b.complianceRate - a.complianceRate; });
+  
+  var totalTrips = trucks.reduce(function(sum, t) { return sum + t.totalTrips; }, 0);
+  var compliantTrips = trucks.reduce(function(sum, t) { return sum + t.compliantTrips; }, 0);
+  var overallRate = totalTrips > 0 ? (compliantTrips / totalTrips * 100) : 0;
+  
+  // Set title
+  var parts = month.split('-');
+  var date = new Date(parts[0], parts[1] - 1);
+  var monthLabel = MONTHS[date.getMonth()] + ' ' + date.getFullYear();
+  document.getElementById('report-modal-title').textContent = monthLabel + ' Report';
+  
+  // Build content
+  var html = '';
+  
+  // Summary section
+  html += '<div class="report-summary">'
+    + '<div class="report-summary-title">📊 Overall Summary</div>'
+    + '<div class="report-stats-grid">'
+    + '<div class="report-stat">'
+    + '<div class="report-stat-label">Total Trips</div>'
+    + '<div class="report-stat-value">' + totalTrips + '</div>'
+    + '</div>'
+    + '<div class="report-stat">'
+    + '<div class="report-stat-label">With Shipment #</div>'
+    + '<div class="report-stat-value green">' + compliantTrips + '</div>'
+    + '</div>'
+    + '<div class="report-stat">'
+    + '<div class="report-stat-label">Missing</div>'
+    + '<div class="report-stat-value red">' + (totalTrips - compliantTrips) + '</div>'
+    + '</div>'
+    + '<div class="report-stat">'
+    + '<div class="report-stat-label">Compliance Rate</div>'
+    + '<div class="report-stat-value">' + overallRate.toFixed(1) + '%</div>'
+    + '</div>'
+    + '</div></div>';
+  
+  // Truck sections
+  trucks.forEach(function(truck, index) {
+    var rank = index + 1;
+    var color = getTruckColor(truck.name);
+    var badge = getComplianceBadge(truck.complianceRate);
+    
+    html += '<div class="report-truck-section">'
+      + '<div class="report-truck-header">'
+      + '<div class="report-truck-name" style="color:' + color.bg + '">'
+      + '<span>#' + rank + '</span> 🚛 ' + truck.name
+      + '</div>'
+      + badge
+      + '</div>'
+      
+      + '<div class="report-truck-stats">'
+      + '<div class="report-mini-stat">'
+      + '<div class="report-mini-stat-label">Total</div>'
+      + '<div class="report-mini-stat-value">' + truck.totalTrips + '</div>'
+      + '</div>'
+      + '<div class="report-mini-stat">'
+      + '<div class="report-mini-stat-label">Compliant</div>'
+      + '<div class="report-mini-stat-value" style="color:var(--green)">' + truck.compliantTrips + '</div>'
+      + '</div>'
+      + '<div class="report-mini-stat">'
+      + '<div class="report-mini-stat-label">Missing</div>'
+      + '<div class="report-mini-stat-value" style="color:var(--red)">' + truck.missingTrips.length + '</div>'
+      + '</div>'
+      + '</div>';
+    
+    // Missing trips
+    if (truck.missingTrips.length > 0) {
+      html += '<div class="report-missing-section">'
+        + '<div class="report-missing-title">⚠️ Missing Shipment Numbers (' + truck.missingTrips.length + ')</div>';
+      
+      truck.missingTrips.forEach(function(trip) {
+        var parts = trip.date.split('-');
+        var d = new Date(parts[0], parts[1] - 1, parts[2]);
+        var dateStr = d.toLocaleDateString('en-PH', { 
+          weekday: 'short', month: 'short', day: 'numeric' 
+        });
+        
+        var helpersHTML = trip.helpers.length > 0 
+          ? '<div class="report-missing-helpers">👷 ' + trip.helpers.join(', ') + '</div>'
+          : '<div class="report-missing-helpers" style="color:var(--text3)">⚠️ No helpers recorded</div>';
+        
+        html += '<div class="report-missing-item">'
+          + '<div>'
+          + '<div class="report-missing-date">' + dateStr + '</div>'
+          + '<div class="report-missing-details">' + trip.route + (trip.type ? ' • ' + trip.type : '') + '</div>'
+          + helpersHTML
+          + '</div>'
+          + '</div>';
+      });
+      
+      html += '</div>';
+    } else {
+      html += '<div class="report-perfect">✅ Perfect! All trips have shipment numbers.</div>';
+    }
+    
+    html += '</div>';
+  });
+  
+  document.getElementById('report-modal-content').innerHTML = html;
+  document.getElementById('report-modal').classList.add('open');
+}
+
+function closeReportModal() {
+  document.getElementById('report-modal').classList.remove('open');
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+  var modal = document.getElementById('report-modal');
+  if (e.target === modal) {
+    closeReportModal();
+  }
+});
 
 // ═══ CALENDAR ═════════════════════════════════════════
 var MONTHS = ['January','February','March','April','May','June',
@@ -1801,5 +2106,22 @@ function showToast(m) {
 });
 
 </script>
+<!-- REPORT MODAL -->
+<div class="report-modal" id="report-modal">
+  <div class="report-header">
+    <div class="report-header-left">
+      <button class="report-close-btn" onclick="closeReportModal()">×</button>
+      <div class="report-title" id="report-modal-title">Compliance Report</div>
+    </div>
+    <button class="report-export-btn" onclick="exportComplianceReport()">
+      📥 Export
+    </button>
+  </div>
+  
+  <div class="report-content" id="report-modal-content">
+    <!-- Content will be populated by JS -->
+  </div>
+</div>
+
 </body>
 </html>
