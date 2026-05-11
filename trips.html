@@ -956,11 +956,6 @@ var selectedDay  = null;
 var activeFilters = { truck:'', type:'', billed:'', route:'', shipment:'' };
 var filteredTrips = [];
 var currentView = 'calendar'; // ✅ NEW
-// Add after var currentView = 'calendar';
-var cachedComplianceData = null;
-var cachedHelperData = null;
-var lastComplianceMonth = '';
-var lastHelperMonth = '';
 
 // ═══ TRUCK COLORS (red gradient) ══════════════════════
 var TRUCK_COLORS = [
@@ -1132,38 +1127,83 @@ function applyRateAdjustment() {
 })();
 
 function loadAll() {
-  var loadingEl = document.getElementById('wrap-loading');
-  loadingEl.innerHTML = '<div class="spinner"></div>&nbsp;Loading data...<br><small style="color:var(--text3);margin-top:8px">This may take a few seconds</small>';
-  
   Promise.all([
     apiGet(TAB_TRUCKS + '!B2:B'),
     apiGet(TAB_TRIPS  + '!A2:I'),
-    apiGet(TAB_ATTENDANCE + '!A2:K')
+    apiGet(TAB_ATTENDANCE + '!A2:K') // ✅ DAGDAG: Load attendance
   ]).then(function(res) {
-    loadingEl.innerHTML = '<div class="spinner"></div>&nbsp;Processing data...';
-    
-    // ... existing processing code ...
-    
-    // Add small delay to prevent UI freeze
-    setTimeout(function() {
-      buildColorMap();
-      renderLegend();
-      buildFilterDropdowns();
-      filteredTrips = allTrips.slice();
-      renderCalendar();
+    var truckRows = res[0].values || [];
+    var tripRows  = res[1].values || [];
+    var attRows   = res[2].values || []; // ✅ DAGDAG
 
-      loadingEl.style.display = 'none';
-      document.getElementById('view-toggle-card').style.display = '';
-      document.getElementById('filter-bar').style.display = '';
-      document.getElementById('calendar-card').style.display = '';
-    }, 100);
+    allTrucks = truckRows.filter(function(r){ return r[0]; }).map(function(r){ return r[0]; });
+
+    // Process trips (existing code)
+    allTrips = [];
+    tripRows.forEach(function(r, i) {
+      if (!r[0] && !r[1]) return;
+      if (!r[1]) return;
+      
+      var actualRowIndex = i + 2;
+      var deliveryDate = convertExcelDate(r[1]);
+      var shipmentDate = r[3] ? convertExcelDate(r[3]) : '';
+      
+      allTrips.push({
+        rowIndex: actualRowIndex,
+        id: r[0] || '',
+        deliveryDate: deliveryDate,
+        truck: r[2] || '',
+        shipmentDate: shipmentDate,
+        type: r[4] || '',
+        shipmentNumber: r[5] || '',
+        billed: r[6] || '',
+        route: r[7] || '',
+        rate: r[8] || ''
+      });
+    });
+
+    // ✅ DAGDAG: Process attendance
+    allAttendance = [];
+    attRows.forEach(function(r) {
+      if (!r[1] || !r[2]) return; // Skip if no date or name
+      
+      var attDate = convertExcelDate(r[1]);
+      
+      allAttendance.push({
+        id: r[0] || '',
+        date: attDate,
+        employeeName: r[2] || '',
+        twoManTeam: r[3] || '',
+        crates: r[4] || '0',
+        mealAllowanceOnly: r[5] || '',
+        assignedTruck: r[6] || '',
+        location: r[7] || '',
+        timestamp: r[10] || ''
+      });
+    });
+
+    console.log('📦 Loaded trips:', allTrips.length);
+    console.log('👥 Loaded attendance:', allAttendance.length);
+
+    buildColorMap();
+    renderLegend();
+    buildFilterDropdowns();
+    filteredTrips = allTrips.slice();
+
+    renderCalendar();
+
+    document.getElementById('wrap-loading').style.display = 'none';
+    document.getElementById('view-toggle-card').style.display = '';
+    document.getElementById('filter-bar').style.display = '';
+    document.getElementById('calendar-card').style.display = '';
 
   }).catch(function(err) {
-    loadingEl.style.display = 'none';
+    document.getElementById('wrap-loading').style.display = 'none';
     showToast('Failed to load. Check connection.');
     console.error('❌ Load error:', err);
   });
 }
+
 
 
 // ✅ NEW FUNCTION: Convert Excel serial number to YYYY-MM-DD
@@ -1197,8 +1237,6 @@ function convertExcelDate(value) {
   
   return ''; // Return empty if can't parse
 }
-
-
 
 // ═══ FILTER ═══════════════════════════════════════════
 function buildFilterDropdowns() {
@@ -1284,11 +1322,12 @@ function clearFilters() {
 function switchToView(view) {
   currentView = view;
   
-  // Update buttons (existing code)
+  // Update buttons
   var calBtn = document.getElementById('view-calendar-btn');
   var compBtn = document.getElementById('view-compliance-btn');
   var helpersBtn = document.getElementById('view-helpers-btn');
   
+  // Reset all buttons
   [calBtn, compBtn, helpersBtn].forEach(function(btn) {
     btn.className = 'view-toggle-btn';
     btn.style.background = 'transparent';
@@ -1296,6 +1335,7 @@ function switchToView(view) {
     btn.style.color = 'var(--text3)';
   });
   
+  // Activate selected button
   var activeBtn = view === 'calendar' ? calBtn : view === 'compliance' ? compBtn : helpersBtn;
   activeBtn.className = 'view-toggle-btn active';
   activeBtn.style.background = 'var(--bg)';
@@ -1310,19 +1350,12 @@ function switchToView(view) {
   document.getElementById('compliance-view').style.display = view === 'compliance' ? 'block' : 'none';
   document.getElementById('helpers-view').style.display = view === 'helpers' ? 'block' : 'none';
   
-  // ✅ DAGDAG: Show loading indicator
   if (view === 'compliance') {
-    document.getElementById('compliance-ranking').innerHTML = '<div class="loading-wrap"><div class="spinner"></div>&nbsp;Calculating compliance...</div>';
-    setTimeout(function() {
-      populateComplianceMonthSelector();
-      renderComplianceReport();
-    }, 50);
+    populateComplianceMonthSelector();
+    renderComplianceReport();
   } else if (view === 'helpers') {
-    document.getElementById('helpers-ranking').innerHTML = '<div class="loading-wrap"><div class="spinner"></div>&nbsp;Calculating helper performance...</div>';
-    setTimeout(function() {
-      populateHelpersMonthSelector();
-      renderHelpersReport();
-    }, 50);
+    populateHelpersMonthSelector();
+    renderHelpersReport();
   }
 }
 
@@ -1418,15 +1451,6 @@ function renderComplianceReport() {
   if (!selectedMonth || !selectedMonth.value) return;
   
   var month = selectedMonth.value;
-
-    var currentData;
-  if (month === lastComplianceMonth && cachedComplianceData) {
-    currentData = cachedComplianceData;
-  } else {
-    currentData = calculateComplianceData(month);
-    cachedComplianceData = currentData;
-    lastComplianceMonth = month;
-  }
   var currentData = calculateComplianceData(month);
   var trucks = Object.keys(currentData).map(function(k) { return currentData[k]; });
   
@@ -1699,13 +1723,13 @@ function renderCalendar() {
 
     var pillsHtml = '';
     if (entries.length) {
-      var shown = entries.slice(0, 2);
+      var shown = entries.slice(0, 3);
       pillsHtml = '<div class="cal-names">'
         + shown.map(function(e) {
             return '<div class="cal-name-pill" style="background:' + e.color.bg + ';color:' + e.color.text + '">'
               + e.truck + '</div>';
           }).join('')
-        + (entries.length > 2
+        + (entries.length > 3
             ? '<div class="cal-name-pill" style="background:var(--text3);color:#fff">+' + (entries.length-3) + '</div>'
             : '')
         + '</div>';
@@ -2126,7 +2150,7 @@ function initAutoRefresh(onRefresh) {
     if (!token || Date.now() >= expiry) return;
     console.log('🔄 Auto-refresh triggered');
     onRefresh(function() {});
-  }, 10 * 60 * 1000); // ✅ BINAGO: 10 minutes instead of 5
+  }, 5 * 60 * 1000);
 }
 
 // ═══ HELPERS ══════════════════════════════════════════
@@ -2259,17 +2283,6 @@ function renderHelpersReport() {
   if (!selectedMonth || !selectedMonth.value) return;
   
   var month = selectedMonth.value;
-
-    // ✅ DAGDAG: Use cache if same month
-  var helperData;
-  if (month === lastHelperMonth && cachedHelperData) {
-    helperData = cachedHelperData;
-  } else {
-    helperData = calculateHelperData(month);
-    cachedHelperData = helperData;
-    lastHelperMonth = month;
-  }
-
   var helperData = calculateHelperData(month);
   var helpers = Object.keys(helperData).map(function(k) { return helperData[k]; });
   
