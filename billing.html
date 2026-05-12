@@ -99,9 +99,8 @@ body.dark .card-hd{border-bottom-color:rgba(255,255,255,.05)}
 .tbl tr:last-child td{border-bottom:none}
 .tbl td b{color:var(--text)}
 
-/* SAVE BTN */
+/* SAVE BTN — FIX: use display:none by default, show via JS style.display */
 .save-btn{width:100%;padding:15px;border:none;border-radius:16px;background:var(--red);color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:4px 4px 10px rgba(179,37,51,.3);transition:all .15s;display:none;margin-bottom:14px}
-.save-btn.show{display:block}
 .save-btn:active{transform:scale(.98)}
 .save-btn:disabled{opacity:.6;cursor:not-allowed}
 
@@ -285,6 +284,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         </div>
       </div>
 
+      <!-- FIX: Save button — no CSS class dependency, controlled purely via style.display -->
       <button class="save-btn" id="save-btn" onclick="saveToSheet()">💾 Save &amp; Cross-Check Trips</button>
 
       <!-- CROSS-CHECK -->
@@ -436,7 +436,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         </div>
         <div style="padding:0 18px 14px">
           <div class="stats" id="rpt-cc-stats" style="margin-top:14px"></div>
-          <!-- Exact matches list -->
           <div id="rpt-cc-ex-wrap" style="display:none;margin-top:4px">
             <div class="cc-st g" style="padding-top:8px">✅ Exact Matches Found in Trips</div>
             <div class="tbl-wrap">
@@ -446,7 +445,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
               </table>
             </div>
           </div>
-          <!-- Fuzzy list -->
           <div id="rpt-cc-fz-wrap" style="display:none;margin-top:4px">
             <div class="cc-st o" style="padding-top:8px">⚠️ Possible Matches (Flagged)</div>
             <div class="tbl-wrap">
@@ -456,7 +454,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
               </table>
             </div>
           </div>
-          <!-- No match list -->
           <div id="rpt-cc-nm-wrap" style="display:none;margin-top:4px">
             <div class="cc-st r" style="padding-top:8px">❌ Not Found in Trips</div>
             <div class="tbl-wrap">
@@ -466,7 +463,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
               </table>
             </div>
           </div>
-          <!-- Invalid shipment numbers -->
           <div id="rpt-cc-inv-wrap" style="display:none;margin-top:4px">
             <div class="cc-st r" style="padding-top:8px">⛔ Invalid Shipment Numbers (not 10 digits)</div>
             <div class="tbl-wrap">
@@ -518,11 +514,11 @@ const SHEET_TRIPS   = 'Trips';
 
 let token   = null;
 let isAdmin = false;
-let parsed  = [];         // from current upload
-let master  = [];         // Billing Statement sheet
-let trips   = [];         // Trips sheet
-let unbilled = [];        // trips not in master
-let ccR     = {exact:[],fuzzy:[],noMatch:[]};  // cross-check results
+let parsed  = [];
+let master  = [];
+let trips   = [];
+let unbilled = [];
+let ccR     = {exact:[],fuzzy:[],noMatch:[],invalid:[]};
 let bSt = 'all', uSt = 'all';
 
 // ═══ INIT ═══
@@ -598,8 +594,16 @@ async function processFiles(files){
   document.getElementById('pc').textContent=parsed.length+' shipment(s) found';
   if(parsed.length){
     renderPreview(parsed);
-    show('preview-card');show('save-btn');
-  } else showToast('No data found');
+    // ✅ FIX: show preview card
+    const pc=document.getElementById('preview-card');
+    pc.style.display='';
+    pc.classList.remove('hidden');
+    // ✅ FIX: show save button via style.display directly — no .show class needed
+    const sb=document.getElementById('save-btn');
+    sb.style.display='block';
+  } else {
+    showToast('No data found');
+  }
 }
 
 function parseExcel(file){
@@ -632,7 +636,11 @@ function parseExcel(file){
         const rows=[];
         for(let i=hR+1;i<raw.length;i++){
           const row=raw[i];
-          const ship=String(row[cS]||'').trim();
+          // ✅ FIX: safe shipment number parsing — prevent float precision loss
+          const rawShip=row[cS];
+          const ship=String(
+            typeof rawShip==='number' ? Math.round(rawShip) : (rawShip||'')
+          ).trim();
           if(!ship||ship.toUpperCase().includes('TOTAL')||ship.length<5) continue;
           const validShip=/^\d{10}$/.test(ship);
           rows.push({
@@ -664,26 +672,31 @@ function renderPreview(rows){
 async function saveToSheet(){
   if(!parsed.length||!token) return;
   showLoad(true,'Saving to Google Sheet...');
-  document.getElementById('save-btn').disabled=true;
+  const sb=document.getElementById('save-btn');
+  sb.disabled=true;
   try{
     const ex=await apiGet(SHEET_BILLING+'!A2:A');
     let nid=(ex.values||[]).filter(r=>r[0]).length+1;
     await apiAppend(SHEET_BILLING+'!A:G',parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes']));
     showLoad(false);
     showToast(parsed.length+' rows saved!','ok');
-    hide('preview-card');hide('save-btn');
-    document.getElementById('save-btn').disabled=false;
+    // ✅ FIX: hide using style.display directly
+    const pc=document.getElementById('preview-card');
+    pc.style.display='none';
+    pc.classList.add('hidden');
+    sb.style.display='none';
+    sb.disabled=false;
     hideProg();fi.value='';
     await runCC(parsed);
     renderSOASummary(parsed);
   }catch(err){
     console.error(err);showLoad(false);
     showToast('Save failed');
-    document.getElementById('save-btn').disabled=false;
+    sb.disabled=false;
   }
 }
 
-// ═══ CROSS-CHECK — FIXED FUZZY ═══
+// ═══ CROSS-CHECK ═══
 async function runCC(rows){
   showLoad(true,'Cross-checking with Trips...');
   try{
@@ -692,13 +705,11 @@ async function runCC(rows){
       rowIndex:i+2,
       deliveryDate:r[1]||'',truck:r[2]||'',
       shipmentDate:r[3]||'',type:r[4]||'',
-      // ✅ FIXED: trim + only use if exactly 10 digits
       shipmentNumber:String(r[5]||'').trim(),
       billed:String(r[6]||'').trim(),
       route:r[7]||'',rate:r[8]||''
     }));
 
-    // Build map — only include EXACTLY 10-digit shipment numbers
     const byShip={};
     trips.forEach(t=>{
       const n=t.shipmentNumber;
@@ -708,17 +719,14 @@ async function runCC(rows){
     ccR={exact:[],fuzzy:[],noMatch:[],invalid:[]};
     rows.forEach(bRow=>{
       const bNum=bRow.shipment;
-      // ✅ FIRST: Flag invalid shipment numbers (not exactly 10 digits)
       if(bRow.invalid){
         ccR.invalid.push({billing:bRow});
         return;
       }
-      // Exact match ONLY if billing number is exactly 10 digits AND matches
       if(byShip[bNum]){
         ccR.exact.push({billing:bRow,trip:byShip[bNum]});
         return;
       }
-      // Fuzzy — check against all trip shipment numbers (10-digit ones)
       let bestTrip=null,bestReason='';
       for(const tNum of Object.keys(byShip)){
         const reason=fuzzyReason(bNum,tNum);
@@ -733,25 +741,20 @@ async function runCC(rows){
   }catch(err){console.error(err);showLoad(false);showToast('Cross-check failed');}
 }
 
-// ✅ FIXED FUZZY — strict digit rules only
 function fuzzyReason(a,b){
   if(!/^\d+$/.test(a)||!/^\d{10}$/.test(b)) return null;
-
-  // Case 1: Billing has extra repeated digit (11 digits) → trips has 10
   if(a.length===11){
     for(let i=0;i<a.length-1;i++){
       if(a[i]===a[i+1]&&a.slice(0,i)+a.slice(i+1)===b)
         return 'Extra repeated digit "'+a[i]+'" at position '+(i+1);
     }
   }
-  // Case 2: Billing missing one digit (9 digits) → trips has 10
   if(a.length===9){
     for(let i=0;i<=b.length;i++){
       if(a.slice(0,i)===b.slice(0,i)&&a.slice(i)===b.slice(i+1))
         return 'Missing digit "'+b[i]+'" at position '+(i+1);
     }
   }
-  // Case 3: Same length 10, exactly ONE digit different
   if(a.length===10){
     let diff=0,pos=-1;
     for(let i=0;i<10;i++) if(a[i]!==b[i]){diff++;pos=i;}
@@ -761,11 +764,11 @@ function fuzzyReason(a,b){
 }
 
 function renderCC(){
-  show('cc-card');
+  const cc=document.getElementById('cc-card');
+  cc.style.display='';cc.classList.remove('hidden');
   const {exact,fuzzy,noMatch,invalid}=ccR;
   document.getElementById('cc-bdg').textContent=exact.length+'✅ '+fuzzy.length+'⚠️ '+noMatch.length+'❌'+(invalid.length?' '+invalid.length+'⛔':'');
 
-  // Invalid shipment numbers — show first
   const iw=document.getElementById('cc-inv-wrap');
   if(invalid.length){
     iw.style.display='';
@@ -862,7 +865,8 @@ function renderSOASummary(rows){
       <div class="soa-meta">${s.count} shipment(s)</div>
       <div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
     </div>`).join('');
-  show('soa-card');
+  const sc=document.getElementById('soa-card');
+  sc.style.display='';sc.classList.remove('hidden');
 }
 
 // ═══ BILLED TAB ═══
@@ -873,7 +877,7 @@ async function loadBilled(){
     const res=await apiGet(SHEET_BILLING+'!A2:G');
     master=(res.values||[]).filter(r=>r[0]).map(r=>({
       id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
-      valid:(r[6]||'Yes').trim()  // G = Valid column; default Yes for old records
+      valid:(r[6]||'Yes').trim()
     }));
     showLoad(false);
     buildBFilters();renderBStats();renderBilled();
@@ -1000,7 +1004,7 @@ async function loadReport(){
     const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:G'),apiGet(SHEET_TRIPS+'!A2:I')]);
     master=(bRes.values||[]).filter(r=>r[0]).map(r=>({
       id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
-      valid:(r[6]||'Yes').trim()  // G = Valid column; default Yes for old records
+      valid:(r[6]||'Yes').trim()
     }));
     const billedSet=new Set(master.map(r=>r.shipment.trim()));
     trips=(tRes.values||[]).filter(r=>r[0]).map((r,i)=>({
@@ -1048,7 +1052,6 @@ function renderReport(){
     return true;
   });
 
-  // Per SOA
   const soaMap={};
   bRows.forEach(r=>{
     if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,count:0,total:0,trucks:new Set(),months:new Set()};
@@ -1065,7 +1068,6 @@ function renderReport(){
       <div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
     </div>`).join('')||'<div style="padding:14px 18px;font-size:12px;color:var(--text3)">No data</div>';
 
-  // Per Month — Billed
   const bByMonth=grpByMonth(bRows);
   document.getElementById('rpt-month-list').innerHTML=bByMonth.map(({label,items})=>`
     <div class="grp" style="margin-top:14px">
@@ -1078,7 +1080,6 @@ function renderReport(){
       <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td style="white-space:nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.soa}">${r.soa}</td><td style="white-space:nowrap">${r.truck}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
-  // Per Truck — Billed
   const bByTruck=grpBy(bRows,'truck');
   document.getElementById('rpt-truck-list').innerHTML=bByTruck.map(({key,items})=>`
     <div class="grp" style="margin-top:14px">
@@ -1091,7 +1092,6 @@ function renderReport(){
       <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td style="white-space:nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.soa}">${r.soa}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
-  // Per Month — Unbilled
   const uByMonth=grpByMonth(unbilled.map(r=>({...r,date:r.deliveryDate})));
   document.getElementById('rpt-umonth-bdg').textContent=unbilled.length+' total';
   document.getElementById('rpt-umonth-list').innerHTML=uByMonth.map(({label,items})=>`
@@ -1102,7 +1102,6 @@ function renderReport(){
       <tbody>${items.map(r=>`<tr><td style="white-space:nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td style="white-space:nowrap">${r.truck}</td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.route||''}">${r.route||'—'}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
-  // Per Truck — Unbilled
   const uByTruck=grpBy(unbilled,'truck');
   document.getElementById('rpt-utruck-list').innerHTML=uByTruck.map(({key,items})=>`
     <div class="grp" style="margin-top:14px">
@@ -1112,7 +1111,6 @@ function renderReport(){
       <tbody>${items.map(r=>`<tr><td style="white-space:nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.route||''}">${r.route||'—'}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
-  // Cross-check in report
   const ccStats=document.getElementById('rpt-cc-stats');
   const invLen=(ccR.invalid||[]).length;
   ccStats.innerHTML=`
@@ -1145,7 +1143,6 @@ function renderReport(){
     ).join('');
   } else nmW.style.display='none';
 
-  // Invalid shipment numbers in report
   const invList=ccR.invalid||[];
   const invW=document.getElementById('rpt-cc-inv-wrap');
   if(invList.length){
@@ -1171,7 +1168,7 @@ function grpByMonth(rows){
   return Object.keys(map).sort().reverse().map(k=>({label:monthLabel(k),items:map[k]}));
 }
 function grpHTML(title,items,cardFn,prefix,color){
-  const amt=items.reduce((s,r)=>s+Number(r.rate||r.rate||0),0);
+  const amt=items.reduce((s,r)=>s+Number(r.rate||0),0);
   return`<div class="grp">
     <div class="grp-hd">${prefix}${title}</div>
     <div class="grp-tally">
@@ -1199,8 +1196,23 @@ function apiPut(range,values){
 }
 
 // ═══ UI HELPERS ═══
-function show(id){const e=document.getElementById(id);if(e){e.style.display='';e.classList&&e.classList.remove('hidden');}}
-function hide(id){const e=document.getElementById(id);if(e){e.style.display='none';e.classList&&e.classList.add('hidden');}}
+// ✅ FIX: show/hide now also toggle .show class for elements that need it
+function show(id){
+  const e=document.getElementById(id);
+  if(e){
+    e.style.display='';
+    e.classList&&e.classList.remove('hidden');
+    e.classList&&e.classList.add('show');
+  }
+}
+function hide(id){
+  const e=document.getElementById(id);
+  if(e){
+    e.style.display='none';
+    e.classList&&e.classList.add('hidden');
+    e.classList&&e.classList.remove('show');
+  }
+}
 function showProg(s){document.getElementById('prog').classList.toggle('show',s);}
 function hideProg(){document.getElementById('prog').classList.remove('show');}
 function setP(p,m){document.getElementById('pb').style.width=p+'%';document.getElementById('pm').textContent=m;}
