@@ -506,7 +506,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
         <div class="neu-card" style="margin-bottom:14px">
           <div class="card-title" style="margin-bottom:4px">Fresh Trip Compliance</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">2-Man Team = exactly 2 attended (1 driver + 1 helper). All helpers must have a Crates record.</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Primary helper (👑 first to check-in) must file Crates record. Secondary helpers shown in gray.</div>
           <div id="rpt-trips-list"></div>
         </div>
 
@@ -518,7 +518,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
         <div class="neu-card" style="margin-bottom:14px">
           <div class="card-title" style="margin-bottom:12px">Other Trip Attendance</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Frozen and Masbate trips — no 2-man team requirement.</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Frozen and Masbate trips — no primary helper requirement.</div>
           <div id="rpt-other-list"></div>
         </div>
       </div>
@@ -589,9 +589,9 @@ var isAdmin       = false;
 var currentUser   = null;
 var allAttendance = [];
 var myRecords     = [];
-var allEmployees  = [];  // raw rows from sheet [email, fname, lname, role, position]
+var allEmployees  = [];
 var allTrucks     = [];
-var positionMap   = {};  // email -> 'Driver' or 'Helper'
+var positionMap   = {};
 var locationData  = null;
 var calYear, calMonth;
 var todayStr      = '';
@@ -601,7 +601,7 @@ var firstLoad     = true;
 var activeFilters = { name:'', team:'', meal:'', truck:'', crates:'' };
 var filteredAttendance = [];
 var selectedDay   = null;
-var allRecords    = [];  // employee records (crates etc.)
+var allRecords    = [];
 var rptPeriod     = 'week';
 
 // ═══ EMPLOYEE COLOR MAP ═══════════════════════════════
@@ -661,19 +661,18 @@ function loadAll() {
   if (mEmp)   while (mEmp.options.length > 1)   mEmp.remove(1);
 
   Promise.all([
-    apiGet(TAB_EMPLOYEES  + '!A2:E'),   // now fetching column E (Position)
+    apiGet(TAB_EMPLOYEES  + '!A2:E'),
     apiGet(TAB_TRUCKS     + '!A2:B'),
-    apiGet(TAB_ATTENDANCE + '!A2:K')
+    apiGet(TAB_ATTENDANCE + '!A2:L')  // ← NOW READING COLUMN L (Helper Type)
   ]).then(function(res) {
     allEmployees = (res[0].values || []).filter(function(r){ return r[0]; });
     var truckRows = res[1].values || [];
     var attRows   = res[2].values || [];
 
-    // Build positionMap: fullName -> 'Driver' or 'Helper'
     positionMap = {};
     allEmployees.forEach(function(r) {
       var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
-      var position = (r[4]||'Helper'); // column E = Position
+      var position = (r[4]||'Helper');
       positionMap[fullName.toLowerCase()] = position;
     });
 
@@ -694,9 +693,12 @@ function loadAll() {
     }
 
     allAttendance = attRows.map(function(r, i) {
-      return { rowIndex:i+2, id:r[0]||'', date:r[1]||'', name:r[2]||'',
+      return { 
+        rowIndex:i+2, id:r[0]||'', date:r[1]||'', name:r[2]||'',
         team:r[3]||'', crates:r[4]||'', meal:r[5]||'',
-        truck:r[6]||'', location:r[7]||'', lat:r[8]||'', lng:r[9]||'', time:r[10]||'' };
+        truck:r[6]||'', location:r[7]||'', lat:r[8]||'', lng:r[9]||'', time:r[10]||'',
+        helperType: r[11]||'' // ← NEW: Column L = 'Primary', 'Secondary', or blank
+      };
     }).filter(function(r){ return r.date; });
 
     buildColorMap();
@@ -751,7 +753,6 @@ function loadAll() {
   });
 }
 
-// Helper: get position for a name from positionMap
 function getPosition(name) {
   return positionMap[(name||'').toLowerCase()] || 'Helper';
 }
@@ -784,11 +785,23 @@ function showDoneState(rec) {
   document.getElementById('status-pill').className   = 'status-pill pill-present';
   document.getElementById('wrap-done').style.display = 'block';
   document.getElementById('wrap-form').style.display = 'none';
-  document.getElementById('today-detail').innerHTML = [
-    ['Date',rec.date],['Time',rec.time],['2-Man Team',rec.team||'No'],
-    ['Crates',rec.crates||'0'],['Meal Allowance',rec.meal],
-    ['Truck',rec.truck||'—'],['Location',rec.location||'—']
-  ].map(function(r){
+  
+  var rows = [
+    ['Date',rec.date],
+    ['Time',rec.time],
+    ['2-Man Team',rec.team||'No'],
+    ['Crates',rec.crates||'0'],
+    ['Meal Allowance',rec.meal],
+    ['Truck',rec.truck||'—'],
+    ['Location',rec.location||'—']
+  ];
+  
+  // ✅ ADD: Show helper type if applicable
+  if (rec.helperType) {
+    rows.push(['Helper Type', rec.helperType === 'Primary' ? '👑 Primary' : 'Secondary']);
+  }
+  
+  document.getElementById('today-detail').innerHTML = rows.map(function(r){
     return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';
   }).join('');
 }
@@ -829,14 +842,19 @@ function submitAttendance() {
   if (!currentUser) { showToast('No user loaded.'); return; }
   var localExists = myRecords.find(function(r){ return r.date===todayStr; });
   if (localExists) { showToast('⚠️ Naka-attendance ka na ngayon!'); showDoneState(localExists); return; }
+  
   showSaving('Checking attendance...');
-  apiGet(TAB_ATTENDANCE+'!A2:K').then(function(res) {
+  apiGet(TAB_ATTENDANCE+'!A2:L').then(function(res) {
     var rows = res.values || [];
     allAttendance = rows.map(function(r,i){
-      return {rowIndex:i+2,id:r[0]||'',date:r[1]||'',name:r[2]||'',
+      return {
+        rowIndex:i+2,id:r[0]||'',date:r[1]||'',name:r[2]||'',
         team:r[3]||'',crates:r[4]||'',meal:r[5]||'',
-        truck:r[6]||'',location:r[7]||'',lat:r[8]||'',lng:r[9]||'',time:r[10]||''};
+        truck:r[6]||'',location:r[7]||'',lat:r[8]||'',lng:r[9]||'',time:r[10]||'',
+        helperType:r[11]||''
+      };
     }).filter(function(r){ return r.date; });
+    
     myRecords = allAttendance.filter(function(r){ return r.name.toLowerCase()===currentUser.fullName.toLowerCase(); });
     var serverExists = myRecords.find(function(r){ return r.date===todayStr; });
     if (serverExists) {
@@ -847,6 +865,7 @@ function submitAttendance() {
       document.getElementById('status-pill').className='status-pill pill-present';
       showAttExistsNotif(serverExists); return;
     }
+    
     var crates=document.getElementById('f-crates').value.trim()||'0';
     var meal=document.getElementById('f-meal').value;
     var truck=document.getElementById('f-truck').value;
@@ -854,16 +873,40 @@ function submitAttendance() {
     var now=new Date();
     var time=now.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',hour12:true});
     var id='ATT-'+todayStr.replace(/-/g,'')+'-'+pad(allAttendance.length+1);
-    var row=[id,todayStr,currentUser.fullName,teamValue,crates,meal,truck,loc.address,String(loc.lat),String(loc.lng),time];
+    
+    // ✅ NEW: Determine if this helper is Primary or Secondary
+    var helperType = '';
+    if (currentUser.position.toLowerCase() === 'helper' && truck) {
+      var helpersToday = allAttendance.filter(function(a) {
+        return a.date === todayStr 
+          && (a.truck || '').toLowerCase() === truck.toLowerCase()
+          && getPosition(a.name).toLowerCase() === 'helper';
+      });
+      
+      helperType = helpersToday.length === 0 ? 'Primary' : 'Secondary';
+    }
+    
+    var row=[id,todayStr,currentUser.fullName,teamValue,crates,meal,truck,loc.address,String(loc.lat),String(loc.lng),time,helperType];
+    
     document.getElementById('saving-text').textContent='Recording attendance...';
-    apiAppend(TAB_ATTENDANCE+'!A:K',[row]).then(function(){
+    apiAppend(TAB_ATTENDANCE+'!A:L',[row]).then(function(){
       hideSaving();
-      var rec={rowIndex:allAttendance.length+2,id:id,date:todayStr,name:currentUser.fullName,
+      var rec={
+        rowIndex:allAttendance.length+2,id:id,date:todayStr,name:currentUser.fullName,
         team:teamValue,crates:crates,meal:meal,truck:truck,location:loc.address,
-        lat:String(loc.lat),lng:String(loc.lng),time:time};
+        lat:String(loc.lat),lng:String(loc.lng),time:time,helperType:helperType
+      };
       allAttendance.push(rec); myRecords.push(rec);
       filteredAttendance=allAttendance.slice();
       buildColorMap(); renderLegend(); showDoneState(rec); renderCalendar();
+      
+      // ✅ NEW: Show reminder if Primary Helper
+      if (helperType === 'Primary') {
+        setTimeout(function() {
+          showToast('📦 You are the PRIMARY HELPER for ' + truck + '. Please file the Crates record.');
+        }, 2000);
+      }
+      
       showToast('✅ Attendance recorded!');
     }).catch(function(err){ hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err); });
   }).catch(function(err){ hideSaving(); showToast('❌ Connection error. Try again.'); console.error(err); });
@@ -1015,10 +1058,19 @@ function selectDay(dateStr) {
       var mealBadge=r.meal==='Yes'?'<span class="badge green">Full Allowance</span>':r.meal==='Meals Only'?'<span class="badge orange">Meals Only</span>':'<span class="badge">No Allowance</span>';
       var teamBadge=r.team==='Yes'?'<span class="badge green">2-Man Team</span>':'';
       var posBadge='<span class="badge">'+(pos||'Helper')+'</span>';
+      
+      // ✅ NEW: Show helper type badge
+      var helperTypeBadge = '';
+      if (r.helperType === 'Primary') {
+        helperTypeBadge = '<span class="badge" style="background:var(--red);color:#fff">👑 Primary</span>';
+      } else if (r.helperType === 'Secondary') {
+        helperTypeBadge = '<span class="badge" style="background:var(--text3);color:#fff">2nd Helper</span>';
+      }
+      
       return '<div class="att-item" onclick="openAttDetail('+r.rowIndex+')" style="border-left:4px solid '+c.bg+'">'
         +'<div class="att-name" style="color:'+c.bg+'">'+r.name+'</div>'
         +'<div class="att-meta">'+(r.time||'')+(r.truck?' · 🚛 '+r.truck:'')+'</div>'
-        +'<div class="att-badges">'+(r.crates?'<span class="badge">'+r.crates+' crates</span>':'')+mealBadge+teamBadge+posBadge+'</div></div>';
+        +'<div class="att-badges">'+(r.crates?'<span class="badge">'+r.crates+' crates</span>':'')+mealBadge+teamBadge+posBadge+helperTypeBadge+'</div></div>';
     }).join('');
   }
   panel.classList.add('show');
@@ -1052,10 +1104,25 @@ function openAttDetail(rowIndex) {
       +'</div>'
       +'<button onclick="promptDeleteAtt()" style="width:100%;margin-top:10px;padding:12px;background:none;border:none;color:var(--red);font-size:13px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Delete Record</button>';
   } else {
-    body.innerHTML=[['Date',rec.date],['Time',rec.time||'—'],['Position',getPosition(rec.name)],
-      ['2-Man Team',rec.team||'No'],['Crates',rec.crates||'0'],
-      ['Meal Allowance',rec.meal],['Truck',rec.truck||'—'],['Location',rec.location||'—']]
-      .map(function(r){ return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>'; }).join('')
+    var rows = [
+      ['Date',rec.date],
+      ['Time',rec.time||'—'],
+      ['Position',getPosition(rec.name)],
+      ['2-Man Team',rec.team||'No'],
+      ['Crates',rec.crates||'0'],
+      ['Meal Allowance',rec.meal],
+      ['Truck',rec.truck||'—'],
+      ['Location',rec.location||'—']
+    ];
+    
+    // ✅ ADD: Show helper type
+    if (rec.helperType) {
+      rows.push(['Helper Type', rec.helperType === 'Primary' ? '👑 Primary' : 'Secondary']);
+    }
+    
+    body.innerHTML = rows.map(function(r){ 
+      return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>'; 
+    }).join('')
       +'<div style="height:16px"></div>'
       +'<button onclick="closeAttSheet()" style="width:100%;padding:14px;background:var(--bg);border:none;border-radius:14px;box-shadow:var(--neu-sm);font-size:15px;font-weight:600;font-family:Inter,sans-serif;color:var(--text2);cursor:pointer">Close</button>';
   }
@@ -1074,9 +1141,9 @@ function saveEditAtt() {
   var meal=document.getElementById('edit-meal').value;
   var truck=document.getElementById('edit-truck').value;
   var loc=document.getElementById('edit-loc').value.trim();
-  var row=[selectedAtt.id,selectedAtt.date,selectedAtt.name,editTeamVal,crates,meal,truck,loc,selectedAtt.lat,selectedAtt.lng,selectedAtt.time];
+  var row=[selectedAtt.id,selectedAtt.date,selectedAtt.name,editTeamVal,crates,meal,truck,loc,selectedAtt.lat,selectedAtt.lng,selectedAtt.time,selectedAtt.helperType];
   showSaving('Updating...');
-  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex,[row]).then(function(){
+  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':L'+selectedAtt.rowIndex,[row]).then(function(){
     hideSaving(); Object.assign(selectedAtt,{team:editTeamVal,crates:crates,meal:meal,truck:truck,location:loc});
     closeAttSheet(); renderCalendar(); if (selectedDay) selectDay(selectedDay);
     if (selectedAtt.name.toLowerCase()===currentUser.fullName.toLowerCase()&&selectedAtt.date===todayStr) showDoneState(selectedAtt);
@@ -1092,7 +1159,7 @@ function promptDeleteAtt() {
 function doDeleteAtt() {
   if (!selectedAtt||!isAdmin) return;
   closeConfirm(); showSaving('Deleting...');
-  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':K'+selectedAtt.rowIndex,[['','','','','','','','','','','']])
+  apiUpdate(TAB_ATTENDANCE+'!A'+selectedAtt.rowIndex+':L'+selectedAtt.rowIndex,[['','','','','','','','','','','','']])
     .then(function(){
       hideSaving();
       allAttendance=allAttendance.filter(function(r){ return r.rowIndex!==selectedAtt.rowIndex; });
@@ -1127,13 +1194,25 @@ function addManualAttendance() {
     var parts=time.split(':'), h=parseInt(parts[0]), m=parts[1], ampm=h>=12?'PM':'AM';
     h=h%12||12; timeFormatted=h+':'+m+' '+ampm;
   }
+  
+  // ✅ NEW: Determine helper type for manual entry
+  var helperType = '';
+  if (getPosition(empName).toLowerCase() === 'helper' && truck) {
+    var helpersOnDate = allAttendance.filter(function(a) {
+      return a.date === date 
+        && (a.truck || '').toLowerCase() === truck.toLowerCase()
+        && getPosition(a.name).toLowerCase() === 'helper';
+    });
+    helperType = helpersOnDate.length === 0 ? 'Primary' : 'Secondary';
+  }
+  
   showSaving('Adding attendance...');
   var id='ATT-'+date.replace(/-/g,'')+'-'+pad(allAttendance.length+1);
-  var row=[id,date,empName,manualTeamValue,crates,meal,truck,location,'','',timeFormatted];
-  apiAppend(TAB_ATTENDANCE+'!A:K',[row]).then(function(){
+  var row=[id,date,empName,manualTeamValue,crates,meal,truck,location,'','',timeFormatted,helperType];
+  apiAppend(TAB_ATTENDANCE+'!A:L',[row]).then(function(){
     hideSaving();
     var rec={rowIndex:allAttendance.length+2,id:id,date:date,name:empName,team:manualTeamValue,
-      crates:crates,meal:meal,truck:truck,location:location,lat:'',lng:'',time:timeFormatted};
+      crates:crates,meal:meal,truck:truck,location:location,lat:'',lng:'',time:timeFormatted,helperType:helperType};
     allAttendance.push(rec); filteredAttendance=allAttendance.slice();
     buildColorMap(); renderLegend(); renderCalendar();
     document.getElementById('manual-emp').value=''; document.getElementById('manual-date').value='';
@@ -1325,10 +1404,6 @@ function renderReport(trips, fromStr, toStr) {
   document.getElementById('rpt-loading').style.display='none';
   document.getElementById('rpt-summary').style.display='block';
 
-  // Separate trips by type:
-  // Fresh (non-Masbate) — strict compliance check
-  // Masbate — exception, all can mark 2-Man Team regardless of count
-  // Frozen — no 2-man team requirement
   var freshTrips   = trips.filter(function(t){ return t.type==='Fresh' && t.route.indexOf('Masbate')===-1; });
   var frozenTrips  = trips.filter(function(t){ return t.type==='Frozen'; });
   var masbateTrips = trips.filter(function(t){ return t.route.indexOf('Masbate')>-1; });
@@ -1339,37 +1414,41 @@ function renderReport(trips, fromStr, toStr) {
     var date=trip.deliveryDate;
     var truck=(trip.truck||'').toLowerCase();
 
-    // All attendance for this truck on this date
     var attOnDay=allAttendance.filter(function(a){
       return a.date===date && (a.truck||'').toLowerCase()===truck;
     });
 
     var totalAtt=attOnDay.length;
 
-    // Classify each attendee using Position from Employees sheet
-    // Driver = Position is 'Driver', Helper = Position is 'Helper'
     var helpers = attOnDay.filter(function(a){ return getPosition(a.name).toLowerCase()==='helper'; });
     var drivers  = attOnDay.filter(function(a){ return getPosition(a.name).toLowerCase()==='driver'; });
 
-    // 2-Man Team = exactly 2 total attendees (1 driver + 1 helper) for Fresh trips
     var is2ManTeam = totalAtt===2 && helpers.length===1 && drivers.length===1;
 
-    // Crates records for this truck+date from Employee Records
-    var cratesRecs=allRecords.filter(function(r){
-      return r.date===date && (r.truck||'').toLowerCase()===truck && r.docType==='Crates';
+    // ✅ NEW: Find primary helper
+    var primaryHelper = helpers.find(function(h){ return h.helperType === 'Primary'; });
+
+    // ✅ NEW: Check if Crates record exists from PRIMARY helper
+    var cratesRec = allRecords.find(function(r){
+      return r.date===date 
+        && (r.truck||'').toLowerCase()===truck 
+        && r.docType==='Crates';
     });
 
-    // Per-person detail — only helpers need Crates records, drivers are excluded
+    var hasCratesRecord = !!cratesRec;
+    var cratesFromPrimary = false;
+    
+    if (cratesRec && primaryHelper) {
+      cratesFromPrimary = cratesRec.empName.toLowerCase() === primaryHelper.name.toLowerCase();
+    }
+
     var empDetails=attOnDay.map(function(a){
       var isHelper=getPosition(a.name).toLowerCase()==='helper';
-      var hasCrates=cratesRecs.some(function(r){ return r.empName.toLowerCase()===a.name.toLowerCase(); });
-      return {name:a.name, isHelper:isHelper, hasCrates:hasCrates, position:getPosition(a.name)};
+      var isPrimary=a.helperType==='Primary';
+      var hasCrates=cratesRec && cratesRec.empName.toLowerCase()===a.name.toLowerCase();
+      return {name:a.name, isHelper:isHelper, isPrimary:isPrimary, hasCrates:hasCrates, position:getPosition(a.name)};
     });
 
-    var missingCrates=empDetails.filter(function(e){ return e.isHelper && !e.hasCrates; });
-    var hasAllCrates=missingCrates.length===0 && helpers.length>0;
-
-    // Build issues with clear English explanations and fix instructions
     var issues=[];
 
     if (totalAtt===0) {
@@ -1382,28 +1461,38 @@ function renderReport(trips, fromStr, toStr) {
         msg: 'No helper checked in for this truck. Only driver(s) recorded: '+drivers.map(function(a){ return a.name.split(' ')[0]; }).join(', ')+'.',
         fix: 'A Fresh delivery requires at least 1 helper. The helper must check in and select this truck.'
       });
+    } else if (!primaryHelper) {
+      issues.push({
+        msg: 'No primary helper identified for this truck.',
+        fix: 'The first helper to check in should be marked as Primary automatically. Check attendance records.'
+      });
     }
 
-    if (helpers.length>0 && !hasAllCrates) {
+    // ✅ NEW: Check if PRIMARY helper filed Crates record
+    if (primaryHelper && !hasCratesRecord) {
       issues.push({
-        msg: 'Missing Crates record for: '+missingCrates.map(function(e){ return e.name.split(' ')[0]; }).join(', ')+'.',
-        fix: 'The helper(s) listed above must file a Crates record in Employee Records for this date and truck.'
+        msg: 'Missing Crates record from primary helper: ' + primaryHelper.name + '.',
+        fix: 'The primary helper (' + primaryHelper.name + ') must file a Crates record in Employee Records for this date and truck.'
+      });
+    } else if (hasCratesRecord && primaryHelper && !cratesFromPrimary) {
+      issues.push({
+        msg: 'Crates record filed by ' + cratesRec.empName + ', but primary helper is ' + primaryHelper.name + '.',
+        fix: 'Only the primary helper should file the Crates record. Admin should verify and correct if needed.'
       });
     }
 
     tripResults.push({
       trip:trip, attCount:totalAtt, helperCount:helpers.length, driverCount:drivers.length,
-      is2ManTeam:is2ManTeam, hasAllCrates:hasAllCrates,
+      is2ManTeam:is2ManTeam, primaryHelper:primaryHelper?primaryHelper.name:null,
+      hasCratesRecord:hasCratesRecord, cratesFromPrimary:cratesFromPrimary,
       empDetails:empDetails, issues:issues, ok:issues.length===0
     });
   });
 
-  // Crates records within the report period
   var cratesInPeriod=allRecords.filter(function(r){ return r.date>=fromStr && r.date<=toStr && r.docType==='Crates'; });
   var okTrips=tripResults.filter(function(t){ return t.ok; }).length;
   var flagTrips=tripResults.filter(function(t){ return !t.ok; }).length;
 
-  // Stat grid
   document.getElementById('rpt-stat-grid').innerHTML=[
     {val:trips.length,      lbl:'Total Trips',    col:'var(--red)'},
     {val:freshTrips.length, lbl:'Fresh (checked)',col:'var(--orange)'},
@@ -1413,7 +1502,6 @@ function renderReport(trips, fromStr, toStr) {
     return '<div class="rpt-stat"><div class="rpt-stat-val" style="color:'+s.col+'">'+s.val+'</div><div class="rpt-stat-lbl">'+s.lbl+'</div></div>';
   }).join('');
 
-  // Flagged trips card
   var flagCard=document.getElementById('rpt-flags-card');
   var allClearCard=document.getElementById('rpt-all-clear');
 
@@ -1442,13 +1530,12 @@ function renderReport(trips, fromStr, toStr) {
       }).join('');
   }
 
-  // Fresh trip compliance list
+  // ✅ UPDATED: Fresh trip compliance display with primary/secondary distinction
   document.getElementById('rpt-trips-list').innerHTML=freshTrips.length===0
     ? '<div class="empty-hint">No Fresh trips in this period.</div>'
     : tripResults.map(function(t){
         var rowCls='rpt-trip-row'+(t.ok?'':(t.issues.length>1?' has-issue':' partial'));
 
-        // Team composition label
         var teamLabel;
         if (t.helperCount===0) {
           teamLabel='No helpers recorded — only driver(s) checked in';
@@ -1460,7 +1547,10 @@ function renderReport(trips, fromStr, toStr) {
 
         var checks=[
           {ok:t.helperCount>=1, lbl:teamLabel},
-          {ok:t.hasAllCrates,   lbl:'All helpers have Crates record'}
+          {ok:t.hasCratesRecord && t.cratesFromPrimary, 
+           lbl:t.primaryHelper 
+             ? ('Primary helper ('+t.primaryHelper.split(' ')[0]+') '+(t.hasCratesRecord && t.cratesFromPrimary?'has':'missing')+' Crates record')
+             : 'No primary helper identified'}
         ];
 
         return '<div class="'+rowCls+'">'
@@ -1478,20 +1568,22 @@ function renderReport(trips, fromStr, toStr) {
             ? '<div class="rpt-emp-pills">'
               +t.empDetails.map(function(e){
                   if (!e.isHelper) {
-                    // Driver — shown in gray, no crates requirement
                     return '<span class="rpt-emp-pill" style="background:var(--text3);color:#fff">'
                       +e.name.split(' ')[0]+' (driver)</span>';
                   }
-                  // Helper — must have Crates record
-                  return '<span class="rpt-emp-pill '+(e.hasCrates?'ok':'missing')+'">'
-                    +e.name.split(' ')[0]+(e.hasCrates?' ✓':' ✕ no crates')+'</span>';
+                  if (e.isPrimary) {
+                    return '<span class="rpt-emp-pill '+(e.hasCrates?'ok':'missing')+'">'
+                      +'👑 '+e.name.split(' ')[0]+(e.hasCrates?' ✓':' ✕ no crates')+'</span>';
+                  } else {
+                    return '<span class="rpt-emp-pill" style="background:var(--text3);color:#fff">'
+                      +e.name.split(' ')[0]+' (2nd helper)</span>';
+                  }
                 }).join('')
               +'</div>'
             : '<div style="font-size:11px;color:var(--red);margin-top:6px">— No attendance found —</div>')
           +'</div>';
       }).join('');
 
-  // Crates return compliance per helper
   var byEmp={};
   cratesInPeriod.forEach(function(r){
     if (!byEmp[r.empName]) byEmp[r.empName]={total:0,liq:0};
@@ -1519,7 +1611,6 @@ function renderReport(trips, fromStr, toStr) {
           +'</div>';
       }).join('');
 
-  // Other trips: Frozen + Masbate (informational)
   var otherTrips=frozenTrips.concat(masbateTrips);
   document.getElementById('rpt-other-list').innerHTML=otherTrips.length===0
     ? '<div class="empty-hint">No Frozen or Masbate trips in this period.</div>'
