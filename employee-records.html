@@ -498,7 +498,12 @@ function buildTasks(){
     });
     var cratesCount=ar?(ar.crates||'0'):'0';
 
-    ['POD','Crates'].forEach(function(type){
+    // Crates task only for Fresh trips (Frozen and Masbate have no crates)
+    var isMasbate = (trip.route||'').toLowerCase().indexOf('masbate') > -1;
+    var isFresh   = (trip.type||'').toLowerCase() === 'fresh';
+    var taskTypes = (isFresh && !isMasbate) ? ['POD','Crates'] : ['POD'];
+
+    taskTypes.forEach(function(type){
       var key=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|'+type;
       if (seen[key]) return; seen[key]=true;
 
