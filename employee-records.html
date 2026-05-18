@@ -18,15 +18,9 @@
   --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
   --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
 }
-body.dark {
-  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
-  --text:#e8e8ec;--text2:#888;--text3:#555;
-  --green:#22c55e;--orange:#f59e0b;--blue:#60a5fa;
-}
+body.dark{--bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;--text:#e8e8ec;--text2:#888;--text3:#555;--green:#22c55e;--orange:#f59e0b;--blue:#60a5fa;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
-
-/* TOPBAR */
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.07);position:sticky;top:0;z-index:50}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .tb-left{display:flex;align-items:center;gap:10px}
@@ -37,22 +31,14 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .tb-btn{width:36px;height:36px;border-radius:12px;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative}
 .tb-btn:active{box-shadow:var(--neu-in)}
 .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-
-/* PAGE */
 .screen{display:flex;flex-direction:column;height:100dvh}
 .page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
-
-/* TABS */
 .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px}
 .tab{flex:1;padding:10px 6px;border:none;background:none;border-radius:10px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all .2s}
 .tab.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
-
-/* CARDS */
 .neu-card{background:var(--bg);border-radius:18px;box-shadow:var(--neu-out);padding:18px;margin-bottom:14px}
 .card-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
-
-/* TASK CARDS */
-.task-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px;border-left:4px solid var(--text3);cursor:pointer;transition:box-shadow .15s}
+.task-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px;border-left:4px solid var(--text3);cursor:pointer}
 .task-card:active{box-shadow:var(--neu-in)}
 .task-card.status-pending{border-left-color:var(--orange)}
 .task-card.status-submitted{border-left-color:var(--green)}
@@ -60,7 +46,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .task-card.status-late{border-left-color:var(--blue)}
 .task-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .task-title{font-size:14px;font-weight:700;color:var(--text)}
-.task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;flex-shrink:0;margin-left:6px}
 .badge-pending{background:rgba(245,158,11,.15);color:var(--orange)}
 .badge-submitted{background:rgba(22,163,74,.15);color:var(--green)}
 .badge-overdue{background:rgba(179,37,51,.15);color:var(--red)}
@@ -68,17 +54,11 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .task-meta{font-size:11px;color:var(--text2);display:flex;flex-direction:column;gap:4px}
 .task-meta-row{display:flex;align-items:center;gap:6px}
 .task-due{font-size:11px;font-weight:600;margin-top:6px}
-.task-due.overdue{color:var(--red)}
-.task-due.ok{color:var(--green)}
-.task-due.warning{color:var(--orange)}
-
-/* FILTER BAR */
+.task-due.overdue{color:var(--red)}.task-due.ok{color:var(--green)}.task-due.warning{color:var(--orange)}
 .filter-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .filter-bar::-webkit-scrollbar{display:none}
-.filter-chip{padding:7px 14px;border-radius:20px;background:var(--bg);box-shadow:var(--neu-sm);font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .2s}
+.filter-chip{padding:7px 14px;border-radius:20px;background:var(--bg);box-shadow:var(--neu-sm);font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;cursor:pointer;border:none;font-family:'Inter',sans-serif}
 .filter-chip.active{box-shadow:var(--neu-in);color:var(--red)}
-
-/* SHEET */
 .sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end}
 .sheet-overlay.open{display:flex}
 .sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:92dvh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.16,1,.3,1)}
@@ -86,56 +66,37 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .sheet-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;opacity:.3}
 .sheet-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
 .sheet-sub{font-size:12px;color:var(--text2);margin-bottom:18px}
-
-/* FORM */
 .fg{margin-bottom:14px}
 .fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
 .fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none}
 .fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,.2)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-/* RADIO TOGGLE */
-.toggle-group{display:flex;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);overflow:hidden}
-.tg-btn{flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all .2s}
-.tg-btn.active-yes{background:var(--green);color:#fff}
-.tg-btn.active-no{background:var(--orange);color:#fff}
-
-/* SIG CANVAS */
 .sig-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:10px}
 .sig-canvas{width:100%;height:110px;border-radius:8px;background:#fff;cursor:crosshair;touch-action:none;display:block}
 .sig-actions{display:flex;gap:8px;margin-top:8px}
 .sig-btn{flex:1;padding:8px;border-radius:8px;background:var(--bg);box-shadow:var(--neu-sm);font-size:12px;font-weight:600;color:var(--text2);border:none;cursor:pointer;font-family:'Inter',sans-serif}
 .sig-btn:active{box-shadow:var(--neu-in)}
-
-/* IMAGE UPLOAD */
 .img-upload-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:18px;text-align:center;cursor:pointer;border:2px dashed var(--text3)}
 .img-upload-box p{font-size:12px;color:var(--text2);margin-top:6px}
 .img-preview{margin-top:10px;border-radius:10px;overflow:hidden;box-shadow:var(--neu-sm);position:relative}
 .img-preview img{width:100%;display:block;max-height:180px;object-fit:contain}
 .img-remove{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700}
-
-/* BTN */
-.btn{width:100%;padding:15px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border:none;transition:all .15s}
-.btn-primary{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,.35)}
+.btn{width:100%;padding:15px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border:none}
+.btn-primary{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,.35);margin-bottom:8px}
 .btn-primary:active{transform:scale(.98)}
-.btn-primary:disabled{background:var(--text3);box-shadow:var(--neu-sm);cursor:not-allowed;transform:none}
 .btn-danger{background:none;color:var(--red);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;border:none;width:100%;padding:12px;cursor:pointer}
 .btn-secondary{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
 .btn-secondary:active{box-shadow:var(--neu-in)}
-
-/* DETAIL ROWS */
-.dt-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05)}
+.dt-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05)}
 body.dark .dt-row{border-bottom-color:rgba(255,255,255,.04)}
 .dt-row:last-child{border-bottom:none}
-.dt-label{font-size:11px;color:var(--text3);font-weight:600}
+.dt-label{font-size:11px;color:var(--text3);font-weight:600;flex-shrink:0;padding-right:8px}
 .dt-val{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:65%}
-
-/* REPORT */
 .rpt-stat{background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px;text-align:center}
 .rpt-stat-val{font-size:26px;font-weight:700;line-height:1;margin-bottom:4px}
 .rpt-stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3)}
 .rpt-emp-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px}
-.rpt-emp-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.rpt-emp-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .rpt-clearance{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
 .cleared{background:rgba(22,163,74,.15);color:var(--green)}
 .not-cleared{background:rgba(179,37,51,.15);color:var(--red)}
@@ -143,16 +104,10 @@ body.dark .dt-row{border-bottom-color:rgba(255,255,255,.04)}
 body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
 .rpt-row:last-child{border-bottom:none}
 .rpt-row-val{font-weight:600}
-.rpt-row-val.ok{color:var(--green)}
-.rpt-row-val.warn{color:var(--orange)}
-.rpt-row-val.bad{color:var(--red)}
-
-/* PERIOD BTNS */
+.rpt-row-val.ok{color:var(--green)}.rpt-row-val.warn{color:var(--orange)}.rpt-row-val.bad{color:var(--red)}
 .period-row{display:flex;gap:8px;margin-bottom:14px}
 .period-btn{flex:1;padding:10px 6px;border:none;background:var(--bg);border-radius:10px;box-shadow:var(--neu-sm);font-size:11px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer}
 .period-btn.active{box-shadow:var(--neu-in);color:var(--red)}
-
-/* CONFIRM */
 .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;padding:20px}
 .confirm-overlay.open{display:flex}
 .confirm-box{background:var(--bg);border-radius:22px;padding:24px;max-width:340px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)}
@@ -162,8 +117,6 @@ body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
 .cb{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none}
 .cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
 .cb-confirm{background:var(--red);color:#fff}
-
-/* SAVING / TOAST */
 .saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center}
 .saving-overlay.show{display:flex}
 .saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
@@ -172,13 +125,9 @@ body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s}
 .toast.show{opacity:1}
-
-/* EMPTY */
 .empty-hint{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
 .loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:var(--text3);font-size:13px}
 .spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
-
-/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 14px rgba(0,0,0,.07);z-index:40}
 body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
 .bnav{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
@@ -186,8 +135,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
 .bnav-icon{width:42px;height:42px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center}
 .bnav:not(.active) .bnav-icon{box-shadow:var(--neu-sm)}
 .bnav.active .bnav-icon{box-shadow:var(--neu-in)}
-
-/* NOTIF ITEMS */
 .notif-item{background:var(--bg2);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
 .notif-icon{font-size:20px;flex-shrink:0}
 .notif-text{font-size:13px;color:var(--text);margin-bottom:2px}
@@ -215,10 +162,8 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <button class="tab" id="tab-all" onclick="switchTab('all')" style="display:none">All Records</button>
       <button class="tab" id="tab-report" onclick="switchTab('report')" style="display:none">Report</button>
     </div>
-
     <div id="loading-main" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
 
-    <!-- TASKS TAB -->
     <div id="content-tasks" style="display:none">
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterTasks('all',this)">All</button>
@@ -231,7 +176,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <div id="tasks-list"></div>
     </div>
 
-    <!-- ALL RECORDS TAB (ADMIN) -->
     <div id="content-all" style="display:none">
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterAll('all',this)">All</button>
@@ -244,7 +188,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <div id="all-list"></div>
     </div>
 
-    <!-- REPORT TAB (ADMIN) -->
     <div id="content-report" style="display:none">
       <div class="neu-card" style="padding:14px;margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Payroll Period</div>
@@ -267,7 +210,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   </div>
 </div>
 
-<!-- TASK DETAIL / EDIT SHEET -->
 <div class="sheet-overlay" id="task-sheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -277,7 +219,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   </div>
 </div>
 
-<!-- NOTIF SHEET -->
 <div class="sheet-overlay" id="notif-sheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -288,7 +229,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   </div>
 </div>
 
-<!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-title" id="confirm-title">Confirm</div>
@@ -299,1002 +239,715 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
     </div>
   </div>
 </div>
-
-<div class="saving-overlay" id="saving-overlay">
-  <div class="saving-box">
-    <div class="saving-spinner"></div>
-    <div class="saving-text" id="saving-text">Saving...</div>
-  </div>
-</div>
+<div class="saving-overlay" id="saving-overlay"><div class="saving-box"><div class="saving-spinner"></div><div class="saving-text" id="saving-text">Saving...</div></div></div>
 <div class="toast" id="toast"></div>
 
-<!-- BOTTOM NAV -->
 <div class="bottom-nav">
-  <button class="bnav" onclick="location.href='index.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>Home
-  </button>
-  <button class="bnav" onclick="location.href='trucks.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>Trucks
-  </button>
-  <button class="bnav" onclick="location.href='trips.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>Trips
-  </button>
-  <button class="bnav" onclick="location.href='billing.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Billing
-  </button>
-  <button class="bnav active">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2"/></svg></div>Records
-  </button>
+  <button class="bnav" onclick="location.href='index.html'"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>Home</button>
+  <button class="bnav" onclick="location.href='trucks.html'"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>Trucks</button>
+  <button class="bnav" onclick="location.href='trips.html'"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>Trips</button>
+  <button class="bnav" onclick="location.href='billing.html'"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Billing</button>
+  <button class="bnav active"><div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2"/></svg></div>Records</button>
 </div>
 
 <script>
 // ═══ CONFIG ═══════════════════════════════════════════
-var SHEET_ID        = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-var TAB_TRIPS       = 'Trips';
-var TAB_ATTENDANCE  = 'Attendance';
-var TAB_EMPLOYEES   = 'Employees';
-var TAB_RECORDS     = 'Records';
+var SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+var TAB_TRIPS      = 'Trips';
+var TAB_ATTENDANCE = 'Attendance';
+var TAB_EMPLOYEES  = 'Employees';
+var TAB_RECORDS    = 'Records';
 
-// ═══ ROSTER ROTATION CONFIG ═══════════════════════════
-// Anchor: Week of May 18–24, 2026
-// Trucks rotate: each week, helpers shift UP by 1 (CAH←CBQ←CAN←NHE←CBJ←CAH)
-var TRUCKS = ['CAH', 'CBQ', 'CAN', 'NHE', 'CBJ'];
+// ═══ EXISTING RECORDS SHEET STRUCTURE ═════════════════
+// A=ID/RowNum  B=Employee Name  C=Date  D=Truck
+// E=Document Type ("Proof of Deliveries" | "Crates")
+// F=Number  G=Liquidated/Returned (Yes/No)
+// H=Acknowledge By  I=Signature  J=Picture  K=Comments
 
-// Anchor assignment for week of May 18, 2026 (Monday)
-var ANCHOR_DATE   = new Date(2026, 4, 18); // May 18, 2026 (Monday)
-var ANCHOR_ASSIGN = {
-  'CAH': 'Jessie Briones',
-  'CBQ': 'Anewlesis Amor',
-  'CAN': 'Joey Mison',
-  'NHE': 'John Richard Cordovilla',
-  'CBJ': 'Michael Tibayan'
-};
-// Helper list in truck order for anchor week
+// ═══ ROSTER ROTATION ══════════════════════════════════
+// Anchor: Week of May 18-24, 2026
+// Rotation: each week helpers shift UP by 1 truck
+var TRUCKS       = ['CAH','CBQ','CAN','NHE','CBJ'];
+var ANCHOR_DATE  = new Date(2026,4,18); // May 18, 2026 Monday
 var HELPER_ORDER = [
-  'Jessie Briones',       // CAH index 0
-  'Anewlesis Amor',       // CBQ index 1
-  'Joey Mison',           // CAN index 2
-  'John Richard Cordovilla', // NHE index 3
-  'Michael Tibayan'       // CBJ index 4
+  'Jessie Briones',           // CAH anchor week
+  'Anewlesis Amor',           // CBQ
+  'Joey Mison',               // CAN
+  'John Richard Cordovilla',  // NHE
+  'Michael Tibayan'           // CBJ
 ];
 
 // ═══ STATE ════════════════════════════════════════════
-var token       = localStorage.getItem('pedroex-token') || '';
-var isAdmin     = false;
-var currentUser = null;
-var allTrips    = [];
-var allAtt      = [];
-var allEmployees= [];
-var allRecords  = [];
-var generatedTasks = []; // computed tasks from trips+attendance+roster
-var taskFilter  = 'all';
-var allFilter   = 'all';
-var rptPeriod   = '1st';
-var selectedTask= null;
-var sigCanvas, sigCtx, isDrawing = false, sigDrawn = false;
-var uploadedImage = null;
+var token          = localStorage.getItem('pedroex-token') || '';
+var isAdmin        = false;
+var currentUser    = null;
+var allTrips       = [];
+var allAtt         = [];
+var allEmployees   = [];
+var allRecords     = [];
+var generatedTasks = [];
+var taskFilter     = 'all';
+var allFilter      = 'all';
+var rptPeriod      = '1st';
+var selectedTask   = null;
+var sigCanvas, sigCtx, sigDrawn = false;
+var uploadedImage  = null;
 var currentExistingSignature = null;
 
-// ═══ ROSTER HELPERS ═══════════════════════════════════
-function getMondayOfWeek(date) {
-  var d = new Date(date);
-  d.setHours(0,0,0,0);
-  var day = d.getDay(); // 0=Sun
-  var diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  return d;
+// ═══ ROSTER ═══════════════════════════════════════════
+function getMondayOfWeek(d) {
+  var dt = new Date(d); dt.setHours(0,0,0,0);
+  var day = dt.getDay();
+  dt.setDate(dt.getDate() + (day===0 ? -6 : 1-day));
+  return dt;
 }
-
 function getScheduledHelper(truck, date) {
-  var truckIdx = TRUCKS.indexOf(truck);
-  if (truckIdx === -1) return null;
-
-  var anchorMonday = getMondayOfWeek(ANCHOR_DATE);
-  var targetMonday = getMondayOfWeek(date);
-  var weekDiff = Math.round((targetMonday - anchorMonday) / (7 * 24 * 60 * 60 * 1000));
-
-  // shift: each week, helpers rotate UP by 1
-  // anchor week: CAH=0,CBQ=1,CAN=2,NHE=3,CBJ=4
-  // next week: CAH=4(prev CBJ), CBQ=0(prev CAH), etc.
-  // so for a given week offset, helper for truck[i] = HELPER_ORDER[(i - weekDiff + 500*5) % 5]
-  var helperIdx = ((truckIdx - weekDiff) % 5 + 500) % 5;
-  return HELPER_ORDER[helperIdx];
+  var idx = TRUCKS.indexOf(truck);
+  if (idx===-1) return null;
+  var wDiff = Math.round((getMondayOfWeek(date) - getMondayOfWeek(ANCHOR_DATE)) / (7*864e5));
+  return HELPER_ORDER[((idx - wDiff) % 5 + 500) % 5];
 }
 
-// ═══ VALIDITY RULES ═══════════════════════════════════
-function getPODDueDate(tripDate, route) {
-  var d = new Date(tripDate + 'T00:00:00');
-  var isMaxbate = (route || '').toLowerCase().indexOf('masbate') > -1;
-
-  if (isMaxbate) {
-    d.setDate(d.getDate() + 4);
-    return d;
-  }
-
-  // next business day; if Saturday (+2 to Monday), if Sunday (+1)
-  var dow = d.getDay(); // 0=Sun,6=Sat
-  if (dow === 6) { d.setDate(d.getDate() + 2); } // Saturday trip → Monday
-  else { d.setDate(d.getDate() + 1); }
-  // skip Sunday
-  if (d.getDay() === 0) d.setDate(d.getDate() + 1);
+// ═══ DUE DATES ════════════════════════════════════════
+function getPODDue(tripDate, route) {
+  var d = new Date(tripDate+'T00:00:00');
+  if ((route||'').toLowerCase().indexOf('masbate')>-1) { d.setDate(d.getDate()+4); return d; }
+  d.setDate(d.getDate() + (d.getDay()===6 ? 2 : 1));
+  if (d.getDay()===0) d.setDate(d.getDate()+1);
   return d;
 }
-
-function getCratesDueDate(tripDate) {
-  var d = new Date(tripDate + 'T00:00:00');
-  d.setDate(d.getDate() + 7);
-  return d;
+function getCratesDue(tripDate) {
+  var d = new Date(tripDate+'T00:00:00');
+  d.setDate(d.getDate()+7); return d;
 }
 
-function getTaskStatus(task, today) {
+// ═══ MATCH EXISTING RECORD ════════════════════════════
+// Key: EmpName (lowercase) + Date + Truck (lowercase) + DocType
+function findExisting(helperName, date, truck, taskType) {
+  var docType = taskType==='POD' ? 'Proof of Deliveries' : 'Crates';
+  return allRecords.find(function(r){
+    return r.empName.toLowerCase() === helperName.toLowerCase()
+        && r.date  === date
+        && r.truck.trim().toLowerCase() === truck.trim().toLowerCase()
+        && r.docType === docType;
+  });
+}
+
+// ═══ STATUS ═══════════════════════════════════════════
+function getStatus(task, today) {
   if (task.submitted) {
-    var subDate = new Date(task.submissionDate + 'T00:00:00');
-    var dueDate = new Date(task.dueDate);
-    dueDate.setHours(23,59,59);
-    if (subDate > dueDate) return 'late';
-    return 'submitted';
+    // late if trip date already past due (best proxy since sheet has no submission date col)
+    return task.late ? 'late' : 'submitted';
   }
-  var due = new Date(task.dueDate);
-  due.setHours(23,59,59);
-  if (today > due) return 'overdue';
-  return 'pending';
+  return today > new Date(task.dueDate+'T23:59:59') ? 'overdue' : 'pending';
 }
-
-function dueDateLabel(dueDateStr, status) {
-  var due = new Date(dueDateStr);
-  var today = new Date(); today.setHours(0,0,0,0);
-  var diff = Math.round((due - today) / 86400000);
-  if (status === 'submitted') return '✓ Submitted';
-  if (status === 'late') return '⚠ Submitted Late';
-  if (status === 'overdue') return '⚠ Overdue by ' + Math.abs(diff) + ' day(s)';
-  if (diff === 0) return '⏰ Due today!';
-  if (diff === 1) return '⏰ Due tomorrow';
-  return '📅 Due in ' + diff + ' day(s)';
+function dueLabel(t) {
+  var due=new Date(t.dueDate+'T00:00:00'), today=new Date(); today.setHours(0,0,0,0);
+  var diff=Math.round((due-today)/864e5);
+  if (t.status==='submitted') return '✓ Submitted';
+  if (t.status==='late')      return '⚠ Submitted Late';
+  if (t.status==='overdue')   return '⚠ Overdue by '+Math.abs(diff)+' day(s)';
+  if (diff===0) return '⏰ Due today!';
+  if (diff===1) return '⏰ Due tomorrow';
+  return '📅 Due in '+diff+' day(s)';
 }
 
 // ═══ INIT ═════════════════════════════════════════════
-(function init() {
-  document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
-  var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-  if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
-
-  isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
-
-  if (isAdmin) {
-    document.getElementById('tab-all').style.display = '';
-    document.getElementById('tab-report').style.display = '';
+(function init(){
+  document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme')==='dark');
+  var expiry=parseInt(localStorage.getItem('pedroex-token-expiry')||'0');
+  if (!token||Date.now()>=expiry){ location.href='index.html'; return; }
+  isAdmin=(localStorage.getItem('pedroex-role')||'').toLowerCase()==='admin';
+  if (isAdmin){
+    document.getElementById('tab-all').style.display='';
+    document.getElementById('tab-report').style.display='';
   }
-
   loadAll();
 })();
 
 // ═══ LOAD ALL ═════════════════════════════════════════
-function loadAll() {
-  document.getElementById('loading-main').style.display = 'flex';
-  document.getElementById('content-tasks').style.display = 'none';
-
-  var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+function loadAll(){
+  var email=(localStorage.getItem('pedroex-email')||'').toLowerCase();
+  document.getElementById('loading-main').style.display='flex';
+  ['content-tasks','content-all','content-report'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.style.display='none';
+  });
 
   Promise.all([
-    apiGet(TAB_EMPLOYEES  + '!A2:E'),
-    apiGet(TAB_TRIPS      + '!A2:I'),
-    apiGet(TAB_ATTENDANCE + '!A2:L'),
-    apiGet(TAB_RECORDS    + '!A2:N')
-  ]).then(function(res) {
-    allEmployees = (res[0].values || []).filter(function(r){ return r[0]; }).map(function(r){
-      return {
-        email:    (r[0]||'').toLowerCase(),
-        firstName:r[1]||'',
-        lastName: r[2]||'',
-        role:     r[3]||'Employee',
-        position: r[4]||'Helper',
-        fullName: ((r[1]||'') + ' ' + (r[2]||'')).trim()
-      };
+    apiGet(TAB_EMPLOYEES+'!A2:E'),
+    apiGet(TAB_TRIPS+'!A2:I'),
+    apiGet(TAB_ATTENDANCE+'!A2:L'),
+    apiGet(TAB_RECORDS+'!A2:K')
+  ]).then(function(res){
+
+    allEmployees=(res[0].values||[]).filter(function(r){return r[0];}).map(function(r){
+      return {email:(r[0]||'').toLowerCase(),firstName:r[1]||'',lastName:r[2]||'',
+              role:r[3]||'Employee',position:r[4]||'Helper',
+              fullName:((r[1]||'')+' '+(r[2]||'')).trim()};
     });
 
-    var empRow = allEmployees.find(function(e){ return e.email === email; });
-    if (!empRow) {
-      document.getElementById('loading-main').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2)">Not registered. Contact admin.</div>';
+    var empRow=allEmployees.find(function(e){return e.email===email;});
+    if (!empRow){
+      document.getElementById('loading-main').innerHTML=
+        '<div style="text-align:center;padding:40px;color:var(--text2)">Not registered. Contact admin.</div>';
       return;
     }
-    currentUser = empRow;
+    currentUser=empRow;
 
-    allTrips = (res[1].values || []).filter(function(r){ return r[1]; }).map(function(r){
-      return {
-        id:           r[0]||'',
-        deliveryDate: r[1]||'',
-        truck:        r[2]||'',
-        shipmentDate: r[3]||'',
-        type:         r[4]||'',
-        shipmentNum:  r[5]||'',
-        billed:       r[6]||'',
-        route:        r[7]||'',
-        rate:         r[8]||''
-      };
+    allTrips=(res[1].values||[]).filter(function(r){return r[1];}).map(function(r){
+      return {id:r[0]||'',deliveryDate:r[1]||'',truck:r[2]||'',shipmentDate:r[3]||'',
+              type:r[4]||'',shipmentNum:r[5]||'',billed:r[6]||'',route:r[7]||'',rate:r[8]||''};
     });
 
-    allAtt = (res[2].values || []).filter(function(r){ return r[1]; }).map(function(r,i){
-      return {
-        rowIndex: i+2,
-        id:r[0]||'', date:r[1]||'', name:r[2]||'',
-        team:r[3]||'', crates:r[4]||'0', meal:r[5]||'',
-        truck:r[6]||'', location:r[7]||'', lat:r[8]||'', lng:r[9]||'', time:r[10]||'',
-        helperType:r[11]||''
-      };
+    allAtt=(res[2].values||[]).filter(function(r){return r[1];}).map(function(r,i){
+      return {rowIndex:i+2,id:r[0]||'',date:r[1]||'',name:r[2]||'',team:r[3]||'',
+              crates:r[4]||'0',meal:r[5]||'',truck:r[6]||'',location:r[7]||'',
+              lat:r[8]||'',lng:r[9]||'',time:r[10]||'',helperType:r[11]||''};
     });
 
-    // Records sheet columns:
-    // A=ID, B=TripID, C=HelperName, D=Truck, E=Date, F=Type(POD/Crates),
-    // G=ExpectedCrates, H=Submitted(Yes/No), I=SubmissionDate,
-    // J=Late(Yes/No), K=Signature, L=Picture, M=Comments, N=RowNum
-    allRecords = (res[3].values || []).filter(function(r){ return r[0]; }).map(function(r,i){
-      return {
-        rowIndex: i+2,
-        id:             r[0]||'',
-        tripId:         r[1]||'',
-        helperName:     r[2]||'',
-        truck:          r[3]||'',
-        date:           r[4]||'',
-        type:           r[5]||'',
-        expectedCrates: r[6]||'0',
-        submitted:      (r[7]||'No') === 'Yes',
-        submissionDate: r[8]||'',
-        late:           (r[9]||'No') === 'Yes',
-        signature:      r[10]||'',
-        picture:        r[11]||'',
-        comments:       r[12]||''
-      };
+    // Records sheet: A=ID, B=EmpName, C=Date, D=Truck, E=DocType,
+    // F=Number, G=Liquidated/Returned, H=AckBy, I=Signature, J=Picture, K=Comments
+    allRecords=(res[3].values||[]).filter(function(r){return r[1];}).map(function(r,i){
+      return {rowIndex:i+2, sheetId:r[0]||String(i+2),
+              empName:r[1]||'', date:r[2]||'', truck:r[3]||'',
+              docType:r[4]||'', number:r[5]||'', liquidated:r[6]||'No',
+              ackBy:r[7]||'', signature:r[8]||'', picture:r[9]||'', comments:r[10]||''};
     });
 
-    // Generate tasks
-    generatedTasks = generateTasks();
+    generatedTasks=buildTasks();
     updateNotifBadge();
-
-    document.getElementById('loading-main').style.display = 'none';
-    document.getElementById('content-tasks').style.display = 'block';
+    document.getElementById('loading-main').style.display='none';
+    document.getElementById('content-tasks').style.display='block';
     renderTasks();
 
   }).catch(function(err){
-    document.getElementById('loading-main').innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load. Check connection.</div>';
+    document.getElementById('loading-main').innerHTML=
+      '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load. Check connection.</div>';
     console.error(err);
   });
 }
 
-// ═══ GENERATE TASKS ═══════════════════════════════════
-// For each trip, determine Primary Helper via roster,
-// then generate POD and Crates tasks for that helper.
-function generateTasks() {
-  var tasks = [];
-  var today = new Date(); today.setHours(0,0,0,0);
+// ═══ BUILD TASKS ══════════════════════════════════════
+function empPosition(name){
+  var e=allEmployees.find(function(x){return x.fullName.toLowerCase()===(name||'').toLowerCase();});
+  return e ? e.position.toLowerCase() : 'helper';
+}
 
-  allTrips.forEach(function(trip) {
-    var truck = (trip.truck || '').trim();
-    var date  = trip.deliveryDate;
-    if (!truck || !date) return;
+function buildTasks(){
+  var tasks=[], today=new Date(); today.setHours(0,0,0,0);
+  var seen={};
 
-    // Find scheduled helper from roster
-    var scheduledHelper = getScheduledHelper(truck, new Date(date + 'T00:00:00'));
+  allTrips.forEach(function(trip){
+    var truck=(trip.truck||'').trim(), date=trip.deliveryDate;
+    if (!truck||!date) return;
 
-    // Also check who actually attended (for display/override)
-    var attOnDay = allAtt.filter(function(a){
-      return a.date === date && (a.truck||'').trim().toLowerCase() === truck.toLowerCase();
+    var scheduled=getScheduledHelper(truck, new Date(date+'T00:00:00'));
+
+    var attOnDay=allAtt.filter(function(a){
+      return a.date===date && a.truck.trim().toLowerCase()===truck.toLowerCase();
     });
+    var helpers=attOnDay.filter(function(a){ return empPosition(a.name)==='helper'; });
 
-    // Determine actual primary helper:
-    // 1. If someone is marked helperType='Primary' in attendance → use that
-    // 2. Else if scheduled helper actually attended → use scheduled helper
-    // 3. Else use earliest-check-in helper from attendance
-    var helpers = attOnDay.filter(function(a){
-      var emp = allEmployees.find(function(e){ return e.fullName.toLowerCase() === a.name.toLowerCase(); });
-      return emp && emp.position.toLowerCase() === 'helper';
+    // Primary helper determination
+    var primary=null;
+    var mp=helpers.find(function(h){return h.helperType==='Primary';});
+    if (mp) { primary=mp.name; }
+    else if (scheduled) {
+      var sa=helpers.find(function(h){return h.name.toLowerCase()===scheduled.toLowerCase();});
+      primary = sa ? scheduled : (helpers.length>0 ? helpers[0].name : scheduled);
+    } else if (helpers.length>0) { primary=helpers[0].name; }
+
+    if (!primary) return;
+
+    // Crates count from attendance
+    var ar=allAtt.find(function(a){
+      return a.date===date && a.truck.trim().toLowerCase()===truck.toLowerCase()
+          && a.name.toLowerCase()===primary.toLowerCase();
     });
+    var crates=ar ? (ar.crates||'0') : '0';
 
-    var primaryHelper = null;
+    ['POD','Crates'].forEach(function(type){
+      var key=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|'+type;
+      if (seen[key]) return; seen[key]=true;
 
-    // Check attendance column L
-    var markedPrimary = helpers.find(function(h){ return h.helperType === 'Primary'; });
-    if (markedPrimary) {
-      primaryHelper = markedPrimary.name;
-    } else if (scheduledHelper) {
-      // Check if scheduled helper actually attended
-      var scheduledAttended = helpers.find(function(h){
-        return h.name.toLowerCase() === scheduledHelper.toLowerCase();
-      });
-      if (scheduledAttended) {
-        primaryHelper = scheduledHelper;
-      } else if (helpers.length > 0) {
-        // Fall back: earliest timestamp among helpers
-        primaryHelper = helpers[0].name;
-      } else {
-        // No helper attended; use scheduled helper as responsible
-        primaryHelper = scheduledHelper;
+      var dueStr = type==='POD'
+        ? fmtDate(getPODDue(date, trip.route))
+        : fmtDate(getCratesDue(date));
+
+      var ex=findExisting(primary, date, truck, type);
+      var submitted = ex && ex.liquidated==='Yes';
+
+      // Detect if late: if record exists as submitted, check if trip date > due
+      var isLate=false;
+      if (submitted) {
+        isLate = new Date(date+'T00:00:00') > new Date(dueStr+'T23:59:59');
       }
-    } else if (helpers.length > 0) {
-      primaryHelper = helpers[0].name;
-    }
 
-    if (!primaryHelper) return;
-
-    // Get crates count from attendance
-    var attRecord = allAtt.find(function(a){
-      return a.date === date
-        && (a.truck||'').trim().toLowerCase() === truck.toLowerCase()
-        && a.name.toLowerCase() === primaryHelper.toLowerCase();
+      var task={
+        id: primary.replace(/\s+/g,'_')+'_'+date+'_'+truck+'_'+type,
+        recordRowIndex: ex ? ex.rowIndex : null,
+        helperName:  primary, truck:truck, date:date, type:type,
+        route:trip.route, tripType:trip.type, tripId:trip.id, shipmentNum:trip.shipmentNum,
+        dueDate:dueStr, expectedCrates:crates,
+        submitted:submitted, late:isLate,
+        submissionDate: submitted ? date : '',
+        signature:  ex ? ex.signature : '',
+        picture:    ex ? ex.picture   : '',
+        comments:   ex ? ex.comments  : '',
+        ackBy:      ex ? ex.ackBy     : '',
+        docNumber:  ex ? ex.number    : '',
+        scheduledHelper: scheduled,
+        isScheduled: scheduled && scheduled.toLowerCase()===primary.toLowerCase()
+      };
+      task.status=getStatus(task,today);
+      tasks.push(task);
     });
-    var cratesCount = attRecord ? (attRecord.crates || '0') : '0';
-
-    var taskIdBase = trip.id + '_' + primaryHelper.replace(/\s+/g,'_');
-
-    // === POD TASK ===
-    var podDue     = getPODDueDate(date, trip.route);
-    var podDueStr  = fmtDate(podDue);
-    var podRecId   = taskIdBase + '_POD';
-    var existingPOD = allRecords.find(function(r){
-      return r.tripId === trip.id
-        && r.helperName.toLowerCase() === primaryHelper.toLowerCase()
-        && r.type === 'POD';
-    });
-
-    var podTask = {
-      id:             podRecId,
-      recordRowIndex: existingPOD ? existingPOD.rowIndex : null,
-      tripId:         trip.id,
-      helperName:     primaryHelper,
-      truck:          truck,
-      date:           date,
-      type:           'POD',
-      route:          trip.route,
-      tripType:       trip.type,
-      shipmentNum:    trip.shipmentNum,
-      dueDate:        podDueStr,
-      expectedCrates: '—',
-      submitted:      existingPOD ? existingPOD.submitted : false,
-      submissionDate: existingPOD ? existingPOD.submissionDate : '',
-      late:           existingPOD ? existingPOD.late : false,
-      signature:      existingPOD ? existingPOD.signature : '',
-      picture:        existingPOD ? existingPOD.picture : '',
-      comments:       existingPOD ? existingPOD.comments : '',
-      scheduledHelper:scheduledHelper,
-      isScheduled:    scheduledHelper && scheduledHelper.toLowerCase() === primaryHelper.toLowerCase()
-    };
-    podTask.status = getTaskStatus(podTask, today);
-    tasks.push(podTask);
-
-    // === CRATES TASK ===
-    var cratesDue    = getCratesDueDate(date);
-    var cratesDueStr = fmtDate(cratesDue);
-    var cratesRecId  = taskIdBase + '_CRATES';
-    var existingCrates = allRecords.find(function(r){
-      return r.tripId === trip.id
-        && r.helperName.toLowerCase() === primaryHelper.toLowerCase()
-        && r.type === 'Crates';
-    });
-
-    var cratesTask = {
-      id:             cratesRecId,
-      recordRowIndex: existingCrates ? existingCrates.rowIndex : null,
-      tripId:         trip.id,
-      helperName:     primaryHelper,
-      truck:          truck,
-      date:           date,
-      type:           'Crates',
-      route:          trip.route,
-      tripType:       trip.type,
-      shipmentNum:    trip.shipmentNum,
-      dueDate:        cratesDueStr,
-      expectedCrates: cratesCount,
-      submitted:      existingCrates ? existingCrates.submitted : false,
-      submissionDate: existingCrates ? existingCrates.submissionDate : '',
-      late:           existingCrates ? existingCrates.late : false,
-      signature:      existingCrates ? existingCrates.signature : '',
-      picture:        existingCrates ? existingCrates.picture : '',
-      comments:       existingCrates ? existingCrates.comments : '',
-      scheduledHelper:scheduledHelper,
-      isScheduled:    scheduledHelper && scheduledHelper.toLowerCase() === primaryHelper.toLowerCase()
-    };
-    cratesTask.status = getTaskStatus(cratesTask, today);
-    tasks.push(cratesTask);
   });
 
-  // Sort: overdue first, then pending, then submitted
-  var order = { overdue:0, pending:1, late:2, submitted:3 };
+  var ord={overdue:0,pending:1,late:2,submitted:3};
   tasks.sort(function(a,b){
-    var oa = order[a.status]||99, ob = order[b.status]||99;
-    if (oa !== ob) return oa - ob;
-    return b.date.localeCompare(a.date);
+    var oa=ord[a.status]||99, ob=ord[b.status]||99;
+    return oa!==ob ? oa-ob : b.date.localeCompare(a.date);
   });
-
   return tasks;
 }
 
-// ═══ RENDER TASKS ═════════════════════════════════════
-function renderTasks() {
-  var myTasks = generatedTasks.filter(function(t){
-    return t.helperName.toLowerCase() === currentUser.fullName.toLowerCase();
+// ═══ RENDER LISTS ═════════════════════════════════════
+function renderTasks(){
+  var mine=generatedTasks.filter(function(t){
+    return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase();
   });
-  renderTaskList(myTasks, 'tasks-list', taskFilter);
+  renderList(mine,'tasks-list',taskFilter);
 }
+function renderAllTasks(){ renderList(generatedTasks,'all-list',allFilter); }
 
-function renderAllTasks() {
-  renderTaskList(generatedTasks, 'all-list', allFilter);
-}
+function renderList(tasks,containerId,filter){
+  var list=tasks;
+  if (filter==='pending')   list=tasks.filter(function(t){return t.status==='pending';});
+  if (filter==='overdue')   list=tasks.filter(function(t){return t.status==='overdue';});
+  if (filter==='submitted') list=tasks.filter(function(t){return t.status==='submitted'||t.status==='late';});
+  if (filter==='pod')       list=tasks.filter(function(t){return t.type==='POD';});
+  if (filter==='crates')    list=tasks.filter(function(t){return t.type==='Crates';});
 
-function renderTaskList(tasks, containerId, filter) {
-  var filtered = tasks;
-  if (filter === 'pending')   filtered = tasks.filter(function(t){ return t.status === 'pending'; });
-  if (filter === 'overdue')   filtered = tasks.filter(function(t){ return t.status === 'overdue'; });
-  if (filter === 'submitted') filtered = tasks.filter(function(t){ return t.status === 'submitted' || t.status === 'late'; });
-  if (filter === 'pod')       filtered = tasks.filter(function(t){ return t.type === 'POD'; });
-  if (filter === 'crates')    filtered = tasks.filter(function(t){ return t.type === 'Crates'; });
+  var el=document.getElementById(containerId);
+  if (!list.length){ el.innerHTML='<div class="empty-hint">No tasks found.</div>'; return; }
 
-  var container = document.getElementById(containerId);
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty-hint">No tasks found.</div>';
-    return;
-  }
+  el.innerHTML=list.map(function(t){
+    var bl=t.status==='submitted'?'✓ Done':t.status==='late'?'⚠ Late':t.status==='overdue'?'⚠ Overdue':'⏳ Pending';
+    var dc=t.status==='overdue'?'overdue':(t.status==='submitted'||t.status==='late'?'ok':'warning');
+    var sub=(!t.isScheduled&&t.scheduledHelper)
+      ? '<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Sched: '
+        +t.scheduledHelper.split(' ')[0]+' → sub: '+t.helperName.split(' ')[0]+'</span>' : '';
+    var cr=t.type==='Crates'
+      ? '<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>' : '';
+    var who=containerId==='all-list'
+      ? '<div class="task-meta-row">👤 '+t.helperName+'</div>' : '';
 
-  var today = new Date(); today.setHours(0,0,0,0);
-
-  container.innerHTML = filtered.map(function(t) {
-    var statusClass = 'status-' + t.status;
-    var badgeClass  = 'badge-' + t.status;
-    var badgeLabel  = t.status === 'submitted' ? '✓ Done' :
-                      t.status === 'late'      ? '⚠ Late' :
-                      t.status === 'overdue'   ? '⚠ Overdue' : '⏳ Pending';
-    var dueLabel    = dueDateLabel(t.dueDate, t.status);
-    var dueClass    = t.status === 'overdue' ? 'overdue' : t.status === 'pending' && dueLabel.indexOf('today') > -1 ? 'warning' : t.status === 'submitted' || t.status === 'late' ? 'ok' : 'ok';
-
-    var schedBadge = '';
-    if (!t.isScheduled && t.scheduledHelper) {
-      schedBadge = '<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Scheduled: ' + t.scheduledHelper.split(' ')[0] + ' (sub: ' + t.helperName.split(' ')[0] + ')</span>';
-    }
-
-    var cratesInfo = t.type === 'Crates' ? '<div class="task-meta-row">📦 Expected: <strong>' + t.expectedCrates + ' crates</strong></div>' : '';
-
-    return '<div class="task-card ' + statusClass + '" onclick="openTask(\'' + t.id + '\')">'
-      + '<div class="task-header">'
-      + '<div class="task-title">' + (t.type === 'POD' ? '📄 POD' : '📦 Crates') + ' — ' + t.truck + '</div>'
-      + '<div class="task-badge ' + badgeClass + '">' + badgeLabel + '</div>'
-      + '</div>'
-      + '<div class="task-meta">'
-      + '<div class="task-meta-row">📅 ' + t.date + (t.route ? ' · ' + t.route.split('/')[0] : '') + '</div>'
-      + '<div class="task-meta-row">👤 ' + t.helperName + (containerId === 'all-list' ? '' : '') + '</div>'
-      + cratesInfo
-      + schedBadge
-      + '</div>'
-      + '<div class="task-due ' + dueClass + '">' + dueLabel + '</div>'
-      + '</div>';
+    return '<div class="task-card status-'+t.status+'" onclick="openTask(\''+t.id+'\')">'+
+      '<div class="task-header">'+
+      '<div class="task-title">'+(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck+'</div>'+
+      '<div class="task-badge badge-'+t.status+'">'+bl+'</div></div>'+
+      '<div class="task-meta">'+
+      '<div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+'</div>'+
+      who+cr+sub+'</div>'+
+      '<div class="task-due '+dc+'">'+dueLabel(t)+'</div></div>';
   }).join('');
 }
 
 // ═══ OPEN TASK SHEET ══════════════════════════════════
-function openTask(taskId) {
-  var t = generatedTasks.find(function(x){ return x.id === taskId; });
+function openTask(taskId){
+  var t=generatedTasks.find(function(x){return x.id===taskId;});
   if (!t) return;
-  selectedTask = t;
+  selectedTask=t; sigDrawn=false; uploadedImage=null; currentExistingSignature=null;
 
-  document.getElementById('ts-title').textContent = (t.type === 'POD' ? '📄 POD' : '📦 Crates') + ' — ' + t.truck;
-  document.getElementById('ts-sub').textContent = t.date + (t.route ? ' · ' + t.route : '') + ' · ' + t.helperName;
+  document.getElementById('ts-title').textContent=(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck;
+  document.getElementById('ts-sub').textContent=t.date+(t.route?' · '+t.route:'')+' · '+t.helperName;
 
-  var canEdit = isAdmin || currentUser.fullName.toLowerCase() === t.helperName.toLowerCase();
-  var canDelete = isAdmin;
+  var canEdit=isAdmin||currentUser.fullName.toLowerCase()===t.helperName.toLowerCase();
+  var canDelete=isAdmin;
 
-  var detailRows = [
-    ['Trip Type', t.tripType || '—'],
-    ['Truck', t.truck],
-    ['Date', t.date],
-    ['Route', t.route || '—'],
-    ['Shipment #', t.shipmentNum || '—'],
-    ['Assigned To', t.helperName],
-    ['Scheduled Helper', t.scheduledHelper || '—'],
-    ['Due Date', t.dueDate],
-    ['Status', t.status.toUpperCase()]
+  var rows=[
+    ['Trip Type', t.tripType||'—'],['Truck',t.truck],['Date',t.date],
+    ['Route',t.route||'—'],['Shipment #',t.shipmentNum||'—'],
+    ['Assigned To',t.helperName],['Scheduled Helper',t.scheduledHelper||'—'],
+    ['Due Date',t.dueDate],['Status',t.status.toUpperCase()]
   ];
-  if (t.type === 'Crates') detailRows.push(['Expected Crates', t.expectedCrates]);
-  if (t.submitted) {
-    detailRows.push(['Submission Date', t.submissionDate]);
-    if (t.late) detailRows.push(['Late Submission', 'Yes ⚠']);
-    if (t.comments) detailRows.push(['Comments', t.comments]);
+  if (t.type==='Crates') rows.push(['Expected Crates',t.expectedCrates]);
+  if (t.submitted){
+    if (t.ackBy)     rows.push(['Acknowledged By',t.ackBy]);
+    if (t.docNumber) rows.push(['Document #',t.docNumber]);
+    if (t.comments)  rows.push(['Comments',t.comments]);
+    if (t.late)      rows.push(['Late Submission','Yes ⚠']);
   }
 
-  var detailHtml = '<div style="background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;margin-bottom:16px">'
-    + detailRows.map(function(r){
-      return '<div class="dt-row"><span class="dt-label">' + r[0] + '</span><span class="dt-val">' + r[1] + '</span></div>';
-    }).join('')
-    + '</div>';
+  var detail='<div style="background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;margin-bottom:16px">'
+    +rows.map(function(r){
+      return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';
+    }).join('')+'</div>';
 
-  // Show existing signature/picture if submitted
-  var mediaHtml = '';
-  if (t.submitted) {
-    if (t.signature) {
-      mediaHtml += '<div class="fg"><label class="fl">Signature</label>'
-        + '<div style="background:#fff;padding:8px;border-radius:10px;border:1px solid #ddd">'
-        + '<img src="' + t.signature + '" style="width:100%;max-height:100px;object-fit:contain">'
-        + '</div></div>';
-    }
-    if (t.picture) {
-      mediaHtml += '<div class="fg"><label class="fl">Photo</label>'
-        + '<div class="img-preview"><img src="' + t.picture + '"></div></div>';
-    }
+  var media='';
+  if (t.submitted){
+    if (t.signature) media+='<div class="fg"><label class="fl">Signature</label>'
+      +'<div style="background:#fff;padding:8px;border-radius:10px;border:1px solid #ddd">'
+      +'<img src="'+t.signature+'" style="width:100%;max-height:100px;object-fit:contain"></div></div>';
+    if (t.picture)   media+='<div class="fg"><label class="fl">Photo</label>'
+      +'<div class="img-preview"><img src="'+t.picture+'"></div></div>';
   }
 
-  var actionHtml = '';
-  if (canEdit) {
-    if (!t.submitted) {
-      actionHtml = buildSubmitForm(t);
-    } else {
-      actionHtml = mediaHtml
-        + '<button class="btn btn-primary" onclick="openEditForm()">✏️ Edit Submission</button>';
-      if (canDelete) {
-        actionHtml += '<button class="btn-danger" onclick="confirmDeleteTask()">Delete Record</button>';
-      }
+  var action='';
+  if (canEdit){
+    if (!t.submitted){ action=buildForm(t,false); }
+    else {
+      action=media+'<button class="btn btn-primary" onclick="openEditForm()">✏️ Edit Submission</button>';
+      if (canDelete) action+='<button class="btn-danger" onclick="confirmDeleteTask()">Delete Record</button>';
     }
-  } else {
-    actionHtml = mediaHtml;
-  }
+  } else { action=media; }
 
-  document.getElementById('ts-body').innerHTML = detailHtml + actionHtml;
+  document.getElementById('ts-body').innerHTML=detail+action;
   document.getElementById('task-sheet').classList.add('open');
-
-  // Init sig canvas if form shown
-  if (!t.submitted && canEdit) {
-    setTimeout(initSigCanvas, 200);
-  }
+  if (!t.submitted&&canEdit) setTimeout(initSigCanvas,200);
 }
 
-function buildSubmitForm(t) {
-  var cratesField = t.type === 'Crates'
+function buildForm(t,isEdit){
+  var cr=t.type==='Crates'
     ? '<div class="fg"><label class="fl">Crates Returned Count</label>'
-      + '<input class="fi" id="sf-crates" type="number" value="' + t.expectedCrates + '" min="0"></div>'
-    : '<input type="hidden" id="sf-crates" value="' + t.expectedCrates + '">';
-
+      +'<input class="fi" id="sf-crates" type="number" value="'+(isEdit?t.expectedCrates:t.expectedCrates)+'" min="0"></div>'
+    : '<input type="hidden" id="sf-crates" value="'+t.expectedCrates+'">';
   return '<div class="fg"><label class="fl">Submission Date</label>'
-    + '<input class="fi" type="date" id="sf-date" value="' + fmtDate(new Date()) + '"></div>'
-    + cratesField
-    + '<div class="fg"><label class="fl">Comments (Optional)</label>'
-    + '<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px" placeholder="Any notes..."></textarea></div>'
-    + '<div class="fg"><label class="fl">Signature (Optional)</label>'
-    + '<div class="sig-box"><canvas class="sig-canvas" id="sf-sig-canvas"></canvas>'
-    + '<div class="sig-actions"><button type="button" class="sig-btn" onclick="clearSig()">Clear</button></div>'
-    + '</div></div>'
-    + '<div class="fg"><label class="fl">Photo (Optional)</label>'
-    + '<input type="file" id="sf-pic-input" accept="image/*" capture="environment" style="display:none" onchange="handlePicUpload(event)">'
-    + '<div class="img-upload-box" id="sf-upload-box" onclick="document.getElementById(\'sf-pic-input\').click()">'
-    + '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/></svg>'
-    + '<p>Tap to capture or upload</p></div>'
-    + '<div class="img-preview" id="sf-img-preview" style="display:none">'
-    + '<img id="sf-preview-img" src="" alt=""><div class="img-remove" onclick="removePic()">✕</div></div></div>'
-    + '<button class="btn btn-primary" onclick="submitTask()">✅ Submit Record</button>';
+    +'<input class="fi" type="date" id="sf-date" value="'+(isEdit?(t.submissionDate||fmtDate(new Date())):fmtDate(new Date()))+'"></div>'
+    +cr
+    +'<div class="fg"><label class="fl">Document # (Optional)</label>'
+    +'<input class="fi" id="sf-number" type="text" value="'+(isEdit?(t.docNumber||''):'')+'" placeholder="POD # or Crates #"></div>'
+    +'<div class="fg"><label class="fl">Acknowledged By (Optional)</label>'
+    +'<input class="fi" id="sf-ackby" type="text" value="'+(isEdit?(t.ackBy||''):'')+'" placeholder="Name of receiver"></div>'
+    +'<div class="fg"><label class="fl">Comments (Optional)</label>'
+    +'<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px" placeholder="Any notes...">'+(isEdit?(t.comments||''):'')+'</textarea></div>'
+    +'<div class="fg"><label class="fl">Signature (Optional)</label>'
+    +'<div class="sig-box"><canvas class="sig-canvas" id="sf-sig-canvas"></canvas>'
+    +'<div class="sig-actions"><button type="button" class="sig-btn" onclick="clearSig()">Clear</button></div></div></div>'
+    +'<div class="fg"><label class="fl">Photo (Optional)</label>'
+    +'<input type="file" id="sf-pic-input" accept="image/*" capture="environment" style="display:none" onchange="handlePicUpload(event)">'
+    +'<div class="img-upload-box" id="sf-upload-box" onclick="document.getElementById(\'sf-pic-input\').click()">'
+    +'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/></svg>'
+    +'<p>Tap to capture or upload</p></div>'
+    +'<div class="img-preview" id="sf-img-preview" style="display:none">'
+    +'<img id="sf-preview-img" src="" alt=""><div class="img-remove" onclick="removePic()">✕</div></div></div>'
+    +'<button class="btn btn-primary" onclick="saveTask()">'+(isEdit?'💾 Save Changes':'✅ Submit Record')+'</button>';
 }
 
-function openEditForm() {
-  var t = selectedTask;
-  if (!t) return;
-
-  var cratesField = t.type === 'Crates'
-    ? '<div class="fg"><label class="fl">Crates Returned Count</label>'
-      + '<input class="fi" id="sf-crates" type="number" value="' + t.expectedCrates + '" min="0"></div>'
-    : '<input type="hidden" id="sf-crates" value="' + t.expectedCrates + '">';
-
-  var formHtml = '<div class="fg"><label class="fl">Submission Date</label>'
-    + '<input class="fi" type="date" id="sf-date" value="' + (t.submissionDate || fmtDate(new Date())) + '"></div>'
-    + cratesField
-    + '<div class="fg"><label class="fl">Comments (Optional)</label>'
-    + '<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px">' + (t.comments||'') + '</textarea></div>'
-    + '<div class="fg"><label class="fl">Signature (Optional)</label>'
-    + '<div class="sig-box"><canvas class="sig-canvas" id="sf-sig-canvas"></canvas>'
-    + '<div class="sig-actions"><button type="button" class="sig-btn" onclick="clearSig()">Clear</button></div>'
-    + '</div></div>'
-    + '<div class="fg"><label class="fl">Photo (Optional)</label>'
-    + '<input type="file" id="sf-pic-input" accept="image/*" capture="environment" style="display:none" onchange="handlePicUpload(event)">'
-    + '<div class="img-upload-box" id="sf-upload-box" onclick="document.getElementById(\'sf-pic-input\').click()">'
-    + '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/></svg>'
-    + '<p>Tap to change photo</p></div>'
-    + '<div class="img-preview" id="sf-img-preview" style="' + (t.picture ? '' : 'display:none') + '">'
-    + '<img id="sf-preview-img" src="' + (t.picture||'') + '" alt=""><div class="img-remove" onclick="removePic()">✕</div></div></div>'
-    + '<button class="btn btn-primary" onclick="submitTask()">💾 Save Changes</button>';
-
-  uploadedImage = t.picture || null;
-  currentExistingSignature = t.signature || null;
-
-  document.getElementById('ts-body').innerHTML = formHtml;
+function openEditForm(){
+  var t=selectedTask; if (!t) return;
+  uploadedImage=t.picture||null;
+  currentExistingSignature=t.signature||null;
+  document.getElementById('ts-body').innerHTML=buildForm(t,true);
   setTimeout(function(){
     initSigCanvas();
-    if (t.signature) {
-      var img = new Image();
-      img.onload = function() {
-        var c = document.getElementById('sf-sig-canvas');
-        if (!c) return;
-        var ctx = c.getContext('2d');
-        ctx.clearRect(0,0,c.width,c.height);
-        ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
-        var scale = Math.min(c.width/img.width, c.height/img.height);
-        ctx.drawImage(img, (c.width-img.width*scale)/2, (c.height-img.height*scale)/2, img.width*scale, img.height*scale);
-      };
-      img.src = t.signature;
+    if (t.signature){ loadSigToCanvas(t.signature); }
+    if (t.picture){
+      var pi=document.getElementById('sf-img-preview');
+      var ub=document.getElementById('sf-upload-box');
+      var im=document.getElementById('sf-preview-img');
+      if (pi&&ub&&im){ im.src=t.picture; pi.style.display='block'; ub.style.display='none'; }
     }
-    if (t.picture) {
-      document.getElementById('sf-img-preview').style.display = 'block';
-      document.getElementById('sf-upload-box').style.display = 'none';
-    }
-  }, 200);
+  },200);
 }
 
-// ═══ SUBMIT TASK ══════════════════════════════════════
-function submitTask() {
-  var t = selectedTask;
-  if (!t) return;
+function loadSigToCanvas(src){
+  var img=new Image();
+  img.onload=function(){
+    var c=document.getElementById('sf-sig-canvas'); if (!c) return;
+    var ctx=c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
+    var sc=Math.min(c.width/img.width, c.height/img.height);
+    ctx.drawImage(img,(c.width-img.width*sc)/2,(c.height-img.height*sc)/2,img.width*sc,img.height*sc);
+  };
+  img.src=src;
+}
 
-  var subDate  = document.getElementById('sf-date').value;
-  var comments = document.getElementById('sf-comments').value.trim();
-  if (!subDate) { showToast('Please enter a submission date.'); return; }
+// ═══ SAVE TASK ════════════════════════════════════════
+function saveTask(){
+  var t=selectedTask; if (!t) return;
+  var subDate=(document.getElementById('sf-date')||{}).value||'';
+  var number =(document.getElementById('sf-number')||{}).value||'';
+  var ackBy  =(document.getElementById('sf-ackby')||{}).value||'';
+  var comments=(document.getElementById('sf-comments')||{}).value||'';
+  var crEl   =document.getElementById('sf-crates');
+  var crVal  =crEl ? crEl.value : t.expectedCrates;
+  if (!subDate){ showToast('Please enter a submission date.'); return; }
 
-  var dueDate  = new Date(t.dueDate + 'T23:59:59');
-  var subDateD = new Date(subDate + 'T00:00:00');
-  var isLate   = subDateD > dueDate;
+  var isLate=new Date(subDate+'T00:00:00')>new Date(t.dueDate+'T23:59:59');
 
-  // Signature
-  var sig = '';
-  if (sigDrawn) {
-    var c = document.getElementById('sf-sig-canvas');
-    if (c) sig = c.toDataURL('image/png');
-  } else if (currentExistingSignature) {
-    sig = currentExistingSignature;
-  }
+  var sig='';
+  if (sigDrawn){ var c=document.getElementById('sf-sig-canvas'); if(c) sig=c.toDataURL('image/png'); }
+  else if (currentExistingSignature){ sig=currentExistingSignature; }
+  var pic=uploadedImage||'';
 
-  var pic = uploadedImage || '';
-
-  var cratesVal = document.getElementById('sf-crates') ? document.getElementById('sf-crates').value : t.expectedCrates;
-
-  var now    = new Date();
-  var recId  = t.recordRowIndex ? null : ('REC-' + now.getTime());
-  var row = [
-    recId || t.id,        // A - ID (use task id as stable key)
-    t.tripId,             // B
-    t.helperName,         // C
-    t.truck,              // D
-    t.date,               // E
-    t.type,               // F
-    cratesVal,            // G - Expected/Actual crates
-    'Yes',                // H - Submitted
-    subDate,              // I - Submission Date
-    isLate ? 'Yes':'No',  // J - Late
-    sig,                  // K
-    pic,                  // L
-    comments              // M
+  // Records sheet: A=ID, B=EmpName, C=Date, D=Truck, E=DocType,
+  // F=Number, G=Liquidated/Returned, H=AckBy, I=Signature, J=Picture, K=Comments
+  var sheetType=t.type==='POD'?'Proof of Deliveries':'Crates';
+  var row=[
+    t.recordRowIndex ? String(t.recordRowIndex) : String(Date.now()),
+    t.helperName, t.date, t.truck, sheetType,
+    number, 'Yes', ackBy, sig, pic, comments
   ];
 
-  // Use task id as record ID for stable upsert
-  row[0] = t.id;
-
   showSaving('Saving record...');
+  var p=t.recordRowIndex
+    ? apiUpdate(TAB_RECORDS+'!A'+t.recordRowIndex+':K'+t.recordRowIndex,[row])
+    : apiAppend(TAB_RECORDS+'!A:K',[row]);
 
-  var savePromise;
-  if (t.recordRowIndex) {
-    // Update existing row
-    savePromise = apiUpdate(TAB_RECORDS + '!A' + t.recordRowIndex + ':M' + t.recordRowIndex, [row]);
-  } else {
-    // Append new row
-    savePromise = apiAppend(TAB_RECORDS + '!A:M', [row]);
-  }
-
-  savePromise.then(function(){
+  p.then(function(){
     hideSaving();
-    showToast(isLate ? '⚠ Submitted (Late)' : '✅ Record submitted!');
-    closeSheet('task-sheet');
-    loadAll();
-  }).catch(function(err){
-    hideSaving();
-    showToast('❌ Save failed. Try again.');
-    console.error(err);
-  });
+    showToast(isLate?'⚠ Submitted (Late)':'✅ Record submitted!');
+    closeSheet('task-sheet'); loadAll();
+  }).catch(function(err){ hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err); });
 }
 
-// ═══ DELETE TASK ══════════════════════════════════════
-function confirmDeleteTask() {
-  if (!isAdmin || !selectedTask) return;
-  document.getElementById('confirm-title').textContent = 'Delete Record?';
-  document.getElementById('confirm-msg').textContent = 'Delete the ' + selectedTask.type + ' record for ' + selectedTask.helperName + ' on ' + selectedTask.date + '? This cannot be undone.';
-  document.getElementById('confirm-ok').onclick = doDeleteTask;
+// ═══ DELETE ═══════════════════════════════════════════
+function confirmDeleteTask(){
+  if (!isAdmin||!selectedTask) return;
+  document.getElementById('confirm-title').textContent='Delete Record?';
+  document.getElementById('confirm-msg').textContent=
+    'Delete the '+selectedTask.type+' record for '+selectedTask.helperName+' on '+selectedTask.date+'?';
+  document.getElementById('confirm-ok').onclick=doDelete;
   document.getElementById('confirm-overlay').classList.add('open');
 }
-
-function doDeleteTask() {
-  if (!selectedTask || !selectedTask.recordRowIndex) {
-    closeConfirm();
-    showToast('No saved record to delete.');
-    return;
-  }
-  closeConfirm();
-  showSaving('Deleting...');
-  apiUpdate(TAB_RECORDS + '!A' + selectedTask.recordRowIndex + ':M' + selectedTask.recordRowIndex,
-    [['','','','','','','','No','','No','','','']])
-    .then(function(){
-      hideSaving();
-      showToast('✅ Record deleted.');
-      closeSheet('task-sheet');
-      loadAll();
-    }).catch(function(err){
-      hideSaving();
-      showToast('❌ Delete failed.');
-      console.error(err);
-    });
+function doDelete(){
+  if (!selectedTask||!selectedTask.recordRowIndex){ closeConfirm(); showToast('No saved record.'); return; }
+  closeConfirm(); showSaving('Deleting...');
+  apiUpdate(TAB_RECORDS+'!A'+selectedTask.recordRowIndex+':K'+selectedTask.recordRowIndex,
+    [['','','','','','','No','','','','']])
+    .then(function(){ hideSaving(); showToast('✅ Deleted.'); closeSheet('task-sheet'); loadAll(); })
+    .catch(function(err){ hideSaving(); showToast('❌ Delete failed.'); console.error(err); });
 }
 
 // ═══ FILTERS ══════════════════════════════════════════
-function filterTasks(f, btn) {
-  taskFilter = f;
-  document.querySelectorAll('#content-tasks .filter-chip').forEach(function(c){ c.classList.remove('active'); });
-  btn.classList.add('active');
-  renderTasks();
+function filterTasks(f,btn){
+  taskFilter=f;
+  document.querySelectorAll('#content-tasks .filter-chip').forEach(function(c){c.classList.remove('active');});
+  btn.classList.add('active'); renderTasks();
 }
-function filterAll(f, btn) {
-  allFilter = f;
-  document.querySelectorAll('#content-all .filter-chip').forEach(function(c){ c.classList.remove('active'); });
-  btn.classList.add('active');
-  renderAllTasks();
+function filterAll(f,btn){
+  allFilter=f;
+  document.querySelectorAll('#content-all .filter-chip').forEach(function(c){c.classList.remove('active');});
+  btn.classList.add('active'); renderAllTasks();
 }
 
 // ═══ TABS ═════════════════════════════════════════════
-function switchTab(name) {
+function switchTab(name){
   ['tasks','all','report'].forEach(function(t){
-    document.getElementById('tab-'+t).classList.toggle('active', t===name);
-    var el = document.getElementById('content-'+t);
-    if (el) el.style.display = (t===name ? 'block' : 'none');
+    document.getElementById('tab-'+t).classList.toggle('active',t===name);
+    var el=document.getElementById('content-'+t); if(el) el.style.display=(t===name?'block':'none');
   });
-  if (name === 'all') renderAllTasks();
-  if (name === 'report') {
-    if (document.getElementById('rpt-content').style.display === 'none'
-      && document.getElementById('rpt-loading').style.display === 'none') {
-      generateReport();
-    }
+  if (name==='all') renderAllTasks();
+  if (name==='report'){
+    var rc=document.getElementById('rpt-content');
+    var rl=document.getElementById('rpt-loading');
+    if (rc.style.display==='none'&&rl.style.display==='none') generateReport();
   }
 }
 
 // ═══ REPORT ═══════════════════════════════════════════
-function setRptPeriod(p) {
-  rptPeriod = p;
+function setRptPeriod(p){
+  rptPeriod=p;
   ['1st','2nd','custom'].forEach(function(x){
-    document.getElementById('rpt-btn-'+x).classList.toggle('active', x===p);
+    document.getElementById('rpt-btn-'+x).classList.toggle('active',x===p);
   });
-  document.getElementById('rpt-custom-wrap').style.display = p==='custom' ? 'block' : 'none';
-  if (p !== 'custom') generateReport();
+  document.getElementById('rpt-custom-wrap').style.display=p==='custom'?'block':'none';
+  if (p!=='custom') generateReport();
 }
 
-function generateReport() {
-  var now = new Date();
-  var y = now.getFullYear(), m = now.getMonth();
-  var from, to;
-
-  if (rptPeriod === '1st') {
-    from = fmtDate(new Date(y, m, 1));
-    to   = fmtDate(new Date(y, m, 15));
-  } else if (rptPeriod === '2nd') {
-    var lastDay = new Date(y, m+1, 0).getDate();
-    from = fmtDate(new Date(y, m, 16));
-    to   = fmtDate(new Date(y, m, lastDay));
-  } else {
-    from = document.getElementById('rpt-from').value;
-    to   = document.getElementById('rpt-to').value;
-    if (!from || !to) { showToast('Select date range.'); return; }
+function generateReport(){
+  var now=new Date(), y=now.getFullYear(), m=now.getMonth();
+  var from,to;
+  if (rptPeriod==='1st')      { from=fmtDate(new Date(y,m,1));  to=fmtDate(new Date(y,m,15)); }
+  else if (rptPeriod==='2nd') { from=fmtDate(new Date(y,m,16)); to=fmtDate(new Date(y,m+1,0)); }
+  else {
+    from=document.getElementById('rpt-from').value;
+    to  =document.getElementById('rpt-to').value;
+    if (!from||!to){ showToast('Select date range.'); return; }
   }
 
-  document.getElementById('rpt-loading').style.display = 'flex';
-  document.getElementById('rpt-content').style.display = 'none';
+  document.getElementById('rpt-loading').style.display='flex';
+  document.getElementById('rpt-content').style.display='none';
 
-  // Filter tasks in period
-  var periodTasks = generatedTasks.filter(function(t){
-    return t.date >= from && t.date <= to;
+  var period=generatedTasks.filter(function(t){ return t.date>=from&&t.date<=to; });
+  var total=period.length;
+  var done=period.filter(function(t){ return t.submitted; }).length;
+  var pend=period.filter(function(t){ return t.status==='pending'||t.status==='overdue'; }).length;
+
+  var map={};
+  period.forEach(function(t){
+    if (!map[t.helperName]) map[t.helperName]={pod:[],crates:[]};
+    (t.type==='POD'?map[t.helperName].pod:map[t.helperName].crates).push(t);
   });
 
-  // Group by helper
-  var helperMap = {};
-  periodTasks.forEach(function(t){
-    if (!helperMap[t.helperName]) helperMap[t.helperName] = { pod:[], crates:[] };
-    if (t.type === 'POD') helperMap[t.helperName].pod.push(t);
-    else helperMap[t.helperName].crates.push(t);
-  });
+  var stats='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">'
+    +scard(total,'Total Tasks','var(--text)')
+    +scard(done,'Submitted','var(--green)')
+    +scard(pend,'Pending/OD',pend>0?'var(--red)':'var(--text3)')
+    +'</div>';
 
-  var totalTasks = periodTasks.length;
-  var totalDone  = periodTasks.filter(function(t){ return t.submitted; }).length;
-  var totalPend  = periodTasks.filter(function(t){ return t.status === 'pending' || t.status === 'overdue'; }).length;
+  var cards=Object.keys(map).sort().map(function(name){
+    var d=map[name];
+    var allT=d.pod.concat(d.crates);
+    var od=allT.filter(function(t){return t.status==='overdue';}).length;
+    var late=allT.filter(function(t){return t.status==='late';}).length;
+    var pendN=allT.filter(function(t){return t.status==='pending';}).length;
+    var cleared=od===0&&pendN===0;
 
-  var statsHtml = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">'
-    + statCard(totalTasks, 'Total Tasks', 'var(--text)')
-    + statCard(totalDone,  'Submitted',   'var(--green)')
-    + statCard(totalPend,  'Pending',     totalPend > 0 ? 'var(--red)' : 'var(--text3)')
-    + '</div>';
-
-  var helperCards = Object.keys(helperMap).sort().map(function(name){
-    var d = helperMap[name];
-    var allTasks   = d.pod.concat(d.crates);
-    var submitted  = allTasks.filter(function(t){ return t.submitted; }).length;
-    var overdue    = allTasks.filter(function(t){ return t.status === 'overdue'; }).length;
-    var late       = allTasks.filter(function(t){ return t.status === 'late'; }).length;
-    var pending    = allTasks.filter(function(t){ return t.status === 'pending'; }).length;
-    var cleared    = overdue === 0 && pending === 0;
-
-    var podSubmitted   = d.pod.filter(function(t){ return t.submitted; }).length;
-    var podTotal       = d.pod.length;
-    var podOverdue     = d.pod.filter(function(t){ return t.status === 'overdue'; }).length;
-    var podLate        = d.pod.filter(function(t){ return t.status === 'late'; }).length;
-
-    var cratesSubmitted= d.crates.filter(function(t){ return t.submitted; }).length;
-    var cratesTotal    = d.crates.length;
-    var cratesOverdue  = d.crates.filter(function(t){ return t.status === 'overdue'; }).length;
-    var cratesLate     = d.crates.filter(function(t){ return t.status === 'late'; }).length;
-
-    var clearanceClass = cleared ? 'cleared' : 'not-cleared';
-    var clearanceLabel = cleared ? '✓ CLEARED' : '✗ NOT CLEARED';
+    function grp(arr){
+      return {
+        sub:arr.filter(function(t){return t.submitted;}).length,
+        tot:arr.length,
+        od: arr.filter(function(t){return t.status==='overdue';}).length,
+        late:arr.filter(function(t){return t.status==='late';}).length
+      };
+    }
+    var pg=grp(d.pod), cg=grp(d.crates);
+    var pc=pg.od>0?'bad':pg.late>0?'warn':'ok';
+    var cc=cg.od>0?'bad':cg.late>0?'warn':'ok';
 
     return '<div class="rpt-emp-card">'
-      + '<div class="rpt-emp-name">' + name
-      + '<span class="rpt-clearance ' + clearanceClass + '">' + clearanceLabel + '</span></div>'
-      + '<div class="rpt-row"><span>📄 POD</span><span class="rpt-row-val ' + (podOverdue > 0 ? 'bad' : podLate > 0 ? 'warn' : 'ok') + '">'
-      + podSubmitted + '/' + podTotal + (podOverdue > 0 ? ' (' + podOverdue + ' overdue)' : podLate > 0 ? ' (' + podLate + ' late)' : ' ✓') + '</span></div>'
-      + '<div class="rpt-row"><span>📦 Crates</span><span class="rpt-row-val ' + (cratesOverdue > 0 ? 'bad' : cratesLate > 0 ? 'warn' : 'ok') + '">'
-      + cratesSubmitted + '/' + cratesTotal + (cratesOverdue > 0 ? ' (' + cratesOverdue + ' overdue)' : cratesLate > 0 ? ' (' + cratesLate + ' late)' : ' ✓') + '</span></div>'
-      + (late > 0 ? '<div class="rpt-row"><span>⚠ Late Submissions</span><span class="rpt-row-val warn">' + late + '</span></div>' : '')
-      + (pending > 0 ? '<div class="rpt-row"><span>⏳ Still Pending</span><span class="rpt-row-val bad">' + pending + '</span></div>' : '')
-      + '</div>';
+      +'<div class="rpt-emp-name">'+name
+      +'<span class="rpt-clearance '+(cleared?'cleared':'not-cleared')+'">'+(cleared?'✓ CLEARED':'✗ NOT CLEARED')+'</span></div>'
+      +'<div class="rpt-row"><span>📄 POD</span><span class="rpt-row-val '+pc+'">'
+      +pg.sub+'/'+pg.tot+(pg.od>0?' ('+pg.od+' overdue)':pg.late>0?' ('+pg.late+' late)':' ✓')+'</span></div>'
+      +'<div class="rpt-row"><span>📦 Crates</span><span class="rpt-row-val '+cc+'">'
+      +cg.sub+'/'+cg.tot+(cg.od>0?' ('+cg.od+' overdue)':cg.late>0?' ('+cg.late+' late)':' ✓')+'</span></div>'
+      +(late>0?'<div class="rpt-row"><span>⚠ Late Submissions</span><span class="rpt-row-val warn">'+late+'</span></div>':'')
+      +(pendN>0?'<div class="rpt-row"><span>⏳ Still Pending</span><span class="rpt-row-val bad">'+pendN+'</span></div>':'')
+      +'</div>';
   }).join('');
 
-  document.getElementById('rpt-loading').style.display = 'none';
-  document.getElementById('rpt-content').style.display = 'block';
-  document.getElementById('rpt-content').innerHTML =
-    '<div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:600">'
-    + 'Period: ' + from + ' to ' + to + '</div>'
-    + statsHtml
-    + (helperCards || '<div class="empty-hint">No tasks in this period.</div>');
+  document.getElementById('rpt-loading').style.display='none';
+  document.getElementById('rpt-content').style.display='block';
+  document.getElementById('rpt-content').innerHTML=
+    '<div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:600">Period: '+from+' → '+to+'</div>'
+    +stats+(cards||'<div class="empty-hint">No tasks in this period.</div>');
 }
 
-function statCard(val, lbl, color) {
-  return '<div class="rpt-stat"><div class="rpt-stat-val" style="color:' + color + '">' + val + '</div><div class="rpt-stat-lbl">' + lbl + '</div></div>';
+function scard(v,l,c){
+  return '<div class="rpt-stat"><div class="rpt-stat-val" style="color:'+c+'">'+v+'</div>'
+        +'<div class="rpt-stat-lbl">'+l+'</div></div>';
 }
 
 // ═══ NOTIFICATIONS ════════════════════════════════════
-function updateNotifBadge() {
-  var myTasks = generatedTasks.filter(function(t){
-    return t.helperName.toLowerCase() === currentUser.fullName.toLowerCase();
-  });
-  var urgent = myTasks.filter(function(t){ return t.status === 'overdue' || t.status === 'pending'; });
-  var badge = document.getElementById('notif-badge');
-  if (urgent.length > 0) {
-    badge.textContent = urgent.length;
-    badge.style.display = 'flex';
-  } else {
-    badge.style.display = 'none';
-  }
+function updateNotifBadge(){
+  var n=generatedTasks.filter(function(t){
+    return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
+        && (t.status==='overdue'||t.status==='pending');
+  }).length;
+  var b=document.getElementById('notif-badge');
+  if (n>0){b.textContent=n;b.style.display='flex';}else{b.style.display='none';}
 }
-
-function openNotifSheet() {
-  var myTasks = generatedTasks.filter(function(t){
-    return t.helperName.toLowerCase() === currentUser.fullName.toLowerCase()
-      && (t.status === 'overdue' || t.status === 'pending');
+function openNotifSheet(){
+  var urgent=generatedTasks.filter(function(t){
+    return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
+        && (t.status==='overdue'||t.status==='pending');
   });
-
-  if (!myTasks.length) {
-    showToast('✓ No pending tasks!');
-    return;
-  }
-
-  document.getElementById('notif-list').innerHTML = myTasks.map(function(t){
-    var icon = t.status === 'overdue' ? '🔴' : '🟡';
-    return '<div class="notif-item">'
-      + '<div class="notif-icon">' + icon + '</div>'
-      + '<div><div class="notif-text">' + (t.type==='POD'?'📄 POD':'📦 Crates') + ' — ' + t.truck + '</div>'
-      + '<div class="notif-meta">' + t.date + ' · Due: ' + t.dueDate + '</div></div>'
-      + '</div>';
+  if (!urgent.length){ showToast('✓ No pending tasks!'); return; }
+  document.getElementById('notif-list').innerHTML=urgent.map(function(t){
+    return '<div class="notif-item"><div class="notif-icon">'+(t.status==='overdue'?'🔴':'🟡')+'</div>'
+      +'<div><div class="notif-text">'+(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck+'</div>'
+      +'<div class="notif-meta">'+t.date+' · Due: '+t.dueDate+'</div></div></div>';
   }).join('');
-
   document.getElementById('notif-sheet').classList.add('open');
 }
 
-// ═══ SIGNATURE CANVAS ═════════════════════════════════
-function initSigCanvas() {
-  sigCanvas = document.getElementById('sf-sig-canvas');
-  if (!sigCanvas) return;
-  sigCtx = sigCanvas.getContext('2d');
-  var rect = sigCanvas.getBoundingClientRect();
-  sigCanvas.width  = rect.width;
-  sigCanvas.height = rect.height || 110;
-  sigCtx.fillStyle = '#fff';
-  sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
-  sigDrawn = false;
-  uploadedImage = null;
-  currentExistingSignature = null;
-  setupSigEvents();
+// ═══ SIGNATURE ════════════════════════════════════════
+function initSigCanvas(){
+  sigCanvas=document.getElementById('sf-sig-canvas'); if (!sigCanvas) return;
+  sigCtx=sigCanvas.getContext('2d');
+  var r=sigCanvas.getBoundingClientRect();
+  sigCanvas.width=r.width; sigCanvas.height=r.height||110;
+  sigCtx.fillStyle='#fff'; sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
+  sigDrawn=false; setupSigEvents();
 }
-
-function setupSigEvents() {
+function setupSigEvents(){
   if (!sigCanvas) return;
-  var drawing = false, lx = 0, ly = 0;
-  function pos(e) {
-    var r = sigCanvas.getBoundingClientRect();
-    var t = e.touches ? e.touches[0] : e;
-    return { x:(t.clientX-r.left)*(sigCanvas.width/r.width), y:(t.clientY-r.top)*(sigCanvas.height/r.height) };
-  }
-  function start(e){ drawing=true; sigDrawn=true; currentExistingSignature=null; var p=pos(e); lx=p.x; ly=p.y; }
-  function move(e){ if(!drawing)return; e.preventDefault(); var p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(lx,ly); sigCtx.lineTo(p.x,p.y); sigCtx.strokeStyle='#000'; sigCtx.lineWidth=2; sigCtx.lineCap='round'; sigCtx.stroke(); lx=p.x; ly=p.y; }
-  function end(){ drawing=false; }
-  sigCanvas.addEventListener('mousedown',start);
-  sigCanvas.addEventListener('mousemove',move);
-  sigCanvas.addEventListener('mouseup',end);
-  sigCanvas.addEventListener('mouseleave',end);
+  var drawing=false,lx=0,ly=0;
+  function pos(e){ var r=sigCanvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;
+    return{x:(t.clientX-r.left)*(sigCanvas.width/r.width),y:(t.clientY-r.top)*(sigCanvas.height/r.height)};}
+  function start(e){drawing=true;sigDrawn=true;currentExistingSignature=null;var p=pos(e);lx=p.x;ly=p.y;}
+  function move(e){if(!drawing)return;e.preventDefault();var p=pos(e);
+    sigCtx.beginPath();sigCtx.moveTo(lx,ly);sigCtx.lineTo(p.x,p.y);
+    sigCtx.strokeStyle='#000';sigCtx.lineWidth=2;sigCtx.lineCap='round';sigCtx.stroke();lx=p.x;ly=p.y;}
+  function end(){drawing=false;}
+  sigCanvas.addEventListener('mousedown',start);sigCanvas.addEventListener('mousemove',move);
+  sigCanvas.addEventListener('mouseup',end);sigCanvas.addEventListener('mouseleave',end);
   sigCanvas.addEventListener('touchstart',start,{passive:false});
   sigCanvas.addEventListener('touchmove',move,{passive:false});
   sigCanvas.addEventListener('touchend',end,{passive:false});
 }
-
-function clearSig() {
-  if (!sigCanvas) return;
-  sigCtx.fillStyle='#fff'; sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
-  sigDrawn=false; currentExistingSignature=null;
+function clearSig(){
+  if(!sigCanvas) return;
+  sigCtx.fillStyle='#fff';sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
+  sigDrawn=false;currentExistingSignature=null;
 }
 
 // ═══ IMAGE UPLOAD ═════════════════════════════════════
-function handlePicUpload(e) {
-  var file = e.target.files[0]; if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    var img = new Image();
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var max = 800, w = img.width, h = img.height;
-      if (w > h && w > max) { h *= max/w; w = max; }
-      else if (h > max) { w *= max/h; h = max; }
-      canvas.width=w; canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      var q=0.7, result=canvas.toDataURL('image/jpeg',q);
-      while (result.length/1024>150 && q>0.1) { q-=0.1; result=canvas.toDataURL('image/jpeg',q); }
-      uploadedImage = result;
-      document.getElementById('sf-preview-img').src = result;
-      document.getElementById('sf-img-preview').style.display = 'block';
-      document.getElementById('sf-upload-box').style.display = 'none';
+function handlePicUpload(e){
+  var file=e.target.files[0]; if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var c=document.createElement('canvas'),max=800,w=img.width,h=img.height;
+      if(w>h&&w>max){h*=max/w;w=max;}else if(h>max){w*=max/h;h=max;}
+      c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+      var q=0.7,result=c.toDataURL('image/jpeg',q);
+      while(result.length/1024>150&&q>0.1){q-=0.1;result=c.toDataURL('image/jpeg',q);}
+      uploadedImage=result;
+      document.getElementById('sf-preview-img').src=result;
+      document.getElementById('sf-img-preview').style.display='block';
+      document.getElementById('sf-upload-box').style.display='none';
     };
-    img.src = ev.target.result;
+    img.src=ev.target.result;
   };
   reader.readAsDataURL(file);
 }
-
-function removePic() {
-  uploadedImage = null;
-  document.getElementById('sf-img-preview').style.display = 'none';
-  document.getElementById('sf-upload-box').style.display = 'block';
-  document.getElementById('sf-pic-input').value = '';
+function removePic(){
+  uploadedImage=null;
+  document.getElementById('sf-img-preview').style.display='none';
+  document.getElementById('sf-upload-box').style.display='block';
+  document.getElementById('sf-pic-input').value='';
 }
 
 // ═══ API ══════════════════════════════════════════════
-function apiGet(range) {
+function apiGet(range){
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range),
     {headers:{Authorization:'Bearer '+token}})
-    .then(function(r){ if(r.status===401){location.href='index.html';throw new Error('Auth');} return r.json(); });
+    .then(function(r){if(r.status===401){location.href='index.html';throw new Error('Auth');}return r.json();});
 }
-function apiAppend(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
-    {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
-    .then(function(r){ if(!r.ok) throw new Error('Append failed'); return r.json(); });
+function apiAppend(range,values){
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)
+    +':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+     body:JSON.stringify({values:values})})
+    .then(function(r){if(!r.ok) throw new Error('Append failed');return r.json();});
 }
-function apiUpdate(range, values) {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
-    {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
-    .then(function(r){ if(!r.ok) throw new Error('Update failed'); return r.json(); });
+function apiUpdate(range,values){
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)
+    +'?valueInputOption=USER_ENTERED',
+    {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
+     body:JSON.stringify({values:values})})
+    .then(function(r){if(!r.ok) throw new Error('Update failed');return r.json();});
 }
 
-// ═══ HELPERS ══════════════════════════════════════════
-function fmtDate(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-function pad(n) { return n<10?'0'+n:String(n); }
-function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
-function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
-function showSaving(m) { document.getElementById('saving-text').textContent=m||'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
-function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
+// ═══ UTILS ════════════════════════════════════════════
+function fmtDate(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function pad(n){return n<10?'0'+n:String(n);}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');}
+function showSaving(m){document.getElementById('saving-text').textContent=m||'Saving...';document.getElementById('saving-overlay').classList.add('show');}
+function hideSaving(){document.getElementById('saving-overlay').classList.remove('show');}
 var _tt;
-function showToast(m) { var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },3000); }
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},3000);}
 
-// Close sheets on backdrop tap
 ['task-sheet','notif-sheet'].forEach(function(id){
   var el=document.getElementById(id);
-  if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
+  if(el) el.addEventListener('click',function(e){if(e.target===el) el.classList.remove('open');});
 });
 </script>
 </body>
