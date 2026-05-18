@@ -37,7 +37,6 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .tab{flex:1;padding:10px 6px;border:none;background:none;border-radius:10px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all .2s}
 .tab.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
 .neu-card{background:var(--bg);border-radius:18px;box-shadow:var(--neu-out);padding:18px;margin-bottom:14px}
-.card-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
 .task-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px;border-left:4px solid var(--text3);cursor:pointer}
 .task-card:active{box-shadow:var(--neu-in)}
 .task-card.status-pending{border-left-color:var(--orange)}
@@ -81,8 +80,8 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .img-preview{margin-top:10px;border-radius:10px;overflow:hidden;box-shadow:var(--neu-sm);position:relative}
 .img-preview img{width:100%;display:block;max-height:180px;object-fit:contain}
 .img-remove{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700}
-.btn{width:100%;padding:15px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border:none}
-.btn-primary{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,.35);margin-bottom:8px}
+.btn{width:100%;padding:15px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border:none;margin-bottom:8px}
+.btn-primary{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,.35)}
 .btn-primary:active{transform:scale(.98)}
 .btn-danger{background:none;color:var(--red);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;border:none;width:100%;padding:12px;cursor:pointer}
 .btn-secondary{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
@@ -190,7 +189,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
 
     <div id="content-report" style="display:none">
       <div class="neu-card" style="padding:14px;margin-bottom:14px">
-        <div class="card-title" style="margin-bottom:10px">Payroll Period</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Payroll Period</div>
         <div class="period-row">
           <button class="period-btn active" id="rpt-btn-1st" onclick="setRptPeriod('1st')">1st – 15th</button>
           <button class="period-btn" id="rpt-btn-2nd" onclick="setRptPeriod('2nd')">16th – End</button>
@@ -210,6 +209,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   </div>
 </div>
 
+<!-- TASK SHEET -->
 <div class="sheet-overlay" id="task-sheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -219,6 +219,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   </div>
 </div>
 
+<!-- NOTIF SHEET -->
 <div class="sheet-overlay" id="notif-sheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -229,6 +230,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   </div>
 </div>
 
+<!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-title" id="confirm-title">Confirm</div>
@@ -239,7 +241,10 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
     </div>
   </div>
 </div>
-<div class="saving-overlay" id="saving-overlay"><div class="saving-box"><div class="saving-spinner"></div><div class="saving-text" id="saving-text">Saving...</div></div></div>
+
+<div class="saving-overlay" id="saving-overlay">
+  <div class="saving-box"><div class="saving-spinner"></div><div class="saving-text" id="saving-text">Saving...</div></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <div class="bottom-nav">
@@ -258,23 +263,35 @@ var TAB_ATTENDANCE = 'Attendance';
 var TAB_EMPLOYEES  = 'Employees';
 var TAB_RECORDS    = 'Records';
 
-// ═══ EXISTING RECORDS SHEET STRUCTURE ═════════════════
-// A=ID/RowNum  B=Employee Name  C=Date  D=Truck
-// E=Document Type ("Proof of Deliveries" | "Crates")
-// F=Number  G=Liquidated/Returned (Yes/No)
-// H=Acknowledge By  I=Signature  J=Picture  K=Comments
+// ═══ RECORDS SHEET STRUCTURE (Updated) ════════════════
+// A=ID  B=Employee Name  C=Date (Trip Date)
+// D=Submission Date  E=Truck  F=Document Type
+// G=Number  H=Liquidated/Returned  I=Acknowledge By
+// J=Signature  K=Picture  L=Comments
+
+// ═══ SUBMISSION DETECTION ════════════════════════════
+// POD submitted   = Number starts with "100" OR has Signature OR has Picture
+// Crates returned = Number starts with "62"  OR has Signature OR has Picture
+function isRecordSubmitted(rec, taskType) {
+  var num = (rec.number || '').trim();
+  var hasSig = rec.signature && rec.signature.trim().length > 10;
+  var hasPic = rec.picture  && rec.picture.trim().length > 10;
+  if (taskType === 'POD') {
+    return num.startsWith('100') || hasSig || hasPic;
+  } else { // Crates
+    return num.startsWith('62') || hasSig || hasPic;
+  }
+}
 
 // ═══ ROSTER ROTATION ══════════════════════════════════
-// Anchor: Week of May 18-24, 2026
-// Rotation: each week helpers shift UP by 1 truck
 var TRUCKS       = ['CAH','CBQ','CAN','NHE','CBJ'];
 var ANCHOR_DATE  = new Date(2026,4,18); // May 18, 2026 Monday
 var HELPER_ORDER = [
-  'Jessie Briones',           // CAH anchor week
-  'Anewlesis Amor',           // CBQ
-  'Joey Mison',               // CAN
-  'John Richard Cordovilla',  // NHE
-  'Michael Tibayan'           // CBJ
+  'Jessie Briones',
+  'Anewlesis Amor',
+  'Joey Mison',
+  'John Richard Cordovilla',
+  'Michael Tibayan'
 ];
 
 // ═══ STATE ════════════════════════════════════════════
@@ -296,56 +313,60 @@ var currentExistingSignature = null;
 
 // ═══ ROSTER ═══════════════════════════════════════════
 function getMondayOfWeek(d) {
-  var dt = new Date(d); dt.setHours(0,0,0,0);
-  var day = dt.getDay();
-  dt.setDate(dt.getDate() + (day===0 ? -6 : 1-day));
+  var dt=new Date(d); dt.setHours(0,0,0,0);
+  var day=dt.getDay();
+  dt.setDate(dt.getDate()+(day===0?-6:1-day));
   return dt;
 }
 function getScheduledHelper(truck, date) {
-  var idx = TRUCKS.indexOf(truck);
-  if (idx===-1) return null;
-  var wDiff = Math.round((getMondayOfWeek(date) - getMondayOfWeek(ANCHOR_DATE)) / (7*864e5));
-  return HELPER_ORDER[((idx - wDiff) % 5 + 500) % 5];
+  var idx=TRUCKS.indexOf(truck); if(idx===-1) return null;
+  var wDiff=Math.round((getMondayOfWeek(date)-getMondayOfWeek(ANCHOR_DATE))/(7*864e5));
+  return HELPER_ORDER[((idx-wDiff)%5+500)%5];
 }
 
 // ═══ DUE DATES ════════════════════════════════════════
 function getPODDue(tripDate, route) {
-  var d = new Date(tripDate+'T00:00:00');
-  if ((route||'').toLowerCase().indexOf('masbate')>-1) { d.setDate(d.getDate()+4); return d; }
-  d.setDate(d.getDate() + (d.getDay()===6 ? 2 : 1));
+  var d=new Date(tripDate+'T00:00:00');
+  if ((route||'').toLowerCase().indexOf('masbate')>-1){ d.setDate(d.getDate()+4); return d; }
+  d.setDate(d.getDate()+(d.getDay()===6?2:1));
   if (d.getDay()===0) d.setDate(d.getDate()+1);
   return d;
 }
 function getCratesDue(tripDate) {
-  var d = new Date(tripDate+'T00:00:00');
-  d.setDate(d.getDate()+7); return d;
+  var d=new Date(tripDate+'T00:00:00'); d.setDate(d.getDate()+7); return d;
 }
 
-// ═══ MATCH EXISTING RECORD ════════════════════════════
-// Key: EmpName (lowercase) + Date + Truck (lowercase) + DocType
-function findExisting(helperName, date, truck, taskType) {
-  var docType = taskType==='POD' ? 'Proof of Deliveries' : 'Crates';
+// ═══ FIND EXISTING RECORD ═════════════════════════════
+// Match: EmpName + TripDate + Truck + DocType
+function findExisting(helperName, tripDate, truck, taskType) {
+  var docType=taskType==='POD'?'Proof of Deliveries':'Crates';
   return allRecords.find(function(r){
-    return r.empName.toLowerCase() === helperName.toLowerCase()
-        && r.date  === date
-        && r.truck.trim().toLowerCase() === truck.trim().toLowerCase()
-        && r.docType === docType;
+    return r.empName.toLowerCase()===helperName.toLowerCase()
+        && r.date===tripDate
+        && r.truck.trim().toLowerCase()===truck.trim().toLowerCase()
+        && r.docType===docType;
   });
 }
 
-// ═══ STATUS ═══════════════════════════════════════════
+// ═══ TASK STATUS ══════════════════════════════════════
 function getStatus(task, today) {
   if (task.submitted) {
-    // late if trip date already past due (best proxy since sheet has no submission date col)
-    return task.late ? 'late' : 'submitted';
+    if (task.submissionDate) {
+      var sub=new Date(task.submissionDate+'T00:00:00');
+      var due=new Date(task.dueDate+'T23:59:59');
+      return sub>due ? 'late' : 'submitted';
+    }
+    // No submission date — check if trip date > due (conservative: mark as submitted)
+    return 'submitted';
   }
-  return today > new Date(task.dueDate+'T23:59:59') ? 'overdue' : 'pending';
+  return today>new Date(task.dueDate+'T23:59:59') ? 'overdue' : 'pending';
 }
+
 function dueLabel(t) {
-  var due=new Date(t.dueDate+'T00:00:00'), today=new Date(); today.setHours(0,0,0,0);
+  var due=new Date(t.dueDate+'T00:00:00'),today=new Date(); today.setHours(0,0,0,0);
   var diff=Math.round((due-today)/864e5);
-  if (t.status==='submitted') return '✓ Submitted';
-  if (t.status==='late')      return '⚠ Submitted Late';
+  if (t.status==='submitted') return '✓ Submitted'+(t.submissionDate?' on '+t.submissionDate:'');
+  if (t.status==='late')      return '⚠ Late — submitted '+t.submissionDate;
   if (t.status==='overdue')   return '⚠ Overdue by '+Math.abs(diff)+' day(s)';
   if (diff===0) return '⏰ Due today!';
   if (diff===1) return '⏰ Due tomorrow';
@@ -354,9 +375,9 @@ function dueLabel(t) {
 
 // ═══ INIT ═════════════════════════════════════════════
 (function init(){
-  document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme')==='dark');
+  document.body.classList.toggle('dark',localStorage.getItem('pedroex-theme')==='dark');
   var expiry=parseInt(localStorage.getItem('pedroex-token-expiry')||'0');
-  if (!token||Date.now()>=expiry){ location.href='index.html'; return; }
+  if (!token||Date.now()>=expiry){location.href='index.html';return;}
   isAdmin=(localStorage.getItem('pedroex-role')||'').toLowerCase()==='admin';
   if (isAdmin){
     document.getElementById('tab-all').style.display='';
@@ -377,7 +398,7 @@ function loadAll(){
     apiGet(TAB_EMPLOYEES+'!A2:E'),
     apiGet(TAB_TRIPS+'!A2:I'),
     apiGet(TAB_ATTENDANCE+'!A2:L'),
-    apiGet(TAB_RECORDS+'!A2:K')
+    apiGet(TAB_RECORDS+'!A2:L')   // now reading A-L (12 columns)
   ]).then(function(res){
 
     allEmployees=(res[0].values||[]).filter(function(r){return r[0];}).map(function(r){
@@ -405,13 +426,25 @@ function loadAll(){
               lat:r[8]||'',lng:r[9]||'',time:r[10]||'',helperType:r[11]||''};
     });
 
-    // Records sheet: A=ID, B=EmpName, C=Date, D=Truck, E=DocType,
-    // F=Number, G=Liquidated/Returned, H=AckBy, I=Signature, J=Picture, K=Comments
+    // New Records sheet: A=ID, B=EmpName, C=Date(TripDate), D=SubmissionDate,
+    // E=Truck, F=DocType, G=Number, H=Liquidated/Returned,
+    // I=AckBy, J=Signature, K=Picture, L=Comments
     allRecords=(res[3].values||[]).filter(function(r){return r[1];}).map(function(r,i){
-      return {rowIndex:i+2, sheetId:r[0]||String(i+2),
-              empName:r[1]||'', date:r[2]||'', truck:r[3]||'',
-              docType:r[4]||'', number:r[5]||'', liquidated:r[6]||'No',
-              ackBy:r[7]||'', signature:r[8]||'', picture:r[9]||'', comments:r[10]||''};
+      return {
+        rowIndex: i+2,
+        sheetId:  r[0]||String(i+2),
+        empName:  r[1]||'',
+        date:     r[2]||'',       // trip date
+        subDate:  r[3]||'',       // submission date (NEW col D)
+        truck:    r[4]||'',
+        docType:  r[5]||'',
+        number:   r[6]||'',
+        liquidated: r[7]||'',
+        ackBy:    r[8]||'',
+        signature:r[9]||'',
+        picture:  r[10]||'',
+        comments: r[11]||''
+      };
     });
 
     generatedTasks=buildTasks();
@@ -428,76 +461,82 @@ function loadAll(){
 }
 
 // ═══ BUILD TASKS ══════════════════════════════════════
-function empPosition(name){
+function empPos(name){
   var e=allEmployees.find(function(x){return x.fullName.toLowerCase()===(name||'').toLowerCase();});
-  return e ? e.position.toLowerCase() : 'helper';
+  return e?e.position.toLowerCase():'helper';
 }
 
 function buildTasks(){
-  var tasks=[], today=new Date(); today.setHours(0,0,0,0);
+  var tasks=[],today=new Date(); today.setHours(0,0,0,0);
   var seen={};
 
   allTrips.forEach(function(trip){
     var truck=(trip.truck||'').trim(), date=trip.deliveryDate;
     if (!truck||!date) return;
 
-    var scheduled=getScheduledHelper(truck, new Date(date+'T00:00:00'));
+    var scheduled=getScheduledHelper(truck,new Date(date+'T00:00:00'));
 
     var attOnDay=allAtt.filter(function(a){
       return a.date===date && a.truck.trim().toLowerCase()===truck.toLowerCase();
     });
-    var helpers=attOnDay.filter(function(a){ return empPosition(a.name)==='helper'; });
+    var helpers=attOnDay.filter(function(a){return empPos(a.name)==='helper';});
 
     // Primary helper determination
     var primary=null;
     var mp=helpers.find(function(h){return h.helperType==='Primary';});
-    if (mp) { primary=mp.name; }
-    else if (scheduled) {
+    if (mp){ primary=mp.name; }
+    else if (scheduled){
       var sa=helpers.find(function(h){return h.name.toLowerCase()===scheduled.toLowerCase();});
-      primary = sa ? scheduled : (helpers.length>0 ? helpers[0].name : scheduled);
-    } else if (helpers.length>0) { primary=helpers[0].name; }
-
+      primary=sa?scheduled:(helpers.length>0?helpers[0].name:scheduled);
+    } else if (helpers.length>0){ primary=helpers[0].name; }
     if (!primary) return;
 
-    // Crates count from attendance
+    // Crates from attendance
     var ar=allAtt.find(function(a){
       return a.date===date && a.truck.trim().toLowerCase()===truck.toLowerCase()
           && a.name.toLowerCase()===primary.toLowerCase();
     });
-    var crates=ar ? (ar.crates||'0') : '0';
+    var cratesCount=ar?(ar.crates||'0'):'0';
 
     ['POD','Crates'].forEach(function(type){
       var key=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|'+type;
       if (seen[key]) return; seen[key]=true;
 
-      var dueStr = type==='POD'
-        ? fmtDate(getPODDue(date, trip.route))
-        : fmtDate(getCratesDue(date));
+      var dueStr=type==='POD'?fmtDate(getPODDue(date,trip.route)):fmtDate(getCratesDue(date));
 
-      var ex=findExisting(primary, date, truck, type);
-      var submitted = ex && ex.liquidated==='Yes';
+      var ex=findExisting(primary,date,truck,type);
 
-      // Detect if late: if record exists as submitted, check if trip date > due
+      // ✅ Submission detection based on Number prefix / Signature / Picture
+      var submitted = ex ? isRecordSubmitted(ex, type) : false;
+
+      // Late detection using Submission Date column
       var isLate=false;
-      if (submitted) {
-        isLate = new Date(date+'T00:00:00') > new Date(dueStr+'T23:59:59');
+      var subDateStr='';
+      if (submitted && ex) {
+        subDateStr = ex.subDate || '';
+        if (subDateStr) {
+          isLate=new Date(subDateStr+'T00:00:00')>new Date(dueStr+'T23:59:59');
+        }
       }
 
       var task={
-        id: primary.replace(/\s+/g,'_')+'_'+date+'_'+truck+'_'+type,
-        recordRowIndex: ex ? ex.rowIndex : null,
-        helperName:  primary, truck:truck, date:date, type:type,
-        route:trip.route, tripType:trip.type, tripId:trip.id, shipmentNum:trip.shipmentNum,
-        dueDate:dueStr, expectedCrates:crates,
-        submitted:submitted, late:isLate,
-        submissionDate: submitted ? date : '',
-        signature:  ex ? ex.signature : '',
-        picture:    ex ? ex.picture   : '',
-        comments:   ex ? ex.comments  : '',
-        ackBy:      ex ? ex.ackBy     : '',
-        docNumber:  ex ? ex.number    : '',
+        id:         primary.replace(/\s+/g,'_')+'_'+date+'_'+truck+'_'+type,
+        recordRowIndex: ex?ex.rowIndex:null,
+        helperName: primary, truck:truck, date:date, type:type,
+        route:trip.route, tripType:trip.type, tripId:trip.id,
+        shipmentNum:trip.shipmentNum,
+        dueDate:    dueStr,
+        expectedCrates: cratesCount,
+        submitted:  submitted,
+        submissionDate: subDateStr,
+        late:       isLate,
+        signature:  ex?ex.signature:'',
+        picture:    ex?ex.picture:'',
+        comments:   ex?ex.comments:'',
+        ackBy:      ex?ex.ackBy:'',
+        docNumber:  ex?ex.number:'',
         scheduledHelper: scheduled,
-        isScheduled: scheduled && scheduled.toLowerCase()===primary.toLowerCase()
+        isScheduled: scheduled&&scheduled.toLowerCase()===primary.toLowerCase()
       };
       task.status=getStatus(task,today);
       tasks.push(task);
@@ -506,13 +545,13 @@ function buildTasks(){
 
   var ord={overdue:0,pending:1,late:2,submitted:3};
   tasks.sort(function(a,b){
-    var oa=ord[a.status]||99, ob=ord[b.status]||99;
-    return oa!==ob ? oa-ob : b.date.localeCompare(a.date);
+    var oa=ord[a.status]||99,ob=ord[b.status]||99;
+    return oa!==ob?oa-ob:b.date.localeCompare(a.date);
   });
   return tasks;
 }
 
-// ═══ RENDER LISTS ═════════════════════════════════════
+// ═══ RENDER ═══════════════════════════════════════════
 function renderTasks(){
   var mine=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase();
@@ -530,34 +569,35 @@ function renderList(tasks,containerId,filter){
   if (filter==='crates')    list=tasks.filter(function(t){return t.type==='Crates';});
 
   var el=document.getElementById(containerId);
-  if (!list.length){ el.innerHTML='<div class="empty-hint">No tasks found.</div>'; return; }
+  if (!list.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
 
   el.innerHTML=list.map(function(t){
     var bl=t.status==='submitted'?'✓ Done':t.status==='late'?'⚠ Late':t.status==='overdue'?'⚠ Overdue':'⏳ Pending';
     var dc=t.status==='overdue'?'overdue':(t.status==='submitted'||t.status==='late'?'ok':'warning');
     var sub=(!t.isScheduled&&t.scheduledHelper)
-      ? '<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Sched: '
-        +t.scheduledHelper.split(' ')[0]+' → sub: '+t.helperName.split(' ')[0]+'</span>' : '';
+      ?'<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Sched: '
+        +t.scheduledHelper.split(' ')[0]+' → sub: '+t.helperName.split(' ')[0]+'</span>':'';
     var cr=t.type==='Crates'
-      ? '<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>' : '';
+      ?'<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>':'';
     var who=containerId==='all-list'
-      ? '<div class="task-meta-row">👤 '+t.helperName+'</div>' : '';
+      ?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
+    var numTag=t.docNumber
+      ?'<div class="task-meta-row">🔢 '+t.docNumber+'</div>':'';
 
-    return '<div class="task-card status-'+t.status+'" onclick="openTask(\''+t.id+'\')">'+
-      '<div class="task-header">'+
-      '<div class="task-title">'+(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck+'</div>'+
-      '<div class="task-badge badge-'+t.status+'">'+bl+'</div></div>'+
-      '<div class="task-meta">'+
-      '<div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+'</div>'+
-      who+cr+sub+'</div>'+
-      '<div class="task-due '+dc+'">'+dueLabel(t)+'</div></div>';
+    return '<div class="task-card status-'+t.status+'" onclick="openTask(\''+t.id+'\')">'
+      +'<div class="task-header">'
+      +'<div class="task-title">'+(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck+'</div>'
+      +'<div class="task-badge badge-'+t.status+'">'+bl+'</div></div>'
+      +'<div class="task-meta">'
+      +'<div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+'</div>'
+      +who+cr+numTag+sub+'</div>'
+      +'<div class="task-due '+dc+'">'+dueLabel(t)+'</div></div>';
   }).join('');
 }
 
-// ═══ OPEN TASK SHEET ══════════════════════════════════
+// ═══ OPEN TASK ════════════════════════════════════════
 function openTask(taskId){
-  var t=generatedTasks.find(function(x){return x.id===taskId;});
-  if (!t) return;
+  var t=generatedTasks.find(function(x){return x.id===taskId;}); if(!t) return;
   selectedTask=t; sigDrawn=false; uploadedImage=null; currentExistingSignature=null;
 
   document.getElementById('ts-title').textContent=(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck;
@@ -567,17 +607,18 @@ function openTask(taskId){
   var canDelete=isAdmin;
 
   var rows=[
-    ['Trip Type', t.tripType||'—'],['Truck',t.truck],['Date',t.date],
+    ['Trip Type',t.tripType||'—'],['Truck',t.truck],['Date',t.date],
     ['Route',t.route||'—'],['Shipment #',t.shipmentNum||'—'],
     ['Assigned To',t.helperName],['Scheduled Helper',t.scheduledHelper||'—'],
     ['Due Date',t.dueDate],['Status',t.status.toUpperCase()]
   ];
   if (t.type==='Crates') rows.push(['Expected Crates',t.expectedCrates]);
   if (t.submitted){
-    if (t.ackBy)     rows.push(['Acknowledged By',t.ackBy]);
-    if (t.docNumber) rows.push(['Document #',t.docNumber]);
-    if (t.comments)  rows.push(['Comments',t.comments]);
-    if (t.late)      rows.push(['Late Submission','Yes ⚠']);
+    if (t.submissionDate) rows.push(['Submission Date',t.submissionDate]);
+    if (t.late)           rows.push(['Late Submission','Yes ⚠']);
+    if (t.docNumber)      rows.push(['Document #',t.docNumber]);
+    if (t.ackBy)          rows.push(['Acknowledged By',t.ackBy]);
+    if (t.comments)       rows.push(['Comments',t.comments]);
   }
 
   var detail='<div style="background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;margin-bottom:16px">'
@@ -608,18 +649,23 @@ function openTask(taskId){
   if (!t.submitted&&canEdit) setTimeout(initSigCanvas,200);
 }
 
+// ═══ FORM ═════════════════════════════════════════════
 function buildForm(t,isEdit){
   var cr=t.type==='Crates'
-    ? '<div class="fg"><label class="fl">Crates Returned Count</label>'
+    ?'<div class="fg"><label class="fl">Crates Count Returned</label>'
       +'<input class="fi" id="sf-crates" type="number" value="'+(isEdit?t.expectedCrates:t.expectedCrates)+'" min="0"></div>'
-    : '<input type="hidden" id="sf-crates" value="'+t.expectedCrates+'">';
+    :'<input type="hidden" id="sf-crates" value="'+t.expectedCrates+'">';
+
+  // Number label hint based on type
+  var numHint=t.type==='POD'?'POD # (starts with 100...)':'Return Slip # (starts with 62...)';
+
   return '<div class="fg"><label class="fl">Submission Date</label>'
     +'<input class="fi" type="date" id="sf-date" value="'+(isEdit?(t.submissionDate||fmtDate(new Date())):fmtDate(new Date()))+'"></div>'
     +cr
-    +'<div class="fg"><label class="fl">Document # (Optional)</label>'
-    +'<input class="fi" id="sf-number" type="text" value="'+(isEdit?(t.docNumber||''):'')+'" placeholder="POD # or Crates #"></div>'
+    +'<div class="fg"><label class="fl">'+numHint+' (Optional)</label>'
+    +'<input class="fi" id="sf-number" type="text" value="'+(isEdit?(t.docNumber||''): '')+'" placeholder="'+numHint+'"></div>'
     +'<div class="fg"><label class="fl">Acknowledged By (Optional)</label>'
-    +'<input class="fi" id="sf-ackby" type="text" value="'+(isEdit?(t.ackBy||''):'')+'" placeholder="Name of receiver"></div>'
+    +'<input class="fi" id="sf-ackby" type="text" value="'+(isEdit?(t.ackBy||''):'')+'" placeholder="Receiver name"></div>'
     +'<div class="fg"><label class="fl">Comments (Optional)</label>'
     +'<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px" placeholder="Any notes...">'+(isEdit?(t.comments||''):'')+'</textarea></div>'
     +'<div class="fg"><label class="fl">Signature (Optional)</label>'
@@ -642,23 +688,22 @@ function openEditForm(){
   document.getElementById('ts-body').innerHTML=buildForm(t,true);
   setTimeout(function(){
     initSigCanvas();
-    if (t.signature){ loadSigToCanvas(t.signature); }
+    if (t.signature) loadSigToCanvas(t.signature);
     if (t.picture){
       var pi=document.getElementById('sf-img-preview');
       var ub=document.getElementById('sf-upload-box');
       var im=document.getElementById('sf-preview-img');
-      if (pi&&ub&&im){ im.src=t.picture; pi.style.display='block'; ub.style.display='none'; }
+      if (pi&&ub&&im){im.src=t.picture;pi.style.display='block';ub.style.display='none';}
     }
   },200);
 }
-
 function loadSigToCanvas(src){
   var img=new Image();
   img.onload=function(){
-    var c=document.getElementById('sf-sig-canvas'); if (!c) return;
+    var c=document.getElementById('sf-sig-canvas'); if(!c) return;
     var ctx=c.getContext('2d');
     ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
-    var sc=Math.min(c.width/img.width, c.height/img.height);
+    var sc=Math.min(c.width/img.width,c.height/img.height);
     ctx.drawImage(img,(c.width-img.width*sc)/2,(c.height-img.height*sc)/2,img.width*sc,img.height*sc);
   };
   img.src=src;
@@ -671,36 +716,44 @@ function saveTask(){
   var number =(document.getElementById('sf-number')||{}).value||'';
   var ackBy  =(document.getElementById('sf-ackby')||{}).value||'';
   var comments=(document.getElementById('sf-comments')||{}).value||'';
-  var crEl   =document.getElementById('sf-crates');
-  var crVal  =crEl ? crEl.value : t.expectedCrates;
-  if (!subDate){ showToast('Please enter a submission date.'); return; }
+  var crEl=document.getElementById('sf-crates');
+  var crVal=crEl?crEl.value:t.expectedCrates;
+
+  if (!subDate){showToast('Please enter a submission date.');return;}
 
   var isLate=new Date(subDate+'T00:00:00')>new Date(t.dueDate+'T23:59:59');
 
   var sig='';
-  if (sigDrawn){ var c=document.getElementById('sf-sig-canvas'); if(c) sig=c.toDataURL('image/png'); }
+  if (sigDrawn){var c=document.getElementById('sf-sig-canvas');if(c) sig=c.toDataURL('image/png');}
   else if (currentExistingSignature){ sig=currentExistingSignature; }
   var pic=uploadedImage||'';
 
-  // Records sheet: A=ID, B=EmpName, C=Date, D=Truck, E=DocType,
-  // F=Number, G=Liquidated/Returned, H=AckBy, I=Signature, J=Picture, K=Comments
+  // Determine liquidated: Yes if number matches prefix, or has sig/pic
+  var liq='No';
+  if (t.type==='POD'   && (number.startsWith('100')||sig.length>10||pic.length>10)) liq='Yes';
+  if (t.type==='Crates'&& (number.startsWith('62') ||sig.length>10||pic.length>10)) liq='Yes';
+
+  // New sheet structure: A=ID, B=EmpName, C=TripDate, D=SubDate,
+  // E=Truck, F=DocType, G=Number, H=Liquidated,
+  // I=AckBy, J=Signature, K=Picture, L=Comments
   var sheetType=t.type==='POD'?'Proof of Deliveries':'Crates';
   var row=[
-    t.recordRowIndex ? String(t.recordRowIndex) : String(Date.now()),
-    t.helperName, t.date, t.truck, sheetType,
-    number, 'Yes', ackBy, sig, pic, comments
+    t.recordRowIndex?String(t.recordRowIndex):String(Date.now()),
+    t.helperName, t.date, subDate,
+    t.truck, sheetType, number, liq,
+    ackBy, sig, pic, comments
   ];
 
-  showSaving('Saving record...');
+  showSaving('Saving...');
   var p=t.recordRowIndex
-    ? apiUpdate(TAB_RECORDS+'!A'+t.recordRowIndex+':K'+t.recordRowIndex,[row])
-    : apiAppend(TAB_RECORDS+'!A:K',[row]);
+    ?apiUpdate(TAB_RECORDS+'!A'+t.recordRowIndex+':L'+t.recordRowIndex,[row])
+    :apiAppend(TAB_RECORDS+'!A:L',[row]);
 
   p.then(function(){
     hideSaving();
     showToast(isLate?'⚠ Submitted (Late)':'✅ Record submitted!');
     closeSheet('task-sheet'); loadAll();
-  }).catch(function(err){ hideSaving(); showToast('❌ Save failed. Try again.'); console.error(err); });
+  }).catch(function(err){hideSaving();showToast('❌ Save failed.');console.error(err);});
 }
 
 // ═══ DELETE ═══════════════════════════════════════════
@@ -713,12 +766,13 @@ function confirmDeleteTask(){
   document.getElementById('confirm-overlay').classList.add('open');
 }
 function doDelete(){
-  if (!selectedTask||!selectedTask.recordRowIndex){ closeConfirm(); showToast('No saved record.'); return; }
+  if (!selectedTask||!selectedTask.recordRowIndex){closeConfirm();showToast('No saved record.');return;}
   closeConfirm(); showSaving('Deleting...');
-  apiUpdate(TAB_RECORDS+'!A'+selectedTask.recordRowIndex+':K'+selectedTask.recordRowIndex,
-    [['','','','','','','No','','','','']])
-    .then(function(){ hideSaving(); showToast('✅ Deleted.'); closeSheet('task-sheet'); loadAll(); })
-    .catch(function(err){ hideSaving(); showToast('❌ Delete failed.'); console.error(err); });
+  // Blank row but keep structure (12 cols)
+  apiUpdate(TAB_RECORDS+'!A'+selectedTask.recordRowIndex+':L'+selectedTask.recordRowIndex,
+    [['','','','','','','','No','','','','']])
+    .then(function(){hideSaving();showToast('✅ Deleted.');closeSheet('task-sheet');loadAll();})
+    .catch(function(err){hideSaving();showToast('❌ Delete failed.');console.error(err);});
 }
 
 // ═══ FILTERS ══════════════════════════════════════════
@@ -758,23 +812,23 @@ function setRptPeriod(p){
 }
 
 function generateReport(){
-  var now=new Date(), y=now.getFullYear(), m=now.getMonth();
+  var now=new Date(),y=now.getFullYear(),m=now.getMonth();
   var from,to;
-  if (rptPeriod==='1st')      { from=fmtDate(new Date(y,m,1));  to=fmtDate(new Date(y,m,15)); }
-  else if (rptPeriod==='2nd') { from=fmtDate(new Date(y,m,16)); to=fmtDate(new Date(y,m+1,0)); }
+  if (rptPeriod==='1st')     {from=fmtDate(new Date(y,m,1)); to=fmtDate(new Date(y,m,15));}
+  else if(rptPeriod==='2nd') {from=fmtDate(new Date(y,m,16));to=fmtDate(new Date(y,m+1,0));}
   else {
     from=document.getElementById('rpt-from').value;
     to  =document.getElementById('rpt-to').value;
-    if (!from||!to){ showToast('Select date range.'); return; }
+    if (!from||!to){showToast('Select date range.');return;}
   }
 
   document.getElementById('rpt-loading').style.display='flex';
   document.getElementById('rpt-content').style.display='none';
 
-  var period=generatedTasks.filter(function(t){ return t.date>=from&&t.date<=to; });
+  var period=generatedTasks.filter(function(t){return t.date>=from&&t.date<=to;});
   var total=period.length;
-  var done=period.filter(function(t){ return t.submitted; }).length;
-  var pend=period.filter(function(t){ return t.status==='pending'||t.status==='overdue'; }).length;
+  var done=period.filter(function(t){return t.submitted;}).length;
+  var pend=period.filter(function(t){return t.status==='pending'||t.status==='overdue';}).length;
 
   var map={};
   period.forEach(function(t){
@@ -801,20 +855,27 @@ function generateReport(){
         sub:arr.filter(function(t){return t.submitted;}).length,
         tot:arr.length,
         od: arr.filter(function(t){return t.status==='overdue';}).length,
-        late:arr.filter(function(t){return t.status==='late';}).length
+        late:arr.filter(function(t){return t.status==='late';}).length,
+        // List submitted doc numbers
+        nums:arr.filter(function(t){return t.submitted&&t.docNumber;}).map(function(t){return t.docNumber;})
       };
     }
-    var pg=grp(d.pod), cg=grp(d.crates);
+    var pg=grp(d.pod),cg=grp(d.crates);
     var pc=pg.od>0?'bad':pg.late>0?'warn':'ok';
     var cc=cg.od>0?'bad':cg.late>0?'warn':'ok';
+
+    var podNums=pg.nums.length?'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+pg.nums.join(', ')+'</div>':'';
+    var crNums =cg.nums.length?'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+cg.nums.join(', ')+'</div>':'';
 
     return '<div class="rpt-emp-card">'
       +'<div class="rpt-emp-name">'+name
       +'<span class="rpt-clearance '+(cleared?'cleared':'not-cleared')+'">'+(cleared?'✓ CLEARED':'✗ NOT CLEARED')+'</span></div>'
       +'<div class="rpt-row"><span>📄 POD</span><span class="rpt-row-val '+pc+'">'
       +pg.sub+'/'+pg.tot+(pg.od>0?' ('+pg.od+' overdue)':pg.late>0?' ('+pg.late+' late)':' ✓')+'</span></div>'
+      +podNums
       +'<div class="rpt-row"><span>📦 Crates</span><span class="rpt-row-val '+cc+'">'
       +cg.sub+'/'+cg.tot+(cg.od>0?' ('+cg.od+' overdue)':cg.late>0?' ('+cg.late+' late)':' ✓')+'</span></div>'
+      +crNums
       +(late>0?'<div class="rpt-row"><span>⚠ Late Submissions</span><span class="rpt-row-val warn">'+late+'</span></div>':'')
       +(pendN>0?'<div class="rpt-row"><span>⏳ Still Pending</span><span class="rpt-row-val bad">'+pendN+'</span></div>':'')
       +'</div>';
@@ -836,7 +897,7 @@ function scard(v,l,c){
 function updateNotifBadge(){
   var n=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
-        && (t.status==='overdue'||t.status==='pending');
+        &&(t.status==='overdue'||t.status==='pending');
   }).length;
   var b=document.getElementById('notif-badge');
   if (n>0){b.textContent=n;b.style.display='flex';}else{b.style.display='none';}
@@ -844,9 +905,9 @@ function updateNotifBadge(){
 function openNotifSheet(){
   var urgent=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
-        && (t.status==='overdue'||t.status==='pending');
+        &&(t.status==='overdue'||t.status==='pending');
   });
-  if (!urgent.length){ showToast('✓ No pending tasks!'); return; }
+  if (!urgent.length){showToast('✓ No pending tasks!');return;}
   document.getElementById('notif-list').innerHTML=urgent.map(function(t){
     return '<div class="notif-item"><div class="notif-icon">'+(t.status==='overdue'?'🔴':'🟡')+'</div>'
       +'<div><div class="notif-text">'+(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck+'</div>'
@@ -857,7 +918,7 @@ function openNotifSheet(){
 
 // ═══ SIGNATURE ════════════════════════════════════════
 function initSigCanvas(){
-  sigCanvas=document.getElementById('sf-sig-canvas'); if (!sigCanvas) return;
+  sigCanvas=document.getElementById('sf-sig-canvas'); if(!sigCanvas) return;
   sigCtx=sigCanvas.getContext('2d');
   var r=sigCanvas.getBoundingClientRect();
   sigCanvas.width=r.width; sigCanvas.height=r.height||110;
@@ -867,8 +928,8 @@ function initSigCanvas(){
 function setupSigEvents(){
   if (!sigCanvas) return;
   var drawing=false,lx=0,ly=0;
-  function pos(e){ var r=sigCanvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;
-    return{x:(t.clientX-r.left)*(sigCanvas.width/r.width),y:(t.clientY-r.top)*(sigCanvas.height/r.height)};}
+  function pos(e){var r=sigCanvas.getBoundingClientRect(),tt=e.touches?e.touches[0]:e;
+    return{x:(tt.clientX-r.left)*(sigCanvas.width/r.width),y:(tt.clientY-r.top)*(sigCanvas.height/r.height)};}
   function start(e){drawing=true;sigDrawn=true;currentExistingSignature=null;var p=pos(e);lx=p.x;ly=p.y;}
   function move(e){if(!drawing)return;e.preventDefault();var p=pos(e);
     sigCtx.beginPath();sigCtx.moveTo(lx,ly);sigCtx.lineTo(p.x,p.y);
@@ -881,7 +942,7 @@ function setupSigEvents(){
   sigCanvas.addEventListener('touchend',end,{passive:false});
 }
 function clearSig(){
-  if(!sigCanvas) return;
+  if (!sigCanvas) return;
   sigCtx.fillStyle='#fff';sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
   sigDrawn=false;currentExistingSignature=null;
 }
@@ -944,10 +1005,9 @@ function showSaving(m){document.getElementById('saving-text').textContent=m||'Sa
 function hideSaving(){document.getElementById('saving-overlay').classList.remove('show');}
 var _tt;
 function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},3000);}
-
 ['task-sheet','notif-sheet'].forEach(function(id){
   var el=document.getElementById(id);
-  if(el) el.addEventListener('click',function(e){if(e.target===el) el.classList.remove('open');});
+  if(el) el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('open');});
 });
 </script>
 </body>
