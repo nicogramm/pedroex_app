@@ -6,2222 +6,1296 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#e0e0e5">
-<title>Employee Records - PedroEX</title>
+<title>Employee Records — PedroEX</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root {
-  --bg:       #e0e0e5;
-  --bg2:      #e8e8ed;
-  --shadow-d: #b8b9be;
-  --shadow-l: #ffffff;
-  --text:     #2a2a2e;
-  --text2:    #777;
-  --text3:    #aaa;
-  --red:      #B32533;
-  --red-d:    #8f1e29;
-  --card:     #e0e0e5;
-  --green:    #27ae60;
-  --blue:     #3498db;
-  --orange:   #e67e22;
-  --purple:   #9b59b6;
-
-  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
-  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
-  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
-  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+  --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
+  --text:#2a2a2e;--text2:#777;--text3:#aaa;
+  --red:#B32533;--green:#16a34a;--orange:#f59e0b;--blue:#2563eb;
+  --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
+  --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
+  --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
 }
-
 body.dark {
-  --bg:       #1e1e24;
-  --bg2:      #252530;
-  --shadow-d: #0a0a0e;
-  --shadow-l: #2a2a32;
-  --text:     #e8e8ec;
-  --text2:    #888;
-  --text3:    #555;
-  --card:     #1e1e24;
-  --green:    #2ecc71;
-  --blue:     #5dade2;
-  --orange:   #f39c12;
-  --purple:   #b19cd9;
-
-  --neu-out:  6px 6px 16px var(--shadow-d), -2px -2px 8px var(--shadow-l);
-  --neu-in:   inset 5px 5px 12px var(--shadow-d), inset -2px -2px 8px var(--shadow-l);
-  --neu-sm:   5px 5px 12px var(--shadow-d), -2px -2px 8px var(--shadow-l);
-  --neu-xs:   4px 4px 10px var(--shadow-d), -2px -2px 6px var(--shadow-l);
-}
-
-body.dark .sig-canvas {
-  background: #ffffff;
-  border: 1px solid #3a3a42;
-}
-
-body.dark .img-upload-box {
-  border-color: #3a3a42;
-  background: #252530;
-}
-
-body.dark .img-upload-box:hover {
-  border-color: var(--red);
-}
-
-body.dark .modal {
-  background: rgba(0, 0, 0, 0.85);
-}
-
-body.dark .form-input,
-body.dark .form-select,
-body.dark .form-textarea {
-  background: #252530;
-  color: var(--text);
-  border: 1px solid #3a3a42;
-}
-
-body.dark .form-input::placeholder,
-body.dark .form-textarea::placeholder {
-  color: var(--text3);
-}
-
-body.dark .form-input:focus,
-body.dark .form-select:focus,
-body.dark .form-textarea:focus {
-  outline: 2px solid var(--red);
-  outline-offset: 2px;
-  border-color: var(--red);
-}
-
-body.dark .record-card {
-  background: #252530;
-}
-
-body.dark .calendar,
-body.dark .report-header,
-body.dark .stat-card {
-  background: #252530;
-}
-
-body.dark .cal-day {
-  background: #1e1e24;
-}
-
-body.dark .cal-day.today {
-  background: #252530;
-}
-
-body.dark .tabs {
-  background: #252530;
-}
-
-body.dark .tab.active {
-  background: #1e1e24;
-}
-
-body.dark .filter-chip {
-  background: #252530;
-}
-
-body.dark .filter-chip.active {
-  background: #1e1e24;
-}
-
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
-html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
-
-.topbar {
-  background: var(--bg);
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px;
-  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
-  flex-shrink:0;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-  position:sticky; top:0; z-index:50;
-}
-body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
-
-.tb-left { display:flex; align-items:center; gap:12px }
-.tb-back {
-  width:36px; height:36px; border-radius:12px;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; border:none; color:var(--text);
-}
-.tb-back:active { box-shadow:var(--neu-in) }
-
-.tb-title { font-size:16px; font-weight:700; color:var(--text) }
-
-.tb-right { display:flex; align-items:center; gap:12px }
-.tb-icon-btn {
-  width:36px; height:36px; border-radius:12px;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; border:none; color:var(--text);
-  position:relative;
-}
-.tb-icon-btn:active { box-shadow:var(--neu-in) }
-.tb-icon-btn svg { width:18px; height:18px }
-
-.notif-badge {
-  position:absolute; top:-4px; right:-4px;
-  background:var(--red); color:#fff;
-  font-size:9px; font-weight:700;
-  width:16px; height:16px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-}
-
-.page-wrap {
-  flex:1; 
-  overflow-y:auto; 
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  padding:16px; 
-  padding-bottom:120px;
-  height: calc(100vh - 70px - 60px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-}
-
-.tabs {
-  display:flex; gap:8px; margin-bottom:16px;
-  background:var(--bg); border-radius:16px;
-  padding:6px; box-shadow:var(--neu-in);
-}
-.tab {
-  flex:1; padding:10px 16px; border-radius:12px;
-  font-size:13px; font-weight:600; text-align:center;
-  cursor:pointer; border:none; background:transparent;
-  color:var(--text2); font-family:'Inter',sans-serif;
-  transition:all 0.2s;
-}
-.tab.active {
-  background:var(--bg); color:var(--red);
-  box-shadow:var(--neu-sm);
-}
-
-.filter-bar {
-  display:flex; gap:8px; margin-bottom:16px;
-  overflow-x:auto; -webkit-overflow-scrolling:touch;
-  padding-bottom:4px;
-}
-.filter-bar::-webkit-scrollbar { display:none }
-
-.filter-chip {
-  padding:8px 16px; border-radius:12px;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  font-size:12px; font-weight:600; color:var(--text2);
-  white-space:nowrap; cursor:pointer; border:none;
-  font-family:'Inter',sans-serif;
-}
-.filter-chip.active {
-  box-shadow:var(--neu-in); color:var(--red);
-}
-
-.records-list { display:flex; flex-direction:column; gap:12px; margin-bottom:40px; }
-
-.record-card {
-  background:var(--bg); border-radius:16px;
-  box-shadow:var(--neu-out); padding:14px;
-  cursor:pointer; transition:all 0.15s;
-  border-left:4px solid transparent;
-}
-.record-card:active { box-shadow:var(--neu-in); transform:scale(0.98) }
-
-.record-card.pod-liquidated { border-left-color:var(--blue) }
-.record-card.pod-pending { border-left-color:var(--orange) }
-.record-card.crates-liquidated { border-left-color:var(--green) }
-.record-card.crates-pending { border-left-color:var(--red) }
-.record-card.others-liquidated { border-left-color:var(--purple) }
-.record-card.others-pending { border-left-color:var(--orange) }
-
-.record-header {
-  display:flex; justify-content:space-between; align-items:flex-start;
-  margin-bottom:10px;
-}
-.record-title { font-size:14px; font-weight:700; color:var(--text) }
-.record-badge {
-  padding:4px 10px; border-radius:8px;
-  font-size:10px; font-weight:700; text-transform:uppercase;
-  letter-spacing:0.5px;
-}
-.badge-liquidated { background:rgba(46,204,113,0.2); color:var(--green) }
-.badge-pending { background:rgba(231,76,60,0.2); color:var(--red) }
-
-.record-meta {
-  display:flex; flex-direction:column; gap:6px;
-  font-size:12px; color:var(--text2);
-}
-.record-meta-row {
-  display:flex; align-items:center; gap:8px;
-}
-.record-meta-row svg { width:14px; height:14px; flex-shrink:0 }
-
-.btn-delete {
-  width:100%; padding:14px; border-radius:12px;
-  font-size:14px; font-weight:700; text-align:center;
-  cursor:pointer; border:none; font-family:'Inter',sans-serif;
-  background:var(--red); color:#fff;
-  box-shadow:0 4px 12px rgba(179,37,51,0.3);
-  margin-top:12px;
-}
-.btn-delete:active { transform:scale(0.97) }
-
-.fab {
-  position:fixed;
-  bottom:calc(80px + env(safe-area-inset-bottom,0px));
-  right:20px;
-  width:56px; height:56px; border-radius:50%;
-  background:var(--red); color:#fff;
-  box-shadow:0 6px 20px rgba(179,37,51,0.4);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; border:none; z-index:45;
-  transition:all 0.2s;
-}
-.fab:active { transform:scale(0.92) }
-.fab svg { width:24px; height:24px }
-
-.modal {
-  position:fixed; inset:0; z-index:100;
-  background:rgba(0,0,0,0.6);
-  display:none; align-items:flex-end;
-  animation:fadeIn 0.2s;
-}
-.modal.active { display:flex }
-.modal.fullscreen { align-items:center; justify-content:center }
-
-@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
-
-.modal-content {
-  background:var(--bg); width:100%;
-  border-radius:24px 24px 0 0;
-  padding:24px; padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));
-  max-height:90vh; overflow-y:auto;
-  animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-
-.modal.fullscreen .modal-content {
-  border-radius:24px;
-  max-width:100%;
-  width:100%;
-  max-height:100vh;
-  height:100vh;
-  padding:20px;
-  overflow-y:auto;
-  animation:zoomIn 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-
-@keyframes slideUp { from { transform:translateY(100%) } to { transform:translateY(0) } }
-@keyframes zoomIn { from { transform:scale(0.95); opacity:0 } to { transform:scale(1); opacity:1 } }
-
-.modal-header {
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:20px;
-  position:sticky;
-  top:0;
-  background:var(--bg);
-  z-index:10;
-  padding-bottom:10px;
-}
-.modal-title { font-size:18px; font-weight:700; color:var(--text) }
-.modal-close {
-  width:32px; height:32px; border-radius:50%;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; border:none; color:var(--text);
-}
-.modal-close:active { box-shadow:var(--neu-in) }
-
-.form-group { margin-bottom:18px }
-.form-label {
-  display:block; font-size:11px; font-weight:600;
-  text-transform:uppercase; letter-spacing:1px;
-  color:var(--text3); margin-bottom:8px;
-}
-.form-input, .form-select, .form-textarea {
-  width:100%; padding:14px 16px; border-radius:12px;
-  background:var(--bg); box-shadow:var(--neu-in);
-  border:none; font-size:14px; color:var(--text);
-  font-family:'Inter',sans-serif;
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-  outline:2px solid var(--red); outline-offset:2px;
-}
-.form-textarea { resize:vertical; min-height:80px }
-
-.radio-group {
-  display:flex; gap:12px;
-}
-.radio-btn {
-  flex:1; padding:12px; border-radius:12px;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  text-align:center; font-size:13px; font-weight:600;
-  color:var(--text2); cursor:pointer; border:none;
-  font-family:'Inter',sans-serif; transition:all 0.2s;
-}
-.radio-btn.active {
-  box-shadow:var(--neu-in); color:var(--red);
-}
-
-.sig-container {
-  background:var(--bg2); border-radius:12px;
-  box-shadow:var(--neu-in); padding:12px;
-  margin-bottom:18px;
-}
-.sig-canvas {
-  width:100%; 
-  height:120px; 
-  border-radius:8px;
-  background:#fff; 
-  cursor:crosshair;
-  touch-action:none;
-  display:block;
-  border:1px solid #ddd;
-}
-.sig-actions {
-  display:flex; gap:8px; margin-top:8px;
-}
-.sig-btn {
-  flex:1; padding:8px; border-radius:8px;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  font-size:12px; font-weight:600; color:var(--text2);
-  border:none; cursor:pointer; font-family:'Inter',sans-serif;
-}
-.sig-btn:active { box-shadow:var(--neu-in) }
-
-.sig-display {
-  width:100%; 
-  max-height:120px;
-  border-radius:8px; 
-  background:#fff;
-  display:block; 
-  object-fit:contain;
-  border:1px solid #ddd;
-  padding:8px;
-}
-
-.img-upload-box {
-  background:var(--bg); border-radius:12px;
-  box-shadow:var(--neu-in); padding:20px;
-  text-align:center; cursor:pointer;
-  border:2px dashed var(--text3);
-  transition:all 0.2s;
-}
-.img-upload-box:hover { border-color:var(--red) }
-.img-upload-box svg { width:32px; height:32px; color:var(--text3); margin-bottom:8px }
-.img-upload-box p { font-size:12px; color:var(--text2) }
-
-.img-preview {
-  margin-top:12px; border-radius:12px; overflow:hidden;
-  box-shadow:var(--neu-sm); position:relative;
-}
-.img-preview img { width:100%; display:block; max-height:200px; object-fit:contain }
-.img-remove {
-  position:absolute; top:8px; right:8px;
-  width:28px; height:28px; border-radius:50%;
-  background:var(--red); color:#fff;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; font-size:16px; font-weight:700;
-}
-
-.btn {
-  width:100%; padding:16px; border-radius:12px;
-  font-size:15px; font-weight:700; text-align:center;
-  cursor:pointer; border:none; font-family:'Inter',sans-serif;
-  transition:all 0.15s;
-}
-.btn-primary {
-  background:var(--red); color:#fff;
-  box-shadow:0 4px 12px rgba(179,37,51,0.3);
-}
-.btn-primary:active { transform:scale(0.97) }
-
-.btn-secondary {
-  background:var(--bg); color:var(--text);
-  box-shadow:var(--neu-sm);
-}
-.btn-secondary:active { box-shadow:var(--neu-in) }
-
-.calendar {
-  background:var(--bg); border-radius:16px;
-  box-shadow:var(--neu-out); padding:20px;
-  margin-bottom:16px;
-}
-.cal-header {
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:20px;
-}
-.cal-month { font-size:18px; font-weight:700; color:var(--text) }
-.cal-nav {
-  display:flex; gap:8px;
-}
-.cal-nav-btn {
-  width:36px; height:36px; border-radius:10px;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; border:none; color:var(--text);
-  font-size:18px;
-}
-.cal-nav-btn:active { box-shadow:var(--neu-in) }
-
-.cal-grid {
-  display:grid; 
-  grid-template-columns:repeat(7,1fr);
-  gap:10px;
-}
-.cal-day-label {
-  text-align:center; font-size:11px; font-weight:700;
-  color:var(--text3); text-transform:uppercase;
-  padding:10px 0;
-  letter-spacing:0.5px;
-}
-.cal-day {
-  min-height: 90px;
-  max-height: 90px;
-  overflow: hidden;
-  border-radius: 10px;
-  background: var(--bg);
-  box-shadow: var(--neu-sm);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 6px 4px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text2);
-  cursor: pointer;
-  position: relative;
-}
-.cal-day:active { box-shadow:var(--neu-in) }
-.cal-day.today { 
-  color:var(--red); 
-  box-shadow:var(--neu-in);
-  font-weight:700;
-}
-
-.cal-day-number {
-  margin-bottom: 4px;  /* ⬇️ Bawasan from 6px */
-  font-size: 14px;     /* ⬇️ Bawasan from 15px */
-  flex-shrink: 0;      /* ✨ BAGO - prevent shrinking */
-}
-
-.cal-day-entries {
-  display: flex; 
-  flex-direction: column; 
-  gap: 2px;  /* ⬇️ Bawasan from 3px */
-  width: 100%;
-  align-items: center;
-  overflow: hidden;  /* ✨ Nandito na to */
-  flex: 1;           /* ✨ KAILANGAN ITO - take remaining space */
-  min-height: 0;     /* ✨ BAGO - critical for overflow to work */
-}
-.cal-entry {
-  font-size:7px; font-weight:700;
-  padding:2px 4px; border-radius:3px;
-  text-align:center; 
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:100%;
-  line-height: 1.2;  
-}
-.cal-entry.pod { background:rgba(52,152,219,0.3); color:var(--blue) }
-.cal-entry.crates { background:rgba(39,174,96,0.3); color:var(--green) }
-.cal-entry.others { background:rgba(155,89,182,0.3); color:var(--purple) }
-
-.report-section {
-  margin-bottom:24px;
-}
-
-.report-period-selector {
-  display:flex; gap:12px; margin-bottom:24px;
-  justify-content:center;
-}
-
-.period-btn {
-  padding:12px 24px; border-radius:12px;
-  background:var(--bg); box-shadow:var(--neu-sm);
-  font-size:13px; font-weight:600; color:var(--text2);
-  cursor:pointer; border:none;
-  font-family:'Inter',sans-serif;
-  transition:all 0.2s;
-}
-.period-btn.active {
-  box-shadow:var(--neu-in); color:var(--red);
-}
-
-.report-stats-grid {
-  display:grid; 
-  grid-template-columns:repeat(3, 1fr);
-  gap:16px; 
-  margin-bottom:24px;
-}
-
-.stat-card {
-  background:var(--bg); border-radius:16px;
-  box-shadow:var(--neu-out); padding:20px;
-  text-align:center;
-}
-.stat-label { 
-  font-size:11px; font-weight:600; 
-  text-transform:uppercase; letter-spacing:1px; 
-  color:var(--text3); margin-bottom:12px 
-}
-.stat-value { 
-  font-size:32px; font-weight:700; 
-  color:var(--red); line-height:1;
-  margin-bottom:8px;
-}
-.stat-sub { font-size:12px; color:var(--text2) }
-
-.report-columns {
-  display:flex;
-  flex-direction:column;
-  gap:24px;
-  margin-bottom:24px;
-}
-
-.report-column {
-  background:var(--bg); border-radius:16px;
-  box-shadow:var(--neu-out); padding:20px;
-}
-
-.report-column-header {
-  display:flex; align-items:center; gap:12px;
-  margin-bottom:16px;
-  padding-bottom:16px;
-  border-bottom:2px solid var(--bg2);
-}
-
-.report-column-icon {
-  width:48px; height:48px;
-  border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:24px;
-}
-.report-column-icon.pod { background:rgba(52,152,219,0.2); color:var(--blue) }
-.report-column-icon.crates { background:rgba(39,174,96,0.2); color:var(--green) }
-
-.report-column-title {
-  flex:1;
-}
-.report-column-name {
-  font-size:18px; font-weight:700; color:var(--text);
-}
-.report-column-count {
-  font-size:12px; color:var(--text2);
-}
-
-.report-list {
-  display:flex; flex-direction:column; gap:12px;
-}
-
-.report-employee-card {
-  background:var(--bg2); border-radius:12px;
-  padding:14px;
-}
-
-.report-emp-header {
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:8px;
-}
-
-.report-emp-name {
-  font-size:14px; font-weight:700; color:var(--text);
-}
-
-.report-emp-badge {
-  padding:4px 10px; border-radius:6px;
-  font-size:11px; font-weight:700;
-}
-.report-emp-badge.good { background:rgba(46,204,113,0.2); color:var(--green) }
-.report-emp-badge.warning { background:rgba(230,126,34,0.2); color:var(--orange) }
-.report-emp-badge.bad { background:rgba(231,76,60,0.2); color:var(--red) }
-
-.report-emp-details {
-  font-size:12px; color:var(--text2);
-  display:flex; flex-direction:column; gap:4px;
-}
-
-.performance-section {
-  margin-top:24px;
-  padding-top:24px;
-  border-top:2px solid var(--bg2);
-}
-
-.performance-title {
-  font-size:16px; font-weight:700; color:var(--text);
-  margin-bottom:16px;
-}
-
-.performance-grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
-  gap:12px;
-}
-
-.performance-card {
-  background:var(--bg2); border-radius:12px;
-  padding:14px;
-  cursor:pointer;
-  transition:all 0.2s;
-}
-.performance-card:hover {
-  box-shadow:var(--neu-sm);
-}
-
-.perf-emp-name {
-  font-size:13px; font-weight:700; color:var(--text);
-  margin-bottom:8px;
-}
-
-.perf-stats {
-  display:flex; flex-direction:column; gap:6px;
-  font-size:11px; color:var(--text2);
-}
-
-.perf-stat-row {
-  display:flex; justify-content:space-between; align-items:center;
-}
-
-.perf-stat-label {
-  display:flex; align-items:center; gap:6px;
-}
-
-.perf-stat-value {
-  font-weight:700;
-}
-.perf-stat-value.good { color:var(--green) }
-.perf-stat-value.warning { color:var(--orange) }
-.perf-stat-value.bad { color:var(--red) }
-
-.detail-section {
-  margin-bottom:20px;
-}
-.detail-label {
-  font-size:11px; font-weight:600;
-  text-transform:uppercase; letter-spacing:1px;
-  color:var(--text3); margin-bottom:8px;
-}
-.detail-value {
-  font-size:14px; color:var(--text);
-  padding:12px; border-radius:10px;
-  background:var(--bg2);
-}
-
-.notif-modal {
-  position:fixed; inset:0; z-index:200;
-  background:rgba(0,0,0,0.7);
-  display:none; align-items:center; justify-content:center;
-  animation:fadeIn 0.2s;
-}
-.notif-modal.active { display:flex }
-
-.notif-content {
-  background:var(--bg); 
-  border-radius:20px;
-  padding:24px;
-  max-width:500px;
-  width:90%;
-  max-height:80vh;
-  overflow-y:auto;
-  box-shadow:var(--neu-out);
-  animation:zoomIn 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-
-.notif-header {
-  display:flex; align-items:center; gap:12px;
-  margin-bottom:20px;
-  padding-bottom:16px;
-  border-bottom:2px solid var(--bg2);
-}
-
-.notif-icon {
-  width:48px; height:48px;
-  border-radius:50%;
-  background:rgba(179,37,51,0.2);
-  display:flex; align-items:center; justify-content:center;
-  font-size:24px;
-}
-
-.notif-title {
-  font-size:20px; font-weight:700; color:var(--text);
-}
-
-.notif-list {
-  display:flex; flex-direction:column; gap:12px;
-  margin-bottom:20px;
-}
-
-.notif-item {
-  background:var(--bg2); border-radius:12px;
-  padding:14px;
-  display:flex; align-items:flex-start; gap:12px;
-}
-
-.notif-item-icon {
-  font-size:20px;
-  flex-shrink:0;
-}
-
-.notif-item-content {
-  flex:1;
-}
-
-.notif-item-text {
-  font-size:13px; color:var(--text);
-  margin-bottom:4px;
-}
-
-.notif-item-meta {
-  font-size:11px; color:var(--text3);
-}
-
-.toast {
-  position:fixed;
-  bottom:calc(80px + env(safe-area-inset-bottom,0px));
-  left:50%; transform:translateX(-50%);
-  background:var(--bg); border-radius:14px;
-  box-shadow:var(--neu-out);
-  border-left:3px solid var(--red);
-  padding:13px 22px; font-size:13px; font-weight:500; color:var(--text);
-  z-index:300; white-space:nowrap;
-  opacity:0; pointer-events:none; transition:opacity 0.25s;
-}
-.toast.show { opacity:1 }
-
-.ptr-indicator {
-  position:fixed;
-  top:calc(env(safe-area-inset-top,0px) + 60px);
-  left:50%; transform:translateX(-50%) translateY(-80px);
-  background:var(--bg); border-radius:50%;
-  width:40px; height:40px; box-shadow:var(--neu-out);
-  display:flex; align-items:center; justify-content:center;
-  z-index:200; transition:transform 0.2s; pointer-events:none;
-}
-.ptr-indicator.visible { transform:translateX(-50%) translateY(0) }
-.ptr-spinner {
-  width:18px; height:18px;
-  border:2px solid var(--text3);
-  border-top-color:var(--red);
-  border-radius:50%;
-}
-.ptr-spinner.spinning { animation:spin 0.7s linear infinite }
-@keyframes spin { to { transform:rotate(360deg) } }
-
-.bottom-nav {
-  position:fixed; bottom:0; left:0; right:0;
-  background:var(--bg);
-  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
-  display:flex; align-items:center; justify-content:space-around;
-  box-shadow:0 -3px 14px rgba(0,0,0,0.07);
-  z-index:40;
-}
-body.dark .bottom-nav { box-shadow:0 -3px 14px rgba(0,0,0,0.4) }
-
-.bnav {
-  display:flex; flex-direction:column; align-items:center; gap:4px;
-  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
-  color:var(--text3); cursor:pointer; border:none; background:none;
-  font-family:'Inter',sans-serif;
-}
-.bnav.active { color:var(--red) }
-
-.bnav-icon {
-  width:42px; height:42px; border-radius:14px;
-  background:var(--bg);
-  display:flex; align-items:center; justify-content:center;
-  transition:box-shadow 0.2s;
-}
-.bnav:not(.active) .bnav-icon { box-shadow:var(--neu-sm) }
-.bnav.active .bnav-icon { box-shadow:var(--neu-in) }
-
+  --bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;
+  --text:#e8e8ec;--text2:#888;--text3:#555;
+  --green:#22c55e;--orange:#f59e0b;--blue:#60a5fa;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+
+/* TOPBAR */
+.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.07);position:sticky;top:0;z-index:50}
+body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-back{width:36px;height:36px;border-radius:12px;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--text2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tb-back:active{box-shadow:var(--neu-in)}
+.tb-title{font-size:16px;font-weight:700;color:var(--text)}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-btn{width:36px;height:36px;border-radius:12px;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative}
+.tb-btn:active{box-shadow:var(--neu-in)}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+/* PAGE */
+.screen{display:flex;flex-direction:column;height:100dvh}
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px}
+.tab{flex:1;padding:10px 6px;border:none;background:none;border-radius:10px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all .2s}
+.tab.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
+
+/* CARDS */
+.neu-card{background:var(--bg);border-radius:18px;box-shadow:var(--neu-out);padding:18px;margin-bottom:14px}
+.card-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+
+/* TASK CARDS */
+.task-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px;border-left:4px solid var(--text3);cursor:pointer;transition:box-shadow .15s}
+.task-card:active{box-shadow:var(--neu-in)}
+.task-card.status-pending{border-left-color:var(--orange)}
+.task-card.status-submitted{border-left-color:var(--green)}
+.task-card.status-overdue{border-left-color:var(--red)}
+.task-card.status-late{border-left-color:var(--blue)}
+.task-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.task-title{font-size:14px;font-weight:700;color:var(--text)}
+.task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.badge-pending{background:rgba(245,158,11,.15);color:var(--orange)}
+.badge-submitted{background:rgba(22,163,74,.15);color:var(--green)}
+.badge-overdue{background:rgba(179,37,51,.15);color:var(--red)}
+.badge-late{background:rgba(37,99,235,.15);color:var(--blue)}
+.task-meta{font-size:11px;color:var(--text2);display:flex;flex-direction:column;gap:4px}
+.task-meta-row{display:flex;align-items:center;gap:6px}
+.task-due{font-size:11px;font-weight:600;margin-top:6px}
+.task-due.overdue{color:var(--red)}
+.task-due.ok{color:var(--green)}
+.task-due.warning{color:var(--orange)}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{padding:7px 14px;border-radius:20px;background:var(--bg);box-shadow:var(--neu-sm);font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .2s}
+.filter-chip.active{box-shadow:var(--neu-in);color:var(--red)}
+
+/* SHEET */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:92dvh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.16,1,.3,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;opacity:.3}
+.sheet-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
+.sheet-sub{font-size:12px;color:var(--text2);margin-bottom:18px}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none}
+.fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,.2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* RADIO TOGGLE */
+.toggle-group{display:flex;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);overflow:hidden}
+.tg-btn{flex:1;padding:12px;border:none;background:none;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all .2s}
+.tg-btn.active-yes{background:var(--green);color:#fff}
+.tg-btn.active-no{background:var(--orange);color:#fff}
+
+/* SIG CANVAS */
+.sig-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:10px}
+.sig-canvas{width:100%;height:110px;border-radius:8px;background:#fff;cursor:crosshair;touch-action:none;display:block}
+.sig-actions{display:flex;gap:8px;margin-top:8px}
+.sig-btn{flex:1;padding:8px;border-radius:8px;background:var(--bg);box-shadow:var(--neu-sm);font-size:12px;font-weight:600;color:var(--text2);border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.sig-btn:active{box-shadow:var(--neu-in)}
+
+/* IMAGE UPLOAD */
+.img-upload-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:18px;text-align:center;cursor:pointer;border:2px dashed var(--text3)}
+.img-upload-box p{font-size:12px;color:var(--text2);margin-top:6px}
+.img-preview{margin-top:10px;border-radius:10px;overflow:hidden;box-shadow:var(--neu-sm);position:relative}
+.img-preview img{width:100%;display:block;max-height:180px;object-fit:contain}
+.img-remove{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700}
+
+/* BTN */
+.btn{width:100%;padding:15px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,.35)}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{background:var(--text3);box-shadow:var(--neu-sm);cursor:not-allowed;transform:none}
+.btn-danger{background:none;color:var(--red);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;border:none;width:100%;padding:12px;cursor:pointer}
+.btn-secondary{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
+.btn-secondary:active{box-shadow:var(--neu-in)}
+
+/* DETAIL ROWS */
+.dt-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05)}
+body.dark .dt-row{border-bottom-color:rgba(255,255,255,.04)}
+.dt-row:last-child{border-bottom:none}
+.dt-label{font-size:11px;color:var(--text3);font-weight:600}
+.dt-val{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:65%}
+
+/* REPORT */
+.rpt-stat{background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px;text-align:center}
+.rpt-stat-val{font-size:26px;font-weight:700;line-height:1;margin-bottom:4px}
+.rpt-stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3)}
+.rpt-emp-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px}
+.rpt-emp-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.rpt-clearance{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+.cleared{background:rgba(22,163,74,.15);color:var(--green)}
+.not-cleared{background:rgba(179,37,51,.15);color:var(--red)}
+.rpt-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
+.rpt-row:last-child{border-bottom:none}
+.rpt-row-val{font-weight:600}
+.rpt-row-val.ok{color:var(--green)}
+.rpt-row-val.warn{color:var(--orange)}
+.rpt-row-val.bad{color:var(--red)}
+
+/* PERIOD BTNS */
+.period-row{display:flex;gap:8px;margin-bottom:14px}
+.period-btn{flex:1;padding:10px 6px;border:none;background:var(--bg);border-radius:10px;box-shadow:var(--neu-sm);font-size:11px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer}
+.period-btn.active{box-shadow:var(--neu-in);color:var(--red)}
+
+/* CONFIRM */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg);border-radius:22px;padding:24px;max-width:340px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.confirm-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.confirm-msg{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px}
+.confirm-btns{display:flex;gap:10px}
+.cb{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none}
+.cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
+.cb-confirm{background:var(--red);color:#fff}
+
+/* SAVING / TOAST */
+.saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center}
+.saving-overlay.show{display:flex}
+.saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+.saving-text{font-size:14px;color:var(--text2);font-weight:500}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.show{opacity:1}
+
+/* EMPTY */
+.empty-hint{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+.loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:var(--text3);font-size:13px}
+.spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 14px rgba(0,0,0,.07);z-index:40}
+body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
+.bnav{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
+.bnav.active{color:var(--red)}
+.bnav-icon{width:42px;height:42px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center}
+.bnav:not(.active) .bnav-icon{box-shadow:var(--neu-sm)}
+.bnav.active .bnav-icon{box-shadow:var(--neu-in)}
+
+/* NOTIF ITEMS */
+.notif-item{background:var(--bg2);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
+.notif-icon{font-size:20px;flex-shrink:0}
+.notif-text{font-size:13px;color:var(--text);margin-bottom:2px}
+.notif-meta{font-size:11px;color:var(--text3)}
 </style>
 </head>
 <body>
-
-<div class="topbar">
-  <div class="tb-left">
-    <button class="tb-back" onclick="location.href='index.html'">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <span class="tb-title">Employee Records</span>
-  </div>
-  <div class="tb-right">
-    <button class="tb-icon-btn" id="notif-btn" onclick="showNotifications()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="notif-badge" id="notif-count" style="display:none">0</span>
-    </button>
-    <button class="tb-icon-btn" onclick="toggleTheme()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" id="theme-icon">
-        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
-        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
-  </div>
-</div>
-
-<div class="page-wrap" id="page-wrap">
-  
-  <div class="tabs">
-    <button class="tab active" data-tab="list" onclick="switchTab('list')">Records</button>
-    <button class="tab" data-tab="calendar" onclick="switchTab('calendar')">Calendar</button>
-    <button class="tab" data-tab="report" onclick="openReportModal()">Report</button>
-  </div>
-
-  <div id="tab-list" class="tab-content">
-    <div class="filter-bar">
-      <button class="filter-chip active" data-filter="all" onclick="filterRecords('all')">All</button>
-      <button class="filter-chip" data-filter="pod" onclick="filterRecords('pod')">POD</button>
-      <button class="filter-chip" data-filter="crates" onclick="filterRecords('crates')">Crates</button>
-      <button class="filter-chip" data-filter="others" onclick="filterRecords('others')">Others</button>
-      <button class="filter-chip" data-filter="pending" onclick="filterRecords('pending')">Pending</button>
-      <button class="filter-chip" data-filter="liquidated" onclick="filterRecords('liquidated')">Liquidated</button>
+<div class="screen">
+  <div class="topbar">
+    <div class="tb-left">
+      <button class="tb-back" onclick="location.href='index.html'">‹</button>
+      <span class="tb-title">Employee Records</span>
     </div>
-    <div class="records-list" id="records-list"></div>
+    <div class="tb-right">
+      <button class="tb-btn" id="notif-btn" onclick="openNotifSheet()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="notif-badge" id="notif-badge" style="display:none">0</span>
+      </button>
+    </div>
   </div>
 
-  <div id="tab-calendar" class="tab-content" style="display:none">
-    <div class="filter-bar" style="margin-bottom:16px">
-      <button class="filter-chip active" data-cal-filter="pod" onclick="filterCalendar('pod')">POD</button>
-      <button class="filter-chip" data-cal-filter="crates" onclick="filterCalendar('crates')">Crates</button>
-      <button class="filter-chip" data-cal-filter="others" onclick="filterCalendar('others')">Others</button>
+  <div class="page-wrap" id="page-wrap">
+    <div class="tabs">
+      <button class="tab active" id="tab-tasks" onclick="switchTab('tasks')">My Tasks</button>
+      <button class="tab" id="tab-all" onclick="switchTab('all')" style="display:none">All Records</button>
+      <button class="tab" id="tab-report" onclick="switchTab('report')" style="display:none">Report</button>
     </div>
-    
-    <div class="calendar">
-      <div class="cal-header">
-        <div class="cal-month" id="cal-month">January 2025</div>
-        <div class="cal-nav">
-          <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
-          <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+
+    <div id="loading-main" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
+
+    <!-- TASKS TAB -->
+    <div id="content-tasks" style="display:none">
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterTasks('all',this)">All</button>
+        <button class="filter-chip" onclick="filterTasks('pending',this)">Pending</button>
+        <button class="filter-chip" onclick="filterTasks('overdue',this)">Overdue</button>
+        <button class="filter-chip" onclick="filterTasks('submitted',this)">Submitted</button>
+        <button class="filter-chip" onclick="filterTasks('pod',this)">POD</button>
+        <button class="filter-chip" onclick="filterTasks('crates',this)">Crates</button>
+      </div>
+      <div id="tasks-list"></div>
+    </div>
+
+    <!-- ALL RECORDS TAB (ADMIN) -->
+    <div id="content-all" style="display:none">
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterAll('all',this)">All</button>
+        <button class="filter-chip" onclick="filterAll('pending',this)">Pending</button>
+        <button class="filter-chip" onclick="filterAll('overdue',this)">Overdue</button>
+        <button class="filter-chip" onclick="filterAll('submitted',this)">Submitted</button>
+        <button class="filter-chip" onclick="filterAll('pod',this)">POD</button>
+        <button class="filter-chip" onclick="filterAll('crates',this)">Crates</button>
+      </div>
+      <div id="all-list"></div>
+    </div>
+
+    <!-- REPORT TAB (ADMIN) -->
+    <div id="content-report" style="display:none">
+      <div class="neu-card" style="padding:14px;margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:10px">Payroll Period</div>
+        <div class="period-row">
+          <button class="period-btn active" id="rpt-btn-1st" onclick="setRptPeriod('1st')">1st – 15th</button>
+          <button class="period-btn" id="rpt-btn-2nd" onclick="setRptPeriod('2nd')">16th – End</button>
+          <button class="period-btn" id="rpt-btn-custom" onclick="setRptPeriod('custom')">Custom</button>
         </div>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
-    </div>
-    <div class="records-list" id="cal-records-list"></div>
-  </div>
-
-</div>
-
-<button class="fab" onclick="openAddModal()">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  </svg>
-</button>
-
-<!-- ADD/EDIT MODAL -->
-<div class="modal" id="record-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-title">Add Record</div>
-      <button class="modal-close" onclick="closeModal('record-modal')">✕</button>
-    </div>
-
-    <form id="record-form">
-      <input type="hidden" id="edit-id">
-
-      <div class="form-group">
-        <label class="form-label">Employee Name *</label>
-        <select class="form-select" id="emp-name" required>
-          <option value="">Select employee...</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Date *</label>
-        <input type="date" class="form-input" id="rec-date" required>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Truck Plate *</label>
-        <select class="form-select" id="rec-truck" required>
-          <option value="">Select truck...</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Document Type *</label>
-        <select class="form-select" id="doc-type" required onchange="updateFormFields()">
-          <option value="">Select type...</option>
-          <option value="Proof of Deliveries">Proof of Deliveries</option>
-          <option value="Crates">Crates</option>
-          <option value="Others">Others</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" id="number-label">Number (Optional)</label>
-        <input type="text" class="form-input" id="doc-number" placeholder="Leave blank if not applicable">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Liquidated/Returned *</label>
-        <div class="radio-group">
-          <button type="button" class="radio-btn" data-value="No" onclick="selectRadio(this, 'liquidated')">No</button>
-          <button type="button" class="radio-btn active" data-value="Yes" onclick="selectRadio(this, 'liquidated')">Yes</button>
-        </div>
-        <input type="hidden" id="liquidated" value="Yes">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Acknowledged By (Optional)</label>
-        <input type="text" class="form-input" id="ack-by" placeholder="Leave blank if not applicable">
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Signature (Optional)</label>
-        <div class="sig-container">
-          <canvas class="sig-canvas" id="sig-canvas"></canvas>
-          <div class="sig-actions">
-            <button type="button" class="sig-btn" onclick="clearSignature()">Clear</button>
+        <div id="rpt-custom-wrap" style="display:none">
+          <div class="row2" style="margin-bottom:10px">
+            <div><label class="fl">From</label><input class="fi" type="date" id="rpt-from"></div>
+            <div><label class="fl">To</label><input class="fi" type="date" id="rpt-to"></div>
           </div>
+          <button class="btn btn-primary" onclick="generateReport()" style="padding:12px;font-size:13px">Generate</button>
         </div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Picture (Optional)</label>
-        <input type="file" id="pic-input" accept="image/*" capture="environment" style="display:none" onchange="handleImageUpload(event)">
-        <div class="img-upload-box" id="upload-box" onclick="document.getElementById('pic-input').click()">
-          <svg viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
-            <path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <p>Tap to capture/upload</p>
-        </div>
-        <div class="img-preview" id="img-preview" style="display:none">
-          <img id="preview-img" src="" alt="">
-          <div class="img-remove" onclick="removeImage()">✕</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Comments (Optional)</label>
-        <textarea class="form-textarea" id="comments" rows="3"></textarea>
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="save-btn">Save Record</button>
-      <button type="button" class="btn-delete" id="delete-btn" style="display:none" onclick="deleteRecord()">Delete Record</button>
-    </form>
-  </div>
-</div>
-
-<!-- VIEW DETAILS MODAL -->
-<div class="modal" id="detail-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title">Record Details</div>
-      <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
-    </div>
-    <div id="detail-content"></div>
-    <button class="btn btn-primary" onclick="editFromDetail()" style="margin-top:16px">Edit Record</button>
-  </div>
-</div>
-
-<!-- REPORT MODAL (FULLSCREEN) -->
-<div class="modal fullscreen" id="report-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title">📊 Reports & Performance</div>
-      <button class="modal-close" onclick="closeModal('report-modal')">✕</button>
-    </div>
-    
-    <div class="report-period-selector">
-      <button class="period-btn active" data-period="weekly" onclick="changeReportPeriod('weekly')">Weekly</button>
-      <button class="period-btn" data-period="fortnightly" onclick="changeReportPeriod('fortnightly')">Fortnightly</button>
-      <button class="period-btn" data-period="monthly" onclick="changeReportPeriod('monthly')">Monthly</button>
-    </div>
-
-    <div class="report-section">
-      <div class="detail-label" id="report-period-text">Week of Jan 13-19, 2025</div>
-      
-      <div class="report-stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total Records</div>
-          <div class="stat-value" id="report-total">0</div>
-          <div class="stat-sub">This period</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Liquidated</div>
-          <div class="stat-value" id="report-liquidated">0</div>
-          <div class="stat-sub">Completed</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Pending</div>
-          <div class="stat-value" id="report-pending">0</div>
-          <div class="stat-sub">Awaiting return</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="report-columns" id="report-columns"></div>
-
-    <div class="performance-section">
-      <div class="performance-title">📈 Employee Performance</div>
-      <div class="performance-grid" id="performance-grid"></div>
+      <div id="rpt-loading" class="loading-wrap" style="display:none"><div class="spinner"></div>&nbsp;Generating...</div>
+      <div id="rpt-content" style="display:none"></div>
     </div>
   </div>
 </div>
 
-<!-- NOTIFICATION MODAL -->
-<div class="notif-modal" id="notif-modal">
-  <div class="notif-content">
-    <div class="notif-header">
-      <div class="notif-icon">🔔</div>
-      <div class="notif-title">REMINDERS</div>
-    </div>
-    <div class="notif-list" id="notif-list"></div>
-    <button class="btn btn-primary" onclick="closeModal('notif-modal')">Close</button>
+<!-- TASK DETAIL / EDIT SHEET -->
+<div class="sheet-overlay" id="task-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="ts-title"></div>
+    <div class="sheet-sub" id="ts-sub"></div>
+    <div id="ts-body"></div>
   </div>
 </div>
 
-<div class="bottom-nav">
-  <button class="bnav" onclick="location.href='index.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
-    Home
-  </button>
-  <button class="bnav" onclick="location.href='trucks.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
-    Trucks
-  </button>
-  <button class="bnav" onclick="location.href='trips.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
-    Trips
-  </button>
-  <button class="bnav" onclick="location.href='billing.html'">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-    Billing
-  </button>
-  <button class="bnav active">
-    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2"/></svg></div>
-    Records
-  </button>
+<!-- NOTIF SHEET -->
+<div class="sheet-overlay" id="notif-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🔔 Reminders</div>
+    <div class="sheet-sub" style="margin-bottom:14px">Pending and overdue tasks</div>
+    <div id="notif-list"></div>
+    <button class="btn btn-secondary" onclick="closeSheet('notif-sheet')" style="margin-top:10px">Close</button>
+  </div>
 </div>
 
+<!-- CONFIRM -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirm</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
+    <div class="confirm-btns">
+      <button class="cb cb-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="cb cb-confirm" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="saving-overlay" id="saving-overlay">
+  <div class="saving-box">
+    <div class="saving-spinner"></div>
+    <div class="saving-text" id="saving-text">Saving...</div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
-<div class="ptr-indicator">
-  <div class="ptr-spinner" id="ptr-spinner"></div>
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="bnav" onclick="location.href='index.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>Home
+  </button>
+  <button class="bnav" onclick="location.href='trucks.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>Trucks
+  </button>
+  <button class="bnav" onclick="location.href='trips.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>Trips
+  </button>
+  <button class="bnav" onclick="location.href='billing.html'">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>Billing
+  </button>
+  <button class="bnav active">
+    <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2"/></svg></div>Records
+  </button>
 </div>
 
 <script>
-const CLIENT_ID = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
-const SHEET_ID  = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-const SCOPES    = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+// ═══ CONFIG ═══════════════════════════════════════════
+var SHEET_ID        = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+var TAB_TRIPS       = 'Trips';
+var TAB_ATTENDANCE  = 'Attendance';
+var TAB_EMPLOYEES   = 'Employees';
+var TAB_RECORDS     = 'Records';
 
-let token = null;
-let records = [];
-let employees = [];
-let trucks = [];
-let currentFilter = 'all';
-let currentMonth = new Date();
-let sigCanvas, sigCtx;
-let uploadedImage = null;
-let reportPeriod = 'weekly';
-let calendarFilter = 'pod';
-let currentSignature = null;
-let isDrawing = false;
-let currentEditId = null;
+// ═══ ROSTER ROTATION CONFIG ═══════════════════════════
+// Anchor: Week of May 18–24, 2026
+// Trucks rotate: each week, helpers shift UP by 1 (CAH←CBQ←CAN←NHE←CBJ←CAH)
+var TRUCKS = ['CAH', 'CBQ', 'CAN', 'NHE', 'CBJ'];
 
-(function init() {
-  const savedToken = localStorage.getItem('pedroex-token');
-  const expiry = localStorage.getItem('pedroex-token-expiry');
-  
-  if (!savedToken || !expiry || Date.now() >= parseInt(expiry)) {
-    location.href = 'index.html';
-    return;
+// Anchor assignment for week of May 18, 2026 (Monday)
+var ANCHOR_DATE   = new Date(2026, 4, 18); // May 18, 2026 (Monday)
+var ANCHOR_ASSIGN = {
+  'CAH': 'Jessie Briones',
+  'CBQ': 'Anewlesis Amor',
+  'CAN': 'Joey Mison',
+  'NHE': 'John Richard Cordovilla',
+  'CBJ': 'Michael Tibayan'
+};
+// Helper list in truck order for anchor week
+var HELPER_ORDER = [
+  'Jessie Briones',       // CAH index 0
+  'Anewlesis Amor',       // CBQ index 1
+  'Joey Mison',           // CAN index 2
+  'John Richard Cordovilla', // NHE index 3
+  'Michael Tibayan'       // CBJ index 4
+];
+
+// ═══ STATE ════════════════════════════════════════════
+var token       = localStorage.getItem('pedroex-token') || '';
+var isAdmin     = false;
+var currentUser = null;
+var allTrips    = [];
+var allAtt      = [];
+var allEmployees= [];
+var allRecords  = [];
+var generatedTasks = []; // computed tasks from trips+attendance+roster
+var taskFilter  = 'all';
+var allFilter   = 'all';
+var rptPeriod   = '1st';
+var selectedTask= null;
+var sigCanvas, sigCtx, isDrawing = false, sigDrawn = false;
+var uploadedImage = null;
+var currentExistingSignature = null;
+
+// ═══ ROSTER HELPERS ═══════════════════════════════════
+function getMondayOfWeek(date) {
+  var d = new Date(date);
+  d.setHours(0,0,0,0);
+  var day = d.getDay(); // 0=Sun
+  var diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function getScheduledHelper(truck, date) {
+  var truckIdx = TRUCKS.indexOf(truck);
+  if (truckIdx === -1) return null;
+
+  var anchorMonday = getMondayOfWeek(ANCHOR_DATE);
+  var targetMonday = getMondayOfWeek(date);
+  var weekDiff = Math.round((targetMonday - anchorMonday) / (7 * 24 * 60 * 60 * 1000));
+
+  // shift: each week, helpers rotate UP by 1
+  // anchor week: CAH=0,CBQ=1,CAN=2,NHE=3,CBJ=4
+  // next week: CAH=4(prev CBJ), CBQ=0(prev CAH), etc.
+  // so for a given week offset, helper for truck[i] = HELPER_ORDER[(i - weekDiff + 500*5) % 5]
+  var helperIdx = ((truckIdx - weekDiff) % 5 + 500) % 5;
+  return HELPER_ORDER[helperIdx];
+}
+
+// ═══ VALIDITY RULES ═══════════════════════════════════
+function getPODDueDate(tripDate, route) {
+  var d = new Date(tripDate + 'T00:00:00');
+  var isMaxbate = (route || '').toLowerCase().indexOf('masbate') > -1;
+
+  if (isMaxbate) {
+    d.setDate(d.getDate() + 4);
+    return d;
   }
-  
-  token = savedToken;
-  applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
-  
-  // ✅ Role-based access — mula sa localStorage na na-save ng index.html
-  const role = (localStorage.getItem('pedroex-role') || '').toLowerCase();
-  const isAdmin = role === 'admin';
-  
 
-  
-  sigCanvas = document.getElementById('sig-canvas');
-  sigCtx = sigCanvas.getContext('2d');
-  
-  loadEmployees();
-  loadTrucks();
-  loadRecords();
-  
-  initPullToRefresh(document.getElementById('page-wrap'), function(done) {
-    loadRecords();
-    setTimeout(done, 1000);
-  });
-  
-  checkReminders();
-  setInterval(checkReminders, 60000);
+  // next business day; if Saturday (+2 to Monday), if Sunday (+1)
+  var dow = d.getDay(); // 0=Sun,6=Sat
+  if (dow === 6) { d.setDate(d.getDate() + 2); } // Saturday trip → Monday
+  else { d.setDate(d.getDate() + 1); }
+  // skip Sunday
+  if (d.getDay() === 0) d.setDate(d.getDate() + 1);
+  return d;
+}
+
+function getCratesDueDate(tripDate) {
+  var d = new Date(tripDate + 'T00:00:00');
+  d.setDate(d.getDate() + 7);
+  return d;
+}
+
+function getTaskStatus(task, today) {
+  if (task.submitted) {
+    var subDate = new Date(task.submissionDate + 'T00:00:00');
+    var dueDate = new Date(task.dueDate);
+    dueDate.setHours(23,59,59);
+    if (subDate > dueDate) return 'late';
+    return 'submitted';
+  }
+  var due = new Date(task.dueDate);
+  due.setHours(23,59,59);
+  if (today > due) return 'overdue';
+  return 'pending';
+}
+
+function dueDateLabel(dueDateStr, status) {
+  var due = new Date(dueDateStr);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var diff = Math.round((due - today) / 86400000);
+  if (status === 'submitted') return '✓ Submitted';
+  if (status === 'late') return '⚠ Submitted Late';
+  if (status === 'overdue') return '⚠ Overdue by ' + Math.abs(diff) + ' day(s)';
+  if (diff === 0) return '⏰ Due today!';
+  if (diff === 1) return '⏰ Due tomorrow';
+  return '📅 Due in ' + diff + ' day(s)';
+}
+
+// ═══ INIT ═════════════════════════════════════════════
+(function init() {
+  document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
+  var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
+
+  isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
+
+  if (isAdmin) {
+    document.getElementById('tab-all').style.display = '';
+    document.getElementById('tab-report').style.display = '';
+  }
+
+  loadAll();
 })();
 
-function toggleTheme() {
-  const isDark = document.body.classList.toggle('dark');
-  localStorage.setItem('pedroex-theme', isDark ? 'dark' : 'light');
-}
+// ═══ LOAD ALL ═════════════════════════════════════════
+function loadAll() {
+  document.getElementById('loading-main').style.display = 'flex';
+  document.getElementById('content-tasks').style.display = 'none';
 
-function applyTheme(dark) {
-  document.body.classList.toggle('dark', dark);
-}
+  var email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
 
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-  
-  document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-  document.getElementById(`tab-${tab}`).style.display = 'block';
-  
-  if (tab === 'calendar') {
-    setTimeout(() => renderCalendar(), 100);
-  }
-}
-
-function changeReportPeriod(period) {
-  reportPeriod = period;
-  document.querySelectorAll('.period-btn').forEach(c => c.classList.remove('active'));
-  document.querySelector(`[data-period="${period}"]`).classList.add('active');
-  loadReport();
-}
-
-function filterCalendar(type) {
-  calendarFilter = type;
-  document.querySelectorAll('[data-cal-filter]').forEach(c => c.classList.remove('active'));
-  document.querySelector(`[data-cal-filter="${type}"]`).classList.add('active');
-  renderCalendar();
-}
-
-function loadEmployees() {
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:C`, {
-    headers: {'Authorization': 'Bearer ' + token}
-  })
-  .then(r => r.json())
-  .then(res => {
-    employees = (res.values || []).map(r => ({
-      email: r[0] || '',
-      firstName: r[1] || '',
-      lastName: r[2] || ''
-    }));
-    
-    const sel = document.getElementById('emp-name');
-    sel.innerHTML = '<option value="">Select employee...</option>' + 
-      employees.map(e => {
-        const fullName = `${e.firstName} ${e.lastName}`;
-        return `<option value="${fullName}">${fullName}</option>`;
-      }).join('');
-  })
-  .catch(() => showToast('❌ Error loading employees'));
-}
-
-function loadTrucks() {
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Truck%20Roster!B2:D`, {
-    headers: {'Authorization': 'Bearer ' + token}
-  })
-  .then(r => r.json())
-  .then(res => {
-    trucks = (res.values || []).map(r => ({
-      plate: r[0] || '',
-      lto: r[1] || '',
-      nmis: r[2] || ''
-    }));
-    
-    const sel = document.getElementById('rec-truck');
-    sel.innerHTML = '<option value="">Select truck...</option>' + 
-      trucks.map(t => `<option value="${t.plate}">${t.plate}</option>`).join('');
-  })
-  .catch(() => showToast('❌ Error loading trucks'));
-}
-
-// Line ~750 — TANGGALIN ang filtering logic
-function loadRecords() {
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Records!A2:K`, {
-    headers: {'Authorization': 'Bearer ' + token}
-  })
-  .then(r => r.json())
-  .then(res => {
-    // ✅ SIMPLE LANG — no filtering
-    records = (res.values || []).filter(r => r && r[1]).map((r, i) => ({
-      id: r[0],
-      empName: r[1] || '',
-      date: r[2] || '',
-      truck: r[3] || '',
-      docType: r[4] || '',
-      number: r[5] || '',
-      liquidated: r[6] || 'No',
-      ackBy: r[7] || '',
-      signature: r[8] || '',
-      picture: r[9] || '',
-      comments: r[10] || ''
-    }));
-    
-    console.log('Records loaded:', records.length);
-    renderRecords();
-    updateNotifications();
-  })
-  .catch(() => showToast('❌ Error loading records'));
-}
-
-
-function renderRecords() {
-  const list = document.getElementById('records-list');
-  let filtered = records;
-  
-  if (currentFilter === 'pod') filtered = records.filter(r => r.docType === 'Proof of Deliveries');
-  else if (currentFilter === 'crates') filtered = records.filter(r => r.docType === 'Crates');
-  else if (currentFilter === 'others') filtered = records.filter(r => r.docType === 'Others');
-  else if (currentFilter === 'pending') filtered = records.filter(r => r.liquidated === 'No');
-  else if (currentFilter === 'liquidated') filtered = records.filter(r => r.liquidated === 'Yes');
-  
-  if (filtered.length === 0) {
-    list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:40px 0">No records found</p>';
-    return;
-  }
-  
-  list.innerHTML = filtered.map(r => {
-    const isPOD = r.docType === 'Proof of Deliveries';
-    const isCrates = r.docType === 'Crates';
-    const isOthers = r.docType === 'Others';
-    const isLiq = r.liquidated === 'Yes';
-    
-    let cardClass = 'record-card';
-    if (isPOD && isLiq) cardClass += ' pod-liquidated';
-    else if (isPOD && !isLiq) cardClass += ' pod-pending';
-    else if (isCrates && isLiq) cardClass += ' crates-liquidated';
-    else if (isCrates && !isLiq) cardClass += ' crates-pending';
-    else if (isOthers && isLiq) cardClass += ' others-liquidated';
-    else if (isOthers && !isLiq) cardClass += ' others-pending';
-    
-    return `
-      <div class="${cardClass}" onclick="viewRecordDetail(${r.id})">
-        <div class="record-header">
-          <div class="record-title">${r.empName}</div>
-          <div class="record-badge ${isLiq ? 'badge-liquidated' : 'badge-pending'}">
-            ${isLiq ? 'Liquidated' : 'Pending'}
-          </div>
-        </div>
-        <div class="record-meta">
-          <div class="record-meta-row">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" stroke-width="2"/></svg>
-            ${r.date}
-          </div>
-          <div class="record-meta-row">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/></svg>
-            ${r.truck}
-          </div>
-          <div class="record-meta-row">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h5" stroke="currentColor" stroke-width="2"/></svg>
-            ${r.docType}${r.number ? ' #' + r.number : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function filterRecords(filter) {
-  currentFilter = filter;
-  document.querySelectorAll('[data-filter]').forEach(c => c.classList.remove('active'));
-  document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
-  renderRecords();
-}
-
-function viewRecordDetail(id) {
-  const rec = records.find(r => r.id === id);
-  if (!rec) return;
-  
-  currentEditId = id;
-  
-  console.log('Viewing record:', rec);
-  console.log('Signature exists:', !!rec.signature);
-  console.log('Signature length:', rec.signature ? rec.signature.length : 0);
-  
-  let html = `
-    <div class="detail-section">
-      <div class="detail-label">Employee</div>
-      <div class="detail-value">${rec.empName}</div>
-    </div>
-    
-    <div class="detail-section">
-      <div class="detail-label">Date</div>
-      <div class="detail-value">${rec.date}</div>
-    </div>
-    
-    <div class="detail-section">
-      <div class="detail-label">Truck</div>
-      <div class="detail-value">${rec.truck}</div>
-    </div>
-    
-    <div class="detail-section">
-      <div class="detail-label">Document Type</div>
-      <div class="detail-value">${rec.docType}${rec.number ? ' #' + rec.number : ''}</div>
-    </div>
-    
-    <div class="detail-section">
-      <div class="detail-label">Status</div>
-      <div class="detail-value">${rec.liquidated === 'Yes' ? '✅ Liquidated' : '⏳ Pending'}</div>
-    </div>
-  `;
-  
-  if (rec.ackBy) {
-    html += `
-      <div class="detail-section">
-        <div class="detail-label">Acknowledged By</div>
-        <div class="detail-value">${rec.ackBy}</div>
-      </div>
-    `;
-  }
-  
-  if (rec.signature && rec.signature.trim() !== '') {
-    console.log('Adding signature to view');
-    html += `
-      <div class="detail-section">
-        <div class="detail-label">Signature</div>
-        <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #ddd;">
-          <img src="${rec.signature}" 
-               class="sig-display" 
-               alt="Signature"
-               style="width:100%; height:auto; max-height:120px; object-fit:contain; display:block;"
-               onload="console.log('Signature loaded successfully')"
-               onerror="console.error('Signature failed to load'); this.style.display='none'; this.nextElementSibling.style.display='block'">
-          <div style="display:none; padding:20px; text-align:center; color:var(--text3); font-size:12px;">
-            ⚠️ Signature could not be displayed
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  if (rec.picture && rec.picture.trim() !== '') {
-    html += `
-      <div class="detail-section">
-        <div class="detail-label">Picture</div>
-        <div class="img-preview">
-          <img src="${rec.picture}" alt="Picture">
-        </div>
-      </div>
-    `;
-  }
-  
-  if (rec.comments) {
-    html += `
-      <div class="detail-section">
-        <div class="detail-label">Comments</div>
-        <div class="detail-value">${rec.comments}</div>
-      </div>
-    `;
-  }
-
- 
-  
-  document.getElementById('detail-content').innerHTML = html;
-  document.getElementById('detail-modal').classList.add('active');
-}
-
-function editFromDetail() {
-  closeModal('detail-modal');
-  viewRecord(currentEditId);
-}
-
-function openAddModal() {
-    // ✅ Admin check
-
-
-  document.getElementById('modal-title').textContent = 'Add Record';
-  document.getElementById('record-form').reset();
-  document.getElementById('edit-id').value = '';
-  removeImage();
-  currentSignature = null;
-  isDrawing = false;
-  document.getElementById('rec-date').valueAsDate = new Date();
-  document.getElementById('delete-btn').style.display = 'none';
-  document.getElementById('save-btn').style.display = 'block';
-  
-  document.getElementById('record-modal').classList.add('active');
-  
-  setTimeout(function() {
-    initSignatureCanvas();
-  }, 150);
-}
-
-function closeModal(modalId) {
-  document.getElementById(modalId).classList.remove('active');
-}
-
-function viewRecord(id) {
-  const rec = records.find(r => r.id === id);
-  if (!rec) return;
-  
-  document.getElementById('modal-title').textContent = 'Edit Record';
-  document.getElementById('edit-id').value = rec.id;
-  document.getElementById('emp-name').value = rec.empName;
-  document.getElementById('rec-date').value = rec.date;
-  document.getElementById('rec-truck').value = rec.truck;
-  document.getElementById('doc-type').value = rec.docType;
-  document.getElementById('doc-number').value = rec.number;
-  document.getElementById('liquidated').value = rec.liquidated;
-  document.getElementById('ack-by').value = rec.ackBy;
-  document.getElementById('comments').value = rec.comments;
-  
-  document.querySelectorAll('.radio-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.value === rec.liquidated);
-  });
-  
-  document.getElementById('save-btn').style.display = 'block';
-  document.getElementById('delete-btn').style.display = 'block';
-  
-  currentSignature = rec.signature;
-  isDrawing = false;
-  
-  if (rec.picture) {
-    document.getElementById('preview-img').src = rec.picture;
-    document.getElementById('img-preview').style.display = 'block';
-    document.getElementById('upload-box').style.display = 'none';
-    uploadedImage = rec.picture;
-  } else {
-    removeImage();
-  }
-  
-  document.getElementById('record-modal').classList.add('active');
-  
-  setTimeout(function() {
-    initSignatureCanvas();
-    if (rec.signature && rec.signature.trim() !== '') {
-      const img = new Image();
-      img.onload = () => {
-        console.log('Signature image loaded in edit mode');
-        const canvas = document.getElementById('sig-canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-        const x = (canvas.width / 2) - (img.width / 2) * scale;
-        const y = (canvas.height / 2) - (img.height / 2) * scale;
-        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+  Promise.all([
+    apiGet(TAB_EMPLOYEES  + '!A2:E'),
+    apiGet(TAB_TRIPS      + '!A2:I'),
+    apiGet(TAB_ATTENDANCE + '!A2:L'),
+    apiGet(TAB_RECORDS    + '!A2:N')
+  ]).then(function(res) {
+    allEmployees = (res[0].values || []).filter(function(r){ return r[0]; }).map(function(r){
+      return {
+        email:    (r[0]||'').toLowerCase(),
+        firstName:r[1]||'',
+        lastName: r[2]||'',
+        role:     r[3]||'Employee',
+        position: r[4]||'Helper',
+        fullName: ((r[1]||'') + ' ' + (r[2]||'')).trim()
       };
-      img.onerror = () => {
-        console.error('Failed to load signature in edit mode');
-      };
-      img.src = rec.signature;
-    }
-  }, 150);
-}
-
-function updateFormFields() {
-  const docType = document.getElementById('doc-type').value;
-  const numberLabel = document.getElementById('number-label');
-  
-  if (docType === 'Proof of Deliveries') {
-    numberLabel.textContent = 'POD Number (Optional)';
-  } else if (docType === 'Crates') {
-    numberLabel.textContent = 'Crate Number (Optional)';
-  } else {
-    numberLabel.textContent = 'Number (Optional)';
-  }
-}
-
-function initSignatureCanvas() {
-  const canvas = document.getElementById('sig-canvas');
-  const ctx = canvas.getContext('2d');
-  
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height;
-  
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  setupSignaturePad();
-}
-
-document.getElementById('record-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const id = document.getElementById('edit-id').value;
-  const empName = document.getElementById('emp-name').value;
-  const date = document.getElementById('rec-date').value;
-  const truck = document.getElementById('rec-truck').value;
-  const docType = document.getElementById('doc-type').value;
-  const number = document.getElementById('doc-number').value;
-  const liquidated = document.getElementById('liquidated').value;
-  const ackBy = document.getElementById('ack-by').value;
-  const comments = document.getElementById('comments').value;
-  
-  let signature = '';
-  if (isDrawing) {
-    signature = sigCanvas.toDataURL('image/png');
-    console.log('New signature created, length:', signature.length);
-  } else if (currentSignature && currentSignature.trim() !== '') {
-    signature = currentSignature;
-    console.log('Using existing signature, length:', signature.length);
-  }
-  
-  let picture = uploadedImage || '';
-  
-    const rowId = id ? id : Date.now().toString();
-
-    const row = [
-    rowId,      // A - ID
-    empName,    // B
-    date,       // C
-    truck,      // D
-    docType,    // E
-    number,     // F
-    liquidated, // G
-    ackBy,      // H
-    signature,  // I
-    picture,    // J
-    comments    // K
-    ];
-  console.log('Saving record with signature:', !!signature);
-  
-    const range = id ? `Records!A${id}:K${id}` : 'Records!A:K';
-    const method = id ? 'PUT' : 'POST';
-    const url = id 
-        ? `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW`
-        : `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
-    
-  fetch(url, {
-    method: method,
-    headers: {
-      'Authorization': 'Bearer ' + token,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ values: [row] })
-  })
-  .then(r => r.json())
-  .then(() => {
-    showToast(id ? '✓ Record updated' : '✓ Record added');
-    closeModal('record-modal');
-    loadRecords();
-  })
-  .catch(() => showToast('❌ Error saving record'));
-});
-
-function deleteRecord() {
-    // ✅ Admin check
-
-  const id = document.getElementById('edit-id').value;
-  if (!id) return;
-  
-  if (!confirm('Are you sure you want to delete this record?')) return;
-  
-  fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Records!A${id}:K${id}:clear`, {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + token,
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(r => r.json())
-  .then(() => {
-    showToast('✓ Record deleted');
-    closeModal('record-modal');
-    loadRecords();
-  })
-  .catch(() => showToast('❌ Error deleting record'));
-}
-
-function selectRadio(btn, inputId) {
-  btn.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(inputId).value = btn.dataset.value;
-}
-
-function setupSignaturePad() {
-  let drawing = false;
-  let lastX = 0;
-  let lastY = 0;
-  
-  const canvas = document.getElementById('sig-canvas');
-  const ctx = canvas.getContext('2d');
-  
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches ? e.touches[0] : e;
-    return {
-      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
-      y: (touch.clientY - rect.top) * (canvas.height / rect.height)
-    };
-  }
-  
-  canvas.addEventListener('mousedown', function(e) {
-    drawing = true;
-    isDrawing = true;
-    const pos = getPos(e);
-    lastX = pos.x;
-    lastY = pos.y;
-    currentSignature = null;
-  });
-  
-  canvas.addEventListener('mousemove', function(e) {
-    if (!drawing) return;
-    e.preventDefault();
-    const pos = getPos(e);
-    
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-    
-    lastX = pos.x;
-    lastY = pos.y;
-  });
-  
-  canvas.addEventListener('mouseup', function() {
-    drawing = false;
-  });
-  
-  canvas.addEventListener('mouseleave', function() {
-    drawing = false;
-  });
-  
-  canvas.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    drawing = true;
-    isDrawing = true;
-    const pos = getPos(e);
-    lastX = pos.x;
-    lastY = pos.y;
-    currentSignature = null;
-  }, { passive: false });
-  
-  canvas.addEventListener('touchmove', function(e) {
-    if (!drawing) return;
-    e.preventDefault();
-    const pos = getPos(e);
-    
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-    
-    lastX = pos.x;
-    lastY = pos.y;
-  }, { passive: false });
-  
-  canvas.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    drawing = false;
-  }, { passive: false });
-}
-
-function clearSignature() {
-  const canvas = document.getElementById('sig-canvas');
-  const ctx = canvas.getContext('2d');
-  
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  currentSignature = null;
-  isDrawing = false;
-}
-
-function handleImageUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const img = new Image();
-    img.onload = function() {
-      const compressed = compressImage(event.target.result, 100);
-      
-      uploadedImage = compressed;
-      document.getElementById('preview-img').src = compressed;
-      document.getElementById('img-preview').style.display = 'block';
-      document.getElementById('upload-box').style.display = 'none';
-    };
-    img.src = event.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function compressImage(dataUrl, maxKB) {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const img = new Image();
-  
-  img.src = dataUrl;
-  
-  let width = img.width;
-  let height = img.height;
-  const maxSize = 800;
-  
-  if (width > height && width > maxSize) {
-    height *= maxSize / width;
-    width = maxSize;
-  } else if (height > maxSize) {
-    width *= maxSize / height;
-    height = maxSize;
-  }
-  
-  canvas.width = width;
-  canvas.height = height;
-  ctx.drawImage(img, 0, 0, width, height);
-  
-  let quality = 0.7;
-  let result = canvas.toDataURL('image/jpeg', quality);
-  
-  while (result.length / 1024 > maxKB && quality > 0.1) {
-    quality -= 0.1;
-    result = canvas.toDataURL('image/jpeg', quality);
-  }
-  
-  return result;
-}
-
-function removeImage() {
-  uploadedImage = null;
-  document.getElementById('img-preview').style.display = 'none';
-  document.getElementById('upload-box').style.display = 'block';
-  document.getElementById('pic-input').value = '';
-}
-
-function renderCalendar() {
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
-  
-  document.getElementById('cal-month').textContent = 
-    currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  
-  const grid = document.getElementById('cal-grid');
-  grid.innerHTML = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-    .map(d => `<div class="cal-day-label">${d}</div>`).join('');
-  
-  for (let i = 0; i < firstDay; i++) {
-    grid.innerHTML += '<div></div>';
-  }
-  
-  const today = new Date();
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    
-    const dayRecords = records.filter(r => {
-      if (calendarFilter === 'pod') return r.date === date && r.docType === 'Proof of Deliveries';
-      if (calendarFilter === 'crates') return r.date === date && r.docType === 'Crates';
-      if (calendarFilter === 'others') return r.date === date && r.docType === 'Others';
-      return false;
     });
-    
-    const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-    
-    const entriesHTML = dayRecords.slice(0, 2).map(r => {
-      const firstName = r.empName.split(' ')[0];
-      let entryClass = calendarFilter;
-      return `<div class="cal-entry ${entryClass}">${firstName}</div>`;
-    }).join('');
-    
-    const moreCount = dayRecords.length > 2 ? `<div class="cal-entry" style="background:var(--text3);color:#fff">+${dayRecords.length - 2}</div>` : '';
-    
-    grid.innerHTML += `
-      <div class="cal-day ${isToday ? 'today' : ''}" onclick="showDayRecords('${date}')">
-        <div class="cal-day-number">${day}</div>
-        <div class="cal-day-entries">
-          ${entriesHTML}
-          ${moreCount}
-        </div>
-      </div>
-    `;
-  }
+
+    var empRow = allEmployees.find(function(e){ return e.email === email; });
+    if (!empRow) {
+      document.getElementById('loading-main').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text2)">Not registered. Contact admin.</div>';
+      return;
+    }
+    currentUser = empRow;
+
+    allTrips = (res[1].values || []).filter(function(r){ return r[1]; }).map(function(r){
+      return {
+        id:           r[0]||'',
+        deliveryDate: r[1]||'',
+        truck:        r[2]||'',
+        shipmentDate: r[3]||'',
+        type:         r[4]||'',
+        shipmentNum:  r[5]||'',
+        billed:       r[6]||'',
+        route:        r[7]||'',
+        rate:         r[8]||''
+      };
+    });
+
+    allAtt = (res[2].values || []).filter(function(r){ return r[1]; }).map(function(r,i){
+      return {
+        rowIndex: i+2,
+        id:r[0]||'', date:r[1]||'', name:r[2]||'',
+        team:r[3]||'', crates:r[4]||'0', meal:r[5]||'',
+        truck:r[6]||'', location:r[7]||'', lat:r[8]||'', lng:r[9]||'', time:r[10]||'',
+        helperType:r[11]||''
+      };
+    });
+
+    // Records sheet columns:
+    // A=ID, B=TripID, C=HelperName, D=Truck, E=Date, F=Type(POD/Crates),
+    // G=ExpectedCrates, H=Submitted(Yes/No), I=SubmissionDate,
+    // J=Late(Yes/No), K=Signature, L=Picture, M=Comments, N=RowNum
+    allRecords = (res[3].values || []).filter(function(r){ return r[0]; }).map(function(r,i){
+      return {
+        rowIndex: i+2,
+        id:             r[0]||'',
+        tripId:         r[1]||'',
+        helperName:     r[2]||'',
+        truck:          r[3]||'',
+        date:           r[4]||'',
+        type:           r[5]||'',
+        expectedCrates: r[6]||'0',
+        submitted:      (r[7]||'No') === 'Yes',
+        submissionDate: r[8]||'',
+        late:           (r[9]||'No') === 'Yes',
+        signature:      r[10]||'',
+        picture:        r[11]||'',
+        comments:       r[12]||''
+      };
+    });
+
+    // Generate tasks
+    generatedTasks = generateTasks();
+    updateNotifBadge();
+
+    document.getElementById('loading-main').style.display = 'none';
+    document.getElementById('content-tasks').style.display = 'block';
+    renderTasks();
+
+  }).catch(function(err){
+    document.getElementById('loading-main').innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load. Check connection.</div>';
+    console.error(err);
+  });
 }
 
-function changeMonth(delta) {
-  currentMonth.setMonth(currentMonth.getMonth() + delta);
-  renderCalendar();
+// ═══ GENERATE TASKS ═══════════════════════════════════
+// For each trip, determine Primary Helper via roster,
+// then generate POD and Crates tasks for that helper.
+function generateTasks() {
+  var tasks = [];
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  allTrips.forEach(function(trip) {
+    var truck = (trip.truck || '').trim();
+    var date  = trip.deliveryDate;
+    if (!truck || !date) return;
+
+    // Find scheduled helper from roster
+    var scheduledHelper = getScheduledHelper(truck, new Date(date + 'T00:00:00'));
+
+    // Also check who actually attended (for display/override)
+    var attOnDay = allAtt.filter(function(a){
+      return a.date === date && (a.truck||'').trim().toLowerCase() === truck.toLowerCase();
+    });
+
+    // Determine actual primary helper:
+    // 1. If someone is marked helperType='Primary' in attendance → use that
+    // 2. Else if scheduled helper actually attended → use scheduled helper
+    // 3. Else use earliest-check-in helper from attendance
+    var helpers = attOnDay.filter(function(a){
+      var emp = allEmployees.find(function(e){ return e.fullName.toLowerCase() === a.name.toLowerCase(); });
+      return emp && emp.position.toLowerCase() === 'helper';
+    });
+
+    var primaryHelper = null;
+
+    // Check attendance column L
+    var markedPrimary = helpers.find(function(h){ return h.helperType === 'Primary'; });
+    if (markedPrimary) {
+      primaryHelper = markedPrimary.name;
+    } else if (scheduledHelper) {
+      // Check if scheduled helper actually attended
+      var scheduledAttended = helpers.find(function(h){
+        return h.name.toLowerCase() === scheduledHelper.toLowerCase();
+      });
+      if (scheduledAttended) {
+        primaryHelper = scheduledHelper;
+      } else if (helpers.length > 0) {
+        // Fall back: earliest timestamp among helpers
+        primaryHelper = helpers[0].name;
+      } else {
+        // No helper attended; use scheduled helper as responsible
+        primaryHelper = scheduledHelper;
+      }
+    } else if (helpers.length > 0) {
+      primaryHelper = helpers[0].name;
+    }
+
+    if (!primaryHelper) return;
+
+    // Get crates count from attendance
+    var attRecord = allAtt.find(function(a){
+      return a.date === date
+        && (a.truck||'').trim().toLowerCase() === truck.toLowerCase()
+        && a.name.toLowerCase() === primaryHelper.toLowerCase();
+    });
+    var cratesCount = attRecord ? (attRecord.crates || '0') : '0';
+
+    var taskIdBase = trip.id + '_' + primaryHelper.replace(/\s+/g,'_');
+
+    // === POD TASK ===
+    var podDue     = getPODDueDate(date, trip.route);
+    var podDueStr  = fmtDate(podDue);
+    var podRecId   = taskIdBase + '_POD';
+    var existingPOD = allRecords.find(function(r){
+      return r.tripId === trip.id
+        && r.helperName.toLowerCase() === primaryHelper.toLowerCase()
+        && r.type === 'POD';
+    });
+
+    var podTask = {
+      id:             podRecId,
+      recordRowIndex: existingPOD ? existingPOD.rowIndex : null,
+      tripId:         trip.id,
+      helperName:     primaryHelper,
+      truck:          truck,
+      date:           date,
+      type:           'POD',
+      route:          trip.route,
+      tripType:       trip.type,
+      shipmentNum:    trip.shipmentNum,
+      dueDate:        podDueStr,
+      expectedCrates: '—',
+      submitted:      existingPOD ? existingPOD.submitted : false,
+      submissionDate: existingPOD ? existingPOD.submissionDate : '',
+      late:           existingPOD ? existingPOD.late : false,
+      signature:      existingPOD ? existingPOD.signature : '',
+      picture:        existingPOD ? existingPOD.picture : '',
+      comments:       existingPOD ? existingPOD.comments : '',
+      scheduledHelper:scheduledHelper,
+      isScheduled:    scheduledHelper && scheduledHelper.toLowerCase() === primaryHelper.toLowerCase()
+    };
+    podTask.status = getTaskStatus(podTask, today);
+    tasks.push(podTask);
+
+    // === CRATES TASK ===
+    var cratesDue    = getCratesDueDate(date);
+    var cratesDueStr = fmtDate(cratesDue);
+    var cratesRecId  = taskIdBase + '_CRATES';
+    var existingCrates = allRecords.find(function(r){
+      return r.tripId === trip.id
+        && r.helperName.toLowerCase() === primaryHelper.toLowerCase()
+        && r.type === 'Crates';
+    });
+
+    var cratesTask = {
+      id:             cratesRecId,
+      recordRowIndex: existingCrates ? existingCrates.rowIndex : null,
+      tripId:         trip.id,
+      helperName:     primaryHelper,
+      truck:          truck,
+      date:           date,
+      type:           'Crates',
+      route:          trip.route,
+      tripType:       trip.type,
+      shipmentNum:    trip.shipmentNum,
+      dueDate:        cratesDueStr,
+      expectedCrates: cratesCount,
+      submitted:      existingCrates ? existingCrates.submitted : false,
+      submissionDate: existingCrates ? existingCrates.submissionDate : '',
+      late:           existingCrates ? existingCrates.late : false,
+      signature:      existingCrates ? existingCrates.signature : '',
+      picture:        existingCrates ? existingCrates.picture : '',
+      comments:       existingCrates ? existingCrates.comments : '',
+      scheduledHelper:scheduledHelper,
+      isScheduled:    scheduledHelper && scheduledHelper.toLowerCase() === primaryHelper.toLowerCase()
+    };
+    cratesTask.status = getTaskStatus(cratesTask, today);
+    tasks.push(cratesTask);
+  });
+
+  // Sort: overdue first, then pending, then submitted
+  var order = { overdue:0, pending:1, late:2, submitted:3 };
+  tasks.sort(function(a,b){
+    var oa = order[a.status]||99, ob = order[b.status]||99;
+    if (oa !== ob) return oa - ob;
+    return b.date.localeCompare(a.date);
+  });
+
+  return tasks;
 }
 
-function showDayRecords(date) {
-  const dayRecords = records.filter(r => r.date === date);
-  const list = document.getElementById('cal-records-list');
-  
-  if (dayRecords.length === 0) {
-    list.innerHTML = '<p style="text-align:center;color:var(--text2);padding:20px 0">No records for this date</p>';
+// ═══ RENDER TASKS ═════════════════════════════════════
+function renderTasks() {
+  var myTasks = generatedTasks.filter(function(t){
+    return t.helperName.toLowerCase() === currentUser.fullName.toLowerCase();
+  });
+  renderTaskList(myTasks, 'tasks-list', taskFilter);
+}
+
+function renderAllTasks() {
+  renderTaskList(generatedTasks, 'all-list', allFilter);
+}
+
+function renderTaskList(tasks, containerId, filter) {
+  var filtered = tasks;
+  if (filter === 'pending')   filtered = tasks.filter(function(t){ return t.status === 'pending'; });
+  if (filter === 'overdue')   filtered = tasks.filter(function(t){ return t.status === 'overdue'; });
+  if (filter === 'submitted') filtered = tasks.filter(function(t){ return t.status === 'submitted' || t.status === 'late'; });
+  if (filter === 'pod')       filtered = tasks.filter(function(t){ return t.type === 'POD'; });
+  if (filter === 'crates')    filtered = tasks.filter(function(t){ return t.type === 'Crates'; });
+
+  var container = document.getElementById(containerId);
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-hint">No tasks found.</div>';
     return;
   }
-  
-  list.innerHTML = dayRecords.map(r => {
-    const isPOD = r.docType === 'Proof of Deliveries';
-    const isCrates = r.docType === 'Crates';
-    const isOthers = r.docType === 'Others';
-    const isLiq = r.liquidated === 'Yes';
-    
-    let cardClass = 'record-card';
-    if (isPOD && isLiq) cardClass += ' pod-liquidated';
-    else if (isPOD && !isLiq) cardClass += ' pod-pending';
-    else if (isCrates && isLiq) cardClass += ' crates-liquidated';
-    else if (isCrates && !isLiq) cardClass += ' crates-pending';
-    else if (isOthers && isLiq) cardClass += ' others-liquidated';
-    else if (isOthers && !isLiq) cardClass += ' others-pending';
-    
-    return `
-      <div class="${cardClass}" onclick="viewRecordDetail(${r.id})">
-        <div class="record-header">
-          <div class="record-title">${r.empName}</div>
-          <div class="record-badge ${isLiq ? 'badge-liquidated' : 'badge-pending'}">
-            ${isLiq ? 'Liquidated' : 'Pending'}
-          </div>
-        </div>
-        <div class="record-meta">
-          <div class="record-meta-row">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/></svg>
-            ${r.truck}
-          </div>
-          <div class="record-meta-row">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/></svg>
-            ${r.docType}${r.number ? ' #' + r.number : ''}
-          </div>
-        </div>
-      </div>
-    `;
+
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  container.innerHTML = filtered.map(function(t) {
+    var statusClass = 'status-' + t.status;
+    var badgeClass  = 'badge-' + t.status;
+    var badgeLabel  = t.status === 'submitted' ? '✓ Done' :
+                      t.status === 'late'      ? '⚠ Late' :
+                      t.status === 'overdue'   ? '⚠ Overdue' : '⏳ Pending';
+    var dueLabel    = dueDateLabel(t.dueDate, t.status);
+    var dueClass    = t.status === 'overdue' ? 'overdue' : t.status === 'pending' && dueLabel.indexOf('today') > -1 ? 'warning' : t.status === 'submitted' || t.status === 'late' ? 'ok' : 'ok';
+
+    var schedBadge = '';
+    if (!t.isScheduled && t.scheduledHelper) {
+      schedBadge = '<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Scheduled: ' + t.scheduledHelper.split(' ')[0] + ' (sub: ' + t.helperName.split(' ')[0] + ')</span>';
+    }
+
+    var cratesInfo = t.type === 'Crates' ? '<div class="task-meta-row">📦 Expected: <strong>' + t.expectedCrates + ' crates</strong></div>' : '';
+
+    return '<div class="task-card ' + statusClass + '" onclick="openTask(\'' + t.id + '\')">'
+      + '<div class="task-header">'
+      + '<div class="task-title">' + (t.type === 'POD' ? '📄 POD' : '📦 Crates') + ' — ' + t.truck + '</div>'
+      + '<div class="task-badge ' + badgeClass + '">' + badgeLabel + '</div>'
+      + '</div>'
+      + '<div class="task-meta">'
+      + '<div class="task-meta-row">📅 ' + t.date + (t.route ? ' · ' + t.route.split('/')[0] : '') + '</div>'
+      + '<div class="task-meta-row">👤 ' + t.helperName + (containerId === 'all-list' ? '' : '') + '</div>'
+      + cratesInfo
+      + schedBadge
+      + '</div>'
+      + '<div class="task-due ' + dueClass + '">' + dueLabel + '</div>'
+      + '</div>';
   }).join('');
 }
 
-function openReportModal() {
-  document.getElementById('report-modal').classList.add('active');
-  loadReport();
-}
+// ═══ OPEN TASK SHEET ══════════════════════════════════
+function openTask(taskId) {
+  var t = generatedTasks.find(function(x){ return x.id === taskId; });
+  if (!t) return;
+  selectedTask = t;
 
-function loadReport() {
-  const now = new Date();
-  let startDate, endDate;
-  
-  if (reportPeriod === 'weekly') {
-    startDate = new Date(now);
-    startDate.setDate(now.getDate() - now.getDay());
-    endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 6);
-    
-    document.getElementById('report-period-text').textContent = 
-      `Week of ${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-    
-  } else if (reportPeriod === 'fortnightly') {
-    startDate = new Date(now);
-    startDate.setDate(now.getDate() - 13);
-    endDate = new Date(now);
-    
-    document.getElementById('report-period-text').textContent = 
-      `${startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-    
-  } else if (reportPeriod === 'monthly') {
-    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
-    document.getElementById('report-period-text').textContent = 
-      `${startDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+  document.getElementById('ts-title').textContent = (t.type === 'POD' ? '📄 POD' : '📦 Crates') + ' — ' + t.truck;
+  document.getElementById('ts-sub').textContent = t.date + (t.route ? ' · ' + t.route : '') + ' · ' + t.helperName;
+
+  var canEdit = isAdmin || currentUser.fullName.toLowerCase() === t.helperName.toLowerCase();
+  var canDelete = isAdmin;
+
+  var detailRows = [
+    ['Trip Type', t.tripType || '—'],
+    ['Truck', t.truck],
+    ['Date', t.date],
+    ['Route', t.route || '—'],
+    ['Shipment #', t.shipmentNum || '—'],
+    ['Assigned To', t.helperName],
+    ['Scheduled Helper', t.scheduledHelper || '—'],
+    ['Due Date', t.dueDate],
+    ['Status', t.status.toUpperCase()]
+  ];
+  if (t.type === 'Crates') detailRows.push(['Expected Crates', t.expectedCrates]);
+  if (t.submitted) {
+    detailRows.push(['Submission Date', t.submissionDate]);
+    if (t.late) detailRows.push(['Late Submission', 'Yes ⚠']);
+    if (t.comments) detailRows.push(['Comments', t.comments]);
   }
-  
-  const periodRecords = records.filter(r => {
-    const d = new Date(r.date);
-    return d >= startDate && d <= endDate;
-  });
-  
-  const liquidated = periodRecords.filter(r => r.liquidated === 'Yes').length;
-  const pending = periodRecords.length - liquidated;
-  
-  document.getElementById('report-total').textContent = periodRecords.length;
-  document.getElementById('report-liquidated').textContent = liquidated;
-  document.getElementById('report-pending').textContent = pending;
-  
-  const podRecords = periodRecords.filter(r => r.docType === 'Proof of Deliveries');
-  const cratesRecords = periodRecords.filter(r => r.docType === 'Crates');
-  
-  const podByEmployee = {};
-  podRecords.forEach(r => {
-    if (!podByEmployee[r.empName]) podByEmployee[r.empName] = [];
-    podByEmployee[r.empName].push(r);
-  });
-  
-  const cratesByEmployee = {};
-  cratesRecords.forEach(r => {
-    if (!cratesByEmployee[r.empName]) cratesByEmployee[r.empName] = [];
-    cratesByEmployee[r.empName].push(r);
-  });
-  
-  const columnsHTML = `
-    <div class="report-column">
-      <div class="report-column-header">
-        <div class="report-column-icon pod">📄</div>
-        <div class="report-column-title">
-          <div class="report-column-name">Proof of Deliveries</div>
-          <div class="report-column-count">${podRecords.length} records</div>
-        </div>
-      </div>
-      <div class="report-list">
-        ${Object.keys(podByEmployee).map(emp => {
-          const empRecords = podByEmployee[emp];
-          const empLiq = empRecords.filter(r => r.liquidated === 'Yes').length;
-          const percentage = Math.round((empLiq / empRecords.length) * 100);
-          
-          let badgeClass = 'good';
-          if (percentage < 50) badgeClass = 'bad';
-          else if (percentage < 80) badgeClass = 'warning';
-          
-          return `
-            <div class="report-employee-card">
-              <div class="report-emp-header">
-                <div class="report-emp-name">${emp}</div>
-                <div class="report-emp-badge ${badgeClass}">${empLiq}/${empRecords.length}</div>
-              </div>
-              <div class="report-emp-details">
-                <div>Performance: ${percentage}%</div>
-                <div>Liquidated: ${empLiq} | Pending: ${empRecords.length - empLiq}</div>
-              </div>
-            </div>
-          `;
-        }).join('') || '<p style="text-align:center;color:var(--text2);padding:20px 0">No POD records</p>'}
-      </div>
-    </div>
-    
-    <div class="report-column">
-      <div class="report-column-header">
-        <div class="report-column-icon crates">📦</div>
-        <div class="report-column-title">
-          <div class="report-column-name">Crates</div>
-          <div class="report-column-count">${cratesRecords.length} records</div>
-        </div>
-      </div>
-      <div class="report-list">
-        ${Object.keys(cratesByEmployee).map(emp => {
-          const empRecords = cratesByEmployee[emp];
-          const empLiq = empRecords.filter(r => r.liquidated === 'Yes').length;
-          const percentage = Math.round((empLiq / empRecords.length) * 100);
-          
-          let badgeClass = 'good';
-          if (percentage < 50) badgeClass = 'bad';
-          else if (percentage < 80) badgeClass = 'warning';
-          
-          return `
-            <div class="report-employee-card">
-              <div class="report-emp-header">
-                <div class="report-emp-name">${emp}</div>
-                <div class="report-emp-badge ${badgeClass}">${empLiq}/${empRecords.length}</div>
-              </div>
-              <div class="report-emp-details">
-                <div>Performance: ${percentage}%</div>
-                <div>Liquidated: ${empLiq} | Pending: ${empRecords.length - empLiq}</div>
-              </div>
-            </div>
-          `;
-        }).join('') || '<p style="text-align:center;color:var(--text2);padding:20px 0">No Crates records</p>'}
-      </div>
-    </div>
-  `;
-  
-  document.getElementById('report-columns').innerHTML = columnsHTML;
-  
-  const allEmployees = new Set([...Object.keys(podByEmployee), ...Object.keys(cratesByEmployee)]);
-  
-  const performanceHTML = Array.from(allEmployees).map(emp => {
-    const podRecs = podByEmployee[emp] || [];
-    const cratesRecs = cratesByEmployee[emp] || [];
-    
-    const podLiq = podRecs.filter(r => r.liquidated === 'Yes').length;
-    const cratesLiq = cratesRecs.filter(r => r.liquidated === 'Yes').length;
-    
-    const podPerf = podRecs.length > 0 ? Math.round((podLiq / podRecs.length) * 100) : 0;
-    const cratesPerf = cratesRecs.length > 0 ? Math.round((cratesLiq / cratesRecs.length) * 100) : 0;
-    
-    function getPerfClass(perf) {
-      if (perf >= 80) return 'good';
-      if (perf >= 50) return 'warning';
-      return 'bad';
+
+  var detailHtml = '<div style="background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;margin-bottom:16px">'
+    + detailRows.map(function(r){
+      return '<div class="dt-row"><span class="dt-label">' + r[0] + '</span><span class="dt-val">' + r[1] + '</span></div>';
+    }).join('')
+    + '</div>';
+
+  // Show existing signature/picture if submitted
+  var mediaHtml = '';
+  if (t.submitted) {
+    if (t.signature) {
+      mediaHtml += '<div class="fg"><label class="fl">Signature</label>'
+        + '<div style="background:#fff;padding:8px;border-radius:10px;border:1px solid #ddd">'
+        + '<img src="' + t.signature + '" style="width:100%;max-height:100px;object-fit:contain">'
+        + '</div></div>';
     }
-    
-    return `
-      <div class="performance-card">
-        <div class="perf-emp-name">${emp}</div>
-        <div class="perf-stats">
-          <div class="perf-stat-row">
-            <div class="perf-stat-label">
-              <span>📄 POD:</span>
-            </div>
-            <div class="perf-stat-value ${getPerfClass(podPerf)}">${podLiq}/${podRecs.length} (${podPerf}%)</div>
-          </div>
-          <div class="perf-stat-row">
-            <div class="perf-stat-label">
-              <span>📦 Crates:</span>
-            </div>
-            <div class="perf-stat-value ${getPerfClass(cratesPerf)}">${cratesLiq}/${cratesRecs.length} (${cratesPerf}%)</div>
-          </div>
-        </div>
-      </div>
-    `;
+    if (t.picture) {
+      mediaHtml += '<div class="fg"><label class="fl">Photo</label>'
+        + '<div class="img-preview"><img src="' + t.picture + '"></div></div>';
+    }
+  }
+
+  var actionHtml = '';
+  if (canEdit) {
+    if (!t.submitted) {
+      actionHtml = buildSubmitForm(t);
+    } else {
+      actionHtml = mediaHtml
+        + '<button class="btn btn-primary" onclick="openEditForm()">✏️ Edit Submission</button>';
+      if (canDelete) {
+        actionHtml += '<button class="btn-danger" onclick="confirmDeleteTask()">Delete Record</button>';
+      }
+    }
+  } else {
+    actionHtml = mediaHtml;
+  }
+
+  document.getElementById('ts-body').innerHTML = detailHtml + actionHtml;
+  document.getElementById('task-sheet').classList.add('open');
+
+  // Init sig canvas if form shown
+  if (!t.submitted && canEdit) {
+    setTimeout(initSigCanvas, 200);
+  }
+}
+
+function buildSubmitForm(t) {
+  var cratesField = t.type === 'Crates'
+    ? '<div class="fg"><label class="fl">Crates Returned Count</label>'
+      + '<input class="fi" id="sf-crates" type="number" value="' + t.expectedCrates + '" min="0"></div>'
+    : '<input type="hidden" id="sf-crates" value="' + t.expectedCrates + '">';
+
+  return '<div class="fg"><label class="fl">Submission Date</label>'
+    + '<input class="fi" type="date" id="sf-date" value="' + fmtDate(new Date()) + '"></div>'
+    + cratesField
+    + '<div class="fg"><label class="fl">Comments (Optional)</label>'
+    + '<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px" placeholder="Any notes..."></textarea></div>'
+    + '<div class="fg"><label class="fl">Signature (Optional)</label>'
+    + '<div class="sig-box"><canvas class="sig-canvas" id="sf-sig-canvas"></canvas>'
+    + '<div class="sig-actions"><button type="button" class="sig-btn" onclick="clearSig()">Clear</button></div>'
+    + '</div></div>'
+    + '<div class="fg"><label class="fl">Photo (Optional)</label>'
+    + '<input type="file" id="sf-pic-input" accept="image/*" capture="environment" style="display:none" onchange="handlePicUpload(event)">'
+    + '<div class="img-upload-box" id="sf-upload-box" onclick="document.getElementById(\'sf-pic-input\').click()">'
+    + '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/></svg>'
+    + '<p>Tap to capture or upload</p></div>'
+    + '<div class="img-preview" id="sf-img-preview" style="display:none">'
+    + '<img id="sf-preview-img" src="" alt=""><div class="img-remove" onclick="removePic()">✕</div></div></div>'
+    + '<button class="btn btn-primary" onclick="submitTask()">✅ Submit Record</button>';
+}
+
+function openEditForm() {
+  var t = selectedTask;
+  if (!t) return;
+
+  var cratesField = t.type === 'Crates'
+    ? '<div class="fg"><label class="fl">Crates Returned Count</label>'
+      + '<input class="fi" id="sf-crates" type="number" value="' + t.expectedCrates + '" min="0"></div>'
+    : '<input type="hidden" id="sf-crates" value="' + t.expectedCrates + '">';
+
+  var formHtml = '<div class="fg"><label class="fl">Submission Date</label>'
+    + '<input class="fi" type="date" id="sf-date" value="' + (t.submissionDate || fmtDate(new Date())) + '"></div>'
+    + cratesField
+    + '<div class="fg"><label class="fl">Comments (Optional)</label>'
+    + '<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px">' + (t.comments||'') + '</textarea></div>'
+    + '<div class="fg"><label class="fl">Signature (Optional)</label>'
+    + '<div class="sig-box"><canvas class="sig-canvas" id="sf-sig-canvas"></canvas>'
+    + '<div class="sig-actions"><button type="button" class="sig-btn" onclick="clearSig()">Clear</button></div>'
+    + '</div></div>'
+    + '<div class="fg"><label class="fl">Photo (Optional)</label>'
+    + '<input type="file" id="sf-pic-input" accept="image/*" capture="environment" style="display:none" onchange="handlePicUpload(event)">'
+    + '<div class="img-upload-box" id="sf-upload-box" onclick="document.getElementById(\'sf-pic-input\').click()">'
+    + '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="2"/></svg>'
+    + '<p>Tap to change photo</p></div>'
+    + '<div class="img-preview" id="sf-img-preview" style="' + (t.picture ? '' : 'display:none') + '">'
+    + '<img id="sf-preview-img" src="' + (t.picture||'') + '" alt=""><div class="img-remove" onclick="removePic()">✕</div></div></div>'
+    + '<button class="btn btn-primary" onclick="submitTask()">💾 Save Changes</button>';
+
+  uploadedImage = t.picture || null;
+  currentExistingSignature = t.signature || null;
+
+  document.getElementById('ts-body').innerHTML = formHtml;
+  setTimeout(function(){
+    initSigCanvas();
+    if (t.signature) {
+      var img = new Image();
+      img.onload = function() {
+        var c = document.getElementById('sf-sig-canvas');
+        if (!c) return;
+        var ctx = c.getContext('2d');
+        ctx.clearRect(0,0,c.width,c.height);
+        ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
+        var scale = Math.min(c.width/img.width, c.height/img.height);
+        ctx.drawImage(img, (c.width-img.width*scale)/2, (c.height-img.height*scale)/2, img.width*scale, img.height*scale);
+      };
+      img.src = t.signature;
+    }
+    if (t.picture) {
+      document.getElementById('sf-img-preview').style.display = 'block';
+      document.getElementById('sf-upload-box').style.display = 'none';
+    }
+  }, 200);
+}
+
+// ═══ SUBMIT TASK ══════════════════════════════════════
+function submitTask() {
+  var t = selectedTask;
+  if (!t) return;
+
+  var subDate  = document.getElementById('sf-date').value;
+  var comments = document.getElementById('sf-comments').value.trim();
+  if (!subDate) { showToast('Please enter a submission date.'); return; }
+
+  var dueDate  = new Date(t.dueDate + 'T23:59:59');
+  var subDateD = new Date(subDate + 'T00:00:00');
+  var isLate   = subDateD > dueDate;
+
+  // Signature
+  var sig = '';
+  if (sigDrawn) {
+    var c = document.getElementById('sf-sig-canvas');
+    if (c) sig = c.toDataURL('image/png');
+  } else if (currentExistingSignature) {
+    sig = currentExistingSignature;
+  }
+
+  var pic = uploadedImage || '';
+
+  var cratesVal = document.getElementById('sf-crates') ? document.getElementById('sf-crates').value : t.expectedCrates;
+
+  var now    = new Date();
+  var recId  = t.recordRowIndex ? null : ('REC-' + now.getTime());
+  var row = [
+    recId || t.id,        // A - ID (use task id as stable key)
+    t.tripId,             // B
+    t.helperName,         // C
+    t.truck,              // D
+    t.date,               // E
+    t.type,               // F
+    cratesVal,            // G - Expected/Actual crates
+    'Yes',                // H - Submitted
+    subDate,              // I - Submission Date
+    isLate ? 'Yes':'No',  // J - Late
+    sig,                  // K
+    pic,                  // L
+    comments              // M
+  ];
+
+  // Use task id as record ID for stable upsert
+  row[0] = t.id;
+
+  showSaving('Saving record...');
+
+  var savePromise;
+  if (t.recordRowIndex) {
+    // Update existing row
+    savePromise = apiUpdate(TAB_RECORDS + '!A' + t.recordRowIndex + ':M' + t.recordRowIndex, [row]);
+  } else {
+    // Append new row
+    savePromise = apiAppend(TAB_RECORDS + '!A:M', [row]);
+  }
+
+  savePromise.then(function(){
+    hideSaving();
+    showToast(isLate ? '⚠ Submitted (Late)' : '✅ Record submitted!');
+    closeSheet('task-sheet');
+    loadAll();
+  }).catch(function(err){
+    hideSaving();
+    showToast('❌ Save failed. Try again.');
+    console.error(err);
+  });
+}
+
+// ═══ DELETE TASK ══════════════════════════════════════
+function confirmDeleteTask() {
+  if (!isAdmin || !selectedTask) return;
+  document.getElementById('confirm-title').textContent = 'Delete Record?';
+  document.getElementById('confirm-msg').textContent = 'Delete the ' + selectedTask.type + ' record for ' + selectedTask.helperName + ' on ' + selectedTask.date + '? This cannot be undone.';
+  document.getElementById('confirm-ok').onclick = doDeleteTask;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function doDeleteTask() {
+  if (!selectedTask || !selectedTask.recordRowIndex) {
+    closeConfirm();
+    showToast('No saved record to delete.');
+    return;
+  }
+  closeConfirm();
+  showSaving('Deleting...');
+  apiUpdate(TAB_RECORDS + '!A' + selectedTask.recordRowIndex + ':M' + selectedTask.recordRowIndex,
+    [['','','','','','','','No','','No','','','']])
+    .then(function(){
+      hideSaving();
+      showToast('✅ Record deleted.');
+      closeSheet('task-sheet');
+      loadAll();
+    }).catch(function(err){
+      hideSaving();
+      showToast('❌ Delete failed.');
+      console.error(err);
+    });
+}
+
+// ═══ FILTERS ══════════════════════════════════════════
+function filterTasks(f, btn) {
+  taskFilter = f;
+  document.querySelectorAll('#content-tasks .filter-chip').forEach(function(c){ c.classList.remove('active'); });
+  btn.classList.add('active');
+  renderTasks();
+}
+function filterAll(f, btn) {
+  allFilter = f;
+  document.querySelectorAll('#content-all .filter-chip').forEach(function(c){ c.classList.remove('active'); });
+  btn.classList.add('active');
+  renderAllTasks();
+}
+
+// ═══ TABS ═════════════════════════════════════════════
+function switchTab(name) {
+  ['tasks','all','report'].forEach(function(t){
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+    var el = document.getElementById('content-'+t);
+    if (el) el.style.display = (t===name ? 'block' : 'none');
+  });
+  if (name === 'all') renderAllTasks();
+  if (name === 'report') {
+    if (document.getElementById('rpt-content').style.display === 'none'
+      && document.getElementById('rpt-loading').style.display === 'none') {
+      generateReport();
+    }
+  }
+}
+
+// ═══ REPORT ═══════════════════════════════════════════
+function setRptPeriod(p) {
+  rptPeriod = p;
+  ['1st','2nd','custom'].forEach(function(x){
+    document.getElementById('rpt-btn-'+x).classList.toggle('active', x===p);
+  });
+  document.getElementById('rpt-custom-wrap').style.display = p==='custom' ? 'block' : 'none';
+  if (p !== 'custom') generateReport();
+}
+
+function generateReport() {
+  var now = new Date();
+  var y = now.getFullYear(), m = now.getMonth();
+  var from, to;
+
+  if (rptPeriod === '1st') {
+    from = fmtDate(new Date(y, m, 1));
+    to   = fmtDate(new Date(y, m, 15));
+  } else if (rptPeriod === '2nd') {
+    var lastDay = new Date(y, m+1, 0).getDate();
+    from = fmtDate(new Date(y, m, 16));
+    to   = fmtDate(new Date(y, m, lastDay));
+  } else {
+    from = document.getElementById('rpt-from').value;
+    to   = document.getElementById('rpt-to').value;
+    if (!from || !to) { showToast('Select date range.'); return; }
+  }
+
+  document.getElementById('rpt-loading').style.display = 'flex';
+  document.getElementById('rpt-content').style.display = 'none';
+
+  // Filter tasks in period
+  var periodTasks = generatedTasks.filter(function(t){
+    return t.date >= from && t.date <= to;
+  });
+
+  // Group by helper
+  var helperMap = {};
+  periodTasks.forEach(function(t){
+    if (!helperMap[t.helperName]) helperMap[t.helperName] = { pod:[], crates:[] };
+    if (t.type === 'POD') helperMap[t.helperName].pod.push(t);
+    else helperMap[t.helperName].crates.push(t);
+  });
+
+  var totalTasks = periodTasks.length;
+  var totalDone  = periodTasks.filter(function(t){ return t.submitted; }).length;
+  var totalPend  = periodTasks.filter(function(t){ return t.status === 'pending' || t.status === 'overdue'; }).length;
+
+  var statsHtml = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">'
+    + statCard(totalTasks, 'Total Tasks', 'var(--text)')
+    + statCard(totalDone,  'Submitted',   'var(--green)')
+    + statCard(totalPend,  'Pending',     totalPend > 0 ? 'var(--red)' : 'var(--text3)')
+    + '</div>';
+
+  var helperCards = Object.keys(helperMap).sort().map(function(name){
+    var d = helperMap[name];
+    var allTasks   = d.pod.concat(d.crates);
+    var submitted  = allTasks.filter(function(t){ return t.submitted; }).length;
+    var overdue    = allTasks.filter(function(t){ return t.status === 'overdue'; }).length;
+    var late       = allTasks.filter(function(t){ return t.status === 'late'; }).length;
+    var pending    = allTasks.filter(function(t){ return t.status === 'pending'; }).length;
+    var cleared    = overdue === 0 && pending === 0;
+
+    var podSubmitted   = d.pod.filter(function(t){ return t.submitted; }).length;
+    var podTotal       = d.pod.length;
+    var podOverdue     = d.pod.filter(function(t){ return t.status === 'overdue'; }).length;
+    var podLate        = d.pod.filter(function(t){ return t.status === 'late'; }).length;
+
+    var cratesSubmitted= d.crates.filter(function(t){ return t.submitted; }).length;
+    var cratesTotal    = d.crates.length;
+    var cratesOverdue  = d.crates.filter(function(t){ return t.status === 'overdue'; }).length;
+    var cratesLate     = d.crates.filter(function(t){ return t.status === 'late'; }).length;
+
+    var clearanceClass = cleared ? 'cleared' : 'not-cleared';
+    var clearanceLabel = cleared ? '✓ CLEARED' : '✗ NOT CLEARED';
+
+    return '<div class="rpt-emp-card">'
+      + '<div class="rpt-emp-name">' + name
+      + '<span class="rpt-clearance ' + clearanceClass + '">' + clearanceLabel + '</span></div>'
+      + '<div class="rpt-row"><span>📄 POD</span><span class="rpt-row-val ' + (podOverdue > 0 ? 'bad' : podLate > 0 ? 'warn' : 'ok') + '">'
+      + podSubmitted + '/' + podTotal + (podOverdue > 0 ? ' (' + podOverdue + ' overdue)' : podLate > 0 ? ' (' + podLate + ' late)' : ' ✓') + '</span></div>'
+      + '<div class="rpt-row"><span>📦 Crates</span><span class="rpt-row-val ' + (cratesOverdue > 0 ? 'bad' : cratesLate > 0 ? 'warn' : 'ok') + '">'
+      + cratesSubmitted + '/' + cratesTotal + (cratesOverdue > 0 ? ' (' + cratesOverdue + ' overdue)' : cratesLate > 0 ? ' (' + cratesLate + ' late)' : ' ✓') + '</span></div>'
+      + (late > 0 ? '<div class="rpt-row"><span>⚠ Late Submissions</span><span class="rpt-row-val warn">' + late + '</span></div>' : '')
+      + (pending > 0 ? '<div class="rpt-row"><span>⏳ Still Pending</span><span class="rpt-row-val bad">' + pending + '</span></div>' : '')
+      + '</div>';
   }).join('');
-  
-  document.getElementById('performance-grid').innerHTML = performanceHTML || '<p style="text-align:center;color:var(--text2);padding:20px 0">No performance data</p>';
+
+  document.getElementById('rpt-loading').style.display = 'none';
+  document.getElementById('rpt-content').style.display = 'block';
+  document.getElementById('rpt-content').innerHTML =
+    '<div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:600">'
+    + 'Period: ' + from + ' to ' + to + '</div>'
+    + statsHtml
+    + (helperCards || '<div class="empty-hint">No tasks in this period.</div>');
 }
 
-function updateNotifications() {
-  checkReminders();
+function statCard(val, lbl, color) {
+  return '<div class="rpt-stat"><div class="rpt-stat-val" style="color:' + color + '">' + val + '</div><div class="rpt-stat-lbl">' + lbl + '</div></div>';
 }
 
-function checkReminders() {
-  const now = new Date();
-  // ✅ BAGO: Filter pending records FIRST
-  const pending = records.filter(r => r.liquidated === 'No');
-  
-  let podCount = 0;
-  let cratesCount = 0;
-  
-  pending.forEach(r => {
-    const recDate = new Date(r.date);
-    
-    if (r.docType === 'Proof of Deliveries') {
-      let dueDate = new Date(recDate);
-      dueDate.setDate(recDate.getDate() + 1);
-      
-      if (dueDate.getDay() === 0) dueDate.setDate(dueDate.getDate() + 1);
-      if (dueDate.getDay() === 6) dueDate.setDate(dueDate.getDate() + 2);
-      
-      if (dueDate <= now) {
-        podCount++;
-      }
-    }
-    
-    if (r.docType === 'Crates') {
-      const daysSince = Math.floor((now - recDate) / (1000 * 60 * 60 * 24));
-      if (daysSince >= 7) {
-        cratesCount++;
-      }
-    }
+// ═══ NOTIFICATIONS ════════════════════════════════════
+function updateNotifBadge() {
+  var myTasks = generatedTasks.filter(function(t){
+    return t.helperName.toLowerCase() === currentUser.fullName.toLowerCase();
   });
-  
-  const totalNotif = podCount + cratesCount;
-  const badge = document.getElementById('notif-count');
-  
-  if (totalNotif > 0) {
-    badge.textContent = totalNotif;
+  var urgent = myTasks.filter(function(t){ return t.status === 'overdue' || t.status === 'pending'; });
+  var badge = document.getElementById('notif-badge');
+  if (urgent.length > 0) {
+    badge.textContent = urgent.length;
     badge.style.display = 'flex';
   } else {
     badge.style.display = 'none';
   }
 }
 
-
-
-function showNotifications() {
-  const now = new Date();
-  // ✅ BAGO: Filter pending records FIRST
-  const pending = records.filter(r => r.liquidated === 'No');
-  
-  let messages = [];
-  
-  pending.forEach(r => {
-    const recDate = new Date(r.date);
-    
-    if (r.docType === 'Proof of Deliveries') {
-      let dueDate = new Date(recDate);
-      dueDate.setDate(recDate.getDate() + 1);
-      
-      if (dueDate.getDay() === 0) dueDate.setDate(dueDate.getDate() + 1);
-      if (dueDate.getDay() === 6) dueDate.setDate(dueDate.getDate() + 2);
-      
-      if (dueDate <= now) {
-        const daysOverdue = Math.floor((now - dueDate) / (1000 * 60 * 60 * 24));
-        messages.push({
-          icon: '📄',
-          text: `POD${r.number ? ' #' + r.number : ''} (${r.empName})`,
-          meta: daysOverdue === 0 ? 'Due today' : `Overdue ${daysOverdue} days`
-        });
-      }
-    }
-    
-    if (r.docType === 'Crates') {
-      const daysSince = Math.floor((now - recDate) / (1000 * 60 * 60 * 24));
-      if (daysSince >= 7) {
-        messages.push({
-          icon: '📦',
-          text: `Crates${r.number ? ' #' + r.number : ''} (${r.empName})`,
-          meta: `Overdue ${daysSince} days`
-        });
-      }
-    }
+function openNotifSheet() {
+  var myTasks = generatedTasks.filter(function(t){
+    return t.helperName.toLowerCase() === currentUser.fullName.toLowerCase()
+      && (t.status === 'overdue' || t.status === 'pending');
   });
-  
-  if (messages.length === 0) {
-    showToast('✓ No pending reminders');
+
+  if (!myTasks.length) {
+    showToast('✓ No pending tasks!');
     return;
   }
-  
-  const listHTML = messages.map(m => `
-    <div class="notif-item">
-      <div class="notif-item-icon">${m.icon}</div>
-      <div class="notif-item-content">
-        <div class="notif-item-text">${m.text}</div>
-        <div class="notif-item-meta">${m.meta}</div>
-      </div>
-    </div>
-  `).join('');
-  
-  document.getElementById('notif-list').innerHTML = listHTML;
-  document.getElementById('notif-modal').classList.add('active');
+
+  document.getElementById('notif-list').innerHTML = myTasks.map(function(t){
+    var icon = t.status === 'overdue' ? '🔴' : '🟡';
+    return '<div class="notif-item">'
+      + '<div class="notif-icon">' + icon + '</div>'
+      + '<div><div class="notif-text">' + (t.type==='POD'?'📄 POD':'📦 Crates') + ' — ' + t.truck + '</div>'
+      + '<div class="notif-meta">' + t.date + ' · Due: ' + t.dueDate + '</div></div>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('notif-sheet').classList.add('open');
 }
 
-
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+// ═══ SIGNATURE CANVAS ═════════════════════════════════
+function initSigCanvas() {
+  sigCanvas = document.getElementById('sf-sig-canvas');
+  if (!sigCanvas) return;
+  sigCtx = sigCanvas.getContext('2d');
+  var rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width  = rect.width;
+  sigCanvas.height = rect.height || 110;
+  sigCtx.fillStyle = '#fff';
+  sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
+  sigDrawn = false;
+  uploadedImage = null;
+  currentExistingSignature = null;
+  setupSigEvents();
 }
 
-function initPullToRefresh(el, onRefresh) {
-  let startY = 0;
-  let pulling = false;
-  const threshold = 70;
-  const indicator = document.querySelector('.ptr-indicator');
-  const spinner = document.getElementById('ptr-spinner');
-  
-  el.addEventListener('touchstart', function(e) {
-    if (el.scrollTop === 0) {
-      startY = e.touches[0].clientY;
-      pulling = true;
-    }
-  }, { passive: true });
-  
-  el.addEventListener('touchmove', function(e) {
-    if (!pulling) return;
-    const dist = e.touches[0].clientY - startY;
-    if (dist < 0) { pulling = false; return; }
-    
-    const progress = Math.min(dist / threshold, 1);
-    indicator.classList.add('visible');
-    spinner.style.transform = `rotate(${progress * 360}deg)`;
-  }, { passive: true });
-  
-  el.addEventListener('touchend', function(e) {
-    if (!pulling) return;
-    pulling = false;
-    
-    const dist = e.changedTouches[0].clientY - startY;
-    if (dist >= threshold) {
-      spinner.classList.add('spinning');
-      onRefresh(function() {
-        spinner.classList.remove('spinning');
-        indicator.classList.remove('visible');
-      });
-    } else {
-      indicator.classList.remove('visible');
-    }
-  });
+function setupSigEvents() {
+  if (!sigCanvas) return;
+  var drawing = false, lx = 0, ly = 0;
+  function pos(e) {
+    var r = sigCanvas.getBoundingClientRect();
+    var t = e.touches ? e.touches[0] : e;
+    return { x:(t.clientX-r.left)*(sigCanvas.width/r.width), y:(t.clientY-r.top)*(sigCanvas.height/r.height) };
+  }
+  function start(e){ drawing=true; sigDrawn=true; currentExistingSignature=null; var p=pos(e); lx=p.x; ly=p.y; }
+  function move(e){ if(!drawing)return; e.preventDefault(); var p=pos(e); sigCtx.beginPath(); sigCtx.moveTo(lx,ly); sigCtx.lineTo(p.x,p.y); sigCtx.strokeStyle='#000'; sigCtx.lineWidth=2; sigCtx.lineCap='round'; sigCtx.stroke(); lx=p.x; ly=p.y; }
+  function end(){ drawing=false; }
+  sigCanvas.addEventListener('mousedown',start);
+  sigCanvas.addEventListener('mousemove',move);
+  sigCanvas.addEventListener('mouseup',end);
+  sigCanvas.addEventListener('mouseleave',end);
+  sigCanvas.addEventListener('touchstart',start,{passive:false});
+  sigCanvas.addEventListener('touchmove',move,{passive:false});
+  sigCanvas.addEventListener('touchend',end,{passive:false});
 }
 
+function clearSig() {
+  if (!sigCanvas) return;
+  sigCtx.fillStyle='#fff'; sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
+  sigDrawn=false; currentExistingSignature=null;
+}
+
+// ═══ IMAGE UPLOAD ═════════════════════════════════════
+function handlePicUpload(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var max = 800, w = img.width, h = img.height;
+      if (w > h && w > max) { h *= max/w; w = max; }
+      else if (h > max) { w *= max/h; h = max; }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      var q=0.7, result=canvas.toDataURL('image/jpeg',q);
+      while (result.length/1024>150 && q>0.1) { q-=0.1; result=canvas.toDataURL('image/jpeg',q); }
+      uploadedImage = result;
+      document.getElementById('sf-preview-img').src = result;
+      document.getElementById('sf-img-preview').style.display = 'block';
+      document.getElementById('sf-upload-box').style.display = 'none';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePic() {
+  uploadedImage = null;
+  document.getElementById('sf-img-preview').style.display = 'none';
+  document.getElementById('sf-upload-box').style.display = 'block';
+  document.getElementById('sf-pic-input').value = '';
+}
+
+// ═══ API ══════════════════════════════════════════════
+function apiGet(range) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range),
+    {headers:{Authorization:'Bearer '+token}})
+    .then(function(r){ if(r.status===401){location.href='index.html';throw new Error('Auth');} return r.json(); });
+}
+function apiAppend(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
+    .then(function(r){ if(!r.ok) throw new Error('Append failed'); return r.json(); });
+}
+function apiUpdate(range, values) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
+    {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
+    .then(function(r){ if(!r.ok) throw new Error('Update failed'); return r.json(); });
+}
+
+// ═══ HELPERS ══════════════════════════════════════════
+function fmtDate(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n) { return n<10?'0'+n:String(n); }
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+function showSaving(m) { document.getElementById('saving-text').textContent=m||'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
+function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
+var _tt;
+function showToast(m) { var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(function(){ t.classList.remove('show'); },3000); }
+
+// Close sheets on backdrop tap
+['task-sheet','notif-sheet'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
+});
 </script>
 </body>
 </html>
