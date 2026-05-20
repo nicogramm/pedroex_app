@@ -12,13 +12,13 @@
 :root {
   --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
   --text:#2a2a2e;--text2:#777;--text3:#aaa;
-  --red:#B32533;--green:#16a34a;--orange:#f59e0b;--blue:#2563eb;
+  --red:#B32533;--green:#16a34a;--orange:#f59e0b;--blue:#2563eb;--purple:#7c3aed;
   --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
   --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
   --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
   --neu-xs:3px 3px 6px var(--shadow-d),-2px -2px 5px var(--shadow-l);
 }
-body.dark{--bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;--text:#e8e8ec;--text2:#888;--text3:#555;--green:#22c55e;--orange:#f59e0b;--blue:#60a5fa;}
+body.dark{--bg:#2a2a2f;--bg2:#313137;--shadow-d:#16161a;--shadow-l:#3e3e46;--text:#e8e8ec;--text2:#888;--text3:#555;--green:#22c55e;--orange:#f59e0b;--blue:#60a5fa;--purple:#a78bfa;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.07);position:sticky;top:0;z-index:50}
@@ -34,15 +34,17 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .screen{display:flex;flex-direction:column;height:100dvh}
 .page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px}
-.tab{flex:1;padding:10px 6px;border:none;background:none;border-radius:10px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all .2s}
+.tab{flex:1;padding:10px 4px;border:none;background:none;border-radius:10px;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer;transition:all .2s}
 .tab.active{background:var(--bg);box-shadow:var(--neu-sm);color:var(--red)}
-.neu-card{background:var(--bg);border-radius:18px;box-shadow:var(--neu-out);padding:18px;margin-bottom:14px}
+
+/* TASK CARDS */
 .task-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px;border-left:4px solid var(--text3);cursor:pointer}
 .task-card:active{box-shadow:var(--neu-in)}
 .task-card.status-pending{border-left-color:var(--orange)}
 .task-card.status-submitted{border-left-color:var(--green)}
 .task-card.status-overdue{border-left-color:var(--red)}
 .task-card.status-late{border-left-color:var(--blue)}
+.task-card.status-missing{border-left-color:var(--purple)}
 .task-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .task-title{font-size:14px;font-weight:700;color:var(--text)}
 .task-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;flex-shrink:0;margin-left:6px}
@@ -50,14 +52,22 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .badge-submitted{background:rgba(22,163,74,.15);color:var(--green)}
 .badge-overdue{background:rgba(179,37,51,.15);color:var(--red)}
 .badge-late{background:rgba(37,99,235,.15);color:var(--blue)}
+.badge-missing{background:rgba(124,58,237,.15);color:var(--purple)}
 .task-meta{font-size:11px;color:var(--text2);display:flex;flex-direction:column;gap:4px}
 .task-meta-row{display:flex;align-items:center;gap:6px}
 .task-due{font-size:11px;font-weight:600;margin-top:6px}
-.task-due.overdue{color:var(--red)}.task-due.ok{color:var(--green)}.task-due.warning{color:var(--orange)}
+.task-due.overdue{color:var(--red)}.task-due.ok{color:var(--green)}.task-due.warning{color:var(--orange)}.task-due.purple{color:var(--purple)}
+
+/* FILTERS */
 .filter-bar{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .filter-bar::-webkit-scrollbar{display:none}
 .filter-chip{padding:7px 14px;border-radius:20px;background:var(--bg);box-shadow:var(--neu-sm);font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;cursor:pointer;border:none;font-family:'Inter',sans-serif}
 .filter-chip.active{box-shadow:var(--neu-in);color:var(--red)}
+
+/* REMINDER CARD */
+.reminder-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:14px;border-left:4px solid var(--red)}
+
+/* SHEET */
 .sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end}
 .sheet-overlay.open{display:flex}
 .sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:92dvh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.16,1,.3,1)}
@@ -65,48 +75,64 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .sheet-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;opacity:.3}
 .sheet-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
 .sheet-sub{font-size:12px;color:var(--text2);margin-bottom:18px}
+
+/* FORM */
 .fg{margin-bottom:14px}
 .fl{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
 .fi{width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none}
 .fi:focus{box-shadow:var(--neu-in),0 0 0 2px rgba(179,37,51,.2)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* SIG */
 .sig-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:10px}
 .sig-canvas{width:100%;height:110px;border-radius:8px;background:#fff;cursor:crosshair;touch-action:none;display:block}
 .sig-actions{display:flex;gap:8px;margin-top:8px}
 .sig-btn{flex:1;padding:8px;border-radius:8px;background:var(--bg);box-shadow:var(--neu-sm);font-size:12px;font-weight:600;color:var(--text2);border:none;cursor:pointer;font-family:'Inter',sans-serif}
 .sig-btn:active{box-shadow:var(--neu-in)}
+
+/* IMAGE */
 .img-upload-box{background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:18px;text-align:center;cursor:pointer;border:2px dashed var(--text3)}
 .img-upload-box p{font-size:12px;color:var(--text2);margin-top:6px}
 .img-preview{margin-top:10px;border-radius:10px;overflow:hidden;box-shadow:var(--neu-sm);position:relative}
 .img-preview img{width:100%;display:block;max-height:180px;object-fit:contain}
 .img-remove{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:700}
+
+/* BUTTONS */
 .btn{width:100%;padding:15px;border-radius:14px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;border:none;margin-bottom:8px}
 .btn-primary{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,.35)}
 .btn-primary:active{transform:scale(.98)}
+.btn-purple{background:var(--purple);color:#fff;box-shadow:4px 4px 12px rgba(124,58,237,.35)}
+.btn-purple:active{transform:scale(.98)}
 .btn-danger{background:none;color:var(--red);font-size:13px;font-weight:600;font-family:'Inter',sans-serif;border:none;width:100%;padding:12px;cursor:pointer}
 .btn-secondary{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
 .btn-secondary:active{box-shadow:var(--neu-in)}
+
+/* DETAIL ROWS */
 .dt-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05)}
 body.dark .dt-row{border-bottom-color:rgba(255,255,255,.04)}
 .dt-row:last-child{border-bottom:none}
 .dt-label{font-size:11px;color:var(--text3);font-weight:600;flex-shrink:0;padding-right:8px}
 .dt-val{font-size:13px;color:var(--text);font-weight:500;text-align:right;max-width:65%}
+
+/* REPORT */
 .rpt-stat{background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px;text-align:center}
-.rpt-stat-val{font-size:26px;font-weight:700;line-height:1;margin-bottom:4px}
+.rpt-stat-val{font-size:24px;font-weight:700;line-height:1;margin-bottom:4px}
 .rpt-stat-lbl{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3)}
 .rpt-emp-card{background:var(--bg);border-radius:14px;box-shadow:var(--neu-xs);padding:14px;margin-bottom:10px}
 .rpt-emp-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .rpt-clearance{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
 .cleared{background:rgba(22,163,74,.15);color:var(--green)}
 .not-cleared{background:rgba(179,37,51,.15);color:var(--red)}
-.rpt-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.rpt-row{display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04);gap:8px}
 body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
 .rpt-row:last-child{border-bottom:none}
-.rpt-row-val{font-weight:600}
-.rpt-row-val.ok{color:var(--green)}.rpt-row-val.warn{color:var(--orange)}.rpt-row-val.bad{color:var(--red)}
+.rpt-row-val{font-weight:600;text-align:right;flex-shrink:0}
+.rpt-row-val.ok{color:var(--green)}.rpt-row-val.warn{color:var(--orange)}.rpt-row-val.bad{color:var(--red)}.rpt-row-val.purple{color:var(--purple)}
 .period-row{display:flex;gap:8px;margin-bottom:14px}
 .period-btn{flex:1;padding:10px 6px;border:none;background:var(--bg);border-radius:10px;box-shadow:var(--neu-sm);font-size:11px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text2);cursor:pointer}
 .period-btn.active{box-shadow:var(--neu-in);color:var(--red)}
+
+/* CONFIRM */
 .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:center;justify-content:center;padding:20px}
 .confirm-overlay.open{display:flex}
 .confirm-box{background:var(--bg);border-radius:22px;padding:24px;max-width:340px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3)}
@@ -116,6 +142,8 @@ body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
 .cb{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;border:none}
 .cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--neu-sm)}
 .cb-confirm{background:var(--red);color:#fff}
+
+/* SAVING / TOAST */
 .saving-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center}
 .saving-overlay.show{display:flex}
 .saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
@@ -127,6 +155,8 @@ body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
 .empty-hint{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
 .loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:var(--text3);font-size:13px}
 .spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+
+/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -3px 14px rgba(0,0,0,.07);z-index:40}
 body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
 .bnav{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif}
@@ -163,32 +193,40 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
     </div>
     <div id="loading-main" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
 
+    <!-- MY TASKS TAB -->
     <div id="content-tasks" style="display:none">
+      <div id="reminder-card" class="reminder-card" style="display:none"></div>
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterTasks('all',this)">All</button>
         <button class="filter-chip" onclick="filterTasks('pending',this)">Pending</button>
+        <button class="filter-chip" onclick="filterTasks('missing',this)">Missing</button>
         <button class="filter-chip" onclick="filterTasks('overdue',this)">Overdue</button>
-        <button class="filter-chip" onclick="filterTasks('submitted',this)">Submitted</button>
+        <button class="filter-chip" onclick="filterTasks('submitted',this)">Done</button>
+        <button class="filter-chip" onclick="filterTasks('shipment',this)">Shipment #</button>
         <button class="filter-chip" onclick="filterTasks('pod',this)">POD</button>
         <button class="filter-chip" onclick="filterTasks('crates',this)">Crates</button>
       </div>
       <div id="tasks-list"></div>
     </div>
 
+    <!-- ALL RECORDS TAB (ADMIN) -->
     <div id="content-all" style="display:none">
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterAll('all',this)">All</button>
         <button class="filter-chip" onclick="filterAll('pending',this)">Pending</button>
+        <button class="filter-chip" onclick="filterAll('missing',this)">Missing</button>
         <button class="filter-chip" onclick="filterAll('overdue',this)">Overdue</button>
-        <button class="filter-chip" onclick="filterAll('submitted',this)">Submitted</button>
+        <button class="filter-chip" onclick="filterAll('submitted',this)">Done</button>
+        <button class="filter-chip" onclick="filterAll('shipment',this)">Shipment #</button>
         <button class="filter-chip" onclick="filterAll('pod',this)">POD</button>
         <button class="filter-chip" onclick="filterAll('crates',this)">Crates</button>
       </div>
       <div id="all-list"></div>
     </div>
 
+    <!-- REPORT TAB (ADMIN) -->
     <div id="content-report" style="display:none">
-      <div class="neu-card" style="padding:14px;margin-bottom:14px">
+      <div style="background:var(--bg);border-radius:18px;box-shadow:var(--neu-out);padding:14px;margin-bottom:14px">
         <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Payroll Period</div>
         <div class="period-row">
           <button class="period-btn active" id="rpt-btn-1st" onclick="setRptPeriod('1st')">1st – 15th</button>
@@ -209,7 +247,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   </div>
 </div>
 
-<!-- TASK SHEET -->
+<!-- TASK DETAIL SHEET -->
 <div class="sheet-overlay" id="task-sheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -224,7 +262,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">🔔 Reminders</div>
-    <div class="sheet-sub" style="margin-bottom:14px">Pending and overdue tasks</div>
+    <div class="sheet-sub" style="margin-bottom:14px">Tasks requiring your attention</div>
     <div id="notif-list"></div>
     <button class="btn btn-secondary" onclick="closeSheet('notif-sheet')" style="margin-top:10px">Close</button>
   </div>
@@ -263,25 +301,13 @@ var TAB_ATTENDANCE = 'Attendance';
 var TAB_EMPLOYEES  = 'Employees';
 var TAB_RECORDS    = 'Records';
 
-// ═══ RECORDS SHEET STRUCTURE (Updated) ════════════════
-// A=ID  B=Employee Name  C=Date (Trip Date)
-// D=Submission Date  E=Truck  F=Document Type
-// G=Number  H=Liquidated/Returned  I=Acknowledge By
-// J=Signature  K=Picture  L=Comments
-
-// ═══ SUBMISSION DETECTION ════════════════════════════
-// POD submitted   = Number starts with "100" OR has Signature OR has Picture
-// Crates returned = Number starts with "62"  OR has Signature OR has Picture
-function isRecordSubmitted(rec, taskType) {
-  var num = (rec.number || '').trim();
-  var hasSig = rec.signature && rec.signature.trim().length > 10;
-  var hasPic = rec.picture  && rec.picture.trim().length > 10;
-  if (taskType === 'POD') {
-    return num.startsWith('100') || hasSig || hasPic;
-  } else { // Crates
-    return num.startsWith('62') || hasSig || hasPic;
-  }
-}
+// ═══ RECORDS SHEET STRUCTURE ══════════════════════════
+// A=ID  B=EmpName  C=TripDate  D=SubmissionDate
+// E=Truck  F=DocType  G=Number  H=Liquidated
+// I=AckBy  J=Signature  K=Picture  L=Comments
+//
+// DocType values: "Proof of Deliveries" | "Crates"
+// Shipment Number → saved directly to Trips sheet col F (ShipmentNum)
 
 // ═══ ROSTER ROTATION ══════════════════════════════════
 var TRUCKS       = ['CAH','CBQ','CAN','NHE','CBJ'];
@@ -310,35 +336,45 @@ var selectedTask   = null;
 var sigCanvas, sigCtx, sigDrawn = false;
 var uploadedImage  = null;
 var currentExistingSignature = null;
+var _reminderShown = false;
+
+// ═══ SUBMISSION DETECTION ═════════════════════════════
+function isRecordSubmitted(rec, taskType) {
+  var num   = (rec.number||'').trim();
+  var hasSig= rec.signature && rec.signature.trim().length > 10;
+  var hasPic= rec.picture   && rec.picture.trim().length  > 10;
+  if (taskType==='POD')    return num.startsWith('100') || hasSig || hasPic;
+  if (taskType==='Crates') return num.startsWith('62')  || hasSig || hasPic;
+  return false;
+}
 
 // ═══ ROSTER ═══════════════════════════════════════════
-function getMondayOfWeek(d) {
+function getMondayOfWeek(d){
   var dt=new Date(d); dt.setHours(0,0,0,0);
   var day=dt.getDay();
   dt.setDate(dt.getDate()+(day===0?-6:1-day));
   return dt;
 }
-function getScheduledHelper(truck, date) {
+function getScheduledHelper(truck,date){
   var idx=TRUCKS.indexOf(truck); if(idx===-1) return null;
   var wDiff=Math.round((getMondayOfWeek(date)-getMondayOfWeek(ANCHOR_DATE))/(7*864e5));
   return HELPER_ORDER[((idx-wDiff)%5+500)%5];
 }
 
 // ═══ DUE DATES ════════════════════════════════════════
-function getPODDue(tripDate, route) {
+function getPODDue(tripDate,route){
   var d=new Date(tripDate+'T00:00:00');
-  if ((route||'').toLowerCase().indexOf('masbate')>-1){ d.setDate(d.getDate()+4); return d; }
+  if ((route||'').toLowerCase().indexOf('masbate')>-1){d.setDate(d.getDate()+4);return d;}
   d.setDate(d.getDate()+(d.getDay()===6?2:1));
   if (d.getDay()===0) d.setDate(d.getDate()+1);
   return d;
 }
-function getCratesDue(tripDate) {
+function getCratesDue(tripDate){
   var d=new Date(tripDate+'T00:00:00'); d.setDate(d.getDate()+7); return d;
 }
 
-// ═══ FIND EXISTING RECORD ═════════════════════════════
-// Match: EmpName + TripDate + Truck + DocType
-function findExisting(helperName, tripDate, truck, taskType) {
+// ═══ FIND EXISTING RECORD (Records sheet) ═════════════
+function findExisting(helperName,tripDate,truck,taskType){
   var docType=taskType==='POD'?'Proof of Deliveries':'Crates';
   return allRecords.find(function(r){
     return r.empName.toLowerCase()===helperName.toLowerCase()
@@ -349,20 +385,26 @@ function findExisting(helperName, tripDate, truck, taskType) {
 }
 
 // ═══ TASK STATUS ══════════════════════════════════════
-function getStatus(task, today) {
-  if (task.submitted) {
-    if (task.submissionDate) {
+function getStatus(task,today){
+  // Shipment Number: no deadline — just missing or done
+  if (task.type==='ShipmentNum'){
+    return task.submitted ? 'submitted' : 'missing';
+  }
+  if (task.submitted){
+    if (task.submissionDate){
       var sub=new Date(task.submissionDate+'T00:00:00');
       var due=new Date(task.dueDate+'T23:59:59');
-      return sub>due ? 'late' : 'submitted';
+      return sub>due?'late':'submitted';
     }
-    // No submission date — check if trip date > due (conservative: mark as submitted)
     return 'submitted';
   }
-  return today>new Date(task.dueDate+'T23:59:59') ? 'overdue' : 'pending';
+  return today>new Date(task.dueDate+'T23:59:59')?'overdue':'pending';
 }
 
-function dueLabel(t) {
+function dueLabel(t){
+  if (t.type==='ShipmentNum'){
+    return t.submitted ? '✓ Filed' : '📋 Not yet filed';
+  }
   var due=new Date(t.dueDate+'T00:00:00'),today=new Date(); today.setHours(0,0,0,0);
   var diff=Math.round((due-today)/864e5);
   if (t.status==='submitted') return '✓ Submitted'+(t.submissionDate?' on '+t.submissionDate:'');
@@ -371,6 +413,13 @@ function dueLabel(t) {
   if (diff===0) return '⏰ Due today!';
   if (diff===1) return '⏰ Due tomorrow';
   return '📅 Due in '+diff+' day(s)';
+}
+
+function dueLabelClass(t){
+  if (t.type==='ShipmentNum') return t.submitted?'ok':'purple';
+  if (t.status==='overdue')   return 'overdue';
+  if (t.status==='submitted'||t.status==='late') return 'ok';
+  return 'warning';
 }
 
 // ═══ INIT ═════════════════════════════════════════════
@@ -398,9 +447,8 @@ function loadAll(){
     apiGet(TAB_EMPLOYEES+'!A2:E'),
     apiGet(TAB_TRIPS+'!A2:I'),
     apiGet(TAB_ATTENDANCE+'!A2:L'),
-    apiGet(TAB_RECORDS+'!A2:L')   // now reading A-L (12 columns)
+    apiGet(TAB_RECORDS+'!A2:L')
   ]).then(function(res){
-
     allEmployees=(res[0].values||[]).filter(function(r){return r[0];}).map(function(r){
       return {email:(r[0]||'').toLowerCase(),firstName:r[1]||'',lastName:r[2]||'',
               role:r[3]||'Employee',position:r[4]||'Helper',
@@ -415,9 +463,15 @@ function loadAll(){
     }
     currentUser=empRow;
 
-    allTrips=(res[1].values||[]).filter(function(r){return r[1];}).map(function(r){
-      return {id:r[0]||'',deliveryDate:r[1]||'',truck:r[2]||'',shipmentDate:r[3]||'',
-              type:r[4]||'',shipmentNum:r[5]||'',billed:r[6]||'',route:r[7]||'',rate:r[8]||''};
+    // Trips: A=ID,B=DeliveryDate,C=Truck,D=ShipmentDate,E=Type,F=ShipmentNum,G=Billed,H=Route,I=Rate
+    allTrips=(res[1].values||[]).filter(function(r){return r[1];}).map(function(r,i){
+      return {
+        rowIndex:i+2,
+        id:r[0]||'', deliveryDate:r[1]||'', truck:r[2]||'',
+        shipmentDate:r[3]||'', type:r[4]||'',
+        shipmentNum:r[5]||'',  // col F — may be empty
+        billed:r[6]||'', route:r[7]||'', rate:r[8]||''
+      };
     });
 
     allAtt=(res[2].values||[]).filter(function(r){return r[1];}).map(function(r,i){
@@ -426,24 +480,13 @@ function loadAll(){
               lat:r[8]||'',lng:r[9]||'',time:r[10]||'',helperType:r[11]||''};
     });
 
-    // New Records sheet: A=ID, B=EmpName, C=Date(TripDate), D=SubmissionDate,
-    // E=Truck, F=DocType, G=Number, H=Liquidated/Returned,
-    // I=AckBy, J=Signature, K=Picture, L=Comments
     allRecords=(res[3].values||[]).filter(function(r){return r[1];}).map(function(r,i){
       return {
-        rowIndex: i+2,
-        sheetId:  r[0]||String(i+2),
-        empName:  r[1]||'',
-        date:     r[2]||'',       // trip date
-        subDate:  r[3]||'',       // submission date (NEW col D)
-        truck:    r[4]||'',
-        docType:  r[5]||'',
-        number:   r[6]||'',
-        liquidated: r[7]||'',
-        ackBy:    r[8]||'',
-        signature:r[9]||'',
-        picture:  r[10]||'',
-        comments: r[11]||''
+        rowIndex:i+2, sheetId:r[0]||String(i+2),
+        empName:r[1]||'', date:r[2]||'', subDate:r[3]||'',
+        truck:r[4]||'', docType:r[5]||'', number:r[6]||'',
+        liquidated:r[7]||'', ackBy:r[8]||'',
+        signature:r[9]||'', picture:r[10]||'', comments:r[11]||''
       };
     });
 
@@ -475,13 +518,12 @@ function buildTasks(){
     if (!truck||!date) return;
 
     var scheduled=getScheduledHelper(truck,new Date(date+'T00:00:00'));
-
     var attOnDay=allAtt.filter(function(a){
       return a.date===date && a.truck.trim().toLowerCase()===truck.toLowerCase();
     });
     var helpers=attOnDay.filter(function(a){return empPos(a.name)==='helper';});
 
-    // Primary helper determination
+    // Determine primary helper
     var primary=null;
     var mp=helpers.find(function(h){return h.helperType==='Primary';});
     if (mp){ primary=mp.name; }
@@ -491,64 +533,109 @@ function buildTasks(){
     } else if (helpers.length>0){ primary=helpers[0].name; }
     if (!primary) return;
 
-    // Crates from attendance
+    // Crates count from attendance
     var ar=allAtt.find(function(a){
       return a.date===date && a.truck.trim().toLowerCase()===truck.toLowerCase()
           && a.name.toLowerCase()===primary.toLowerCase();
     });
     var cratesCount=ar?(ar.crates||'0'):'0';
 
-    // Crates task only for Fresh trips (Frozen and Masbate have no crates)
-    var isMasbate = (trip.route||'').toLowerCase().indexOf('masbate') > -1;
-    var isFresh   = (trip.type||'').toLowerCase() === 'fresh';
-    var taskTypes = (isFresh && !isMasbate) ? ['POD','Crates'] : ['POD'];
+    var isMasbate=(trip.route||'').toLowerCase().indexOf('masbate')>-1;
+    var isFresh=(trip.type||'').toLowerCase()==='fresh';
 
-    taskTypes.forEach(function(type){
-      var key=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|'+type;
-      if (seen[key]) return; seen[key]=true;
-
-      var dueStr=type==='POD'?fmtDate(getPODDue(date,trip.route)):fmtDate(getCratesDue(date));
-
-      var ex=findExisting(primary,date,truck,type);
-
-      // ✅ Submission detection based on Number prefix / Signature / Picture
-      var submitted = ex ? isRecordSubmitted(ex, type) : false;
-
-      // Late detection using Submission Date column
-      var isLate=false;
-      var subDateStr='';
-      if (submitted && ex) {
-        subDateStr = ex.subDate || '';
-        if (subDateStr) {
-          isLate=new Date(subDateStr+'T00:00:00')>new Date(dueStr+'T23:59:59');
-        }
-      }
-
-      var task={
-        id:         primary.replace(/\s+/g,'_')+'_'+date+'_'+truck+'_'+type,
-        recordRowIndex: ex?ex.rowIndex:null,
-        helperName: primary, truck:truck, date:date, type:type,
+    // ── Task 1: SHIPMENT NUMBER (all trips, no deadline) ──
+    var snKey=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|ShipmentNum';
+    if (!seen[snKey]){
+      seen[snKey]=true;
+      var snDone=!!(trip.shipmentNum && trip.shipmentNum.trim());
+      var snTask={
+        id:        primary.replace(/\s+/g,'_')+'_'+date+'_'+truck+'_ShipmentNum',
+        type:      'ShipmentNum',
+        tripRowIndex: trip.rowIndex,
+        recordRowIndex: null,
+        helperName:primary, truck:truck, date:date,
         route:trip.route, tripType:trip.type, tripId:trip.id,
-        shipmentNum:trip.shipmentNum,
-        dueDate:    dueStr,
-        expectedCrates: cratesCount,
-        submitted:  submitted,
-        submissionDate: subDateStr,
-        late:       isLate,
-        signature:  ex?ex.signature:'',
-        picture:    ex?ex.picture:'',
-        comments:   ex?ex.comments:'',
-        ackBy:      ex?ex.ackBy:'',
-        docNumber:  ex?ex.number:'',
-        scheduledHelper: scheduled,
-        isScheduled: scheduled&&scheduled.toLowerCase()===primary.toLowerCase()
+        shipmentNum:trip.shipmentNum||'',
+        dueDate:   date,  // reference only, no enforcement
+        submitted: snDone,
+        submissionDate:'',
+        late:false,
+        scheduledHelper:scheduled,
+        isScheduled:scheduled&&scheduled.toLowerCase()===primary.toLowerCase()
       };
-      task.status=getStatus(task,today);
-      tasks.push(task);
-    });
+      snTask.status=getStatus(snTask,today);
+      tasks.push(snTask);
+    }
+
+    // ── Task 2: POD (all trips, with deadline) ──
+    var podKey=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|POD';
+    if (!seen[podKey]){
+      seen[podKey]=true;
+      var podDue=fmtDate(getPODDue(date,trip.route));
+      var exPOD=findExisting(primary,date,truck,'POD');
+      var podSubmitted=exPOD?isRecordSubmitted(exPOD,'POD'):false;
+      var podSubDate=''; var podLate=false;
+      if (podSubmitted&&exPOD&&exPOD.subDate){
+        podSubDate=exPOD.subDate;
+        podLate=new Date(podSubDate+'T00:00:00')>new Date(podDue+'T23:59:59');
+      }
+      var podTask={
+        id:        primary.replace(/\s+/g,'_')+'_'+date+'_'+truck+'_POD',
+        type:      'POD',
+        tripRowIndex: trip.rowIndex,
+        recordRowIndex:exPOD?exPOD.rowIndex:null,
+        helperName:primary, truck:truck, date:date,
+        route:trip.route, tripType:trip.type, tripId:trip.id,
+        shipmentNum:trip.shipmentNum||'',
+        dueDate:   podDue,
+        submitted: podSubmitted, submissionDate:podSubDate, late:podLate,
+        signature: exPOD?exPOD.signature:'', picture:exPOD?exPOD.picture:'',
+        comments:  exPOD?exPOD.comments:'', ackBy:exPOD?exPOD.ackBy:'',
+        docNumber: exPOD?exPOD.number:'',
+        scheduledHelper:scheduled,
+        isScheduled:scheduled&&scheduled.toLowerCase()===primary.toLowerCase()
+      };
+      podTask.status=getStatus(podTask,today);
+      tasks.push(podTask);
+    }
+
+    // ── Task 3: CRATES (Fresh non-Masbate only, 7-day deadline) ──
+    if (isFresh&&!isMasbate){
+      var crKey=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|Crates';
+      if (!seen[crKey]){
+        seen[crKey]=true;
+        var crDue=fmtDate(getCratesDue(date));
+        var exCR=findExisting(primary,date,truck,'Crates');
+        var crSubmitted=exCR?isRecordSubmitted(exCR,'Crates'):false;
+        var crSubDate=''; var crLate=false;
+        if (crSubmitted&&exCR&&exCR.subDate){
+          crSubDate=exCR.subDate;
+          crLate=new Date(crSubDate+'T00:00:00')>new Date(crDue+'T23:59:59');
+        }
+        var crTask={
+          id:        primary.replace(/\s+/g,'_')+'_'+date+'_'+truck+'_Crates',
+          type:      'Crates',
+          tripRowIndex: trip.rowIndex,
+          recordRowIndex:exCR?exCR.rowIndex:null,
+          helperName:primary, truck:truck, date:date,
+          route:trip.route, tripType:trip.type, tripId:trip.id,
+          shipmentNum:trip.shipmentNum||'',
+          dueDate:   crDue, expectedCrates:cratesCount,
+          submitted: crSubmitted, submissionDate:crSubDate, late:crLate,
+          signature: exCR?exCR.signature:'', picture:exCR?exCR.picture:'',
+          comments:  exCR?exCR.comments:'', ackBy:exCR?exCR.ackBy:'',
+          docNumber: exCR?exCR.number:'',
+          scheduledHelper:scheduled,
+          isScheduled:scheduled&&scheduled.toLowerCase()===primary.toLowerCase()
+        };
+        crTask.status=getStatus(crTask,today);
+        tasks.push(crTask);
+      }
+    }
   });
 
-  var ord={overdue:0,pending:1,late:2,submitted:3};
+  // Sort: overdue→missing→pending→late→submitted
+  var ord={overdue:0,missing:1,pending:2,late:3,submitted:4};
   tasks.sort(function(a,b){
     var oa=ord[a.status]||99,ob=ord[b.status]||99;
     return oa!==ob?oa-ob:b.date.localeCompare(a.date);
@@ -556,20 +643,74 @@ function buildTasks(){
   return tasks;
 }
 
-// ═══ RENDER ═══════════════════════════════════════════
+// ═══ RENDER TASKS ═════════════════════════════════════
 function renderTasks(){
   var mine=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase();
   });
+
+  // Reminder card
+  var overdue=mine.filter(function(t){return t.status==='overdue';});
+  var missing=mine.filter(function(t){return t.status==='missing';});
+  var pending=mine.filter(function(t){return t.status==='pending';});
+  var rc=document.getElementById('reminder-card');
+
+  if (overdue.length||missing.length||pending.length){
+    var lines=['<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">📋 Reminders</div>'];
+    if (overdue.length){
+      lines.push('<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px">⚠ '+overdue.length+' Overdue</div>');
+      overdue.forEach(function(t){
+        lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
+          +taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck
+          +' <span style="color:var(--red);font-weight:600">('+t.date+')</span></div>');
+      });
+    }
+    if (missing.length){
+      lines.push('<div style="font-size:13px;font-weight:700;color:var(--purple);margin-top:'+(overdue.length?'10px':'0')+';margin-bottom:6px">📋 '+missing.length+' Missing Shipment #</div>');
+      missing.forEach(function(t){
+        lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
+          +'🔢 '+t.truck+' <span style="color:var(--purple);font-weight:600">('+t.date+')</span></div>');
+      });
+    }
+    if (pending.length){
+      lines.push('<div style="font-size:13px;font-weight:700;color:var(--orange);margin-top:'+((overdue.length||missing.length)?'10px':'0')+';margin-bottom:6px">⏳ '+pending.length+' Pending</div>');
+      pending.forEach(function(t){
+        lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
+          +taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck
+          +' <span style="color:var(--orange);font-weight:600">Due: '+t.dueDate+'</span></div>');
+      });
+    }
+    lines.push('<button onclick="document.getElementById(\'reminder-card\').style.display=\'none\'" '
+      +'style="margin-top:10px;width:100%;padding:8px;border:none;background:none;color:var(--text3);'
+      +'font-size:12px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Dismiss</button>');
+    rc.innerHTML=lines.join('');
+    rc.style.display='block';
+  } else {
+    rc.style.display='none';
+  }
+
   renderList(mine,'tasks-list',taskFilter);
 }
 function renderAllTasks(){ renderList(generatedTasks,'all-list',allFilter); }
 
+function taskIcon(type){
+  if (type==='ShipmentNum') return '🔢';
+  if (type==='POD')         return '📄';
+  return '📦';
+}
+function taskLabel(type){
+  if (type==='ShipmentNum') return 'Shipment #';
+  if (type==='POD')         return 'POD';
+  return 'Crates';
+}
+
 function renderList(tasks,containerId,filter){
   var list=tasks;
   if (filter==='pending')   list=tasks.filter(function(t){return t.status==='pending';});
+  if (filter==='missing')   list=tasks.filter(function(t){return t.status==='missing';});
   if (filter==='overdue')   list=tasks.filter(function(t){return t.status==='overdue';});
   if (filter==='submitted') list=tasks.filter(function(t){return t.status==='submitted'||t.status==='late';});
+  if (filter==='shipment')  list=tasks.filter(function(t){return t.type==='ShipmentNum';});
   if (filter==='pod')       list=tasks.filter(function(t){return t.type==='POD';});
   if (filter==='crates')    list=tasks.filter(function(t){return t.type==='Crates';});
 
@@ -577,73 +718,81 @@ function renderList(tasks,containerId,filter){
   if (!list.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
 
   el.innerHTML=list.map(function(t){
-    var bl=t.status==='submitted'?'✓ Done':t.status==='late'?'⚠ Late':t.status==='overdue'?'⚠ Overdue':'⏳ Pending';
-    var dc=t.status==='overdue'?'overdue':(t.status==='submitted'||t.status==='late'?'ok':'warning');
+    var bl = t.status==='submitted'?'✓ Done'
+            :t.status==='late'     ?'⚠ Late'
+            :t.status==='overdue'  ?'⚠ Overdue'
+            :t.status==='missing'  ?'📋 Missing'
+            :'⏳ Pending';
+    var bc = 'badge-'+t.status;
+    var dc = dueLabelClass(t);
+    var who=containerId==='all-list'?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
+    var cr =t.type==='Crates'?'<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>':'';
+    var sn =t.shipmentNum?'<div class="task-meta-row">🔢 Shipment: '+t.shipmentNum+'</div>':'';
     var sub=(!t.isScheduled&&t.scheduledHelper)
       ?'<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Sched: '
-        +t.scheduledHelper.split(' ')[0]+' → sub: '+t.helperName.split(' ')[0]+'</span>':'';
-    var cr=t.type==='Crates'
-      ?'<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>':'';
-    var who=containerId==='all-list'
-      ?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
-    var numTag=t.docNumber
-      ?'<div class="task-meta-row">🔢 '+t.docNumber+'</div>':'';
+        +t.scheduledHelper.split(' ')[0]+' → '+t.helperName.split(' ')[0]+'</span>':'';
 
     return '<div class="task-card status-'+t.status+'" onclick="openTask(\''+t.id+'\')">'
       +'<div class="task-header">'
-      +'<div class="task-title">'+(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck+'</div>'
-      +'<div class="task-badge badge-'+t.status+'">'+bl+'</div></div>'
+      +'<div class="task-title">'+taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck+'</div>'
+      +'<div class="task-badge '+bc+'">'+bl+'</div></div>'
       +'<div class="task-meta">'
       +'<div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+'</div>'
-      +who+cr+numTag+sub+'</div>'
+      +who+cr+(t.type!=='ShipmentNum'?sn:'')+sub+'</div>'
       +'<div class="task-due '+dc+'">'+dueLabel(t)+'</div></div>';
   }).join('');
 }
 
-// ═══ OPEN TASK ════════════════════════════════════════
+// ═══ OPEN TASK SHEET ══════════════════════════════════
 function openTask(taskId){
   var t=generatedTasks.find(function(x){return x.id===taskId;}); if(!t) return;
   selectedTask=t; sigDrawn=false; uploadedImage=null; currentExistingSignature=null;
 
-  document.getElementById('ts-title').textContent=(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck;
+  document.getElementById('ts-title').textContent=taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck;
   document.getElementById('ts-sub').textContent=t.date+(t.route?' · '+t.route:'')+' · '+t.helperName;
 
   var canEdit=isAdmin||currentUser.fullName.toLowerCase()===t.helperName.toLowerCase();
-  var canDelete=isAdmin;
+  var canDelete=isAdmin&&t.type!=='ShipmentNum';
 
   var rows=[
     ['Trip Type',t.tripType||'—'],['Truck',t.truck],['Date',t.date],
-    ['Route',t.route||'—'],['Shipment #',t.shipmentNum||'—'],
-    ['Assigned To',t.helperName],['Scheduled Helper',t.scheduledHelper||'—'],
-    ['Due Date',t.dueDate],['Status',t.status.toUpperCase()]
+    ['Route',t.route||'—'],['Assigned To',t.helperName],
+    ['Scheduled Helper',t.scheduledHelper||'—'],['Status',t.status.toUpperCase()]
   ];
-  if (t.type==='Crates') rows.push(['Expected Crates',t.expectedCrates]);
-  if (t.submitted){
-    if (t.submissionDate) rows.push(['Submission Date',t.submissionDate]);
-    if (t.late)           rows.push(['Late Submission','Yes ⚠']);
-    if (t.docNumber)      rows.push(['Document #',t.docNumber]);
-    if (t.ackBy)          rows.push(['Acknowledged By',t.ackBy]);
-    if (t.comments)       rows.push(['Comments',t.comments]);
+  if (t.type==='ShipmentNum'){
+    rows.push(['Shipment #',t.shipmentNum||'Not filed yet']);
+  } else {
+    rows.splice(4,0,['Due Date',t.dueDate]);
+    if (t.type==='Crates') rows.push(['Expected Crates',t.expectedCrates]);
+    if (t.submitted){
+      if (t.submissionDate) rows.push(['Submission Date',t.submissionDate]);
+      if (t.late) rows.push(['Late Submission','Yes ⚠']);
+      if (t.docNumber) rows.push(['Document #',t.docNumber]);
+      if (t.ackBy) rows.push(['Acknowledged By',t.ackBy]);
+      if (t.comments) rows.push(['Comments',t.comments]);
+    }
   }
 
   var detail='<div style="background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;margin-bottom:16px">'
-    +rows.map(function(r){
-      return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';
-    }).join('')+'</div>';
+    +rows.map(function(r){return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';}).join('')
+    +'</div>';
 
   var media='';
-  if (t.submitted){
+  if (t.submitted&&t.type!=='ShipmentNum'){
     if (t.signature) media+='<div class="fg"><label class="fl">Signature</label>'
       +'<div style="background:#fff;padding:8px;border-radius:10px;border:1px solid #ddd">'
       +'<img src="'+t.signature+'" style="width:100%;max-height:100px;object-fit:contain"></div></div>';
-    if (t.picture)   media+='<div class="fg"><label class="fl">Photo</label>'
+    if (t.picture) media+='<div class="fg"><label class="fl">Photo</label>'
       +'<div class="img-preview"><img src="'+t.picture+'"></div></div>';
   }
 
   var action='';
   if (canEdit){
-    if (!t.submitted){ action=buildForm(t,false); }
-    else {
+    if (t.type==='ShipmentNum'){
+      action=buildShipmentForm(t);
+    } else if (!t.submitted){
+      action=buildRecordForm(t,false);
+    } else {
       action=media+'<button class="btn btn-primary" onclick="openEditForm()">✏️ Edit Submission</button>';
       if (canDelete) action+='<button class="btn-danger" onclick="confirmDeleteTask()">Delete Record</button>';
     }
@@ -651,28 +800,49 @@ function openTask(taskId){
 
   document.getElementById('ts-body').innerHTML=detail+action;
   document.getElementById('task-sheet').classList.add('open');
-  if (!t.submitted&&canEdit) setTimeout(initSigCanvas,200);
+  if (t.type!=='ShipmentNum'&&!t.submitted&&canEdit) setTimeout(initSigCanvas,200);
 }
 
-// ═══ FORM ═════════════════════════════════════════════
-function buildForm(t,isEdit){
+// ═══ SHIPMENT NUMBER FORM ═════════════════════════════
+function buildShipmentForm(t){
+  return '<div class="fg"><label class="fl">Shipment Number</label>'
+    +'<input class="fi" id="sf-shipnum" type="text" value="'+(t.shipmentNum||'')+'" placeholder="e.g. 1004766903"></div>'
+    +'<button class="btn btn-purple" onclick="saveShipmentNum()">💾 '+(t.submitted?'Update':'File')+' Shipment Number</button>';
+}
+
+function saveShipmentNum(){
+  var t=selectedTask; if(!t||t.type!=='ShipmentNum') return;
+  var val=(document.getElementById('sf-shipnum')||{}).value||'';
+  if (!val.trim()){showToast('Please enter the shipment number.');return;}
+
+  // Save directly to Trips sheet column F (ShipmentNum)
+  // Trips row index is stored in t.tripRowIndex
+  showSaving('Filing shipment number...');
+  apiUpdate(TAB_TRIPS+'!F'+t.tripRowIndex+':F'+t.tripRowIndex,[[val.trim()]])
+    .then(function(){
+      hideSaving();
+      showToast('✅ Shipment number filed!');
+      closeSheet('task-sheet'); loadAll();
+    }).catch(function(err){hideSaving();showToast('❌ Save failed.');console.error(err);});
+}
+
+// ═══ POD / CRATES FORM ════════════════════════════════
+function buildRecordForm(t,isEdit){
   var cr=t.type==='Crates'
     ?'<div class="fg"><label class="fl">Crates Count Returned</label>'
-      +'<input class="fi" id="sf-crates" type="number" value="'+(isEdit?t.expectedCrates:t.expectedCrates)+'" min="0"></div>'
-    :'<input type="hidden" id="sf-crates" value="'+t.expectedCrates+'">';
-
-  // Number label hint based on type
+      +'<input class="fi" id="sf-crates" type="number" value="'+t.expectedCrates+'" min="0"></div>'
+    :'<input type="hidden" id="sf-crates" value="'+(t.expectedCrates||'0')+'">';
   var numHint=t.type==='POD'?'POD # (starts with 100...)':'Return Slip # (starts with 62...)';
 
   return '<div class="fg"><label class="fl">Submission Date</label>'
     +'<input class="fi" type="date" id="sf-date" value="'+(isEdit?(t.submissionDate||fmtDate(new Date())):fmtDate(new Date()))+'"></div>'
     +cr
     +'<div class="fg"><label class="fl">'+numHint+' (Optional)</label>'
-    +'<input class="fi" id="sf-number" type="text" value="'+(isEdit?(t.docNumber||''): '')+'" placeholder="'+numHint+'"></div>'
+    +'<input class="fi" id="sf-number" type="text" value="'+(isEdit?(t.docNumber||''):'')+'" placeholder="'+numHint+'"></div>'
     +'<div class="fg"><label class="fl">Acknowledged By (Optional)</label>'
     +'<input class="fi" id="sf-ackby" type="text" value="'+(isEdit?(t.ackBy||''):'')+'" placeholder="Receiver name"></div>'
     +'<div class="fg"><label class="fl">Comments (Optional)</label>'
-    +'<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px" placeholder="Any notes...">'+(isEdit?(t.comments||''):'')+'</textarea></div>'
+    +'<textarea class="fi" id="sf-comments" rows="3" style="resize:vertical;min-height:70px">'+(isEdit?(t.comments||''):'')+'</textarea></div>'
     +'<div class="fg"><label class="fl">Signature (Optional)</label>'
     +'<div class="sig-box"><canvas class="sig-canvas" id="sf-sig-canvas"></canvas>'
     +'<div class="sig-actions"><button type="button" class="sig-btn" onclick="clearSig()">Clear</button></div></div></div>'
@@ -683,14 +853,14 @@ function buildForm(t,isEdit){
     +'<p>Tap to capture or upload</p></div>'
     +'<div class="img-preview" id="sf-img-preview" style="display:none">'
     +'<img id="sf-preview-img" src="" alt=""><div class="img-remove" onclick="removePic()">✕</div></div></div>'
-    +'<button class="btn btn-primary" onclick="saveTask()">'+(isEdit?'💾 Save Changes':'✅ Submit Record')+'</button>';
+    +'<button class="btn btn-primary" onclick="saveRecord()">'+(isEdit?'💾 Save Changes':'✅ Submit Record')+'</button>';
 }
 
 function openEditForm(){
-  var t=selectedTask; if (!t) return;
+  var t=selectedTask; if(!t) return;
   uploadedImage=t.picture||null;
   currentExistingSignature=t.signature||null;
-  document.getElementById('ts-body').innerHTML=buildForm(t,true);
+  document.getElementById('ts-body').innerHTML=buildRecordForm(t,true);
   setTimeout(function(){
     initSigCanvas();
     if (t.signature) loadSigToCanvas(t.signature);
@@ -698,10 +868,11 @@ function openEditForm(){
       var pi=document.getElementById('sf-img-preview');
       var ub=document.getElementById('sf-upload-box');
       var im=document.getElementById('sf-preview-img');
-      if (pi&&ub&&im){im.src=t.picture;pi.style.display='block';ub.style.display='none';}
+      if(pi&&ub&&im){im.src=t.picture;pi.style.display='block';ub.style.display='none';}
     }
   },200);
 }
+
 function loadSigToCanvas(src){
   var img=new Image();
   img.onload=function(){
@@ -714,16 +885,15 @@ function loadSigToCanvas(src){
   img.src=src;
 }
 
-// ═══ SAVE TASK ════════════════════════════════════════
-function saveTask(){
-  var t=selectedTask; if (!t) return;
+// ═══ SAVE RECORD (POD / CRATES) ═══════════════════════
+function saveRecord(){
+  var t=selectedTask; if(!t) return;
   var subDate=(document.getElementById('sf-date')||{}).value||'';
   var number =(document.getElementById('sf-number')||{}).value||'';
   var ackBy  =(document.getElementById('sf-ackby')||{}).value||'';
   var comments=(document.getElementById('sf-comments')||{}).value||'';
   var crEl=document.getElementById('sf-crates');
-  var crVal=crEl?crEl.value:t.expectedCrates;
-
+  var crVal=crEl?crEl.value:(t.expectedCrates||'0');
   if (!subDate){showToast('Please enter a submission date.');return;}
 
   var isLate=new Date(subDate+'T00:00:00')>new Date(t.dueDate+'T23:59:59');
@@ -733,14 +903,10 @@ function saveTask(){
   else if (currentExistingSignature){ sig=currentExistingSignature; }
   var pic=uploadedImage||'';
 
-  // Determine liquidated: Yes if number matches prefix, or has sig/pic
   var liq='No';
-  if (t.type==='POD'   && (number.startsWith('100')||sig.length>10||pic.length>10)) liq='Yes';
-  if (t.type==='Crates'&& (number.startsWith('62') ||sig.length>10||pic.length>10)) liq='Yes';
+  if (t.type==='POD'   &&(number.startsWith('100')||sig.length>10||pic.length>10)) liq='Yes';
+  if (t.type==='Crates'&&(number.startsWith('62') ||sig.length>10||pic.length>10)) liq='Yes';
 
-  // New sheet structure: A=ID, B=EmpName, C=TripDate, D=SubDate,
-  // E=Truck, F=DocType, G=Number, H=Liquidated,
-  // I=AckBy, J=Signature, K=Picture, L=Comments
   var sheetType=t.type==='POD'?'Proof of Deliveries':'Crates';
   var row=[
     t.recordRowIndex?String(t.recordRowIndex):String(Date.now()),
@@ -763,7 +929,7 @@ function saveTask(){
 
 // ═══ DELETE ═══════════════════════════════════════════
 function confirmDeleteTask(){
-  if (!isAdmin||!selectedTask) return;
+  if (!isAdmin||!selectedTask||selectedTask.type==='ShipmentNum') return;
   document.getElementById('confirm-title').textContent='Delete Record?';
   document.getElementById('confirm-msg').textContent=
     'Delete the '+selectedTask.type+' record for '+selectedTask.helperName+' on '+selectedTask.date+'?';
@@ -773,7 +939,6 @@ function confirmDeleteTask(){
 function doDelete(){
   if (!selectedTask||!selectedTask.recordRowIndex){closeConfirm();showToast('No saved record.');return;}
   closeConfirm(); showSaving('Deleting...');
-  // Blank row but keep structure (12 cols)
   apiUpdate(TAB_RECORDS+'!A'+selectedTask.recordRowIndex+':L'+selectedTask.recordRowIndex,
     [['','','','','','','','No','','','','']])
     .then(function(){hideSaving();showToast('✅ Deleted.');closeSheet('task-sheet');loadAll();})
@@ -826,63 +991,68 @@ function generateReport(){
     to  =document.getElementById('rpt-to').value;
     if (!from||!to){showToast('Select date range.');return;}
   }
-
   document.getElementById('rpt-loading').style.display='flex';
   document.getElementById('rpt-content').style.display='none';
 
   var period=generatedTasks.filter(function(t){return t.date>=from&&t.date<=to;});
-  var total=period.length;
-  var done=period.filter(function(t){return t.submitted;}).length;
-  var pend=period.filter(function(t){return t.status==='pending'||t.status==='overdue';}).length;
+  var totalTasks=period.length;
+  var totalDone =period.filter(function(t){return t.submitted;}).length;
+  var totalPend =period.filter(function(t){return t.status==='pending'||t.status==='overdue'||t.status==='missing';}).length;
 
+  // Group by helper
   var map={};
   period.forEach(function(t){
-    if (!map[t.helperName]) map[t.helperName]={pod:[],crates:[]};
-    (t.type==='POD'?map[t.helperName].pod:map[t.helperName].crates).push(t);
+    if (!map[t.helperName]) map[t.helperName]={sn:[],pod:[],crates:[]};
+    if (t.type==='ShipmentNum') map[t.helperName].sn.push(t);
+    else if (t.type==='POD')    map[t.helperName].pod.push(t);
+    else                        map[t.helperName].crates.push(t);
   });
 
   var stats='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">'
-    +scard(total,'Total Tasks','var(--text)')
-    +scard(done,'Submitted','var(--green)')
-    +scard(pend,'Pending/OD',pend>0?'var(--red)':'var(--text3)')
+    +scard(totalTasks,'Total Tasks','var(--text)')
+    +scard(totalDone, 'Completed',  'var(--green)')
+    +scard(totalPend, 'Incomplete', totalPend>0?'var(--red)':'var(--text3)')
     +'</div>';
 
   var cards=Object.keys(map).sort().map(function(name){
     var d=map[name];
-    var allT=d.pod.concat(d.crates);
-    var od=allT.filter(function(t){return t.status==='overdue';}).length;
-    var late=allT.filter(function(t){return t.status==='late';}).length;
-    var pendN=allT.filter(function(t){return t.status==='pending';}).length;
-    var cleared=od===0&&pendN===0;
 
     function grp(arr){
-      return {
-        sub:arr.filter(function(t){return t.submitted;}).length,
-        tot:arr.length,
-        od: arr.filter(function(t){return t.status==='overdue';}).length,
-        late:arr.filter(function(t){return t.status==='late';}).length,
-        // List submitted doc numbers
-        nums:arr.filter(function(t){return t.submitted&&t.docNumber;}).map(function(t){return t.docNumber;})
-      };
+      var sub =arr.filter(function(t){return t.submitted;}).length;
+      var od  =arr.filter(function(t){return t.status==='overdue';}).length;
+      var late=arr.filter(function(t){return t.status==='late';}).length;
+      var miss=arr.filter(function(t){return t.status==='missing';}).length;
+      var pend=arr.filter(function(t){return t.status==='pending';}).length;
+      var nums=arr.filter(function(t){return t.submitted&&(t.docNumber||t.shipmentNum);})
+                  .map(function(t){return t.docNumber||t.shipmentNum;});
+      var missList=arr.filter(function(t){return !t.submitted;})
+                      .map(function(t){return t.truck+' ('+t.date+')'});
+      return {sub:sub,tot:arr.length,od:od,late:late,miss:miss,pend:pend,nums:nums,missList:missList};
     }
-    var pg=grp(d.pod),cg=grp(d.crates);
-    var pc=pg.od>0?'bad':pg.late>0?'warn':'ok';
-    var cc=cg.od>0?'bad':cg.late>0?'warn':'ok';
 
-    var podNums=pg.nums.length?'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+pg.nums.join(', ')+'</div>':'';
-    var crNums =cg.nums.length?'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+cg.nums.join(', ')+'</div>':'';
+    var sg=grp(d.sn), pg=grp(d.pod), cg=grp(d.crates);
+    var allT=d.sn.concat(d.pod).concat(d.crates);
+    var anyOd=allT.some(function(t){return t.status==='overdue';});
+    var anyMiss=allT.some(function(t){return t.status==='missing'||t.status==='pending';});
+    var cleared=!anyOd&&!anyMiss;
+
+    var sc_=function(g,label){
+      var cls=g.od>0?'bad':g.miss>0||g.pend>0?'purple':g.late>0?'warn':'ok';
+      var detail=g.od>0?' ('+g.od+' overdue)':g.miss>0?' ('+g.miss+' missing)':g.late>0?' ('+g.late+' late)':' ✓';
+      var nums=g.nums.length?'<div style="font-size:10px;color:var(--text3);margin:2px 0 4px">'+g.nums.join(', ')+'</div>':'';
+      var mlist=g.missList.length&&(g.od>0||g.miss>0||g.pend>0)
+        ?'<div style="font-size:10px;color:var(--red);margin-bottom:4px">Missing: '+g.missList.join(', ')+'</div>':'';
+      return '<div class="rpt-row"><span>'+label+'</span>'
+        +'<span class="rpt-row-val '+cls+'">'+g.sub+'/'+g.tot+detail+'</span></div>'
+        +nums+mlist;
+    };
 
     return '<div class="rpt-emp-card">'
       +'<div class="rpt-emp-name">'+name
       +'<span class="rpt-clearance '+(cleared?'cleared':'not-cleared')+'">'+(cleared?'✓ CLEARED':'✗ NOT CLEARED')+'</span></div>'
-      +'<div class="rpt-row"><span>📄 POD</span><span class="rpt-row-val '+pc+'">'
-      +pg.sub+'/'+pg.tot+(pg.od>0?' ('+pg.od+' overdue)':pg.late>0?' ('+pg.late+' late)':' ✓')+'</span></div>'
-      +podNums
-      +'<div class="rpt-row"><span>📦 Crates</span><span class="rpt-row-val '+cc+'">'
-      +cg.sub+'/'+cg.tot+(cg.od>0?' ('+cg.od+' overdue)':cg.late>0?' ('+cg.late+' late)':' ✓')+'</span></div>'
-      +crNums
-      +(late>0?'<div class="rpt-row"><span>⚠ Late Submissions</span><span class="rpt-row-val warn">'+late+'</span></div>':'')
-      +(pendN>0?'<div class="rpt-row"><span>⏳ Still Pending</span><span class="rpt-row-val bad">'+pendN+'</span></div>':'')
+      +sc_(sg,'🔢 Shipment #')
+      +sc_(pg,'📄 POD')
+      +(d.crates.length?sc_(cg,'📦 Crates'):'')
       +'</div>';
   }).join('');
 
@@ -900,25 +1070,68 @@ function scard(v,l,c){
 
 // ═══ NOTIFICATIONS ════════════════════════════════════
 function updateNotifBadge(){
-  var n=generatedTasks.filter(function(t){
+  var urgent=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
-        &&(t.status==='overdue'||t.status==='pending');
-  }).length;
+        &&(t.status==='overdue'||t.status==='pending'||t.status==='missing');
+  });
+  var n=urgent.length;
   var b=document.getElementById('notif-badge');
   if (n>0){b.textContent=n;b.style.display='flex';}else{b.style.display='none';}
+
+  if (!_reminderShown&&n>0){
+    _reminderShown=true;
+    setTimeout(function(){showReminderPopup(urgent);},800);
+  }
 }
+
+function showReminderPopup(urgent){
+  var overdue=urgent.filter(function(t){return t.status==='overdue';});
+  var missing=urgent.filter(function(t){return t.status==='missing';});
+  var pending=urgent.filter(function(t){return t.status==='pending';});
+
+  var html='<div style="text-align:center;margin-bottom:16px">'
+    +'<div style="font-size:36px;margin-bottom:8px">'+(overdue.length?'🔴':missing.length?'🟣':'🟡')+'</div>'
+    +'<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">You have pending tasks!</div>'
+    +'<div style="font-size:12px;color:var(--text2)">Please complete your records.</div></div>';
+
+  if (overdue.length){
+    html+='<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:8px">⚠ Overdue</div>';
+    overdue.forEach(function(t){
+      html+='<div class="notif-item" style="border-left:3px solid var(--red)">'
+        +'<div class="notif-icon">'+taskIcon(t.type)+'</div>'
+        +'<div><div class="notif-text">'+taskLabel(t.type)+' — '+t.truck+'</div>'
+        +'<div class="notif-meta">'+t.date+' · Due: '+t.dueDate+'</div></div></div>';
+    });
+  }
+  if (missing.length){
+    html+='<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-top:12px;margin-bottom:8px">📋 Missing Shipment #</div>';
+    missing.forEach(function(t){
+      html+='<div class="notif-item" style="border-left:3px solid var(--purple)">'
+        +'<div class="notif-icon">🔢</div>'
+        +'<div><div class="notif-text">Shipment # — '+t.truck+'</div>'
+        +'<div class="notif-meta">'+t.date+'</div></div></div>';
+    });
+  }
+  if (pending.length){
+    html+='<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);margin-top:12px;margin-bottom:8px">⏳ Pending</div>';
+    pending.forEach(function(t){
+      html+='<div class="notif-item" style="border-left:3px solid var(--orange)">'
+        +'<div class="notif-icon">'+taskIcon(t.type)+'</div>'
+        +'<div><div class="notif-text">'+taskLabel(t.type)+' — '+t.truck+'</div>'
+        +'<div class="notif-meta">'+t.date+' · Due: '+t.dueDate+'</div></div></div>';
+    });
+  }
+  document.getElementById('notif-list').innerHTML=html;
+  document.getElementById('notif-sheet').classList.add('open');
+}
+
 function openNotifSheet(){
   var urgent=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
-        &&(t.status==='overdue'||t.status==='pending');
+        &&(t.status==='overdue'||t.status==='pending'||t.status==='missing');
   });
-  if (!urgent.length){showToast('✓ No pending tasks!');return;}
-  document.getElementById('notif-list').innerHTML=urgent.map(function(t){
-    return '<div class="notif-item"><div class="notif-icon">'+(t.status==='overdue'?'🔴':'🟡')+'</div>'
-      +'<div><div class="notif-text">'+(t.type==='POD'?'📄 POD':'📦 Crates')+' — '+t.truck+'</div>'
-      +'<div class="notif-meta">'+t.date+' · Due: '+t.dueDate+'</div></div></div>';
-  }).join('');
-  document.getElementById('notif-sheet').classList.add('open');
+  if (!urgent.length){showToast('✓ All tasks completed!');return;}
+  showReminderPopup(urgent);
 }
 
 // ═══ SIGNATURE ════════════════════════════════════════
@@ -947,7 +1160,7 @@ function setupSigEvents(){
   sigCanvas.addEventListener('touchend',end,{passive:false});
 }
 function clearSig(){
-  if (!sigCanvas) return;
+  if(!sigCanvas) return;
   sigCtx.fillStyle='#fff';sigCtx.fillRect(0,0,sigCanvas.width,sigCanvas.height);
   sigDrawn=false;currentExistingSignature=null;
 }
