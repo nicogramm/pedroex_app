@@ -691,7 +691,99 @@ function renderTasks(){
 
   renderList(mine,'tasks-list',taskFilter);
 }
-function renderAllTasks(){ renderList(generatedTasks,'all-list',allFilter); }
+// ═══ ADMIN: GROUPED PER HELPER ════════════════════════
+function renderAllTasks(){
+  var el=document.getElementById('all-list');
+  var tasks=generatedTasks;
+
+  // Apply filter
+  var filtered=tasks;
+  if (allFilter==='pending')   filtered=tasks.filter(function(t){return t.status==='pending';});
+  if (allFilter==='missing')   filtered=tasks.filter(function(t){return t.status==='missing';});
+  if (allFilter==='overdue')   filtered=tasks.filter(function(t){return t.status==='overdue';});
+  if (allFilter==='submitted') filtered=tasks.filter(function(t){return t.status==='submitted'||t.status==='late';});
+  if (allFilter==='shipment')  filtered=tasks.filter(function(t){return t.type==='ShipmentNum';});
+  if (allFilter==='pod')       filtered=tasks.filter(function(t){return t.type==='POD';});
+  if (allFilter==='crates')    filtered=tasks.filter(function(t){return t.type==='Crates';});
+
+  if (!filtered.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
+
+  // Group by helper
+  var groups={};
+  filtered.forEach(function(t){
+    if (!groups[t.helperName]) groups[t.helperName]=[];
+    groups[t.helperName].push(t);
+  });
+
+  // Sort helpers: those with overdue/missing first
+  var helperNames=Object.keys(groups).sort(function(a,b){
+    var urgA=groups[a].some(function(t){return t.status==='overdue'||t.status==='missing';})?0:1;
+    var urgB=groups[b].some(function(t){return t.status==='overdue'||t.status==='missing';})?0:1;
+    return urgA-urgB || a.localeCompare(b);
+  });
+
+  el.innerHTML=helperNames.map(function(name){
+    var htasks=groups[name];
+    var od   =htasks.filter(function(t){return t.status==='overdue';}).length;
+    var miss =htasks.filter(function(t){return t.status==='missing';}).length;
+    var pend =htasks.filter(function(t){return t.status==='pending';}).length;
+    var done =htasks.filter(function(t){return t.status==='submitted'||t.status==='late';}).length;
+    var total=htasks.length;
+
+    // Header color: red if overdue, purple if missing, orange if pending, green if all done
+    var headerColor=od>0?'var(--red)':miss>0?'var(--purple)':pend>0?'var(--orange)':'var(--green)';
+    var statusSummary='';
+    if (od)   statusSummary+='<span style="color:var(--red);font-weight:700">'+od+' overdue</span> ';
+    if (miss) statusSummary+='<span style="color:var(--purple);font-weight:700">'+miss+' missing</span> ';
+    if (pend) statusSummary+='<span style="color:var(--orange);font-weight:700">'+pend+' pending</span> ';
+    if (done) statusSummary+='<span style="color:var(--green);font-weight:700">'+done+' done</span>';
+
+    var safeId='grp_'+name.replace(/\s+/g,'_');
+
+    // Task rows (hidden by default, expanded if has urgent)
+    var hasUrgent=od>0||miss>0;
+    var tasksHtml=htasks.map(function(t){
+      var bl=t.status==='submitted'?'✓ Done':t.status==='late'?'⚠ Late':t.status==='overdue'?'⚠ Overdue':t.status==='missing'?'📋 Missing':'⏳ Pending';
+      var bc='badge-'+t.status;
+      var dc=dueLabelClass(t);
+      var cr=t.type==='Crates'?'<span style="font-size:10px;color:var(--text2)"> · 📦 '+t.expectedCrates+' crates</span>':'';
+      return '<div class="task-card status-'+t.status+'" style="margin-bottom:8px;margin-left:0" onclick="openTask(\''+t.id+'\')">'
+        +'<div class="task-header">'
+        +'<div class="task-title">'+taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck+'</div>'
+        +'<div class="task-badge '+bc+'">'+bl+'</div></div>'
+        +'<div class="task-meta">'
+        +'<div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+cr+'</div>'
+        +(t.docNumber?'<div class="task-meta-row">🔢 '+t.docNumber+'</div>':'')
+        +'</div>'
+        +'<div class="task-due '+dc+'">'+dueLabel(t)+'</div></div>';
+    }).join('');
+
+    return '<div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);margin-bottom:12px;overflow:hidden">'
+      // Header — always visible, click to toggle
+      +'<div onclick="toggleGroup(\''+safeId+'\')" style="padding:14px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-left:4px solid '+headerColor+'">'
+      +'<div>'
+      +'<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">👤 '+name+'</div>'
+      +'<div style="font-size:11px;color:var(--text2)">'+statusSummary+'<span style="color:var(--text3)"> · '+total+' task'+(total>1?'s':'')+'</span></div>'
+      +'</div>'
+      +'<div id="'+safeId+'_icon" style="font-size:18px;color:var(--text3);transition:transform .2s">'+(hasUrgent?'▲':'▼')+'</div>'
+      +'</div>'
+      // Expandable body
+      +'<div id="'+safeId+'" style="padding:'+(hasUrgent?'12px 12px 4px':'0')+' 12px;display:'+(hasUrgent?'block':'none')+'">'
+      +tasksHtml
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function toggleGroup(id){
+  var body=document.getElementById(id);
+  var icon=document.getElementById(id+'_icon');
+  if (!body||!icon) return;
+  var isOpen=body.style.display!=='none';
+  body.style.display=isOpen?'none':'block';
+  body.style.padding=isOpen?'0 12px':'12px 12px 4px';
+  icon.textContent=isOpen?'▼':'▲';
+}
 
 function taskIcon(type){
   if (type==='ShipmentNum') return '🔢';
