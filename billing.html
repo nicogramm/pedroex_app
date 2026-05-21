@@ -43,7 +43,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,.3)}
 .tb-page{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.3px}
 .tb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs)}
 
-/* TABS — scrollable */
+/* TABS */
 .tab-bar{display:flex;gap:6px;padding:12px 14px 0;flex-shrink:0;overflow-x:auto}
 .tab-bar::-webkit-scrollbar{display:none}
 .tab-btn{flex-shrink:0;padding:9px 16px;border:none;background:var(--bg);border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;box-shadow:var(--neu-sm);white-space:nowrap;transition:all .2s}
@@ -91,15 +91,17 @@ body.dark .card-hd{border-bottom-color:rgba(255,255,255,.05)}
 .bdg.green{color:var(--green)}
 .bdg.orange{color:var(--orange)}
 
-/* TABLE */
-.tbl-wrap{overflow-x:auto}
-.tbl{width:100%;border-collapse:collapse;font-size:11px}
-.tbl th{padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.06)}
-.tbl td{padding:8px 12px;color:var(--text2);white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.03)}
+/* TABLE — FIXED LAYOUT */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:11px;table-layout:auto;min-width:600px}
+.tbl th{padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.06);min-width:80px}
+.tbl td{padding:8px 12px;color:var(--text2);border-bottom:1px solid rgba(0,0,0,.03);min-width:80px;word-wrap:break-word}
 .tbl tr:last-child td{border-bottom:none}
 .tbl td b{color:var(--text)}
+.tbl td.nowrap{white-space:nowrap}
+.tbl td.ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
 
-/* SAVE BTN — FIX: use display:none by default, show via JS style.display */
+/* SAVE BTN */
 .save-btn{width:100%;padding:15px;border:none;border-radius:16px;background:var(--red);color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:4px 4px 10px rgba(179,37,51,.3);transition:all .15s;display:none;margin-bottom:14px}
 .save-btn:active{transform:scale(.98)}
 .save-btn:disabled{opacity:.6;cursor:not-allowed}
@@ -133,6 +135,18 @@ body.dark .soa-item{border-bottom-color:rgba(255,255,255,.03)}
 .soa-chips{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
 .soa-chip{font-size:9px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);box-shadow:var(--neu-xs);color:var(--text2)}
 
+/* LIQUIDATION STATUS */
+.liq-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.liq-status.full{background:rgba(22,163,74,.12);color:var(--green)}
+.liq-status.partial{background:rgba(245,158,11,.12);color:var(--orange)}
+.liq-status.pending{background:rgba(179,37,51,.12);color:var(--red)}
+.liq-prog{height:6px;border-radius:3px;background:var(--bg);box-shadow:var(--neu-in);overflow:hidden;margin-top:6px}
+.liq-prog-bar{height:100%;border-radius:3px;transition:width .3s}
+.liq-prog-bar.full{background:var(--green)}
+.liq-prog-bar.partial{background:var(--orange)}
+.liq-btn{padding:6px 14px;border:none;border-radius:8px;background:var(--green);color:#fff;font-size:11px;font-weight:600;cursor:pointer;margin-top:6px}
+.liq-btn:disabled{background:var(--text3);cursor:not-allowed}
+
 /* FILTERS */
 .frow{display:flex;gap:7px;margin-bottom:13px;overflow-x:auto;padding-bottom:2px}
 .frow::-webkit-scrollbar{display:none}
@@ -143,7 +157,7 @@ body.dark .soa-item{border-bottom-color:rgba(255,255,255,.03)}
 .fsrch::placeholder{color:var(--text3)}
 
 /* STATS */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:9px;margin-bottom:14px}
 .sc{background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:12px 8px;text-align:center}
 .sv{font-size:20px;font-weight:700;letter-spacing:-1px;line-height:1}
 .sv.red{color:var(--red)}.sv.green{color:var(--green)}.sv.orange{color:var(--orange)}
@@ -214,7 +228,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
 <body>
 <div class="shell">
 
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="tb-left">
       <button class="tb-back" onclick="history.back()">
@@ -228,17 +241,16 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
     <img class="tb-avatar" id="user-avatar" src="" alt="">
   </div>
 
-  <!-- TABS -->
   <div class="tab-bar" id="tab-bar" style="display:none">
     <button class="tab-btn active" id="tab-upload" onclick="switchTab('upload')">Upload</button>
     <button class="tab-btn" id="tab-billed" onclick="switchTab('billed')">Billed</button>
     <button class="tab-btn" id="tab-unbilled" onclick="switchTab('unbilled')">Unbilled</button>
+    <button class="tab-btn" id="tab-liquidation" onclick="switchTab('liquidation')">Liquidation</button>
     <button class="tab-btn" id="tab-report" onclick="switchTab('report')">Full Report</button>
   </div>
 
   <div class="page-wrap" id="page-wrap">
 
-    <!-- ACCESS DENIED -->
     <div id="pane-denied" style="display:none">
       <div class="denied">
         <div class="denied-icon">
@@ -249,7 +261,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       </div>
     </div>
 
-    <!-- ═══ UPLOAD TAB ═══ -->
+    <!-- UPLOAD TAB -->
     <div id="pane-upload" style="display:none">
       <div class="sec-ey">Billing Statement</div>
       <div class="sec-ti">Upload Excel File</div>
@@ -284,10 +296,8 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         </div>
       </div>
 
-      <!-- FIX: Save button — no CSS class dependency, controlled purely via style.display -->
       <button class="save-btn" id="save-btn" onclick="saveToSheet()">💾 Save &amp; Cross-Check Trips</button>
 
-      <!-- CROSS-CHECK -->
       <div class="card hidden" id="cc-card">
         <div class="card-hd">
           <span class="card-hd-t">🔍 Cross-Check Results</span>
@@ -314,7 +324,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         </div>
       </div>
 
-      <!-- SOA SUMMARY -->
       <div class="card hidden" id="soa-card">
         <div class="card-hd">
           <span class="card-hd-t">📋 SOA Summary — This Upload</span>
@@ -324,7 +333,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       </div>
     </div>
 
-    <!-- ═══ BILLED TAB ═══ -->
+    <!-- BILLED TAB -->
     <div id="pane-billed" style="display:none">
       <div class="sec-ey">Master List</div>
       <div class="sec-ti">Billed Shipments</div>
@@ -344,7 +353,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <div class="lst" id="billed-list"></div>
     </div>
 
-    <!-- ═══ UNBILLED TAB ═══ -->
+    <!-- UNBILLED TAB -->
     <div id="pane-unbilled" style="display:none">
       <div class="sec-ey">Trips — Not Yet Billed</div>
       <div class="sec-ti">Unbilled Shipments</div>
@@ -362,15 +371,31 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <div class="lst" id="unbilled-list"></div>
     </div>
 
-    <!-- ═══ FULL REPORT TAB ═══ -->
+    <!-- LIQUIDATION TAB -->
+    <div id="pane-liquidation" style="display:none">
+      <div class="sec-ey">Payment Tracking</div>
+      <div class="sec-ti">Liquidation Status</div>
+      <div class="stats" id="liq-stats"></div>
+      <div class="frow">
+        <input class="fsrch" id="ls" type="text" placeholder="🔍 Search SOA..." oninput="renderLiquidation()">
+        <select class="fsel" id="lm" onchange="renderLiquidation()"><option value="">All Months</option></select>
+        <select class="fsel" id="lst" onchange="renderLiquidation()">
+          <option value="">All Status</option>
+          <option value="full">Fully Liquidated</option>
+          <option value="partial">Partially Liquidated</option>
+          <option value="pending">Not Yet Liquidated</option>
+        </select>
+      </div>
+      <div class="lst" id="liq-list"></div>
+    </div>
+
+    <!-- FULL REPORT TAB -->
     <div id="pane-report" style="display:none">
       <div class="sec-ey">Billing Analytics</div>
       <div class="sec-ti">Full Report</div>
 
-      <!-- OVERALL STATS -->
       <div class="stats" id="rpt-stats"></div>
 
-      <!-- SECTION 1: BILLED -->
       <div class="report-section-title">✅ Billed Shipments</div>
       <div class="frow">
         <input class="fsrch" id="rs" type="text" placeholder="🔍 Search..." oninput="renderReport()">
@@ -379,7 +404,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         <select class="fsel" id="rt" onchange="renderReport()"><option value="">All Trucks</option></select>
       </div>
 
-      <!-- Per SOA Summary -->
       <div class="card" id="rpt-soa-card" style="margin-bottom:14px">
         <div class="card-hd">
           <span class="card-hd-t">Per SOA Breakdown</span>
@@ -388,7 +412,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         <div id="rpt-soa-list"></div>
       </div>
 
-      <!-- Per Month Billed -->
       <div class="card" id="rpt-month-card" style="margin-bottom:14px">
         <div class="card-hd">
           <span class="card-hd-t">Per Month — Billed</span>
@@ -396,7 +419,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         <div style="padding:0 18px 14px" id="rpt-month-list"></div>
       </div>
 
-      <!-- Per Truck Billed -->
       <div class="card" id="rpt-truck-card" style="margin-bottom:14px">
         <div class="card-hd">
           <span class="card-hd-t">Per Truck — Billed</span>
@@ -406,10 +428,8 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
 
       <div class="divider"></div>
 
-      <!-- SECTION 2: UNBILLED -->
       <div class="report-section-title">⚠️ Unbilled Shipments (from Trips)</div>
 
-      <!-- Per Month Unbilled -->
       <div class="card" id="rpt-umonth-card" style="margin-bottom:14px">
         <div class="card-hd">
           <span class="card-hd-t">Per Month — Unbilled</span>
@@ -418,7 +438,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         <div style="padding:0 18px 14px" id="rpt-umonth-list"></div>
       </div>
 
-      <!-- Per Truck Unbilled -->
       <div class="card" id="rpt-utruck-card" style="margin-bottom:14px">
         <div class="card-hd">
           <span class="card-hd-t">Per Truck — Unbilled</span>
@@ -428,7 +447,6 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
 
       <div class="divider"></div>
 
-      <!-- SECTION 3: CROSS-CHECK SUMMARY -->
       <div class="report-section-title">🔍 Cross-Check Summary (Trips Status)</div>
       <div class="card" id="rpt-cc-card" style="margin-bottom:14px">
         <div class="card-hd">
@@ -475,11 +493,10 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         </div>
       </div>
 
-    </div><!-- /pane-report -->
+    </div>
 
-  </div><!-- /page-wrap -->
+  </div>
 
-  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <button class="bnav" onclick="location.href='index.html'">
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>Home
@@ -521,7 +538,6 @@ let unbilled = [];
 let ccR     = {exact:[],fuzzy:[],noMatch:[],invalid:[]};
 let bSt = 'all', uSt = 'all';
 
-// ═══ INIT ═══
 (function(){
   document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme')==='dark');
   const av=document.getElementById('user-avatar');
@@ -536,18 +552,18 @@ let bSt = 'all', uSt = 'all';
   }
 })();
 
-// ═══ TABS ═══
 function switchTab(t){
-  ['upload','billed','unbilled','report'].forEach(x=>{
+  ['upload','billed','unbilled','liquidation','report'].forEach(x=>{
     document.getElementById('pane-'+x).style.display=x===t?'':'none';
-    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+    const tab=document.getElementById('tab-'+x);
+    if(tab) tab.classList.toggle('active',x===t);
   });
-  if(t==='billed')   loadBilled();
-  if(t==='unbilled') loadUnbilled();
-  if(t==='report')   loadReport();
+  if(t==='billed')      loadBilled();
+  if(t==='unbilled')    loadUnbilled();
+  if(t==='liquidation') loadLiquidation();
+  if(t==='report')      loadReport();
 }
 
-// ═══ EXCEL DATE ═══
 function xDate(s){
   if(!s||isNaN(s)) return String(s||'');
   if(s<1000) return String(s);
@@ -570,7 +586,6 @@ function monthLabel(ym){
   return new Date(y,m-1,1).toLocaleDateString('en-PH',{month:'long',year:'numeric'});
 }
 
-// ═══ DROP ZONE ═══
 const dz=document.getElementById('dz');
 const fi=document.getElementById('fi');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over')});
@@ -594,11 +609,9 @@ async function processFiles(files){
   document.getElementById('pc').textContent=parsed.length+' shipment(s) found';
   if(parsed.length){
     renderPreview(parsed);
-    // ✅ FIX: show preview card
     const pc=document.getElementById('preview-card');
     pc.style.display='';
     pc.classList.remove('hidden');
-    // ✅ FIX: show save button via style.display directly — no .show class needed
     const sb=document.getElementById('save-btn');
     sb.style.display='block';
   } else {
@@ -636,7 +649,6 @@ function parseExcel(file){
         const rows=[];
         for(let i=hR+1;i<raw.length;i++){
           const row=raw[i];
-          // ✅ FIX: safe shipment number parsing — prevent float precision loss
           const rawShip=row[cS];
           const ship=String(
             typeof rawShip==='number' ? Math.round(rawShip) : (rawShip||'')
@@ -663,12 +675,11 @@ function renderPreview(rows){
   const invalid=rows.filter(r=>r.invalid).length;
   document.getElementById('preview-bdg').textContent=rows.length+' rows'+(invalid?' · ⚠️ '+invalid+' invalid':'');
   document.getElementById('preview-body').innerHTML=rows.map(r=>{
-    if(r.invalid) return `<tr style="background:rgba(179,37,51,0.07)"><td>${r.date}</td><td style="color:var(--red)"><b>${r.shipment}</b> ⚠️</td><td>${r.soa}</td><td>${r.truck}</td><td style="color:var(--red);font-size:10px">${r.invalidReason}</td></tr>`;
-    return `<tr><td>${r.date}</td><td><b>${r.shipment}</b></td><td>${r.soa}</td><td>${r.truck}</td><td>${Number(r.rate||0).toLocaleString()}</td></tr>`;
+    if(r.invalid) return `<tr style="background:rgba(179,37,51,0.07)"><td class="nowrap">${r.date}</td><td style="color:var(--red)"><b>${r.shipment}</b> ⚠️</td><td class="ellipsis">${r.soa}</td><td class="nowrap">${r.truck}</td><td style="color:var(--red);font-size:10px">${r.invalidReason}</td></tr>`;
+    return `<tr><td class="nowrap">${r.date}</td><td><b>${r.shipment}</b></td><td class="ellipsis">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">${Number(r.rate||0).toLocaleString()}</td></tr>`;
   }).join('');
 }
 
-// ═══ SAVE ═══
 async function saveToSheet(){
   if(!parsed.length||!token) return;
   showLoad(true,'Saving to Google Sheet...');
@@ -677,10 +688,9 @@ async function saveToSheet(){
   try{
     const ex=await apiGet(SHEET_BILLING+'!A2:A');
     let nid=(ex.values||[]).filter(r=>r[0]).length+1;
-    await apiAppend(SHEET_BILLING+'!A:G',parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes']));
+    await apiAppend(SHEET_BILLING+'!A:J',parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes','No','','']));
     showLoad(false);
     showToast(parsed.length+' rows saved!','ok');
-    // ✅ FIX: hide using style.display directly
     const pc=document.getElementById('preview-card');
     pc.style.display='none';
     pc.classList.add('hidden');
@@ -696,7 +706,6 @@ async function saveToSheet(){
   }
 }
 
-// ═══ CROSS-CHECK ═══
 async function runCC(rows){
   showLoad(true,'Cross-checking with Trips...');
   try{
@@ -869,15 +878,17 @@ function renderSOASummary(rows){
   sc.style.display='';sc.classList.remove('hidden');
 }
 
-// ═══ BILLED TAB ═══
 async function loadBilled(){
   if(!token) return;
   showLoad(true,'Loading billed records...');
   try{
-    const res=await apiGet(SHEET_BILLING+'!A2:G');
+    const res=await apiGet(SHEET_BILLING+'!A2:J');
     master=(res.values||[]).filter(r=>r[0]).map(r=>({
       id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
-      valid:(r[6]||'Yes').trim()
+      valid:(r[6]||'Yes').trim(),
+      liquidated:(r[7]||'No').trim(),
+      liquidationDate:r[8]||'',
+      liquidatedAmount:r[9]||''
     }));
     showLoad(false);
     buildBFilters();renderBStats();renderBilled();
@@ -940,12 +951,11 @@ function renderBilled(){
   else if(bSt==='truck') list.innerHTML=grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','green')).join('');
 }
 
-// ═══ UNBILLED TAB ═══
 async function loadUnbilled(){
   if(!token) return;
   showLoad(true,'Loading unbilled trips...');
   try{
-    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:G'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:J'),apiGet(SHEET_TRIPS+'!A2:I')]);
     const billedSet=new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
     trips=(tRes.values||[]).filter(r=>r[0]).map((r,i)=>({
       rowIndex:i+2,deliveryDate:r[1]||'',truck:r[2]||'',
@@ -996,15 +1006,118 @@ function renderUnbilled(){
   else if(uSt==='truck') list.innerHTML=grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','orange')).join('');
 }
 
-// ═══ FULL REPORT TAB ═══
+async function loadLiquidation(){
+  if(!token) return;
+  showLoad(true,'Loading liquidation data...');
+  try{
+    const res=await apiGet(SHEET_BILLING+'!A2:J');
+    master=(res.values||[]).filter(r=>r[0]).map(r=>({
+      rowIndex:Number(r[0])+1,
+      id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
+      valid:(r[6]||'Yes').trim(),
+      liquidated:(r[7]||'No').trim(),
+      liquidationDate:r[8]||'',
+      liquidatedAmount:r[9]||''
+    }));
+    showLoad(false);
+    buildLFilters();renderLStats();renderLiquidation();
+  }catch(e){showLoad(false);showToast('Failed to load');}
+}
+
+function buildLFilters(){
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('lm').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+}
+
+function renderLStats(){
+  const fullLiq=master.filter(r=>r.liquidated==='Yes').length;
+  const partialLiq=master.filter(r=>r.liquidated==='Partial').length;
+  const pending=master.filter(r=>r.liquidated==='No').length;
+  document.getElementById('liq-stats').innerHTML=`
+    <div class="sc"><div class="sv green">${fullLiq}</div><div class="sl">Full Liq</div></div>
+    <div class="sc"><div class="sv orange">${partialLiq}</div><div class="sl">Partial</div></div>
+    <div class="sc"><div class="sv red">${pending}</div><div class="sl">Pending</div></div>`;
+}
+
+function renderLiquidation(){
+  const srch=document.getElementById('ls').value.toLowerCase();
+  const mo=document.getElementById('lm').value;
+  const st=document.getElementById('lst').value;
+  
+  const soaMap={};
+  master.forEach(r=>{
+    if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,total:0,liquidated:0,items:[],months:new Set()};
+    soaMap[r.soa].total+=Number(r.rate||0);
+    soaMap[r.soa].liquidated+=Number(r.liquidatedAmount||0);
+    soaMap[r.soa].items.push(r);
+    const m=dateMonth(r.date);if(m) soaMap[r.soa].months.add(monthLabel(m));
+  });
+
+  let rows=Object.values(soaMap).filter(s=>{
+    if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
+    if(mo&&![...s.months].some(m=>dateMonth(m)===mo)) return false;
+    if(st==='full'&&s.liquidated<s.total) return false;
+    if(st==='partial'&&(s.liquidated===0||s.liquidated>=s.total)) return false;
+    if(st==='pending'&&s.liquidated>0) return false;
+    return true;
+  });
+
+  const list=document.getElementById('liq-list');
+  if(!rows.length){list.innerHTML=emptyH('No SOA found','Try adjusting your filters.');return;}
+
+  list.innerHTML=rows.map(s=>{
+    const pct=s.total>0?(s.liquidated/s.total*100):0;
+    const status=pct>=100?'full':(pct>0?'partial':'pending');
+    const statusLabel=status==='full'?'Fully Liquidated':(status==='partial'?'Partially Liquidated':'Not Yet Liquidated');
+    const balance=s.total-s.liquidated;
+    return `<div class="ic">
+      <div class="ic-top">
+        <div>
+          <div class="ic-ship">${s.soa}</div>
+          <span class="liq-status ${status}">${statusLabel}</span>
+        </div>
+        <div class="ic-rate ${status==='full'?'g':(status==='partial'?'o':'')}" style="${status==='pending'?'color:var(--red)':''}">₱${s.total.toLocaleString()}</div>
+      </div>
+      <div class="ic-meta">
+        <div class="ic-chip">Liquidated: ₱${s.liquidated.toLocaleString()}</div>
+        <div class="ic-chip">Balance: ₱${balance.toLocaleString()}</div>
+        <div class="ic-chip">${s.items.length} shipment(s)</div>
+      </div>
+      <div class="liq-prog"><div class="liq-prog-bar ${status}" style="width:${pct}%"></div></div>
+      ${status!=='full'?`<button class="liq-btn" onclick="markLiquidated('${s.soa}',${s.total})">💰 Mark as Liquidated</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function markLiquidated(soa,totalAmt){
+  if(!confirm(`Mark SOA ${soa} (₱${totalAmt.toLocaleString()}) as fully liquidated?`)) return;
+  showLoad(true,'Updating liquidation status...');
+  try{
+    const items=master.filter(r=>r.soa===soa);
+    const today=new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});
+    for(const item of items){
+      await apiPut(SHEET_BILLING+'!H'+item.rowIndex+':J'+item.rowIndex,[['Yes',today,item.rate]]);
+      item.liquidated='Yes';
+      item.liquidationDate=today;
+      item.liquidatedAmount=item.rate;
+    }
+    showLoad(false);
+    showToast('SOA marked as liquidated!','ok');
+    renderLStats();renderLiquidation();
+  }catch(e){console.error(e);showLoad(false);showToast('Failed to update');}
+}
+
 async function loadReport(){
   if(!token) return;
   showLoad(true,'Loading full report...');
   try{
-    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:G'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:J'),apiGet(SHEET_TRIPS+'!A2:I')]);
     master=(bRes.values||[]).filter(r=>r[0]).map(r=>({
       id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
-      valid:(r[6]||'Yes').trim()
+      valid:(r[6]||'Yes').trim(),
+      liquidated:(r[7]||'No').trim(),
+      liquidationDate:r[8]||'',
+      liquidatedAmount:r[9]||''
     }));
     const billedSet=new Set(master.map(r=>r.shipment.trim()));
     trips=(tRes.values||[]).filter(r=>r[0]).map((r,i)=>({
@@ -1076,8 +1189,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:18%"><col style="width:24%"><col style="width:20%"><col style="width:16%"><col style="width:14%"><col style="width:8%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th><th></th></tr></thead>
-      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td style="white-space:nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.soa}">${r.soa}</td><td style="white-space:nowrap">${r.truck}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th><th></th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ellipsis" title="${r.soa}">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   const bByTruck=grpBy(bRows,'truck');
@@ -1088,8 +1201,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:20%"><col style="width:30%"><col style="width:36%"><col style="width:10%"><col style="width:4%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th><th></th></tr></thead>
-      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td style="white-space:nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.soa}">${r.soa}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th><th></th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ellipsis" title="${r.soa}">${r.soa}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   const uByMonth=grpByMonth(unbilled.map(r=>({...r,date:r.deliveryDate})));
@@ -1098,8 +1211,8 @@ function renderReport(){
     <div class="grp" style="margin-top:14px">
       <div class="grp-hd">${label}</div>
       <div class="grp-tally"><div class="tally o">${items.length} unbilled</div></div>
-      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:18%"><col style="width:24%"><col style="width:16%"><col style="width:28%"><col style="width:14%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>Truck</th><th>Route</th><th>Rate</th></tr></thead>
-      <tbody>${items.map(r=>`<tr><td style="white-space:nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td style="white-space:nowrap">${r.truck}</td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.route||''}">${r.route||'—'}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>Truck</th><th>Route</th><th>Rate</th></tr></thead>
+      <tbody>${items.map(r=>`<tr><td class="nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td class="nowrap">${r.truck}</td><td class="ellipsis" title="${r.route||''}">${r.route||'—'}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
   const uByTruck=grpBy(unbilled,'truck');
@@ -1107,8 +1220,8 @@ function renderReport(){
     <div class="grp" style="margin-top:14px">
       <div class="grp-hd">🚛 ${key}</div>
       <div class="grp-tally"><div class="tally o">${items.length} unbilled</div></div>
-      <div class="tbl-wrap"><table class="tbl" style="table-layout:fixed;width:100%"><colgroup><col style="width:22%"><col style="width:28%"><col style="width:35%"><col style="width:15%"></colgroup><thead><tr><th>Date</th><th>Shipment No.</th><th>Route</th><th>Rate</th></tr></thead>
-      <tbody>${items.map(r=>`<tr><td style="white-space:nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:0" title="${r.route||''}">${r.route||'—'}</td><td style="white-space:nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>Route</th><th>Rate</th></tr></thead>
+      <tbody>${items.map(r=>`<tr><td class="nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td class="ellipsis" title="${r.route||''}">${r.route||'—'}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
   const ccStats=document.getElementById('rpt-cc-stats');
@@ -1123,7 +1236,7 @@ function renderReport(){
   if(ccR.exact.length){
     exW.style.display='';
     document.getElementById('rpt-cc-ex-list').innerHTML=ccR.exact.map(m=>
-      `<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td>${m.trip.truck}</td><td>${m.trip.deliveryDate}</td><td><span class="pill billed">✅ Matched</span></td></tr>`
+      `<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td class="nowrap">${m.trip.truck}</td><td class="nowrap">${m.trip.deliveryDate}</td><td><span class="pill billed">✅ Matched</span></td></tr>`
     ).join('');
   } else exW.style.display='none';
 
@@ -1131,7 +1244,7 @@ function renderReport(){
   if(ccR.fuzzy.length){
     fzW.style.display='';
     document.getElementById('rpt-cc-fz-list').innerHTML=ccR.fuzzy.map(m=>
-      `<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td>${m.trip.truck}</td><td style="color:var(--orange)">${m.reason}</td></tr>`
+      `<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td class="nowrap">${m.trip.truck}</td><td style="color:var(--orange)">${m.reason}</td></tr>`
     ).join('');
   } else fzW.style.display='none';
 
@@ -1139,7 +1252,7 @@ function renderReport(){
   if(ccR.noMatch.length){
     nmW.style.display='';
     document.getElementById('rpt-cc-nm-list').innerHTML=ccR.noMatch.map(m=>
-      `<tr><td><b>${m.billing.shipment}</b></td><td>${m.billing.soa}</td><td>${m.billing.truck}</td><td>${m.billing.date}</td></tr>`
+      `<tr><td><b>${m.billing.shipment}</b></td><td class="ellipsis" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td class="nowrap">${m.billing.date}</td></tr>`
     ).join('');
   } else nmW.style.display='none';
 
@@ -1148,12 +1261,11 @@ function renderReport(){
   if(invList.length){
     invW.style.display='';
     document.getElementById('rpt-cc-inv-list').innerHTML=invList.map(m=>
-      `<tr><td><b style="color:var(--red)">${m.billing.shipment} ⛔</b></td><td>${m.billing.soa}</td><td>${m.billing.truck}</td><td style="color:var(--red)">${m.billing.invalidReason}</td></tr>`
+      `<tr><td><b style="color:var(--red)">${m.billing.shipment} ⛔</b></td><td class="ellipsis" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td style="color:var(--red)">${m.billing.invalidReason}</td></tr>`
     ).join('');
   } else if(invW) invW.style.display='none';
 }
 
-// ═══ GROUPING HELPERS ═══
 function grpBy(rows,key){
   const map={};
   rows.forEach(r=>{const k=r[key]||'Unknown';if(!map[k]) map[k]=[];map[k].push(r);});
@@ -1179,7 +1291,6 @@ function grpHTML(title,items,cardFn,prefix,color){
   </div>`;
 }
 
-// ═══ API ═══
 function apiGet(range){
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,
     {headers:{Authorization:'Bearer '+token}}).then(r=>{if(!r.ok) throw r.status;return r.json();});
@@ -1195,8 +1306,6 @@ function apiPut(range,values){
     .then(r=>{if(!r.ok) throw r.status;return r.json();});
 }
 
-// ═══ UI HELPERS ═══
-// ✅ FIX: show/hide now also toggle .show class for elements that need it
 function show(id){
   const e=document.getElementById(id);
   if(e){
