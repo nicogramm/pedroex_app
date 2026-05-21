@@ -14,7 +14,7 @@
 :root{
   --bg:#e0e0e5;--bg2:#e8e8ed;--shadow-d:#b8b9be;--shadow-l:#ffffff;
   --text:#2a2a2e;--text2:#777;--text3:#aaa;--red:#B32533;
-  --green:#16a34a;--orange:#f59e0b;--blue:#2563eb;
+  --green:#16a34a;--orange:#f59e0b;--blue:#2563eb;--purple:#9333ea;
   --neu-out:6px 6px 14px var(--shadow-d),-4px -4px 10px var(--shadow-l);
   --neu-in:inset 4px 4px 8px var(--shadow-d),inset -3px -3px 7px var(--shadow-l);
   --neu-sm:4px 4px 8px var(--shadow-d),-3px -3px 7px var(--shadow-l);
@@ -90,8 +90,10 @@ body.dark .card-hd{border-bottom-color:rgba(255,255,255,.05)}
 .bdg{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;background:var(--bg);box-shadow:var(--neu-xs);color:var(--red);white-space:nowrap}
 .bdg.green{color:var(--green)}
 .bdg.orange{color:var(--orange)}
+.bdg.blue{color:var(--blue)}
+.bdg.purple{color:var(--purple)}
 
-/* TABLE — FIXED LAYOUT */
+/* TABLE */
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tbl{width:100%;border-collapse:collapse;font-size:11px;table-layout:auto;min-width:600px}
 .tbl th{padding:8px 12px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);white-space:nowrap;border-bottom:1px solid rgba(0,0,0,.06);min-width:80px}
@@ -135,6 +137,15 @@ body.dark .soa-item{border-bottom-color:rgba(255,255,255,.03)}
 .soa-chips{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
 .soa-chip{font-size:9px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--bg);box-shadow:var(--neu-xs);color:var(--text2)}
 
+/* BILLED OUT STATUS */
+.bo-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.bo-status.done{background:rgba(37,99,235,.12);color:var(--blue)}
+.bo-status.pending{background:rgba(245,158,11,.12);color:var(--orange)}
+.bo-prog{height:6px;border-radius:3px;background:var(--bg);box-shadow:var(--neu-in);overflow:hidden;margin-top:6px}
+.bo-prog-bar{height:100%;border-radius:3px;transition:width .3s;background:var(--blue)}
+.bo-btn{padding:6px 14px;border:none;border-radius:8px;background:var(--blue);color:#fff;font-size:11px;font-weight:600;cursor:pointer;margin-top:6px}
+.bo-btn:disabled{background:var(--text3);cursor:not-allowed}
+
 /* LIQUIDATION STATUS */
 .liq-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
 .liq-status.full{background:rgba(22,163,74,.12);color:var(--green)}
@@ -160,7 +171,7 @@ body.dark .soa-item{border-bottom-color:rgba(255,255,255,.03)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:9px;margin-bottom:14px}
 .sc{background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:12px 8px;text-align:center}
 .sv{font-size:20px;font-weight:700;letter-spacing:-1px;line-height:1}
-.sv.red{color:var(--red)}.sv.green{color:var(--green)}.sv.orange{color:var(--orange)}
+.sv.red{color:var(--red)}.sv.green{color:var(--green)}.sv.orange{color:var(--orange)}.sv.blue{color:var(--blue)}.sv.purple{color:var(--purple)}
 .sl{font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-top:3px}
 
 /* SUB TABS */
@@ -182,13 +193,14 @@ body.dark .soa-item{border-bottom-color:rgba(255,255,255,.03)}
 .pill{font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px;display:inline-block;margin-top:3px}
 .pill.billed{background:rgba(22,163,74,.12);color:var(--green)}
 .pill.unbilled{background:rgba(245,158,11,.12);color:var(--orange)}
+.pill.billedout{background:rgba(37,99,235,.12);color:var(--blue)}
 
 /* GROUP HEADERS */
 .grp{margin-bottom:20px}
 .grp-hd{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px;padding-left:2px}
 .grp-tally{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
 .tally{padding:4px 11px;border-radius:9px;font-size:10px;font-weight:700;background:var(--bg);box-shadow:var(--neu-xs)}
-.tally.g{color:var(--green)}.tally.o{color:var(--orange)}.tally.gr{color:var(--text2)}
+.tally.g{color:var(--green)}.tally.o{color:var(--orange)}.tally.gr{color:var(--text2)}.tally.b{color:var(--blue)}
 
 /* DIVIDER */
 .divider{height:1px;background:rgba(0,0,0,.06);margin:20px 0}
@@ -245,8 +257,9 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
     <button class="tab-btn active" id="tab-upload" onclick="switchTab('upload')">Upload</button>
     <button class="tab-btn" id="tab-billed" onclick="switchTab('billed')">Billed</button>
     <button class="tab-btn" id="tab-unbilled" onclick="switchTab('unbilled')">Unbilled</button>
+    <button class="tab-btn" id="tab-billedout" onclick="switchTab('billedout')">Billed Out</button>
     <button class="tab-btn" id="tab-liquidation" onclick="switchTab('liquidation')">Liquidation</button>
-    <button class="tab-btn" id="tab-report" onclick="switchTab('report')">Full Report</button>
+    <button class="tab-btn" id="tab-report" onclick="switchTab('report')">Report</button>
   </div>
 
   <div class="page-wrap" id="page-wrap">
@@ -371,6 +384,23 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <div class="lst" id="unbilled-list"></div>
     </div>
 
+    <!-- BILLED OUT TAB -->
+    <div id="pane-billedout" style="display:none">
+      <div class="sec-ey">Client Submission</div>
+      <div class="sec-ti">Billed Out Tracking</div>
+      <div class="stats" id="bo-stats"></div>
+      <div class="frow">
+        <input class="fsrch" id="bos" type="text" placeholder="🔍 Search SOA..." oninput="renderBilledOut()">
+        <select class="fsel" id="bom" onchange="renderBilledOut()"><option value="">All Months</option></select>
+        <select class="fsel" id="bost" onchange="renderBilledOut()">
+          <option value="">All Status</option>
+          <option value="done">Billed Out</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="lst" id="bo-list"></div>
+    </div>
+
     <!-- LIQUIDATION TAB -->
     <div id="pane-liquidation" style="display:none">
       <div class="sec-ey">Payment Tracking</div>
@@ -395,6 +425,17 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <div class="sec-ti">Full Report</div>
 
       <div class="stats" id="rpt-stats"></div>
+
+      <!-- BILLED OUT vs LIQUIDATION COMPARISON -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hd">
+          <span class="card-hd-t">📊 Billed Out vs Liquidation Status</span>
+        </div>
+        <div style="padding:14px 18px">
+          <div class="stats" id="rpt-comparison-stats"></div>
+          <div id="rpt-comparison-details"></div>
+        </div>
+      </div>
 
       <div class="report-section-title">✅ Billed Shipments</div>
       <div class="frow">
@@ -553,13 +594,14 @@ let bSt = 'all', uSt = 'all';
 })();
 
 function switchTab(t){
-  ['upload','billed','unbilled','liquidation','report'].forEach(x=>{
+  ['upload','billed','unbilled','billedout','liquidation','report'].forEach(x=>{
     document.getElementById('pane-'+x).style.display=x===t?'':'none';
     const tab=document.getElementById('tab-'+x);
     if(tab) tab.classList.toggle('active',x===t);
   });
   if(t==='billed')      loadBilled();
   if(t==='unbilled')    loadUnbilled();
+  if(t==='billedout')   loadBilledOut();
   if(t==='liquidation') loadLiquidation();
   if(t==='report')      loadReport();
 }
@@ -688,7 +730,7 @@ async function saveToSheet(){
   try{
     const ex=await apiGet(SHEET_BILLING+'!A2:A');
     let nid=(ex.values||[]).filter(r=>r[0]).length+1;
-    await apiAppend(SHEET_BILLING+'!A:J',parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes','No','','']));
+    await apiAppend(SHEET_BILLING+'!A:M',parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes','No','','','No','','']));
     showLoad(false);
     showToast(parsed.length+' rows saved!','ok');
     const pc=document.getElementById('preview-card');
@@ -882,13 +924,17 @@ async function loadBilled(){
   if(!token) return;
   showLoad(true,'Loading billed records...');
   try{
-    const res=await apiGet(SHEET_BILLING+'!A2:J');
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
     master=(res.values||[]).filter(r=>r[0]).map(r=>({
+      rowIndex:Number(r[0])+1,
       id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
       valid:(r[6]||'Yes').trim(),
       liquidated:(r[7]||'No').trim(),
       liquidationDate:r[8]||'',
-      liquidatedAmount:r[9]||''
+      liquidatedAmount:r[9]||'',
+      billedOut:(r[10]||'No').trim(),
+      billedOutDate:r[11]||'',
+      notes:r[12]||''
     }));
     showLoad(false);
     buildBFilters();renderBStats();renderBilled();
@@ -955,7 +1001,7 @@ async function loadUnbilled(){
   if(!token) return;
   showLoad(true,'Loading unbilled trips...');
   try{
-    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:J'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:M'),apiGet(SHEET_TRIPS+'!A2:I')]);
     const billedSet=new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
     trips=(tRes.values||[]).filter(r=>r[0]).map((r,i)=>({
       rowIndex:i+2,deliveryDate:r[1]||'',truck:r[2]||'',
@@ -1006,18 +1052,121 @@ function renderUnbilled(){
   else if(uSt==='truck') list.innerHTML=grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','orange')).join('');
 }
 
-async function loadLiquidation(){
+async function loadBilledOut(){
   if(!token) return;
-  showLoad(true,'Loading liquidation data...');
+  showLoad(true,'Loading billed out data...');
   try{
-    const res=await apiGet(SHEET_BILLING+'!A2:J');
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
     master=(res.values||[]).filter(r=>r[0]).map(r=>({
       rowIndex:Number(r[0])+1,
       id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
       valid:(r[6]||'Yes').trim(),
       liquidated:(r[7]||'No').trim(),
       liquidationDate:r[8]||'',
-      liquidatedAmount:r[9]||''
+      liquidatedAmount:r[9]||'',
+      billedOut:(r[10]||'No').trim(),
+      billedOutDate:r[11]||'',
+      notes:r[12]||''
+    }));
+    showLoad(false);
+    buildBOFilters();renderBOStats();renderBilledOut();
+  }catch(e){showLoad(false);showToast('Failed to load');}
+}
+
+function buildBOFilters(){
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('bom').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+}
+
+function renderBOStats(){
+  const billedOut=master.filter(r=>r.billedOut==='Yes').length;
+  const pending=master.filter(r=>r.billedOut==='No').length;
+  document.getElementById('bo-stats').innerHTML=`
+    <div class="sc"><div class="sv blue">${billedOut}</div><div class="sl">Billed Out</div></div>
+    <div class="sc"><div class="sv orange">${pending}</div><div class="sl">Pending</div></div>
+    <div class="sc"><div class="sv purple">${new Set(master.map(r=>r.soa)).size}</div><div class="sl">Total SOA</div></div>`;
+}
+
+function renderBilledOut(){
+  const srch=document.getElementById('bos').value.toLowerCase();
+  const mo=document.getElementById('bom').value;
+  const st=document.getElementById('bost').value;
+  
+  const soaMap={};
+  master.forEach(r=>{
+    if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,total:0,billedOut:0,items:[],months:new Set()};
+    soaMap[r.soa].total++;
+    if(r.billedOut==='Yes') soaMap[r.soa].billedOut++;
+    soaMap[r.soa].items.push(r);
+    const m=dateMonth(r.date);if(m) soaMap[r.soa].months.add(monthLabel(m));
+  });
+
+  let rows=Object.values(soaMap).filter(s=>{
+    if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
+    if(mo&&![...s.months].some(m=>dateMonth(m)===mo)) return false;
+    if(st==='done'&&s.billedOut<s.total) return false;
+    if(st==='pending'&&s.billedOut>0) return false;
+    return true;
+  });
+
+  const list=document.getElementById('bo-list');
+  if(!rows.length){list.innerHTML=emptyH('No SOA found','Try adjusting your filters.');return;}
+
+  list.innerHTML=rows.map(s=>{
+    const pct=s.total>0?(s.billedOut/s.total*100):0;
+    const status=pct>=100?'done':'pending';
+    const statusLabel=status==='done'?'✅ Billed Out':'⏳ Pending Bill Out';
+    const totalAmt=s.items.reduce((sum,r)=>sum+Number(r.rate||0),0);
+    return `<div class="ic">
+      <div class="ic-top">
+        <div>
+          <div class="ic-ship">${s.soa}</div>
+          <span class="bo-status ${status}">${statusLabel}</span>
+        </div>
+        <div class="ic-rate ${status==='done'?'b':'o'}">₱${totalAmt.toLocaleString()}</div>
+      </div>
+      <div class="ic-meta">
+        <div class="ic-chip">Billed Out: ${s.billedOut} / ${s.total}</div>
+        <div class="ic-chip">${[...s.months].join(', ')}</div>
+      </div>
+      <div class="bo-prog"><div class="bo-prog-bar" style="width:${pct}%"></div></div>
+      ${status!=='done'?`<button class="bo-btn" onclick="markBilledOut('${s.soa}')">📤 Mark as Billed Out</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+async function markBilledOut(soa){
+  if(!confirm(`Mark SOA ${soa} as billed out to client?`)) return;
+  showLoad(true,'Updating billed out status...');
+  try{
+    const items=master.filter(r=>r.soa===soa&&r.billedOut==='No');
+    const today=new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});
+    for(const item of items){
+      await apiPut(SHEET_BILLING+'!K'+item.rowIndex+':L'+item.rowIndex,[['Yes',today]]);
+      item.billedOut='Yes';
+      item.billedOutDate=today;
+    }
+    showLoad(false);
+    showToast('SOA marked as billed out!','ok');
+    renderBOStats();renderBilledOut();
+  }catch(e){console.error(e);showLoad(false);showToast('Failed to update');}
+}
+
+async function loadLiquidation(){
+  if(!token) return;
+  showLoad(true,'Loading liquidation data...');
+  try{
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
+    master=(res.values||[]).filter(r=>r[0]).map(r=>({
+      rowIndex:Number(r[0])+1,
+      id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
+      valid:(r[6]||'Yes').trim(),
+      liquidated:(r[7]||'No').trim(),
+      liquidationDate:r[8]||'',
+      liquidatedAmount:r[9]||'',
+      billedOut:(r[10]||'No').trim(),
+      billedOutDate:r[11]||'',
+      notes:r[12]||''
     }));
     showLoad(false);
     buildLFilters();renderLStats();renderLiquidation();
@@ -1111,13 +1260,16 @@ async function loadReport(){
   if(!token) return;
   showLoad(true,'Loading full report...');
   try{
-    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:J'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:M'),apiGet(SHEET_TRIPS+'!A2:I')]);
     master=(bRes.values||[]).filter(r=>r[0]).map(r=>({
       id:r[0]||'',date:r[1]||'',shipment:r[2]||'',soa:r[3]||'',truck:r[4]||'',rate:r[5]||'',
       valid:(r[6]||'Yes').trim(),
       liquidated:(r[7]||'No').trim(),
       liquidationDate:r[8]||'',
-      liquidatedAmount:r[9]||''
+      liquidatedAmount:r[9]||'',
+      billedOut:(r[10]||'No').trim(),
+      billedOutDate:r[11]||'',
+      notes:r[12]||''
     }));
     const billedSet=new Set(master.map(r=>r.shipment.trim()));
     trips=(tRes.values||[]).filter(r=>r[0]).map((r,i)=>({
@@ -1144,11 +1296,47 @@ function buildRFilters(){
 function renderRStats(){
   const bAmt=master.reduce((s,r)=>s+Number(r.rate||0),0);
   const invalidCount=master.filter(r=>r.valid==='No').length;
+  const billedOutCount=master.filter(r=>r.billedOut==='Yes').length;
+  const liquidatedCount=master.filter(r=>r.liquidated==='Yes').length;
   document.getElementById('rpt-stats').innerHTML=`
     <div class="sc"><div class="sv green">${master.length}</div><div class="sl">Billed</div></div>
+    <div class="sc"><div class="sv blue">${billedOutCount}</div><div class="sl">Billed Out</div></div>
+    <div class="sc"><div class="sv purple">${liquidatedCount}</div><div class="sl">Liquidated</div></div>
     <div class="sc"><div class="sv orange">${unbilled.length}</div><div class="sl">Unbilled</div></div>
     <div class="sc"><div class="sv green" style="font-size:12px">₱${(bAmt/1000).toFixed(1)}K</div><div class="sl">Billed Amt</div></div>
     ${invalidCount?`<div class="sc"><div class="sv red">${invalidCount}</div><div class="sl">Invalid #</div></div>`:''}`;
+  
+  // Billed Out vs Liquidation Comparison
+  const soaMap={};
+  master.forEach(r=>{
+    if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,total:0,billedOut:0,liquidated:0};
+    soaMap[r.soa].total++;
+    if(r.billedOut==='Yes') soaMap[r.soa].billedOut++;
+    if(r.liquidated==='Yes') soaMap[r.soa].liquidated++;
+  });
+  const soaList=Object.values(soaMap);
+  const bothComplete=soaList.filter(s=>s.billedOut===s.total&&s.liquidated===s.total).length;
+  const billedOutOnly=soaList.filter(s=>s.billedOut===s.total&&s.liquidated<s.total).length;
+  const liquidatedOnly=soaList.filter(s=>s.liquidated===s.total&&s.billedOut<s.total).length;
+  const neither=soaList.filter(s=>s.billedOut<s.total&&s.liquidated<s.total).length;
+  
+  document.getElementById('rpt-comparison-stats').innerHTML=`
+    <div class="sc"><div class="sv green">${bothComplete}</div><div class="sl">Both Done</div></div>
+    <div class="sc"><div class="sv blue">${billedOutOnly}</div><div class="sl">BO Only</div></div>
+    <div class="sc"><div class="sv purple">${liquidatedOnly}</div><div class="sl">Liq Only</div></div>
+    <div class="sc"><div class="sv orange">${neither}</div><div class="sl">Both Pending</div></div>`;
+  
+  document.getElementById('rpt-comparison-details').innerHTML=`
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table class="tbl">
+        <thead><tr><th>SOA</th><th>Total</th><th>Billed Out</th><th>Liquidated</th><th>Status</th></tr></thead>
+        <tbody>${soaList.map(s=>{
+          const boStatus=s.billedOut===s.total?'✅':'⏳';
+          const liqStatus=s.liquidated===s.total?'✅':'⏳';
+          return `<tr><td><b>${s.soa}</b></td><td>${s.total}</td><td>${s.billedOut} ${boStatus}</td><td>${s.liquidated} ${liqStatus}</td><td>${boStatus===liqStatus&&boStatus==='✅'?'<span class="pill billed">Complete</span>':'<span class="pill unbilled">Pending</span>'}</td></tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
 }
 
 function renderReport(){
@@ -1189,8 +1377,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th><th></th></tr></thead>
-      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ellipsis" title="${r.soa}">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th><th>BO</th><th>Liq</th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ellipsis" title="${r.soa}">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${r.billedOut==='Yes'?'✅':'⏳'}</td><td>${r.liquidated==='Yes'?'✅':'⏳'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   const bByTruck=grpBy(bRows,'truck');
@@ -1201,8 +1389,8 @@ function renderReport(){
         <div class="tally g">${items.length} shipments</div>
         <div class="tally gr">₱${items.reduce((s,r)=>s+Number(r.rate||0),0).toLocaleString()}</div>
       </div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th><th></th></tr></thead>
-      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ellipsis" title="${r.soa}">${r.soa}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${inv?'<span style="color:var(--red);font-weight:700;font-size:10px">⛔</span>':'<span style="color:var(--green);font-weight:700;font-size:10px">✅</span>'}</td></tr>`;}).join('')}</tbody></table></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Rate</th><th>BO</th><th>Liq</th></tr></thead>
+      <tbody>${items.map(r=>{const inv=r.valid==='No';return`<tr style="${inv?'background:rgba(179,37,51,0.06)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ellipsis" title="${r.soa}">${r.soa}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${r.billedOut==='Yes'?'✅':'⏳'}</td><td>${r.liquidated==='Yes'?'✅':'⏳'}</td></tr>`;}).join('')}</tbody></table></div>
     </div>`).join('')||'<div style="padding:14px 0;font-size:12px;color:var(--text3)">No data</div>';
 
   const uByMonth=grpByMonth(unbilled.map(r=>({...r,date:r.deliveryDate})));
