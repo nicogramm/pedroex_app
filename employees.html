@@ -1147,7 +1147,18 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
           <option value="">All Trucks</option>
         </select>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="runValidation()">
+      <!-- ✅ PERIOD SELECTOR -->
+      <div class="filter-row">
+        <div style="display:flex;gap:8px;width:100%">
+          <button class="period-btn active" id="val-period-1st" onclick="selectValPeriod('1st')">
+            1st (1–15)
+          </button>
+          <button class="period-btn" id="val-period-2nd" onclick="selectValPeriod('2nd')">
+            2nd (16–End)
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="runValidation()">
         🔍 Run Validation
       </button>
     </div>
@@ -1837,6 +1848,9 @@ async function init() {
     document.getElementById('admin-tab-bar').style.display = 'block';
     // ✅ Default month for validation
     document.getElementById('val-month').value = monthStr;
+    // ✅ Default validation period based on current date
+    const today = new Date();
+    selectValPeriod(today.getDate() <= 15 ? '1st' : '2nd');
     
     await loadEmployees();
     await loadAdvances();
@@ -2928,12 +2942,19 @@ function switchValTab(tab) {
   });
 }
 
+function selectValPeriod(period) {
+  valPeriod = period;
+  document.getElementById('val-period-1st').classList.toggle('active', period === '1st');
+  document.getElementById('val-period-2nd').classList.toggle('active', period === '2nd');
+}
+
 // ═══════════════════════════════════════════════════════
 // VALIDATION STATE
 // ═══════════════════════════════════════════════════════
 let validationResults = [];
-let valCalYear  = new Date().getFullYear();
-let valCalMonth = new Date().getMonth();
+let valCalYear   = new Date().getFullYear();
+let valCalMonth  = new Date().getMonth();
+let valPeriod    = '1st'; // ✅ default: 1st payroll period
 
 async function runValidation() {
   const month = document.getElementById('val-month').value;
@@ -2951,8 +2972,14 @@ async function runValidation() {
   document.getElementById('val-issues-content').innerHTML     = '';
 
   try {
-    const startStr = `${year}-${String(mon).padStart(2,'0')}-01`;
-    const endStr   = `${year}-${String(mon).padStart(2,'0')}-${new Date(year, mon, 0).getDate()}`;
+    // ✅ Date range based on selected payroll period
+    const lastDay  = new Date(year, mon, 0).getDate();
+    const startStr = valPeriod === '1st'
+      ? `${year}-${String(mon).padStart(2,'0')}-01`
+      : `${year}-${String(mon).padStart(2,'0')}-16`;
+    const endStr   = valPeriod === '1st'
+      ? `${year}-${String(mon).padStart(2,'0')}-15`
+      : `${year}-${String(mon).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
 
     const [tripsRes, attRes] = await Promise.all([
       gSheets('Trips!A2:I'),
@@ -3453,7 +3480,8 @@ function valRenderGrid() {
   const lastDate  = new Date(allDates[allDates.length - 1] + 'T00:00:00');
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun',
                       'Jul','Aug','Sep','Oct','Nov','Dec'];
-  const rangeLabel = `${monthNames[firstDate.getMonth()]} ${firstDate.getDate()}–${lastDate.getDate()}, ${lastDate.getFullYear()}`;
+  const periodLabel = valPeriod === '1st' ? '1st Period' : '2nd Period';
+  const rangeLabel  = `${periodLabel} · ${monthNames[firstDate.getMonth()]} ${firstDate.getDate()}–${lastDate.getDate()}, ${lastDate.getFullYear()}`;
 
   // ── Day-of-week labels ──
   const dayLabels = allDates.map(d => {
