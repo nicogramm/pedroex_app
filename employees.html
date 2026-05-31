@@ -2786,7 +2786,7 @@ let valCalMonth = new Date().getMonth();
 
 async function runValidation() {
   const month = document.getElementById('val-month').value;
-  if (!month) { showToast('Pumili muna ng month.'); return; }
+  if (!month) { showToast('Please select a month first.'); return; }
 
   const [year, mon] = month.split('-').map(Number);
   valCalYear  = year;
@@ -2872,35 +2872,46 @@ function validateTrip(trip, truckAtts) {
   if (count === 0) {
     return {
       status: 'warn',
-      issues: ['No attendance records para sa truck na ito sa araw na ito.'],
+      issues: ['No attendance records found for this truck on this date.'],
       attStatuses: []
     };
   }
 
-  if (trip.isMasbate) {
-    // RULE: Masbate — lahat ay 2-Man Team = Yes (first day = delivery date)
-    truckAtts.forEach(a => {
-      const ok = a.twoManFlag === 'Yes';
-      if (!ok) { issues.push(`${a.name}: dapat YES (Masbate 1st day)`); status = 'err'; }
-      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'Yes', correct: ok });
-    });
-  } else if (count === 2) {
-    // RULE: Exactly 2 sa truck = 2-Man Team Yes
-    truckAtts.forEach(a => {
-      const ok = a.twoManFlag === 'Yes';
-      if (!ok) { issues.push(`${a.name}: dapat YES (2 lang sa truck)`); status = 'err'; }
-      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'Yes', correct: ok });
-    });
-  } else if (count >= 3) {
-    // RULE: 3+ sa truck = NOT 2-Man Team
+  // ✅ FROZEN trips — no 2-Man Team regardless of headcount
+  if (trip.freshFrozen === 'Frozen' && !trip.isMasbate) {
     truckAtts.forEach(a => {
       const ok = a.twoManFlag === 'No';
-      if (!ok) { issues.push(`${a.name}: dapat NO (3+ tao sa truck)`); status = 'err'; }
+      if (!ok) { issues.push(`${a.name}: should be NO (Frozen trip — no 2-Man Team)`); status = 'err'; }
       attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'No', correct: ok });
     });
+
+  } else if (trip.isMasbate) {
+    // ✅ Masbate — all attendees are 2-Man Team = Yes on delivery date (first day)
+    truckAtts.forEach(a => {
+      const ok = a.twoManFlag === 'Yes';
+      if (!ok) { issues.push(`${a.name}: should be YES (Masbate first day)`); status = 'err'; }
+      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'Yes', correct: ok });
+    });
+
+  } else if (count === 2) {
+    // ✅ Fresh, exactly 2 on truck = 2-Man Team Yes
+    truckAtts.forEach(a => {
+      const ok = a.twoManFlag === 'Yes';
+      if (!ok) { issues.push(`${a.name}: should be YES (only 2 people on truck)`); status = 'err'; }
+      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'Yes', correct: ok });
+    });
+
+  } else if (count >= 3) {
+    // ✅ Fresh, 3+ on truck = NOT 2-Man Team
+    truckAtts.forEach(a => {
+      const ok = a.twoManFlag === 'No';
+      if (!ok) { issues.push(`${a.name}: should be NO (3 or more people on truck)`); status = 'err'; }
+      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'No', correct: ok });
+    });
+
   } else {
-    // 1 person lang — warning
-    issues.push('1 person lang sa truck — possible missing attendance entry.');
+    // 1 person only — warning
+    issues.push('Only 1 attendance record for this truck — possible missing entry.');
     status = 'warn';
     truckAtts.forEach(a =>
       attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: '—', correct: null })
@@ -2909,7 +2920,6 @@ function validateTrip(trip, truckAtts) {
 
   return { status, issues, attStatuses };
 }
-
 function valRenderSummary() {
   document.getElementById('val-sum-trips').textContent = validationResults.length;
   document.getElementById('val-sum-ok').textContent    = validationResults.filter(r => r.status === 'ok').length;
@@ -3097,7 +3107,7 @@ function valCalNext() {
 
 function valShowDayDetail(dateStr) {
   const dayResults = validationResults.filter(r => r.trip.deliveryDate === dateStr);
-  if (!dayResults.length) { showToast('Walang trips sa araw na ito.'); return; }
+  if (!dayResults.length) { showToast('No trips found on this date.'); return; }
 
   const d = new Date(dateStr + 'T00:00:00');
   document.getElementById('val-day-modal-title').textContent =
@@ -3216,7 +3226,7 @@ function valRenderIssues(orphanAtts) {
     hasContent = true;
     const hdr = document.createElement('div');
     hdr.style.cssText = 'font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2980b9;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';
-    hdr.textContent = `ℹ️ Attendance na walang Trip record (${orphanAtts.length})`;
+    hdr.textContent =  `ℹ️ Attendance Without Matching Trip (${orphanAtts.length})`;
     container.appendChild(hdr);
 
     const grouped = {};
@@ -3235,7 +3245,7 @@ function valRenderIssues(orphanAtts) {
           ${g.truck} · ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}
         </div>
         <div style="font-size:12px;color:var(--text2)">
-          Walang trip record para sa truck na ito sa araw na ito.<br>
+          No trip record found for this truck on this date.<br>
           <b>Employees:</b> ${g.names.join(', ')}
         </div>`;
       container.appendChild(div);
