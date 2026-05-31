@@ -2052,9 +2052,22 @@ async function loadEmployeeHistory() {
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
         + '<div><div style="font-size:10px;opacity:0.8">Gross Salary</div><div style="font-size:16px;font-weight:700">₱' + ytd.gross.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
         + '<div><div style="font-size:10px;opacity:0.8">Savings Plan</div><div style="font-size:16px;font-weight:700">₱' + ytd.savings.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
-        + '<div><div style="font-size:10px;opacity:0.8">My Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalEmp.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
-        + '<div><div style="font-size:10px;opacity:0.8">PEDROEX Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalPedroex.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
-        + '</div></div>';
+        + '</div>'
+        + '<div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.2);padding-top:12px">'
+        + '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">MY CONTRIBUTIONS</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
+        + '<div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱' + ytd.empSSS.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '<div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱' + ytd.empPagibig.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '<div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱' + ytd.empPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '</div></div>'
+        + '<div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.2);padding-top:12px">'
+        + '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">PEDROEX CONTRIBUTIONS</div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
+        + '<div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱' + ytd.pedroexSSS.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '<div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱' + ytd.pedroexPagibig.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '<div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱' + ytd.pedroexPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+        + '</div></div>'
+        + '</div>';
     }
 
     html += rows.map(function(r) {
@@ -2750,9 +2763,22 @@ async function loadHistory() {
           + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
           + '<div><div style="font-size:10px;opacity:0.8">Gross Salary</div><div style="font-size:16px;font-weight:700">₱' + ytd.gross.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
           + '<div><div style="font-size:10px;opacity:0.8">Savings Plan</div><div style="font-size:16px;font-weight:700">₱' + ytd.savings.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
-          + '<div><div style="font-size:10px;opacity:0.8">Employee Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalEmp.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
-          + '<div><div style="font-size:10px;opacity:0.8">PEDROEX Contributions</div><div style="font-size:16px;font-weight:700">₱' + ytd.totalPedroex.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
-          + '</div></div>';
+          + '</div>'
+          + '<div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.2);padding-top:12px">'
+          + '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">EMPLOYEE CONTRIBUTIONS</div>'
+          + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
+          + '<div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱' + ytd.empSSS.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '<div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱' + ytd.empPagibig.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '<div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱' + ytd.empPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '</div></div>'
+          + '<div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.2);padding-top:12px">'
+          + '<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">PEDROEX CONTRIBUTIONS</div>'
+          + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
+          + '<div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱' + ytd.pedroexSSS.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '<div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱' + ytd.pedroexPagibig.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '<div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱' + ytd.pedroexPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2}) + '</div></div>'
+          + '</div></div>'
+          + '</div>';
       }
     }
 
