@@ -1543,10 +1543,16 @@ async function calculatePayroll() {
 
     var savingsPlan  = grossPay * 0.05;
 
-    var empSSS       = selectedPeriod === '1st' ? 225 : 0;
-    var empPagibig   = selectedPeriod === '1st' ? 200 : 0;
-    var empPhilHealth= selectedPeriod === '2nd' ? 250 : 0;
-    var totalContrib = empSSS + empPagibig + empPhilHealth;
+// 1st period: SSS + Pag-IBIG only. 2nd period: PhilHealth only.
+    var empSSS            = selectedPeriod === '1st' ? 225 : 0;
+    var empPagibig        = selectedPeriod === '1st' ? 200 : 0;
+    var empPhilHealth     = selectedPeriod === '2nd' ? 250 : 0;
+    var totalContrib      = empSSS + empPagibig + empPhilHealth;
+
+    // PEDROEX share — different SSS amount, same logic per period
+    var pedroexSSS        = selectedPeriod === '1st' ? 475 : 0;
+    var pedroexPagibig    = selectedPeriod === '1st' ? 200 : 0;
+    var pedroexPhilHealth = selectedPeriod === '2nd' ? 250 : 0;
 
     var histRes  = await fetch(
       'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Payroll%20History!A2:AF',
@@ -1572,27 +1578,30 @@ async function calculatePayroll() {
 
     var totalAdv = existingAdv + periodAdv;
 
-    currentPayrollData = {
-      name:          empName,
-      period:        startDate + ' to ' + endDate,
-      position:      position,
-      attYes:        attYes,      // ✅ Stored separately
-      attMeals:      attMeals,    // ✅ Stored separately
-      attNo:         attNo,       // ✅ Stored separately
-      twoManDays:    twoMan,
-      twoManDates:   twoManComment,
-      periodAdv:     periodAdv,
-      existingAdv:   existingAdv,
-      totalAdv:      totalAdv,
-      empSSS:        empSSS,
-      empPagibig:    empPagibig,
-      empPhilHealth: empPhilHealth,
-      totalContrib:  totalContrib,
-      basePay:       basePay,
-      twoManPay:     twoManPay,
-      mealPay:       mealPay,
-      grossPay:      grossPay,
-      savingsPlan:   savingsPlan,
+   currentPayrollData = {
+      name:              empName,
+      period:            startDate + ' to ' + endDate,
+      position:          position,
+      attYes:            attYes,
+      attMeals:          attMeals,
+      attNo:             attNo,
+      twoManDays:        twoMan,
+      twoManDates:       twoManComment,
+      periodAdv:         periodAdv,
+      existingAdv:       existingAdv,
+      totalAdv:          totalAdv,
+      empSSS:            empSSS,
+      empPagibig:        empPagibig,
+      empPhilHealth:     empPhilHealth,
+      totalContrib:      totalContrib,
+      pedroexSSS:        pedroexSSS,
+      pedroexPagibig:    pedroexPagibig,
+      pedroexPhilHealth: pedroexPhilHealth,
+      basePay:           basePay,
+      twoManPay:         twoManPay,
+      mealPay:           mealPay,
+      grossPay:          grossPay,   // base + 2-man only
+      savingsPlan:       savingsPlan,
     };
 
     showPayrollResult();
@@ -1710,11 +1719,12 @@ async function savePayrollToHistory() {
       0,                                      // F: Advance 2
       data.existingAdv,                       // G: Existing Advances
       data.totalAdv,                          // H: Total Advances
-      475,                                    // I: PEDROEX SSS
+      data.pedroexSSS        || 0,            // I: PEDROEX SSS
       data.empSSS,                            // J: Employee SSS
-      200,                                    // K: PEDROEX Pag-IBIG
+      data.pedroexPagibig    || 0,            // K: PEDROEX Pag-IBIG
       data.empPagibig,                        // L: Employee Pag-IBIG
-      250,                                    // M: PEDROEX PhilHealth
+      data.pedroexPhilHealth || 0,            // M: PEDROEX PhilHealth
+      data.empPhilHealth,                     // N: Employee PhilHealth
       data.empPhilHealth,                     // N: Employee PhilHealth
       data.deductedAdv,                       // O: Advance Deduction
       data.totalDed,                          // P: Total Deductions
@@ -3893,11 +3903,12 @@ async function updatePayrollHistory() {
       0,                                      // F
       data.existingAdv,                       // G
       data.totalAdv,                          // H
-      475,                                    // I
-      data.empSSS,                            // J
-      200,                                    // K
-      data.empPagibig,                        // L
-      250,                                    // M
+      data.pedroexSSS        || 0,            // I: PEDROEX SSS
+      data.empSSS,                            // J: Employee SSS
+      data.pedroexPagibig    || 0,            // K: PEDROEX Pag-IBIG
+      data.empPagibig,                        // L: Employee Pag-IBIG
+      data.pedroexPhilHealth || 0,            // M: PEDROEX PhilHealth
+      data.empPhilHealth,                     // N: Employee PhilHealth
       data.empPhilHealth,                     // N
       data.deductedAdv,                       // O
       data.totalDed,                          // P
