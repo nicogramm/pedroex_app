@@ -842,6 +842,146 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 .val-chip.warn .chip-num { color: var(--orange) }
 .val-chip.err  .chip-num { color: var(--red) }
 
+/* ═══════════════════════════════════════
+   ATTENDANCE GRID
+═══════════════════════════════════════ */
+.att-grid-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  box-shadow: var(--neu-out);
+}
+
+.att-grid-table {
+  border-collapse: collapse;
+  min-width: 100%;
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+}
+
+.att-grid-table th,
+.att-grid-table td {
+  padding: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Header rows */
+.att-grid-table thead tr:first-child th {
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 8px;
+}
+
+.att-grid-table thead tr:first-child th:first-child {
+  border-radius: 16px 0 0 0;
+  text-align: left;
+  padding-left: 14px;
+  min-width: 90px;
+}
+.att-grid-table thead tr:first-child th:last-child {
+  border-radius: 0 16px 0 0;
+}
+
+/* Day header row */
+.att-grid-table thead tr:nth-child(2) th {
+  background: var(--bg2);
+  color: var(--text2);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 6px 4px;
+  min-width: 28px;
+  border-bottom: 2px solid var(--shadow-d);
+}
+.att-grid-table thead tr:nth-child(2) th:first-child {
+  text-align: left;
+  padding-left: 14px;
+  min-width: 90px;
+}
+
+/* Name column */
+.att-grid-name {
+  text-align: left !important;
+  padding-left: 14px !important;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  padding-top: 8px !important;
+  padding-bottom: 2px !important;
+}
+
+/* 2-man label cell */
+.att-grid-2man-label {
+  text-align: left !important;
+  padding-left: 20px !important;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 8px !important;
+}
+
+/* Data cells */
+.att-grid-cell {
+  font-size: 12px;
+  font-weight: 700;
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+}
+
+.att-grid-cell.att-yes {
+  color: var(--text);
+}
+
+.att-grid-cell.att-2man {
+  color: var(--red);
+}
+
+.att-grid-cell.att-err {
+  color: var(--orange);
+}
+
+/* Total column */
+.att-grid-total {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  padding: 0 10px !important;
+  border-left: 2px solid var(--shadow-d);
+}
+.att-grid-total.att-2man { color: var(--red) }
+
+/* Row separators */
+.att-grid-name-row td,
+.att-grid-name-row th {
+  border-top: 1px solid var(--shadow-d);
+}
+
+/* Truck subheader */
+.att-grid-truck {
+  text-align: left !important;
+  padding-left: 14px !important;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 2px !important;
+  padding-top: 8px !important;
+}
+
+/* Sunday highlight */
+.att-grid-sunday {
+  background: rgba(179, 37, 51, 0.05);
+}
+
 </style>
 </head>
 <body>
@@ -991,10 +1131,12 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
     </div>
 
     <!-- SUB-TABS -->
-    <div style="display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:5px;margin-bottom:16px;">
+   <!-- SUB-TABS -->
+    <div style="display:flex;gap:6px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:5px;margin-bottom:16px;">
       <button class="tab-btn active" id="val-tab-report"   onclick="switchValTab('report')">📋 Report</button>
       <button class="tab-btn"        id="val-tab-calendar" onclick="switchValTab('calendar')">📅 Calendar</button>
       <button class="tab-btn"        id="val-tab-issues"   onclick="switchValTab('issues')">⚠️ Issues</button>
+      <button class="tab-btn"        id="val-tab-grid"     onclick="switchValTab('grid')">📊 Grid</button>
     </div>
 
     <!-- FILTER -->
@@ -1072,12 +1214,21 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
       </div>
     </div>
 
-    <!-- ISSUES VIEW -->
+   <!-- ISSUES VIEW -->
     <div id="val-view-issues" style="display:none">
       <div id="val-issues-content"></div>
       <div class="empty-state" id="val-issues-empty" style="display:none">
         <div class="empty-icon">✅</div>
         <div class="empty-text">No issues found!<br>All attendance records match the trips.</div>
+      </div>
+    </div>
+
+    <!-- GRID VIEW -->
+    <div id="val-view-grid" style="display:none">
+      <div id="val-grid-content"></div>
+      <div class="empty-state" id="val-grid-empty">
+        <div class="empty-icon">📊</div>
+        <div class="empty-text">Select a month and run validation<br>to see the attendance grid.</div>
       </div>
     </div>
 
@@ -2771,7 +2922,7 @@ function switchAdminTab(tab) {
 // VALIDATION SUB-TAB SWITCHING
 // ═══════════════════════════════════════════════════════
 function switchValTab(tab) {
-  ['report','calendar','issues'].forEach(t => {
+  ['report','calendar','issues','grid'].forEach(t => {
     document.getElementById(`val-tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`val-view-${t}`).style.display = t === tab ? 'block' : 'none';
   });
@@ -2851,11 +3002,12 @@ async function runValidation() {
       !trips.some(t => t.truck === a.truck && t.deliveryDate === a.date)
     );
 
-    document.getElementById('val-loading').style.display = 'none';
+   document.getElementById('val-loading').style.display = 'none';
     valRenderSummary();
     valRenderReport();
     valRenderCalendar();
     valRenderIssues(orphanAtts);
+    valRenderGrid();
 
   } catch(err) {
     document.getElementById('val-loading').style.display = 'none';
@@ -3254,6 +3406,151 @@ function valRenderIssues(orphanAtts) {
 
   if (!hasContent) document.getElementById('val-issues-empty').style.display = 'block';
 }
+
+// ═══════════════════════════════════════════════════════
+// VALIDATION GRID VIEW
+// ═══════════════════════════════════════════════════════
+function valRenderGrid() {
+  const container = document.getElementById('val-grid-content');
+  container.innerHTML = '';
+
+  if (!validationResults.length) {
+    document.getElementById('val-grid-empty').style.display = 'block';
+    return;
+  }
+  document.getElementById('val-grid-empty').style.display = 'none';
+
+  // ── Collect all unique dates in the result set ──
+  const allDates = [...new Set(
+    validationResults.map(r => r.trip.deliveryDate)
+  )].sort();
+
+  // ── Collect all unique employees across all attendance ──
+  // Build: { empName → { date → { attended, twoMan, truck, correct } } }
+  const empMap = {};
+
+  validationResults.forEach(r => {
+    r.attStatuses.forEach(a => {
+      if (!empMap[a.name]) empMap[a.name] = { truck: r.trip.truck, days: {} };
+      empMap[a.name].days[r.trip.deliveryDate] = {
+        attended: true,
+        twoMan:   a.actual === 'Yes',
+        correct:  a.correct,
+        truck:    r.trip.truck,
+      };
+    });
+  });
+
+  const employees = Object.keys(empMap).sort();
+
+  if (!employees.length) {
+    document.getElementById('val-grid-empty').style.display = 'block';
+    return;
+  }
+
+  // ── Determine date range label ──
+  const firstDate = new Date(allDates[0] + 'T00:00:00');
+  const lastDate  = new Date(allDates[allDates.length - 1] + 'T00:00:00');
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun',
+                      'Jul','Aug','Sep','Oct','Nov','Dec'];
+  const rangeLabel = `${monthNames[firstDate.getMonth()]} ${firstDate.getDate()}–${lastDate.getDate()}, ${lastDate.getFullYear()}`;
+
+  // ── Day-of-week labels ──
+  const dayLabels = allDates.map(d => {
+    const dt = new Date(d + 'T00:00:00');
+    return { day: dt.getDate(), dow: dt.getDay() }; // 0=Sun
+  });
+
+  // ── Build table ──
+  let html = `
+    <div class="att-grid-wrap">
+      <table class="att-grid-table">
+        <thead>
+          <tr>
+            <th>DURATION</th>
+            <th colspan="${allDates.length}" style="text-align:center">${rangeLabel}</th>
+            <th></th>
+          </tr>
+          <tr>
+            <th>NAME</th>
+            ${dayLabels.map(dl =>
+              `<th class="${dl.dow === 0 ? 'att-grid-sunday' : ''}">${dl.day}</th>`
+            ).join('')}
+            <th style="border-left:2px solid rgba(255,255,255,0.3);padding:0 8px">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  employees.forEach(empName => {
+    const emp = empMap[empName];
+    const firstName = empName.split(' ')[0].toUpperCase();
+
+    // Count totals
+    let attTotal  = 0;
+    let twoManTotal = 0;
+
+    // Attendance row
+    html += `<tr class="att-grid-name-row">`;
+    html += `<td class="att-grid-name">${firstName}</td>`;
+
+    allDates.forEach(d => {
+      const cell = emp.days[d];
+      const isSun = new Date(d + 'T00:00:00').getDay() === 0;
+      if (cell && cell.attended) {
+        attTotal++;
+        const errClass = cell.correct === false ? 'att-err' : 'att-yes';
+        html += `<td class="att-grid-cell ${errClass}${isSun ? ' att-grid-sunday' : ''}">1</td>`;
+      } else {
+        html += `<td class="att-grid-cell${isSun ? ' att-grid-sunday' : ''}"></td>`;
+      }
+    });
+
+    html += `<td class="att-grid-total">${attTotal || ''}</td>`;
+    html += `</tr>`;
+
+    // 2-Man Team row
+    html += `<tr>`;
+    html += `<td class="att-grid-2man-label">2-Man Team</td>`;
+
+    allDates.forEach(d => {
+      const cell = emp.days[d];
+      const isSun = new Date(d + 'T00:00:00').getDay() === 0;
+      if (cell && cell.twoMan) {
+        twoManTotal++;
+        html += `<td class="att-grid-cell att-2man${isSun ? ' att-grid-sunday' : ''}">1</td>`;
+      } else {
+        html += `<td class="att-grid-cell${isSun ? ' att-grid-sunday' : ''}"></td>`;
+      }
+    });
+
+    html += `<td class="att-grid-total att-2man">${twoManTotal || ''}</td>`;
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+
+  // ── Legend ──
+  html += `
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px;padding:0 4px">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-weight:500">
+        <span style="font-size:13px;font-weight:700;color:var(--text)">1</span> Attended
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-weight:500">
+        <span style="font-size:13px;font-weight:700;color:var(--red)">1</span> 2-Man Team
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-weight:500">
+        <span style="font-size:13px;font-weight:700;color:var(--orange)">1</span> Flag mismatch
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-weight:500">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(179,37,51,0.05)"></span> Sunday
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
 
 // Helper: Google Sheets fetch
 async function gSheets(range) {
