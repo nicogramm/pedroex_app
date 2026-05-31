@@ -3833,30 +3833,34 @@ function editPayrollHistory() {
   if (!r) return;
 
   currentPayrollData = {
-    name:          r[1],
-    period:        r[2],
-    attYes:        parseInt(r[29] || 0), // ✅ FIXED — AD column
-    attMeals:      parseInt(r[30] || 0), // ✅ FIXED — AE column
-    attNo:         parseInt(r[31] || 0), // ✅ FIXED — AF column
-    twoManDays:    r[17] || 0,
-    periodAdv:     parseFloat(r[4] || 0),
-    existingAdv:   parseFloat(r[6] || 0),
-    totalAdv:      parseFloat(r[7] || 0),
-    empSSS:        parseFloat(r[9] || 0),
-    empPagibig:    parseFloat(r[11] || 0),
-    empPhilHealth: parseFloat(r[13] || 0),
-    totalContrib:  parseFloat(r[9] || 0) + parseFloat(r[11] || 0) + parseFloat(r[13] || 0),
-    basePay:       parseFloat(r[25] || 0) - parseFloat(r[18] || 0) - parseFloat(r[26] || 0),
-    twoManPay:     parseFloat(r[18] || 0),
-    mealPay:       parseFloat(r[26] || 0),
-    grossPay:      parseFloat(r[25] || 0),
-    savingsPlan:   parseFloat(r[21] || 0),
-    deductedAdv:   parseFloat(r[14] || 0),
-    remainingAdv:  parseFloat(r[16] || 0),
-    totalDed:      parseFloat(r[15] || 0),
-    netPay:        parseFloat(r[27] || 0),
-    twoManDates:   r[28] || '', // ✅ FIXED — AC column (Comments)
-    payrollId:     r[0]
+    name:              r[1],
+    period:            r[2],
+    attYes:            parseInt(r[29] || 0),
+    attMeals:          parseInt(r[30] || 0),
+    attNo:             parseInt(r[31] || 0),
+    twoManDays:        r[17] || 0,
+    periodAdv:         parseFloat(r[4] || 0),
+    existingAdv:       parseFloat(r[6] || 0),
+    totalAdv:          parseFloat(r[7] || 0),
+    empSSS:            parseFloat(r[9]  || 0),
+    empPagibig:        parseFloat(r[11] || 0),
+    empPhilHealth:     parseFloat(r[13] || 0),
+    totalContrib:      parseFloat(r[9]  || 0) + parseFloat(r[11] || 0) + parseFloat(r[13] || 0),
+    // ✅ PEDROEX — restore from saved sheet columns
+    pedroexSSS:        parseFloat(r[8]  || 0),
+    pedroexPagibig:    parseFloat(r[10] || 0),
+    pedroexPhilHealth: parseFloat(r[12] || 0),
+    basePay:           parseFloat(r[25] || 0) - parseFloat(r[18] || 0) - parseFloat(r[26] || 0),
+    twoManPay:         parseFloat(r[18] || 0),
+    mealPay:           parseFloat(r[26] || 0),
+    grossPay:          parseFloat(r[25] || 0),
+    savingsPlan:       parseFloat(r[21] || 0),
+    deductedAdv:       parseFloat(r[14] || 0),
+    remainingAdv:      parseFloat(r[16] || 0),
+    totalDed:          parseFloat(r[15] || 0),
+    netPay:            parseFloat(r[27] || 0),
+    twoManDates:       r[28] || '',
+    payrollId:         r[0]
   };
 
   showPayrollResult();
