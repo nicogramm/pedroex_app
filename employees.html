@@ -1704,6 +1704,17 @@ async function savePayrollToHistory() {
   var data     = currentPayrollData;
   var comments = document.getElementById('payroll-comments').value.trim();
 
+  // ✅ TEMP DEBUG — tanggalin pagkatapos
+  console.log('CONTRIBUTIONS CHECK:', {
+    period:           selectedPeriod,
+    empSSS:           data.empSSS,
+    empPagibig:       data.empPagibig,
+    empPhilHealth:    data.empPhilHealth,
+    pedroexSSS:       data.pedroexSSS,
+    pedroexPagibig:   data.pedroexPagibig,
+    pedroexPhilHealth:data.pedroexPhilHealth,
+  });
+
   if (!data.deductedAdv && data.deductedAdv !== 0) {
     showToast('Please enter advance deduction amount first.');
     return;
