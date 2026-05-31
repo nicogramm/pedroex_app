@@ -757,6 +757,91 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   font-size: 24px;
   font-weight: 700;
 }
+
+/* ═══════════════════════════════════════
+   ADMIN TABS + VALIDATION
+═══════════════════════════════════════ */
+.tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.tab-btn.active {
+  background: var(--red);
+  color: white;
+  box-shadow: 0 4px 12px rgba(179, 37, 51, 0.35);
+}
+.tab-btn:not(.active):active { box-shadow: var(--neu-in) }
+
+.val-trip-group {
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow: var(--neu-out);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.val-att-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.val-att-row:last-child { border-bottom: none }
+.val-avatar {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: var(--neu-xs);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  color: var(--text2); flex-shrink: 0;
+}
+.val-flag {
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 3px 7px; border-radius: 6px;
+}
+.val-flag.ok   { background: rgba(39,174,96,0.15);  color: var(--green) }
+.val-flag.err  { background: rgba(179,37,51,0.15);  color: var(--red) }
+.val-flag.warn { background: rgba(243,156,18,0.15); color: var(--orange) }
+.val-flag.info { background: rgba(41,128,185,0.15); color: #2980b9 }
+
+.val-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.val-chip {
+  background: var(--bg);
+  border-radius: 14px;
+  box-shadow: var(--neu-out);
+  padding: 12px 8px;
+  text-align: center;
+}
+.val-chip .chip-num {
+  font-size: 20px; font-weight: 700;
+  color: var(--text); line-height: 1;
+}
+.val-chip .chip-lbl {
+  font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text3); margin-top: 4px;
+}
+.val-chip.ok   .chip-num { color: var(--green) }
+.val-chip.warn .chip-num { color: var(--orange) }
+.val-chip.err  .chip-num { color: var(--red) }
+
 </style>
 </head>
 <body>
@@ -776,36 +861,49 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
   </div>
 </div>
 
+<!-- ✅ ADMIN TAB BAR — visible only when isAdmin -->
+<div id="admin-tab-bar" style="display:none; background:var(--bg); padding:10px 16px 0; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+  <div style="display:flex; gap:8px; background:var(--bg); border-radius:16px; box-shadow:var(--neu-in); padding:6px;">
+    <button class="tab-btn active" id="tab-advances" onclick="switchAdminTab('advances')">💰 Advances</button>
+    <button class="tab-btn" id="tab-payroll" onclick="switchAdminTab('payroll')">🧮 Payroll</button>
+    <button class="tab-btn" id="tab-validation" onclick="switchAdminTab('validation')">✅ Validation</button>
+  </div>
+</div>
+
+
 <!-- PAGE CONTENT -->
 <div class="page-wrap" id="page-wrap">
   
   <!-- ADMIN SECTION: ADVANCES CALENDAR -->
   <div id="admin-section" style="display:none">
 
-      <!-- PAYROLL HISTORY SECTION -->
-      <div class="section-divider"></div>
-      <div class="section-header">
-        <h3 class="section-title">Payroll History</h3>
-        <p class="section-subtitle">Saved payroll records</p>
-      </div>
+  <!-- ══════════════════════════════════
+       TAB 1: ADVANCES & PAYROLL HISTORY
+  ═══════════════════════════════════ -->
+  <div id="admin-tab-advances">
 
-      <div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px">
-        <div style="display:flex;gap:10px;margin-bottom:14px">
-          <select class="filter-select" id="hist-filter-emp" onchange="loadHistory()" style="flex:1">
-            <option value="">All Employees</option>
-          </select>
-          <input type="month" class="filter-input" id="hist-filter-month" onchange="loadHistory()" style="flex:1">
-        </div>
-        <div id="history-loading" class="loading" style="display:none"><div class="spinner"></div></div>
-        <div id="history-list"></div>
-        <div id="history-empty" class="empty-state" style="display:none">
-          <div class="empty-icon">📄</div>
-          <div class="empty-text">No payroll history found.</div>
-        </div>
+    <!-- PAYROLL HISTORY SECTION -->
+    <div class="section-divider"></div>
+    <div class="section-header">
+      <h3 class="section-title">Payroll History</h3>
+      <p class="section-subtitle">Saved payroll records</p>
+    </div>
+    <div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px">
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <select class="filter-select" id="hist-filter-emp" onchange="loadHistory()" style="flex:1">
+          <option value="">All Employees</option>
+        </select>
+        <input type="month" class="filter-input" id="hist-filter-month" onchange="loadHistory()" style="flex:1">
       </div>
+      <div id="history-loading" class="loading" style="display:none"><div class="spinner"></div></div>
+      <div id="history-list"></div>
+      <div id="history-empty" class="empty-state" style="display:none">
+        <div class="empty-icon">📄</div>
+        <div class="empty-text">No payroll history found.</div>
+      </div>
+    </div>
 
-    
-      <!-- FILTER BAR -->
+    <!-- FILTER BAR -->
     <div class="filter-bar">
       <div class="filter-row">
         <select class="filter-select" id="filter-employee" onchange="filterAdvances()">
@@ -814,10 +912,6 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
         <input type="month" class="filter-input" id="filter-month" onchange="filterAdvances()">
       </div>
     </div>
-      <div class="filter-row">
-        <input type="month" class="filter-input" id="filter-month" onchange="loadCalendar()">
-      </div>
-  
 
     <!-- CALENDAR -->
     <div class="calendar-container">
@@ -826,27 +920,18 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
         <div class="cal-month-year" id="cal-month-year">May 2025</div>
         <button class="cal-nav-btn" onclick="nextMonth()">›</button>
       </div>
-
       <div class="cal-weekdays">
-        <div class="cal-weekday">Sun</div>
-        <div class="cal-weekday">Mon</div>
-        <div class="cal-weekday">Tue</div>
-        <div class="cal-weekday">Wed</div>
-        <div class="cal-weekday">Thu</div>
-        <div class="cal-weekday">Fri</div>
+        <div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div>
+        <div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div>
+        <div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div>
         <div class="cal-weekday">Sat</div>
       </div>
-
-      <div class="cal-days" id="cal-days">
-        <!-- Generated by JS -->
-      </div>
+      <div class="cal-days" id="cal-days"></div>
     </div>
 
     <!-- ADVANCES LIST -->
     <div id="advances-list-container">
-      <div class="loading" id="advances-loading">
-        <div class="spinner"></div>
-      </div>
+      <div class="loading" id="advances-loading"><div class="spinner"></div></div>
       <div class="advances-list" id="advances-list"></div>
       <div class="empty-state" id="advances-empty" style="display:none">
         <div class="empty-icon">📋</div>
@@ -854,22 +939,23 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
       </div>
     </div>
 
-        <!-- PAYROLL CALCULATOR SECTION -->
-    <div class="section-divider"></div>
+  </div><!-- /admin-tab-advances -->
 
-    <div class="section-header">
+  <!-- ══════════════════════════════════
+       TAB 2: PAYROLL CALCULATOR
+  ═══════════════════════════════════ -->
+  <div id="admin-tab-payroll" style="display:none">
+
+    <div class="section-header" style="margin-top:4px">
       <h3 class="section-title">Payroll Calculator</h3>
       <p class="section-subtitle">Calculate employee salaries for selected period</p>
     </div>
 
     <div class="payroll-calc-card">
-      
-      <!-- Period Selection -->
       <div class="form-group">
         <label class="form-label">Select Month</label>
         <input type="month" class="form-input" id="payroll-month">
       </div>
-
       <div class="form-group">
         <label class="form-label">Payroll Period</label>
         <div class="period-selector">
@@ -881,179 +967,123 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
           </button>
         </div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Select Employee</label>
         <select class="form-select" id="payroll-employee">
           <option value="">Select Employee</option>
         </select>
       </div>
-
       <button class="btn btn-primary" style="width:100%; margin-top:20px" onclick="calculatePayroll()">
         🧮 Calculate Payroll
       </button>
-
     </div>
 
-    <!-- PAYROLL RESULT MODAL -->
-    <div class="modal" id="payroll-result-modal">
-      <div class="modal-content" style="max-width:500px">
-        <div class="modal-header">Payroll Summary</div>
-        
-        <div class="payroll-summary">
-          <div class="summary-employee">
-            <strong id="summary-name">—</strong>
-            <span id="summary-period">—</span>
-          </div>
+  </div><!-- /admin-tab-payroll -->
 
-          <div class="summary-section">
-            <div class="summary-label">ATTENDANCE</div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <span>With Meal Allowance (Yes)</span>
-                <strong id="summary-att-yes">0</strong>
-              </div>
-              <div class="summary-item">
-                <span>Meals Only</span>
-                <strong id="summary-att-meals">0</strong>
-              </div>
-              <div class="summary-item">
-                <span>No Meal (Base Pay Only)</span>
-                <strong id="summary-att-no">0</strong>
-              </div>
-              <div class="summary-item">
-                <span>2-Man Team Days</span>
-                <strong id="summary-2man">0</strong>
-              </div>
-            </div>
-          </div>
+  <!-- ══════════════════════════════════
+       TAB 3: ATTENDANCE VALIDATION
+  ═══════════════════════════════════ -->
+  <div id="admin-tab-validation" style="display:none">
 
-          <div class="summary-section">
-            <div class="summary-label">ADVANCES</div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <span>Advance 1</span>
-                <strong id="summary-adv1">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Advance 2</span>
-                <strong id="summary-adv2">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Existing Advances</span>
-                <strong id="summary-existing">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Total Advances</span>
-                <strong id="summary-total-adv">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Deducted from Salary</span>
-                <strong id="summary-deducted">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>New Existing Advances</span>
-                <strong id="summary-new-existing">₱0.00</strong>
-              </div>
-            </div>
-          </div>
+    <div class="section-header" style="margin-top:4px">
+      <h3 class="section-title">Attendance Validation</h3>
+      <p class="section-subtitle">Verify 2-Man Team flags vs Trips sheet</p>
+    </div>
 
-          <div class="summary-section">
-            <div class="summary-label">CONTRIBUTIONS</div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <span>Employee SSS</span>
-                <strong id="summary-emp-sss">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Employee Pag-IBIG</span>
-                <strong id="summary-emp-pagibig">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Employee PhilHealth</span>
-                <strong id="summary-emp-philhealth">₱0.00</strong>
-              </div>
-            </div>
-          </div>
+    <!-- SUB-TABS -->
+    <div style="display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:5px;margin-bottom:16px;">
+      <button class="tab-btn active" id="val-tab-report"   onclick="switchValTab('report')">📋 Report</button>
+      <button class="tab-btn"        id="val-tab-calendar" onclick="switchValTab('calendar')">📅 Calendar</button>
+      <button class="tab-btn"        id="val-tab-issues"   onclick="switchValTab('issues')">⚠️ Issues</button>
+    </div>
 
-          <div class="summary-section">
-            <div class="summary-label">EARNINGS</div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <span>Base Pay</span>
-                <strong id="summary-base">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>2-Man Team Bonus</span>
-                <strong id="summary-2man-pay">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Meal Allowance</span>
-                <strong id="summary-meal">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Gross Pay</span>
-                <strong id="summary-gross">₱0.00</strong>
-              </div>
-            </div>
-          </div>
+    <!-- FILTER -->
+    <div class="filter-bar">
+      <div class="filter-row">
+        <input type="month" class="filter-input" id="val-month">
+        <select class="filter-select" id="val-truck">
+          <option value="">All Trucks</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="runValidation()">
+        🔍 Run Validation
+      </button>
+    </div>
 
-          <div class="summary-section">
-            <div class="summary-label">DEDUCTIONS</div>
-            <div class="summary-grid">
-              <div class="summary-item">
-                <span>Savings Plan (5%)</span>
-                <strong id="summary-savings">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Advances Deducted</span>
-                <strong id="summary-adv-ded">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Gov't Contributions</span>
-                <strong id="summary-contrib">₱0.00</strong>
-              </div>
-              <div class="summary-item">
-                <span>Total Deductions</span>
-                <strong id="summary-total-ded">₱0.00</strong>
-              </div>
-            </div>
-          </div>
-
-          <!-- MANUAL ADVANCE DEDUCTION INPUT -->
-          <div class="summary-section">
-            <div class="summary-label">ADVANCE DEDUCTION (MANUAL)</div>
-            <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-              <span style="font-size:13px;color:var(--text2);white-space:nowrap">Deductions from Advances:</span>
-              <input type="number" id="manual-deduction" 
-                style="flex:1;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-in);padding:10px 14px;font-size:15px;font-weight:600;color:var(--text);font-family:Inter,sans-serif;outline:none"
-                placeholder="0.00" min="0" step="0.01" oninput="recalcNetPay()">
-            </div>
-          </div>
-
-          <div class="summary-net">
-            <span>NET PAY</span>
-            <strong id="summary-net">₱0.00</strong>
-          </div>
-
-        </div>
-
-        <!-- 2-MAN TEAM DATES COMMENT -->
-        <div class="summary-section">
-          <div class="summary-label">COMMENTS</div>
-          <textarea id="payroll-comments"
-            style="width:100%;background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);padding:12px 14px;font-size:13px;color:var(--text);font-family:Inter,sans-serif;outline:none;resize:none;min-height:80px;margin-top:8px"
-            placeholder="2-Man Team dates, e.g. Apr 1, 3, 7, 12..."></textarea>
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn btn-secondary" onclick="closePayrollResultModal()">Close</button>
-          <button class="btn btn-primary" onclick="savePayrollToHistory()">💾 Save to History</button>
-        </div>
+    <!-- SUMMARY STRIP -->
+    <div class="val-summary-strip" id="val-summary-strip" style="display:none">
+      <div class="val-chip">
+        <div class="chip-num" id="val-sum-trips">—</div>
+        <div class="chip-lbl">Trips</div>
+      </div>
+      <div class="val-chip ok">
+        <div class="chip-num" id="val-sum-ok">—</div>
+        <div class="chip-lbl">OK</div>
+      </div>
+      <div class="val-chip warn">
+        <div class="chip-num" id="val-sum-warn">—</div>
+        <div class="chip-lbl">Warnings</div>
+      </div>
+      <div class="val-chip err">
+        <div class="chip-num" id="val-sum-err">—</div>
+        <div class="chip-lbl">Errors</div>
       </div>
     </div>
 
-  </div>
+    <div class="loading" id="val-loading" style="display:none">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- REPORT VIEW -->
+    <div id="val-view-report">
+      <div id="val-report-content"></div>
+      <div class="empty-state" id="val-report-empty">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-text">Select a month and run validation<br>to see the attendance report.</div>
+      </div>
+    </div>
+
+    <!-- CALENDAR VIEW -->
+    <div id="val-view-calendar" style="display:none">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-weight:500">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green)"></div> All correct
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-weight:500">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--orange)"></div> Has warnings
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);font-weight:500">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--red)"></div> Has errors
+        </div>
+      </div>
+      <div class="calendar-container">
+        <div class="cal-header">
+          <button class="cal-nav-btn" onclick="valCalPrev()">‹</button>
+          <div class="cal-month-year" id="val-cal-label">—</div>
+          <button class="cal-nav-btn" onclick="valCalNext()">›</button>
+        </div>
+        <div class="cal-weekdays">
+          <div class="cal-weekday">Sun</div><div class="cal-weekday">Mon</div>
+          <div class="cal-weekday">Tue</div><div class="cal-weekday">Wed</div>
+          <div class="cal-weekday">Thu</div><div class="cal-weekday">Fri</div>
+          <div class="cal-weekday">Sat</div>
+        </div>
+        <div class="cal-days" id="val-cal-days"></div>
+      </div>
+    </div>
+
+    <!-- ISSUES VIEW -->
+    <div id="val-view-issues" style="display:none">
+      <div id="val-issues-content"></div>
+      <div class="empty-state" id="val-issues-empty" style="display:none">
+        <div class="empty-icon">✅</div>
+        <div class="empty-text">No issues found!<br>All attendance records match the trips.</div>
+      </div>
+    </div>
+
+  </div><!-- /admin-tab-validation -->
+
+</div><!-- /admin-section -->
 
       <!-- EMPLOYEE SECTION: OWN DATA ONLY -->
     <div id="employee-section" style="display:none">
@@ -1644,6 +1674,11 @@ async function init() {
     document.getElementById('admin-badge').style.display = 'inline-block';
     document.getElementById('admin-section').style.display = 'block';
     document.getElementById('add-btn').style.display = 'flex';
+
+    // ✅ Show tab bar (admin only)
+    document.getElementById('admin-tab-bar').style.display = 'block';
+    // ✅ Default month for validation
+    document.getElementById('val-month').value = monthStr;
     
     const now = new Date();
     const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -2718,6 +2753,504 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+// ═══════════════════════════════════════════════════════
+// ADMIN TAB SWITCHING
+// ═══════════════════════════════════════════════════════
+function switchAdminTab(tab) {
+  ['advances','payroll','validation'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`admin-tab-${t}`).style.display = t === tab ? 'block' : 'none';
+  });
+  // Add button — visible sa advances tab lang
+  document.getElementById('add-btn').style.display = tab === 'advances' ? 'flex' : 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+// VALIDATION SUB-TAB SWITCHING
+// ═══════════════════════════════════════════════════════
+function switchValTab(tab) {
+  ['report','calendar','issues'].forEach(t => {
+    document.getElementById(`val-tab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`val-view-${t}`).style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// VALIDATION STATE
+// ═══════════════════════════════════════════════════════
+let validationResults = [];
+let valCalYear  = new Date().getFullYear();
+let valCalMonth = new Date().getMonth();
+
+async function runValidation() {
+  const month = document.getElementById('val-month').value;
+  if (!month) { showToast('Pumili muna ng month.'); return; }
+
+  const [year, mon] = month.split('-').map(Number);
+  valCalYear  = year;
+  valCalMonth = mon - 1;
+
+  document.getElementById('val-loading').style.display        = 'flex';
+  document.getElementById('val-summary-strip').style.display  = 'none';
+  document.getElementById('val-report-empty').style.display   = 'none';
+  document.getElementById('val-issues-empty').style.display   = 'none';
+  document.getElementById('val-report-content').innerHTML     = '';
+  document.getElementById('val-issues-content').innerHTML     = '';
+
+  try {
+    const startStr = `${year}-${String(mon).padStart(2,'0')}-01`;
+    const endStr   = `${year}-${String(mon).padStart(2,'0')}-${new Date(year, mon, 0).getDate()}`;
+
+    const [tripsRes, attRes] = await Promise.all([
+      gSheets('Trips!A2:I'),
+      gSheets('Attendance!A2:K'),
+    ]);
+
+    const trips = (tripsRes.values || [])
+      .filter(r => (r[1]||'') >= startStr && (r[1]||'') <= endStr)
+      .map(r => ({
+        id:           r[0] || '',
+        deliveryDate: r[1] || '',
+        truck:        (r[2] || '').trim(),
+        freshFrozen:  r[4] || '',
+        route:        (r[7] || '').trim(),
+        isMasbate:    (r[7] || '').toLowerCase().includes('masbate'),
+      }));
+
+    const atts = (attRes.values || [])
+      .filter(r => (r[1]||'') >= startStr && (r[1]||'') <= endStr)
+      .map(r => ({
+        date:       r[1] || '',
+        name:       (r[2] || '').trim(),
+        twoManFlag: (r[3] || '').trim(),
+        truck:      (r[6] || '').trim(),
+      }));
+
+    // Populate truck filter
+    const trucks = [...new Set(trips.map(t => t.truck))].sort();
+    const truckSel = document.getElementById('val-truck');
+    truckSel.innerHTML = '<option value="">All Trucks</option>';
+    trucks.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t; o.textContent = t;
+      truckSel.appendChild(o);
+    });
+
+    // Run validation per trip
+    validationResults = trips.map(trip => {
+      const truckAtts = atts.filter(a =>
+        a.truck === trip.truck && a.date === trip.deliveryDate
+      );
+      return { trip, atts: truckAtts, ...validateTrip(trip, truckAtts) };
+    });
+
+    // Orphan attendance (walang matching trip)
+    const orphanAtts = atts.filter(a =>
+      !trips.some(t => t.truck === a.truck && t.deliveryDate === a.date)
+    );
+
+    document.getElementById('val-loading').style.display = 'none';
+    valRenderSummary();
+    valRenderReport();
+    valRenderCalendar();
+    valRenderIssues(orphanAtts);
+
+  } catch(err) {
+    document.getElementById('val-loading').style.display = 'none';
+    console.error(err);
+    showToast('❌ Validation error: ' + err.message);
+  }
+}
+
+function validateTrip(trip, truckAtts) {
+  const issues = [], attStatuses = [];
+  let status = 'ok';
+  const count = truckAtts.length;
+
+  if (count === 0) {
+    return {
+      status: 'warn',
+      issues: ['No attendance records para sa truck na ito sa araw na ito.'],
+      attStatuses: []
+    };
+  }
+
+  if (trip.isMasbate) {
+    // RULE: Masbate — lahat ay 2-Man Team = Yes (first day = delivery date)
+    truckAtts.forEach(a => {
+      const ok = a.twoManFlag === 'Yes';
+      if (!ok) { issues.push(`${a.name}: dapat YES (Masbate 1st day)`); status = 'err'; }
+      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'Yes', correct: ok });
+    });
+  } else if (count === 2) {
+    // RULE: Exactly 2 sa truck = 2-Man Team Yes
+    truckAtts.forEach(a => {
+      const ok = a.twoManFlag === 'Yes';
+      if (!ok) { issues.push(`${a.name}: dapat YES (2 lang sa truck)`); status = 'err'; }
+      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'Yes', correct: ok });
+    });
+  } else if (count >= 3) {
+    // RULE: 3+ sa truck = NOT 2-Man Team
+    truckAtts.forEach(a => {
+      const ok = a.twoManFlag === 'No';
+      if (!ok) { issues.push(`${a.name}: dapat NO (3+ tao sa truck)`); status = 'err'; }
+      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: 'No', correct: ok });
+    });
+  } else {
+    // 1 person lang — warning
+    issues.push('1 person lang sa truck — possible missing attendance entry.');
+    status = 'warn';
+    truckAtts.forEach(a =>
+      attStatuses.push({ name: a.name, actual: a.twoManFlag, expected: '—', correct: null })
+    );
+  }
+
+  return { status, issues, attStatuses };
+}
+
+function valRenderSummary() {
+  document.getElementById('val-sum-trips').textContent = validationResults.length;
+  document.getElementById('val-sum-ok').textContent    = validationResults.filter(r => r.status === 'ok').length;
+  document.getElementById('val-sum-warn').textContent  = validationResults.filter(r => r.status === 'warn').length;
+  document.getElementById('val-sum-err').textContent   = validationResults.filter(r => r.status === 'err').length;
+  document.getElementById('val-summary-strip').style.display = 'grid';
+}
+
+function valRenderReport() {
+  const container = document.getElementById('val-report-content');
+  container.innerHTML = '';
+  if (!validationResults.length) {
+    document.getElementById('val-report-empty').style.display = 'block';
+    return;
+  }
+
+  // Group by date
+  const byDate = {};
+  validationResults.forEach(r => {
+    const d = r.trip.deliveryDate;
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(r);
+  });
+
+  Object.keys(byDate).sort().forEach(dateStr => {
+    const dayResults = byDate[dateStr];
+    const hasErr  = dayResults.some(r => r.status === 'err');
+    const hasWarn = dayResults.some(r => r.status === 'warn');
+    const icon    = hasErr ? '🔴' : hasWarn ? '🟡' : '🟢';
+
+    const d = new Date(dateStr + 'T00:00:00');
+    const label = d.toLocaleDateString('en-PH', { weekday:'short', month:'short', day:'numeric' });
+
+    const sec = document.createElement('div');
+    sec.style.marginBottom = '20px';
+    sec.innerHTML = `
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+                  color:var(--text3);margin-bottom:10px;padding-bottom:6px;
+                  border-bottom:1px solid var(--shadow-d)">
+        ${icon} ${label}
+      </div>`;
+
+    dayResults.forEach(r => {
+      const statusIcon = r.status === 'ok' ? '✅' : r.status === 'warn' ? '⚠️' : '❌';
+      const badgeBg = r.trip.isMasbate
+        ? 'rgba(41,128,185,0.15);color:#2980b9'
+        : r.trip.freshFrozen === 'Fresh'
+          ? 'rgba(39,174,96,0.15);color:var(--green)'
+          : 'rgba(179,37,51,0.12);color:var(--red)';
+      const badgeLabel = r.trip.isMasbate ? 'Masbate' : r.trip.freshFrozen;
+
+      const card = document.createElement('div');
+      card.className = 'val-trip-group';
+      card.style.cursor = 'pointer';
+      card.onclick = () => valShowDayDetail(dateStr);
+
+      const attHtml = r.attStatuses.length
+        ? r.attStatuses.map(a => {
+            const cls      = a.correct === true ? 'ok' : a.correct === false ? 'err' : 'warn';
+            const initials = a.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+            return `
+              <div class="val-att-row">
+                <div class="val-avatar">${initials}</div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);flex:1">${a.name}</div>
+                <div style="display:flex;gap:6px">
+                  <span class="val-flag ${cls}">${a.actual || '—'}</span>
+                  ${a.correct === false
+                    ? `<span class="val-flag err">→ ${a.expected}</span>`
+                    : ''}
+                </div>
+              </div>`;
+          }).join('')
+        : `<div style="font-size:12px;color:var(--text3);padding:8px 0">No attendance records</div>`;
+
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;
+                    margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--shadow-d)">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text)">
+              ${statusIcon} ${r.trip.truck}
+            </div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">
+              ${r.trip.route} · ${r.atts.length} attendee${r.atts.length !== 1 ? 's' : ''}
+            </div>
+          </div>
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;
+                       letter-spacing:0.5px;padding:4px 10px;border-radius:8px;
+                       background:${badgeBg};white-space:nowrap;margin-left:8px">
+            ${badgeLabel}
+          </span>
+        </div>
+        ${attHtml}
+        ${r.issues.length
+          ? `<div style="margin-top:8px;padding:8px 10px;background:rgba(179,37,51,0.07);border-radius:8px">
+               ${r.issues.map(i => `<div style="font-size:11px;color:var(--red);font-weight:500;padding:2px 0">⚠ ${i}</div>`).join('')}
+             </div>`
+          : ''}
+      `;
+      sec.appendChild(card);
+    });
+
+    container.appendChild(sec);
+  });
+}
+
+function valRenderCalendar() {
+  const map = {};
+  validationResults.forEach(r => {
+    const d = r.trip.deliveryDate;
+    if (!map[d]) map[d] = r.status;
+    else if (r.status === 'err') map[d] = 'err';
+    else if (r.status === 'warn' && map[d] !== 'err') map[d] = 'warn';
+  });
+  valDrawCalendar(map);
+}
+
+function valDrawCalendar(map) {
+  const monthNames = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+  document.getElementById('val-cal-label').textContent =
+    `${monthNames[valCalMonth]} ${valCalYear}`;
+
+  const firstDay    = new Date(valCalYear, valCalMonth, 1).getDay();
+  const daysInMonth = new Date(valCalYear, valCalMonth + 1, 0).getDate();
+  const today       = new Date();
+  const isNow = today.getFullYear() === valCalYear && today.getMonth() === valCalMonth;
+
+  const container = document.getElementById('val-cal-days');
+  container.innerHTML = '';
+
+  for (let i = 0; i < firstDay; i++) {
+    const e = document.createElement('div');
+    e.className = 'cal-day empty';
+    container.appendChild(e);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${valCalYear}-${String(valCalMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dayEl   = document.createElement('div');
+    dayEl.className = 'cal-day' + (isNow && day === today.getDate() ? ' today' : '');
+    dayEl.style.cssText = `
+      min-height:62px; max-height:62px; padding:5px 3px;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:flex-start; overflow:hidden;
+    `;
+
+    const numEl = document.createElement('div');
+    numEl.className = 'cal-day-num';
+    numEl.textContent = day;
+    dayEl.appendChild(numEl);
+
+    const status = map[dateStr];
+    if (status) {
+      const pip = document.createElement('div');
+      pip.style.cssText = `
+        width:8px; height:8px; border-radius:50%; margin-top:3px;
+        background:${status === 'err' ? 'var(--red)' : status === 'warn' ? 'var(--orange)' : 'var(--green)'};
+      `;
+      dayEl.appendChild(pip);
+
+      const cnt = validationResults.filter(r => r.trip.deliveryDate === dateStr).length;
+      if (cnt > 1) {
+        const cntEl = document.createElement('div');
+        cntEl.style.cssText = 'font-size:8px;color:var(--text3);font-weight:700;margin-top:2px';
+        cntEl.textContent = cnt + 't';
+        dayEl.appendChild(cntEl);
+      }
+    }
+
+    dayEl.onclick = () => valShowDayDetail(dateStr);
+    container.appendChild(dayEl);
+  }
+}
+
+function valCalPrev() {
+  valCalMonth--;
+  if (valCalMonth < 0) { valCalMonth = 11; valCalYear--; }
+  valRenderCalendar();
+}
+function valCalNext() {
+  valCalMonth++;
+  if (valCalMonth > 11) { valCalMonth = 0; valCalYear++; }
+  valRenderCalendar();
+}
+
+function valShowDayDetail(dateStr) {
+  const dayResults = validationResults.filter(r => r.trip.deliveryDate === dateStr);
+  if (!dayResults.length) { showToast('Walang trips sa araw na ito.'); return; }
+
+  const d = new Date(dateStr + 'T00:00:00');
+  document.getElementById('val-day-modal-title').textContent =
+    d.toLocaleDateString('en-PH', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  let html = '';
+  dayResults.forEach(r => {
+    const statusIcon = r.status === 'ok' ? '✅' : r.status === 'warn' ? '⚠️' : '❌';
+    const badgeBg    = r.trip.isMasbate
+      ? 'rgba(41,128,185,0.15);color:#2980b9'
+      : 'rgba(39,174,96,0.15);color:var(--green)';
+
+    html += `
+      <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--shadow-d)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text)">${statusIcon} ${r.trip.truck}</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">${r.trip.route}</div>
+          </div>
+          <span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;
+                       background:${badgeBg}">
+            ${r.trip.isMasbate ? 'Masbate' : r.trip.freshFrozen}
+          </span>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;
+                    letter-spacing:1px;color:var(--text3);margin-bottom:8px">
+          Attendance (${r.atts.length})
+        </div>
+        ${r.attStatuses.map(a => {
+          const cls      = a.correct === true ? 'ok' : a.correct === false ? 'err' : 'warn';
+          const initials = a.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+          return `
+            <div class="val-att-row">
+              <div class="val-avatar">${initials}</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);flex:1">${a.name}</div>
+              <div style="display:flex;gap:6px">
+                <span class="val-flag ${cls}">${a.actual || '—'}</span>
+                ${a.correct === false ? `<span class="val-flag err">→ ${a.expected}</span>` : ''}
+              </div>
+            </div>`;
+        }).join('')}
+        ${r.issues.length
+          ? `<div style="margin-top:10px;padding:10px;background:rgba(179,37,51,0.07);border-radius:8px">
+               ${r.issues.map(i => `<div style="font-size:11px;color:var(--red);font-weight:500;padding:2px 0">⚠ ${i}</div>`).join('')}
+             </div>`
+          : ''}
+      </div>`;
+  });
+
+  document.getElementById('val-day-modal-body').innerHTML = html;
+  document.getElementById('val-day-modal').classList.add('active');
+}
+
+function valRenderIssues(orphanAtts) {
+  const container = document.getElementById('val-issues-content');
+  container.innerHTML = '';
+  let hasContent = false;
+
+  const errors   = validationResults.filter(r => r.status === 'err');
+  const warnings = validationResults.filter(r => r.status === 'warn');
+
+  // ── ERRORS ──
+  if (errors.length) {
+    hasContent = true;
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';
+    hdr.textContent = `❌ Errors (${errors.length})`;
+    container.appendChild(hdr);
+
+    errors.forEach(r => {
+      const d = new Date(r.trip.deliveryDate + 'T00:00:00');
+      const div = document.createElement('div');
+      div.style.cssText = 'background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid var(--red);padding:14px 16px;margin-bottom:10px;cursor:pointer';
+      div.onclick = () => valShowDayDetail(r.trip.deliveryDate);
+      div.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">
+            ${r.trip.truck}${r.trip.isMasbate ? ' · Masbate' : ''}
+          </div>
+          <div style="font-size:11px;color:var(--text3)">
+            ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">
+          ${r.issues.map(i => `• ${i}`).join('<br>')}
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+
+  // ── WARNINGS ──
+  if (warnings.length) {
+    hasContent = true;
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';
+    hdr.textContent = `⚠️ Warnings (${warnings.length})`;
+    container.appendChild(hdr);
+
+    warnings.forEach(r => {
+      const d   = new Date(r.trip.deliveryDate + 'T00:00:00');
+      const div = document.createElement('div');
+      div.style.cssText = 'background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid var(--orange);padding:14px 16px;margin-bottom:10px';
+      div.innerHTML = `
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">
+          ${r.trip.truck} · ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">
+          ${r.issues.map(i => `• ${i}`).join('<br>')}
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+
+  // ── ORPHAN ATTENDANCE ──
+  if (orphanAtts.length) {
+    hasContent = true;
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2980b9;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';
+    hdr.textContent = `ℹ️ Attendance na walang Trip record (${orphanAtts.length})`;
+    container.appendChild(hdr);
+
+    const grouped = {};
+    orphanAtts.forEach(a => {
+      const key = `${a.date}|${a.truck}`;
+      if (!grouped[key]) grouped[key] = { date: a.date, truck: a.truck, names: [] };
+      grouped[key].names.push(a.name);
+    });
+
+    Object.values(grouped).forEach(g => {
+      const d   = new Date(g.date + 'T00:00:00');
+      const div = document.createElement('div');
+      div.style.cssText = 'background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid #2980b9;padding:14px 16px;margin-bottom:10px';
+      div.innerHTML = `
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">
+          ${g.truck} · ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}
+        </div>
+        <div style="font-size:12px;color:var(--text2)">
+          Walang trip record para sa truck na ito sa araw na ito.<br>
+          <b>Employees:</b> ${g.names.join(', ')}
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+
+  if (!hasContent) document.getElementById('val-issues-empty').style.display = 'block';
+}
+
+// Helper: Google Sheets fetch
+async function gSheets(range) {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`;
+  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+  if (!res.ok) throw new Error(`Sheets API error: ${res.status}`);
+  return res.json();
+}
+
 init();
 
 async function loadHistory() {
@@ -3267,6 +3800,19 @@ function resetPayrollModal() {
       <button class="btn btn-secondary" onclick="document.getElementById('history-detail-modal').classList.remove('active')">Close</button>
     </div>
   </div>
+
+  <!-- VALIDATION DAY DETAIL MODAL -->
+<div class="modal" id="val-day-modal">
+  <div class="modal-content">
+    <div class="modal-header" id="val-day-modal-title">Day Detail</div>
+    <div id="val-day-modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary"
+        onclick="document.getElementById('val-day-modal').classList.remove('active')"
+        style="width:100%">Close</button>
+    </div>
+  </div>
+</div>
 </div>
 
 
