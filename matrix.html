@@ -1632,16 +1632,16 @@
                 name:             r[1]  || '',
                 period:           r[2]  || '',
                 attendance:       parseFloat(r[3])  || 0,
-                grossBasePay:     parseFloat(r[24]) || 0,  // Col Y
-                mealAllowance:    parseFloat(r[25]) || 0,  // Col Z
-                totalNetPay:      parseFloat(r[26]) || 0,  // Col AA
-                totalDeductions:  parseFloat(r[15]) || 0,  // Col P
+                grossBasePay:     parseFloat(r[25]) || 0,  // Col Z — Gross Base Pay
+                mealAllowance:    parseFloat(r[26]) || 0,  // Col AA — Total Meal Allowance
+                totalNetPay:      parseFloat(r[27]) || 0,  // Col AB — Total Net Pay
+                totalDeductions:  parseFloat(r[15]) || 0,  // Col P — Total Deductions
                 pedroSSS:         parseFloat(r[8])  || 0,  // Col I
                 pedroPagibig:     parseFloat(r[10]) || 0,  // Col K
                 pedroPhilhealth:  parseFloat(r[12]) || 0,  // Col M
-                twoManPay:        parseFloat(r[18]) || 0,  // Col S
-                savingsPlanTotal: parseFloat(r[21]) || 0,  // Col V
-            })).filter(r => r.name && r.period);
+                twoManPay:        parseFloat(r[18]) || 0,  // Col S — Total Additional Pay (2-Man)
+                savingsPlanTotal: parseFloat(r[21]) || 0,  // Col V — Savings Plan Total
+               })).filter(r => r.name && r.period);
 
 
                 employeeRows.forEach(r => {
@@ -4771,6 +4771,8 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                   + e.pedroPagibig             // plus employer share ng Pag-IBIG
                   + e.pedroPhilhealth          // plus employer share ng PhilHealth
                   + thirteenthAccrual;         // plus 13th month accrual
+
+                  e.totalEmployerCost = employerCost;  // ← DAGDAG ITO
 
                 totalGrossPay  += e.grossBasePay;
                 totalMeals     += e.mealAllowance;
