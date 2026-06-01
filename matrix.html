@@ -4399,13 +4399,12 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             const netProfit = totalRevenue - totalExpenses;
             const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
 
-            const avgProfitPerTrip = trips.length > 0 ? netProfit / trips.length : 0;
+           const avgProfitPerTrip = trips.length > 0 ? netProfit / trips.length : 0;
             const avgProfitPerDay = dates.length > 0 ? netProfit / dates.length : 0;
 
             const trucks = [...new Set(trips.map(t => t.truck))];
-            const utilization = trucks.length > 0 && dates.length > 0 
-                ? (trips.length / (trucks.length * dates.length) * 100)
-                : 0;
+            const denominator = trucks.length * dates.length;
+            const utilization = denominator > 0 ? (trips.length / denominator * 100) : 0;
 
             document.getElementById('kpi-avg-trip').textContent = formatCompact(avgProfitPerTrip);
             document.getElementById('kpi-avg-day').textContent = formatCompact(avgProfitPerDay);
