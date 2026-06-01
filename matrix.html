@@ -4714,12 +4714,9 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                         name: r.name,
                         attendance: 0,
                         grossBasePay: 0,
-                        mealAllowance: 0,
-                        twoManPay: 0,
                         pedroSSS: 0,
                         pedroPagibig: 0,
                         pedroPhilhealth: 0,
-                        savingsPlanTotal: 0,
                         totalDeductions: 0,
                         totalNetPay: 0,
                         periods: 0
@@ -4740,7 +4737,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             });
 
             // Add 13th month accrual per employee
-            let totalGrossPay = 0, totalMeals = 0, totalTwoMan = 0;
+            let totalGrossPay = 0
             let totalSSS = 0, totalPagibig = 0, totalPhilhealth = 0;
             let total13th = 0, grandTotal = 0;
 
@@ -4763,20 +4760,16 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 e.isDriver = isDriver;
 
            // Gross Base Pay - Total Deductions + 2-Man Pay + Savings Plan + 13th Month + Employer Contributions
-              const employerCost = e.grossBasePay 
-                  - e.totalDeductions          // minus lahat ng deductions (advances, employee share ng SSS etc.)
-                  + e.twoManPay                // plus 2-man team bonus
-                  + e.savingsPlanTotal         // plus savings plan (ikaw ang nagbabayad)
-                  + e.pedroSSS                 // plus employer share ng SSS
-                  + e.pedroPagibig             // plus employer share ng Pag-IBIG
-                  + e.pedroPhilhealth          // plus employer share ng PhilHealth
-                  + thirteenthAccrual;         // plus 13th month accrual
+            const employerCost = e.grossBasePay
+              + e.pedroSSS
+              + e.pedroPagibig
+              + e.pedroPhilhealth
+              - e.totalDeductions
+              + thirteenthAccrual;
 
                   e.totalEmployerCost = employerCost;  // ← DAGDAG ITO
 
                 totalGrossPay  += e.grossBasePay;
-                totalMeals     += e.mealAllowance;
-                totalTwoMan    += e.twoManPay;
                 totalSSS       += e.pedroSSS;
                 totalPagibig   += e.pedroPagibig;
                 totalPhilhealth+= e.pedroPhilhealth;
@@ -4823,13 +4816,11 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             <div style="background:var(--bg2);border-radius:12px;padding:14px;box-shadow:var(--neu-in);margin-bottom:16px">
                 <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Cost Breakdown</div>
                 ${[
-                    ['👷 Gross Base Pay',    totalGrossPay,   'var(--text)'],
-                    ['🍱 Meal Allowance',    totalMeals,      'var(--text)'],
-                    ['👥 2-Man Team Bonus',  totalTwoMan,     'var(--text)'],
-                    ['🏛️ SSS (Employer)',    totalSSS,        'var(--blue)'],
-                    ['🏛️ Pag-IBIG (Employer)', totalPagibig, 'var(--blue)'],
-                    ['🏛️ PhilHealth (Employer)', totalPhilhealth, 'var(--blue)'],
-                    ['🎁 13th Month Accrual', total13th,      'var(--orange)'],
+                    ['👷 Gross Base Pay (incl. meals & 2-man)', totalGrossPay, 'var(--text)'],
+                    ['🏛️ SSS (Employer share)',                 totalSSS,      'var(--blue)'],
+                    ['🏛️ Pag-IBIG (Employer share)',            totalPagibig,  'var(--blue)'],
+                    ['🏛️ PhilHealth (Employer share)',          totalPhilhealth,'var(--blue)'],
+                    ['🎁 13th Month Accrual',                   total13th,     'var(--orange)'],
                 ].map(([label, amt, color]) => `
                     <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px">
                         <span style="color:var(--text2)">${label}</span>
@@ -4857,13 +4848,11 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                         </div>
                         <div style="font-size:16px;font-weight:700;color:var(--red)">${formatCurrency(e.totalEmployerCost)}</div>
                     </div>
-                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--text2)">
-                    <div>Base Pay: <strong style="color:var(--text)">${formatCurrency(e.grossBasePay)}</strong></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--text2)">
+                    <div>Gross Base Pay: <strong style="color:var(--text)">${formatCurrency(e.grossBasePay)}</strong></div>
                     <div>Deductions: <strong style="color:var(--red)">-${formatCurrency(e.totalDeductions)}</strong></div>
-                    <div>2-Man Bonus: <strong style="color:var(--text)">${formatCurrency(e.twoManPay)}</strong></div>
-                    <div>Savings Plan: <strong style="color:var(--green)">${formatCurrency(e.savingsPlanTotal)}</strong></div>
-                    <div>13th Month: <strong style="color:var(--orange)">${formatCurrency(e.thirteenthAccrual)}</strong></div>
                     <div>Gov't (Employer): <strong style="color:var(--blue)">${formatCurrency(e.pedroSSS + e.pedroPagibig + e.pedroPhilhealth)}</strong></div>
+                    <div>13th Month: <strong style="color:var(--orange)">${formatCurrency(e.thirteenthAccrual)}</strong></div>
                 </div>
                 </div>`;
             });
