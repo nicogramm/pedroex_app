@@ -1280,11 +1280,18 @@
                         <div id="top-performers"></div>
                     </div>
 
-                    <div class="section-card">
-                      <div class="section-title">
-                          <span class="icon">💼</span> Actual Payroll Cost
-                      </div>
-                      <div id="actual-payroll-content"></div>
+                              <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">💰</span> Actual Net Profit
+                    </div>
+                    <div id="actual-profit-content"></div>
+                  </div>
+
+                  <div class="section-card">
+                    <div class="section-title">
+                        <span class="icon">💼</span> Actual Payroll Cost
+                    </div>
+                    <div id="actual-payroll-content"></div>
                   </div>
                 </div>
             </div>
@@ -4399,6 +4406,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             renderTrendAnalysis();
             renderAlerts();
             renderTopPerformers();
+            renderActualProfitSummary();
             renderActualPayrollCost();
         }
 
@@ -4694,6 +4702,136 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 return monthKeys.some(mk => r.period.includes(mk.slice(0, 7)));
             });
         }
+
+        async function renderActualProfitSummary() {
+                const container = document.getElementById('actual-profit-content');
+                if (!container) return;
+
+                const trips = getFilteredTrips();
+                const expenses = getFilteredExpenses();
+
+                // Documentation total
+                const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+                let documentationTotal = 0;
+                tripDates.forEach(date => {
+                    const documentation = getDocumentationExpensesForDate(date);
+                    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+                });
+
+                // Estimated manpower (fallback)
+                const estimatedManpower = tripDates.reduce((sum, date) => {
+                    return sum + getManpowerExpensesForDate(date).reduce((s, m) => s + m.amount, 0);
+                }, 0);
+
+                // Actual payroll
+                const actualPayroll = getActualPayrollTotal();
+                const manpowerTotal = actualPayroll !== null ? actualPayroll : estimatedManpower;
+                const isActual = actualPayroll !== null;
+
+                const totalRevenue = trips.reduce((sum, t) => sum + t.rate, 0);
+                const operationalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+                const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
+                const netProfit = totalRevenue - totalExpenses;
+                const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+
+                // Diff vs estimated
+                const estimatedTotal = operationalExpenses + estimatedManpower + documentationTotal;
+                const estimatedProfit = totalRevenue - estimatedTotal;
+                const profitDiff = netProfit - estimatedProfit;
+
+                // VAT (async)
+                const vat = await calculateVAT(trips);
+
+                const periodLabels = {
+                    'month': 'This Month',
+                    'week': 'This Week',
+                    'year': 'Year to Date',
+                    'all': 'All Time',
+                    'pick': pickedMonth ? new Date(pickedMonth + '-01').toLocaleDateString('en-PH', { month: 'long', year: 'numeric' }) : 'Selected Month'
+                };
+                const periodLabel = periodLabels[currentPeriod] || 'Period';
+
+                container.innerHTML = `
+                    <!-- Net Profit Card -->
+                    <div style="background:linear-gradient(135deg,var(--red) 0%,#8f1e29 100%);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 8px 24px rgba(179,37,51,0.3);color:#fff">
+                        <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;opacity:0.8;margin-bottom:6px">
+                            Net Profit — ${periodLabel}
+                            <span style="font-size:9px;margin-left:6px;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:10px">
+                                ${isActual ? '📊 Actual Payroll' : '📋 Estimated'}
+                            </span>
+                        </div>
+                        <div style="font-size:34px;font-weight:800;letter-spacing:-1px;margin-bottom:4px">
+                            ${formatCurrency(netProfit)}
+                        </div>
+                        <div style="font-size:13px;font-weight:600;opacity:0.9;margin-bottom:16px">
+                            Margin: ${margin.toFixed(1)}% • ${trips.length} trip${trips.length !== 1 ? 's' : ''}
+                            ${isActual && profitDiff !== 0 ? `
+                            <span style="font-size:11px;margin-left:8px;background:rgba(255,255,255,0.15);padding:2px 8px;border-radius:10px">
+                                ${profitDiff > 0 ? '▲' : '▼'} ${formatCurrency(Math.abs(profitDiff))} vs estimated
+                            </span>` : ''}
+                        </div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:16px"></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+                            <div>
+                                <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:0.7;margin-bottom:4px">Revenue</div>
+                                <div style="font-size:18px;font-weight:700">${formatCompact(totalRevenue)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:0.7;margin-bottom:4px">Expenses</div>
+                                <div style="font-size:18px;font-weight:700">${formatCompact(totalExpenses)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:0.7;margin-bottom:4px">Manpower</div>
+                                <div style="font-size:18px;font-weight:700">${formatCompact(manpowerTotal)}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expense Breakdown mini -->
+                    <div style="background:var(--bg2);border-radius:14px;padding:14px;box-shadow:var(--neu-in);margin-bottom:14px">
+                        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Expense Breakdown</div>
+                        ${[
+                            ['⛽ Diesel',         expenses.filter(e=>e.category==='Diesel').reduce((s,e)=>s+e.amount,0),      'var(--orange)'],
+                            ['🔧 Maintenance',    expenses.filter(e=>e.category==='Maintenance').reduce((s,e)=>s+e.amount,0), 'var(--red)'],
+                            ['👷 Manpower',       manpowerTotal,                                                               'var(--green)'],
+                            ['📄 Documentation',  documentationTotal,                                                          'var(--blue)'],
+                            ['📦 Other',          expenses.filter(e=>e.category!=='Diesel'&&e.category!=='Maintenance').reduce((s,e)=>s+e.amount,0), 'var(--purple)'],
+                        ].filter(([,amt])=>amt>0).map(([label,amt,color])=>`
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px">
+                                <span style="color:var(--text2)">${label}</span>
+                                <div style="text-align:right">
+                                    <strong style="color:${color}">${formatCurrency(amt)}</strong>
+                                    <span style="font-size:10px;color:var(--text3);margin-left:6px">${totalExpenses>0?((amt/totalExpenses)*100).toFixed(1):'0'}%</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:13px;font-weight:700">
+                            <span style="color:var(--text)">Total Expenses</span>
+                            <strong style="color:var(--text)">${formatCurrency(totalExpenses)}</strong>
+                        </div>
+                    </div>
+
+                    <!-- VAT Summary Card -->
+                    <div style="background:linear-gradient(135deg,var(--blue) 0%,#1e40af 100%);border-radius:18px;padding:20px;box-shadow:0 8px 24px rgba(37,99,235,0.3);color:#fff">
+                        <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;opacity:0.8;margin-bottom:14px">BIR VAT Summary</div>
+                        <div style="height:1px;background:rgba(255,255,255,0.2);margin-bottom:14px"></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                            ${[
+                                ['Output VAT',  vat.outputVAT,      ''],
+                                ['Input VAT',   vat.inputVAT,       ''],
+                                ['Net Payable', vat.netVATPayable,  ''],
+                                ['VAT Savings', vat.vatSavings,     ''],
+                            ].map(([label, amt])=>`
+                                <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:12px;text-align:center">
+                                    <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:6px">${label}</div>
+                                    <div style="font-size:18px;font-weight:700">${formatCompact(amt)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
 
         function renderActualPayrollCost() {
             const container = document.getElementById('actual-payroll-content');
