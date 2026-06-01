@@ -1923,10 +1923,12 @@
                     const thisYear = today.slice(0, 4);
                     filtered = allExpenses.filter(e => e.date.startsWith(thisYear));
                     break;
-                case 'all':
-                case 'pick':
+            case 'all':
+                filtered = allExpenses;
+                break;
+            case 'pick':
                 if (!pickedMonth) { filtered = []; break; }
-                filtered = allTrips.filter(t => t.deliveryDate.startsWith(pickedMonth));
+                filtered = allExpenses.filter(e => e.date.startsWith(pickedMonth));
                 break;
                 default:
                     filtered = allExpenses;
@@ -4404,9 +4406,11 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
            const avgProfitPerTrip = trips.length > 0 ? netProfit / trips.length : 0;
             const avgProfitPerDay = dates.length > 0 ? netProfit / dates.length : 0;
 
-            const trucks = [...new Set(trips.map(t => t.truck))];
-            const denominator = trucks.length * dates.length;
-            const utilization = denominator > 0 ? (trips.length / denominator * 100) : 0;
+           const trucks = [...new Set(trips.map(t => t.truck))];
+          // Utilization = average trips per truck vs expected (1 trip per truck per active day)
+          const activeDays = dates.length;
+          const expectedTrips = trucks.length * activeDays;
+          const utilization = expectedTrips > 0 ? Math.min((trips.length / expectedTrips * 100), 100) : 0;
 
             document.getElementById('kpi-avg-trip').textContent = formatCompact(avgProfitPerTrip);
             document.getElementById('kpi-avg-day').textContent = formatCompact(avgProfitPerDay);
