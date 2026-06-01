@@ -4401,14 +4401,14 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
         // ═══════════════════════════════════════
         // INSIGHTS VIEW
         // ═══════════════════════════════════════
-        function renderInsightsView() {
-            renderKPIs();
-            renderTrendAnalysis();
-            renderAlerts();
-            renderTopPerformers();
-            renderActualProfitSummary();
-            renderActualPayrollCost();
-        }
+      async function renderInsightsView() {
+          renderKPIs();
+          renderTrendAnalysis();
+          renderAlerts();
+          renderTopPerformers();
+          await renderActualProfitSummary();
+          renderActualPayrollCost();
+      }
 
         function renderKPIs() {
             const trips = getFilteredTrips();
@@ -4702,6 +4702,54 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 return monthKeys.some(mk => r.period.includes(mk.slice(0, 7)));
             });
         }
+
+
+          function getActualPayrollTotal() {
+              const payrollRows = getPayrollForPeriod();
+              if (!payrollRows.length) return null;
+
+              const byEmployee = {};
+              payrollRows.forEach(r => {
+                  if (!byEmployee[r.name]) {
+                      byEmployee[r.name] = {
+                          name: r.name,
+                          grossBasePay: 0,
+                          pedroSSS: 0,
+                          pedroPagibig: 0,
+                          pedroPhilhealth: 0,
+                          totalDeductions: 0,
+                          periods: 0
+                      };
+                  }
+                  const e = byEmployee[r.name];
+                  e.grossBasePay    += r.grossBasePay;
+                  e.pedroSSS        += r.pedroSSS;
+                  e.pedroPagibig    += r.pedroPagibig;
+                  e.pedroPhilhealth += r.pedroPhilhealth;
+                  e.totalDeductions += r.totalDeductions;
+                  e.periods++;
+              });
+
+              let grandTotal = 0;
+              Object.values(byEmployee).forEach(e => {
+                  const pos = (employeeRoles[e.name] || employeeRoles[e.name.split(' ')[0]] || 'helper').toLowerCase();
+                  const isDriver = pos === 'driver';
+                  const monthsWorked = e.periods / 2;
+                  const thirteenthAccrual = isDriver
+                      ? DRIVER_13TH_MONTH_MONTHLY * monthsWorked
+                      : HELPER_13TH_MONTH_MONTHLY * monthsWorked;
+
+                  grandTotal += e.grossBasePay
+                      + e.pedroSSS
+                      + e.pedroPagibig
+                      + e.pedroPhilhealth
+                      - e.totalDeductions
+                      + thirteenthAccrual;
+              });
+
+              return grandTotal;
+          }
+
 
         async function renderActualProfitSummary() {
                 const container = document.getElementById('actual-profit-content');
