@@ -273,6 +273,46 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
   font-size:14px;color:var(--text2);font-weight:600;
 }
 
+/* REMINDER BANNER */
+.reminder-section { margin-bottom: 14px; display: none; }
+.reminder-header {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.reminder-item {
+  background: var(--bg); border-radius: 14px;
+  box-shadow: var(--neu-out); padding: 14px 16px;
+  margin-bottom: 10px; border-left: 4px solid var(--orange);
+  cursor: pointer; transition: box-shadow 0.15s;
+}
+.reminder-item:active { box-shadow: var(--neu-in); }
+.reminder-item.urgent { border-left-color: var(--red); }
+.reminder-truck { font-size: 14px; font-weight: 700; color: var(--text); }
+.reminder-date { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.reminder-flags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.rflag {
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 20px; color: #fff;
+}
+.rflag-shipnum { background: var(--red); }
+.rflag-shipdate { background: var(--orange); }
+.reminder-tap { font-size: 10px; color: var(--text3); margin-top: 6px; }
+.reminder-dismiss {
+  background: none; border: none; color: var(--text3);
+  font-size: 12px; font-weight: 600; font-family: Inter, sans-serif;
+  cursor: pointer; padding: 8px 0 0; width: 100%; text-align: right;
+}
+.reminder-dismiss:active { color: var(--text2); }
+.reminder-count {
+  background: var(--orange); color: #fff;
+  border-radius: 20px; padding: 2px 8px;
+  font-size: 10px; font-weight: 700; margin-left: auto;
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -327,6 +367,15 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
         </div>
       </div>
     </div>
+
+    <!-- REMINDER SECTION -->
+<div class="reminder-section" id="reminder-section">
+  <div class="reminder-header">
+    <span>🔔 Reminders</span>
+    <span class="reminder-count" id="reminder-count">0</span>
+  </div>
+  <div id="reminder-list"></div>
+</div>
 
     <!-- FILTER BAR -->
     <div id="filter-bar" class="neu-card" style="padding:14px;margin-bottom:14px;display:none">
@@ -520,8 +569,14 @@ const BASE_RATES = {
   'Masbate': 38661 // Set default for new route
 };
 
-// Current rates (will be adjusted)
-var currentRates = Object.assign({}, BASE_RATES);
+// Current rates — loaded from localStorage, falls back to BASE_RATES
+var currentRates = (function() {
+  try {
+    var saved = localStorage.getItem('pedroex-rates');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return Object.assign({}, BASE_RATES);
+})();
 
 // ═══ STATE ════════════════════════════════════════════
 var token        = '';
@@ -659,9 +714,10 @@ function applyRateAdjustment() {
     ROUTES.forEach(function(route) {
       currentRates[route] = calculateRate(route, adjustment);
     });
+    try { localStorage.setItem('pedroex-rates', JSON.stringify(currentRates)); } catch(e) {}
     closeConfirm();
     toggleRateSettings();
-    showToast('✅ Rates updated! New trips will use adjusted rates.');
+    showToast('✅ Rates updated and saved!');
   };
   document.getElementById('confirm-overlay').classList.add('open');
 }
@@ -755,6 +811,7 @@ function loadAll() {
     document.getElementById('wrap-loading').style.display = 'none';
     document.getElementById('filter-bar').style.display = '';
     document.getElementById('calendar-card').style.display = '';
+    buildReminders();
 
   }).catch(function(err) {
     document.getElementById('wrap-loading').style.display = 'none';
@@ -1096,6 +1153,7 @@ function saveEditTrip() {
       buildColorMap();
       renderLegend();
       renderCalendar();
+      buildReminders();
       if (selectedDay) selectDay(selectedDay);
       showToast('✅ Trip updated!');
     }).catch(function(err){ hideSaving(); showToast('❌ Update failed.'); console.error(err); });
@@ -1119,6 +1177,7 @@ function saveUserEdit() {
       selectedTrip.shipmentNumber = shipNum;
       closeTripSheet();
       renderCalendar();
+      buildReminders();
       if (selectedDay) selectDay(selectedDay);
       showToast('✅ Changes saved!');
     }).catch(function(err){ hideSaving(); showToast('❌ Save failed.'); console.error(err); });
@@ -1367,6 +1426,110 @@ function showToast(m) {
   var el=document.getElementById(id);
   if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
 });
+
+// ═══ REMINDER SYSTEM ══════════════════════════════════
+var dismissedReminders = (function() {
+  try { return JSON.parse(localStorage.getItem('pedroex-dismissed-reminders') || '[]'); }
+  catch(e) { return []; }
+})();
+
+function getReminderKey(trip) {
+  return trip.rowIndex + '-' + trip.deliveryDate + '-' + trip.truck;
+}
+
+function buildReminders() {
+  var section = document.getElementById('reminder-section');
+  var listEl  = document.getElementById('reminder-list');
+  var countEl = document.getElementById('reminder-count');
+
+  // For helpers: only show their trips (match by name in attendance)
+  // For admin: show all
+  // Source: allTrips — filter to last 60 days + future
+  var cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 60);
+  var cutoffStr = fmtDate(cutoff);
+
+  var reminders = allTrips.filter(function(t) {
+    if (!t.truck || !t.deliveryDate) return false;
+    if (t.deliveryDate < cutoffStr) return false;
+    var missingNum  = !t.shipmentNumber || t.shipmentNumber.trim() === '';
+    var missingDate = !t.shipmentDate  || t.shipmentDate.trim() === '';
+    return missingNum || missingDate;
+  });
+
+  // Remove dismissed ones (only if the issue they flagged is still present)
+  // Re-clean dismissed list: remove keys of trips that are now complete
+  var nowCompleteKeys = allTrips
+    .filter(function(t) {
+      var hasNum  = t.shipmentNumber && t.shipmentNumber.trim() !== '';
+      var hasDate = t.shipmentDate   && t.shipmentDate.trim()   !== '';
+      return hasNum && hasDate;
+    })
+    .map(getReminderKey);
+
+  dismissedReminders = dismissedReminders.filter(function(k) {
+    return nowCompleteKeys.indexOf(k) === -1;
+  });
+
+  try { localStorage.setItem('pedroex-dismissed-reminders', JSON.stringify(dismissedReminders)); } catch(e) {}
+
+  var visible = reminders.filter(function(t) {
+    return dismissedReminders.indexOf(getReminderKey(t)) === -1;
+  });
+
+  // Sort: missing shipment# (urgent) first, then by date desc
+  visible.sort(function(a, b) {
+    var aUrgent = !a.shipmentNumber || a.shipmentNumber.trim() === '';
+    var bUrgent = !b.shipmentNumber || b.shipmentNumber.trim() === '';
+    if (aUrgent !== bUrgent) return aUrgent ? -1 : 1;
+    return b.deliveryDate.localeCompare(a.deliveryDate);
+  });
+
+  if (!visible.length) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = '';
+  countEl.textContent = visible.length;
+
+  listEl.innerHTML = visible.map(function(t) {
+    var key = getReminderKey(t);
+    var missingNum  = !t.shipmentNumber || t.shipmentNumber.trim() === '';
+    var missingDate = !t.shipmentDate   || t.shipmentDate.trim()   === '';
+    var c = getTruckColor(t.truck);
+
+    return '<div class="reminder-item' + (missingNum ? ' urgent' : '') + '"'
+      + ' style="border-left-color:' + (missingNum ? 'var(--red)' : 'var(--orange)') + '">'
+      + '<div class="reminder-truck" style="color:' + c.bg + '">🚛 ' + t.truck + '</div>'
+      + '<div class="reminder-date">' + t.deliveryDate
+      + (t.route ? ' · 📍 ' + t.route : '')
+      + '</div>'
+      + '<div class="reminder-flags">'
+      + (missingNum  ? '<span class="rflag rflag-shipnum">⚠️ No Shipment #</span>' : '<span class="rflag" style="background:var(--green)">✅ Shipment # OK</span>')
+      + (missingDate ? '<span class="rflag rflag-shipdate">📅 No Shipment Date</span>' : '<span class="rflag" style="background:var(--green)">✅ Date OK</span>')
+      + '</div>'
+      + '<div class="reminder-tap">Tap to fill in details →</div>'
+      + '<button class="reminder-dismiss" onclick="dismissReminder(event, \'' + key + '\')">Dismiss ✕</button>'
+      + '</div>';
+  }).join('');
+
+  // Clicking the card opens the trip for editing
+  var items = listEl.querySelectorAll('.reminder-item');
+  visible.forEach(function(t, i) {
+    items[i].addEventListener('click', function(e) {
+      if (e.target.classList.contains('reminder-dismiss')) return;
+      openTripDetail(t.rowIndex);
+    });
+  });
+}
+
+function dismissReminder(e, key) {
+  e.stopPropagation();
+  dismissedReminders.push(key);
+  try { localStorage.setItem('pedroex-dismissed-reminders', JSON.stringify(dismissedReminders)); } catch(e) {}
+  buildReminders();
+}
 
 // ═══ REPORT MODAL ═════════════════════════════════════
 var reportTab = 'missing';
