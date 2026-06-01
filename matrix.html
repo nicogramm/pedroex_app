@@ -1032,6 +1032,15 @@
                 font-size: 18px;
             }
         }
+
+
+      .fi {
+        width:100%;background:var(--bg);border:none;border-radius:12px;
+        box-shadow:var(--neu-in);padding:12px 14px;color:var(--text);
+        font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;
+      }
+
+
     </style>
 </head>
 
@@ -1153,12 +1162,22 @@
                 </div>
 
                 <!-- Period Selector -->
-                <div class="period-selector">
-                    <button class="period-btn active" onclick="changePeriod('month')">This Month</button>
-                    <button class="period-btn" onclick="changePeriod('week')">This Week</button>
-                    <button class="period-btn" onclick="changePeriod('year')">Year to Date</button>
-                    <button class="period-btn" onclick="changePeriod('all')">All Time</button>
-                </div>
+            <div class="period-selector">
+                <button class="period-btn active" onclick="changePeriod('month')">This Month</button>
+                <button class="period-btn" onclick="changePeriod('week')">This Week</button>
+                <button class="period-btn" onclick="changePeriod('year')">Year to Date</button>
+                <button class="period-btn" onclick="changePeriod('all')">All Time</button>
+                <button class="period-btn" onclick="changePeriod('pick')">📅 Pick Month</button>
+            </div>
+
+            <!-- Month Picker (hidden by default) -->
+            <div id="month-picker-wrap" style="display:none;margin-bottom:14px">
+                <select class="fi" id="month-picker-select" onchange="onMonthPickerChange()"
+                    style="background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-in);
+                          padding:12px 14px;color:var(--text);font-size:14px;font-family:Inter,sans-serif;
+                          outline:none;width:100%;-webkit-appearance:none">
+                </select>
+            </div>
 
                 <!-- View Toggle -->
                 <div class="view-toggle">
@@ -1777,15 +1796,68 @@
         // ═══════════════════════════════════════
         // ✅ FIXED - PERIOD FILTERING WITH CACHE
         // ═══════════════════════════════════════
+        var pickedMonth = ''; // e.g. '2026-04'
+
         function changePeriod(period) {
             currentPeriod = period;
             cachedFilteredTrips = null;
             cachedFilteredExpenses = null;
             lastFilterPeriod = null;
-            
+
             document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
+
+            var picker = document.getElementById('month-picker-wrap');
+            if (period === 'pick') {
+                picker.style.display = '';
+                populateMonthPicker();
+                // Don't renderAll yet — wait for user to pick
+                return;
+            } else {
+                picker.style.display = 'none';
+            }
+
+            renderAll();
+        }
+
+        function populateMonthPicker() {
+            var sel = document.getElementById('month-picker-select');
+            sel.innerHTML = '';
+
+            // Build list of all months from SYSTEM_START_DATE to now
+            var start = new Date(SYSTEM_START_DATE);
+            var now = new Date();
+            var months = [];
+
+            var d = new Date(start.getFullYear(), start.getMonth(), 1);
+            while (d <= now) {
+                var key = d.getFullYear() + '-' + pad(d.getMonth() + 1);
+                var label = d.toLocaleDateString('en-PH', { month: 'long', year: 'numeric' });
+                months.push({ key: key, label: label });
+                d.setMonth(d.getMonth() + 1);
+            }
+
+            // Most recent first
+            months.reverse().forEach(function(m) {
+                var opt = document.createElement('option');
+                opt.value = m.key;
+                opt.textContent = m.label;
+                if (m.key === pickedMonth) opt.selected = true;
+                sel.appendChild(opt);
+            });
+
+            // Default to most recent if not yet picked
+            if (!pickedMonth && months.length) {
+                pickedMonth = months[0].key;
+                sel.value = pickedMonth;
+            }
+        }
+
+        function onMonthPickerChange() {
+            pickedMonth = document.getElementById('month-picker-select').value;
+            cachedFilteredTrips = null;
+            cachedFilteredExpenses = null;
+            lastFilterPeriod = null;
             renderAll();
         }
 
@@ -1813,6 +1885,10 @@
                     filtered = allTrips.filter(t => t.deliveryDate.startsWith(thisYear));
                     break;
                 case 'all':
+                case 'pick':
+                if (!pickedMonth) { filtered = []; break; }
+                filtered = allTrips.filter(t => t.deliveryDate.startsWith(pickedMonth));
+                break;
                 default:
                     filtered = allTrips;
             }
@@ -1846,6 +1922,10 @@
                     filtered = allExpenses.filter(e => e.date.startsWith(thisYear));
                     break;
                 case 'all':
+                case 'pick':
+                if (!pickedMonth) { filtered = []; break; }
+                filtered = allTrips.filter(t => t.deliveryDate.startsWith(pickedMonth));
+                break;
                 default:
                     filtered = allExpenses;
             }
@@ -1905,6 +1985,16 @@
             const totalExpenses = operationalExpenses + manpowerTotal + documentationTotal;
             const netProfit = totalRevenue - totalExpenses;
             const margin = totalRevenue > 0 ? (netProfit / totalRevenue * 100) : 0;
+
+            // Update hero title to reflect period
+            var periodLabels = {
+                'month': 'This Month',
+                'week': 'This Week',
+                'year': 'Year to Date',
+                'all': 'All Time',
+                'pick': pickedMonth ? new Date(pickedMonth + '-01').toLocaleDateString('en-PH', { month: 'long', year: 'numeric' }) : 'Selected Month'
+            };
+            document.querySelector('.hero-title').textContent = 'Net Profit — ' + (periodLabels[currentPeriod] || 'Period');
 
             document.getElementById('hero-profit').textContent = formatCurrency(netProfit);
             document.getElementById('hero-margin').textContent = 
