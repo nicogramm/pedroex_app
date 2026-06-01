@@ -1628,22 +1628,20 @@
                 // Parse payroll history
                 const payrollRows = payrollRes.values || [];
                 allPayroll = payrollRows.map(r => ({
-                    id:            r[0]  || '',
-                    name:          r[1]  || '',
-                    period:        r[2]  || '',
-                    attendance:    parseFloat(r[3])  || 0,
-                    grossBasePay:  parseFloat(r[24]) || 0,   // Column Y
-                    mealAllowance: parseFloat(r[25]) || 0,   // Column Z
-                    totalNetPay:   parseFloat(r[26]) || 0,   // Column AA
-                    pedroSSS:      parseFloat(r[8])  || 0,   // Column I
-                    empSSS:        parseFloat(r[9])  || 0,   // Column J
-                    pedroPagibig:  parseFloat(r[10]) || 0,   // Column K
-                    empPagibig:    parseFloat(r[11]) || 0,   // Column L
-                    pedroPhilhealth: parseFloat(r[12]) || 0, // Column M
-                    empPhilhealth:   parseFloat(r[13]) || 0, // Column N
-                    twoManAttendance: parseFloat(r[17]) || 0,// Column R
-                    twoManPay:     parseFloat(r[18]) || 0,   // Column S
-                })).filter(r => r.name && r.period);
+                id:               r[0]  || '',
+                name:             r[1]  || '',
+                period:           r[2]  || '',
+                attendance:       parseFloat(r[3])  || 0,
+                grossBasePay:     parseFloat(r[24]) || 0,  // Col Y
+                mealAllowance:    parseFloat(r[25]) || 0,  // Col Z
+                totalNetPay:      parseFloat(r[26]) || 0,  // Col AA
+                totalDeductions:  parseFloat(r[15]) || 0,  // Col P
+                pedroSSS:         parseFloat(r[8])  || 0,  // Col I
+                pedroPagibig:     parseFloat(r[10]) || 0,  // Col K
+                pedroPhilhealth:  parseFloat(r[12]) || 0,  // Col M
+                twoManPay:        parseFloat(r[18]) || 0,  // Col S
+                savingsPlanTotal: parseFloat(r[21]) || 0,  // Col V
+            })).filter(r => r.name && r.period);
 
 
                 employeeRows.forEach(r => {
@@ -4709,7 +4707,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             }
 
             // Group by employee name
-            const byEmployee = {};
+                const byEmployee = {};
             payrollRows.forEach(r => {
                 if (!byEmployee[r.name]) {
                     byEmployee[r.name] = {
@@ -4721,17 +4719,23 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                         pedroSSS: 0,
                         pedroPagibig: 0,
                         pedroPhilhealth: 0,
+                        savingsPlanTotal: 0,
+                        totalDeductions: 0,
+                        totalNetPay: 0,
                         periods: 0
                     };
                 }
                 const e = byEmployee[r.name];
-                e.attendance    += r.attendance;
-                e.grossBasePay  += r.grossBasePay;
-                e.mealAllowance += r.mealAllowance;
-                e.twoManPay     += r.twoManPay;
-                e.pedroSSS      += r.pedroSSS;
-                e.pedroPagibig  += r.pedroPagibig;
+                e.attendance      += r.attendance;
+                e.grossBasePay    += r.grossBasePay;
+                e.mealAllowance   += r.mealAllowance;
+                e.twoManPay       += r.twoManPay;
+                e.pedroSSS        += r.pedroSSS;
+                e.pedroPagibig    += r.pedroPagibig;
                 e.pedroPhilhealth += r.pedroPhilhealth;
+                e.savingsPlanTotal+= r.savingsPlanTotal;
+                e.totalDeductions += r.totalDeductions;
+                e.totalNetPay     += r.totalNetPay;
                 e.periods++;
             });
 
@@ -4758,9 +4762,15 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 e.thirteenthAccrual = thirteenthAccrual;
                 e.isDriver = isDriver;
 
-                const employerCost = e.grossBasePay + e.mealAllowance + e.twoManPay
-                    + e.pedroSSS + e.pedroPagibig + e.pedroPhilhealth + thirteenthAccrual;
-                e.totalEmployerCost = employerCost;
+           // Gross Base Pay - Total Deductions + 2-Man Pay + Savings Plan + 13th Month + Employer Contributions
+              const employerCost = e.grossBasePay 
+                  - e.totalDeductions          // minus lahat ng deductions (advances, employee share ng SSS etc.)
+                  + e.twoManPay                // plus 2-man team bonus
+                  + e.savingsPlanTotal         // plus savings plan (ikaw ang nagbabayad)
+                  + e.pedroSSS                 // plus employer share ng SSS
+                  + e.pedroPagibig             // plus employer share ng Pag-IBIG
+                  + e.pedroPhilhealth          // plus employer share ng PhilHealth
+                  + thirteenthAccrual;         // plus 13th month accrual
 
                 totalGrossPay  += e.grossBasePay;
                 totalMeals     += e.mealAllowance;
@@ -4845,13 +4855,14 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                         </div>
                         <div style="font-size:16px;font-weight:700;color:var(--red)">${formatCurrency(e.totalEmployerCost)}</div>
                     </div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--text2)">
-                        <div>Base Pay: <strong style="color:var(--text)">${formatCurrency(e.grossBasePay)}</strong></div>
-                        <div>Meals: <strong style="color:var(--text)">${formatCurrency(e.mealAllowance)}</strong></div>
-                        <div>2-Man Bonus: <strong style="color:var(--text)">${formatCurrency(e.twoManPay)}</strong></div>
-                        <div>13th Month: <strong style="color:var(--orange)">${formatCurrency(e.thirteenthAccrual)}</strong></div>
-                        <div>SSS+Pag+Phil: <strong style="color:var(--blue)">${formatCurrency(e.pedroSSS + e.pedroPagibig + e.pedroPhilhealth)}</strong></div>
-                    </div>
+                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--text2)">
+                    <div>Base Pay: <strong style="color:var(--text)">${formatCurrency(e.grossBasePay)}</strong></div>
+                    <div>Deductions: <strong style="color:var(--red)">-${formatCurrency(e.totalDeductions)}</strong></div>
+                    <div>2-Man Bonus: <strong style="color:var(--text)">${formatCurrency(e.twoManPay)}</strong></div>
+                    <div>Savings Plan: <strong style="color:var(--green)">${formatCurrency(e.savingsPlanTotal)}</strong></div>
+                    <div>13th Month: <strong style="color:var(--orange)">${formatCurrency(e.thirteenthAccrual)}</strong></div>
+                    <div>Gov't (Employer): <strong style="color:var(--blue)">${formatCurrency(e.pedroSSS + e.pedroPagibig + e.pedroPhilhealth)}</strong></div>
+                </div>
                 </div>`;
             });
 
