@@ -1884,13 +1884,13 @@
                     const thisYear = today.slice(0, 4);
                     filtered = allTrips.filter(t => t.deliveryDate.startsWith(thisYear));
                     break;
-              case 'all':
-                  filtered = allExpenses;
-                  break;
-              case 'pick':
-                  if (!pickedMonth) { filtered = []; break; }
-                  filtered = allExpenses.filter(e => e.date.startsWith(pickedMonth));  // ✅ TAMA
-                  break;
+           case 'all':
+              filtered = allTrips;
+              break;
+          case 'pick':
+              if (!pickedMonth) { filtered = []; break; }
+              filtered = allTrips.filter(t => t.deliveryDate.startsWith(pickedMonth));
+              break;
                 default:
                     filtered = allTrips;
             }
