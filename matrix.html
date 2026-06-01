@@ -4711,16 +4711,19 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             payrollRows.forEach(r => {
                 if (!byEmployee[r.name]) {
                     byEmployee[r.name] = {
-                        name: r.name,
-                        attendance: 0,
-                        grossBasePay: 0,
-                        pedroSSS: 0,
-                        pedroPagibig: 0,
-                        pedroPhilhealth: 0,
-                        totalDeductions: 0,
-                        totalNetPay: 0,
-                        periods: 0
-                    };
+                    name: r.name,
+                    attendance: 0,
+                    grossBasePay: 0,
+                    mealAllowance: 0,
+                    twoManPay: 0,
+                    pedroSSS: 0,
+                    pedroPagibig: 0,
+                    pedroPhilhealth: 0,
+                    savingsPlanTotal: 0,
+                    totalDeductions: 0,
+                    totalNetPay: 0,
+                    periods: 0
+                };
                 }
                 const e = byEmployee[r.name];
                 e.attendance      += r.attendance;
@@ -4744,7 +4747,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             const employeeRows = Object.values(byEmployee).sort((a, b) =>
                 b.grossBasePay - a.grossBasePay
             );
-
+            let totalDeductionsAll = 0; // ← DECLARE DITO BAGO ANG LOOP
             employeeRows.forEach(e => {
                 // Determine position from employeeRoles
                 const pos = (employeeRoles[e.name] || employeeRoles[e.name.split(' ')[0]] || 'helper').toLowerCase();
@@ -4774,6 +4777,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 totalPagibig   += e.pedroPagibig;
                 totalPhilhealth+= e.pedroPhilhealth;
                 total13th      += thirteenthAccrual;
+                totalDeductionsAll+= e.totalDeductions; // ← DAGDAG ITO
                 grandTotal     += employerCost;
             });
 
@@ -4820,8 +4824,9 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                     ['🏛️ SSS (Employer share)',                 totalSSS,      'var(--blue)'],
                     ['🏛️ Pag-IBIG (Employer share)',            totalPagibig,  'var(--blue)'],
                     ['🏛️ PhilHealth (Employer share)',          totalPhilhealth,'var(--blue)'],
-                    ['🎁 13th Month Accrual',                   total13th,     'var(--orange)'],
-                ].map(([label, amt, color]) => `
+                    ['🎁 13th Month Accrual',                    total13th,          'var(--orange)'],
+                    ['➖ Total Deductions (advances, emp. share)', -totalDeductionsAll, 'var(--red)'],
+                    ].map(([label, amt, color]) => `
                     <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px">
                         <span style="color:var(--text2)">${label}</span>
                         <strong style="color:${color}">${formatCurrency(amt)}</strong>
