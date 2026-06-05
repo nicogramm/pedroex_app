@@ -17,7 +17,6 @@
    NEUMORPHIC THEME VARIABLES
 ═══════════════════════════════════════ */
 :root {
-  /* LIGHT NEUMORPHIC */
   --bg:       #e0e0e5;
   --bg2:      #e8e8ed;
   --shadow-d: #b8b9be;
@@ -82,6 +81,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
 .truck-wrap { position:absolute; bottom:9px; left:-350px; animation:truckIn 2.2s cubic-bezier(0.16,1,0.3,1) forwards; animation-delay:0.3s; width:210px }
 @keyframes truckIn { 0%{left:-350px} 70%{left:calc(50% - 105px)} 80%{left:calc(50% - 100px)} 90%{left:calc(50% - 103px)} 100%{left:calc(50% - 102px)} }
 .truck-wrap img { width:100%; height:auto; display:block }
+
 .login-card {
   position:relative; z-index:3; width:100%;
   background: #e0e0e5;
@@ -90,7 +90,7 @@ html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text
   opacity:0; transform:translateY(50px);
   animation:cardUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
   animation-delay:2.5s;
-  margin-bottom: 60px; /* ✅ DAGDAG ITO — i-adjust ang value */
+  margin-bottom: 60px;
 }
 @keyframes cardUp { to { opacity:1; transform:translateY(0) } }
 
@@ -264,7 +264,7 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
   font-size: 18px;
   transition: transform 0.2s ease;
 }
-
+@keyframes spin { to { transform: rotate(360deg) } }
 </style>
 </head>
 <body>
@@ -340,17 +340,17 @@ const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file openid email profile';
 
 const ALL_MODULES = [
-  {id:'trucks',      icon:'truck',     label:'Trucks',       stat:'sv-trucks',   sub:'Fleet roster',    link:'trucks.html'},
-  {id:'trips',       icon:'location',  label:'Trips',        stat:'sv-trips',    sub:'On the road',     link:'trips.html'},
-  {id:'manpower',    icon:'roster',    label:'Manpower',     stat:'sv-manpower', sub:'Duty roster',     link:'manpower-roster.html'},
-  {id:'employees',   icon:'users',     label:'Employees',    stat:'sv-emp',      sub:'Total staff',     link:'employees.html'},
-  {id:'attendance',  icon:'calendar',  label:'Attendance',   stat:'sv-attend',   sub:'Daily logs',      link:'attendance.html'},
-  {id:'emp-records', icon:'folder',    label:'Emp Records',  stat:'sv-records',  sub:'201 files',       link:'employee-records.html'},
-  {id:'matrix',      icon:'chart',     label:'Matrix',       stat:'sv-matrix',   sub:'Performance',     link:'matrix.html'},
-  {id:'expenses-admin',  icon:'chart',  label:'Expenses',     stat:'sv-exp-admin', sub:'Reports & Analytics', wide:true, link:'expenses.html', adminOnly: true},
-  {id:'expenses-emp',    icon:'card',   label:'Expenses',     stat:'sv-exp-emp',   sub:'Submit expense',      wide:true, link:'expenses-emp.html'},
-  {id:'billing',     icon:'doc',       label:'Billing',      stat:'sv-billing',  sub:'Invoices',        wide:true, link:'billing.html'},
-  {id:'settings',    icon:'settings',  label:'Settings',     stat:'sv-set',      sub:'App settings',    wide:true, link:'settings.html'},
+  {id:'trucks',         icon:'truck',    label:'Trucks',      stat:'sv-trucks',    sub:'Fleet roster',        link:'trucks.html'},
+  {id:'trips',          icon:'location', label:'Trips',       stat:'sv-trips',     sub:'On the road',         link:'trips.html'},
+  {id:'manpower',       icon:'roster',   label:'Manpower',    stat:'sv-manpower',  sub:'Duty roster',         link:'manpower-roster.html'},
+  {id:'employees',      icon:'users',    label:'Employees',   stat:'sv-emp',       sub:'Total staff',         link:'employees.html'},
+  {id:'attendance',     icon:'calendar', label:'Attendance',  stat:'sv-attend',    sub:'Daily logs',          link:'attendance.html'},
+  {id:'emp-records',    icon:'folder',   label:'Emp Records', stat:'sv-records',   sub:'201 files',           link:'employee-records.html'},
+  {id:'matrix',         icon:'chart',    label:'Matrix',      stat:'sv-matrix',    sub:'Performance',         link:'matrix.html'},
+  {id:'expenses-admin', icon:'chart',    label:'Expenses',    stat:'sv-exp-admin', sub:'Reports & Analytics', wide:true, link:'expenses.html',     adminOnly:true},
+  {id:'expenses-emp',   icon:'card',     label:'Expenses',    stat:'sv-exp-emp',   sub:'Submit expense',      wide:true, link:'expenses-emp.html'},
+  {id:'billing',        icon:'doc',      label:'Billing',     stat:'sv-billing',   sub:'Invoices',            wide:true, link:'billing.html'},
+  {id:'settings',       icon:'settings', label:'Settings',    stat:'sv-set',       sub:'App settings',        wide:true, link:'settings.html'},
 ];
 
 const ICONS = {
@@ -368,35 +368,48 @@ const ICONS = {
 
 let token = null;
 
-// THEME
+// ═══ THEME ═══
 function applyTheme(dark) {
   document.body.classList.toggle('dark', dark);
   localStorage.setItem('pedroex-theme', dark ? 'dark' : 'light');
 }
 applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
 
-// INIT
+// ═══ INIT ═══
 (function init() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 
   const savedToken = localStorage.getItem('pedroex-token');
-  const expiry = localStorage.getItem('pedroex-token-expiry');
-  const bufferMs = 5 * 60 * 1000;
-  
+  const expiry     = localStorage.getItem('pedroex-token-expiry');
+  const bufferMs   = 5 * 60 * 1000;
+
   if (savedToken && expiry && Date.now() < (parseInt(expiry) - bufferMs)) {
     token = savedToken;
+    // ✅ Clear any stale retry counters on fresh page load
+    sessionStorage.removeItem('pedroex-login-retry');
     loadUser();
   } else {
+    // Expired or missing — clear storage and show login
     localStorage.removeItem('pedroex-token');
     localStorage.removeItem('pedroex-token-expiry');
-    document.getElementById('s-login').classList.add('active');
-    document.getElementById('s-app').classList.remove('active');
+    sessionStorage.removeItem('pedroex-login-retry');
+    showLogin();
   }
 })();
 
-// SIGN IN
+// ═══ SHOW / HIDE SCREENS ═══
+function showLogin() {
+  document.getElementById('s-login').classList.add('active');
+  document.getElementById('s-app').classList.remove('active');
+}
+function showApp() {
+  document.getElementById('s-login').classList.remove('active');
+  document.getElementById('s-app').classList.add('active');
+}
+
+// ═══ SIGN IN ═══
 function signIn() {
   if (typeof google === 'undefined' || !google.accounts) {
     showToast('Loading Google Sign-In...');
@@ -404,330 +417,290 @@ function signIn() {
     return;
   }
 
-  var hasGranted = localStorage.getItem('pedroex-scope-granted');
-  
+  const hasGranted = localStorage.getItem('pedroex-scope-granted');
+
   google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
     scope: SCOPES,
     callback: function(res) {
-      if (res.error) { 
-        showToast('❌ Login error: ' + res.error); 
-        return; 
+      if (res.error) {
+        showToast('❌ Login error: ' + res.error);
+        return;
       }
-      
+
       token = res.access_token;
       const expiresAt = Date.now() + (res.expires_in * 1000);
       localStorage.setItem('pedroex-token', token);
       localStorage.setItem('pedroex-token-expiry', expiresAt);
       localStorage.setItem('pedroex-scope-granted', 'true');
-      
+
+      // ✅ Clear retry counter on fresh successful sign-in
+      sessionStorage.removeItem('pedroex-login-retry');
+
       loadUser();
     }
-  }).requestAccessToken({ 
+  }).requestAccessToken({
     prompt: hasGranted ? '' : 'consent'
   });
 }
 
-// ✅ LOAD USER — FIXED FLOW
+// ═══ LOAD USER ═══
 function loadUser() {
   fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
-  .then(r => {
-    if (!r.ok) throw new Error('Auth failed');
+  .then(function(r) {
+    if (r.status === 401) throw new Error('UNAUTHORIZED');
+    if (!r.ok) throw new Error('HTTP_' + r.status);
     return r.json();
   })
-  .then(u => {
-    // ✅ Save basic user info
-    localStorage.setItem('pedroex-name', u.name || '');
-    localStorage.setItem('pedroex-email', u.email || '');
+  .then(function(u) {
+    // Save basic info
+    localStorage.setItem('pedroex-name',    u.name    || '');
+    localStorage.setItem('pedroex-email',   u.email   || '');
     localStorage.setItem('pedroex-picture', u.picture || '');
     document.getElementById('user-avatar').src = u.picture || '';
 
-    // ✅ FETCH EMPLOYEE DATA FIRST (before rendering dashboard)
-    var email = (u.email || '').toLowerCase();
+    const email = (u.email || '').toLowerCase();
     console.log('🔍 Looking for email:', email);
-    
-    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D', {
+
+    // Fetch employee row
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D', {
       headers: { 'Authorization': 'Bearer ' + token }
     })
-    .then(function(r) { return r.json(); })
-    .then(function(res) {
-      var rows = res.values || [];
-      console.log('📋 Employees sheet data:', rows);
-      
-      var empRow = rows.find(function(r) { 
-        var sheetEmail = (r[0] || '').toLowerCase();
-        console.log('Comparing:', sheetEmail, '===', email, '?', sheetEmail === email);
-        return sheetEmail === email; 
-      });
-      
-      console.log('✅ Found employee row:', empRow);
-      
-      var firstName = empRow ? (empRow[1] || u.given_name || 'team') : (u.given_name || 'team');
-      var role = empRow ? (empRow[3] || 'Employee') : 'Employee';
-      
-      console.log('🎭 Assigned role:', role);
-      console.log('👤 First name:', firstName);
-      
-      // ✅ Save to localStorage
-      localStorage.setItem('pedroex-role', role);
-      localStorage.setItem('pedroex-firstname', firstName); // ← Save firstName separately
-      
-      // ✅ NOW render dashboard with correct data
-      document.getElementById('s-login').classList.remove('active');
-      document.getElementById('s-app').classList.add('active');
-      
-      updateGreeting(firstName); // ← Use firstName, not email
-      buildDashboard();
-      loadDashboardStats();
-
-      // Init pull to refresh
-      initPullToRefresh(
-        document.querySelector('.page-wrap'),
-        function(done) {
-          loadDashboardStats();
-          setTimeout(done, 1000);
-        }
-      );
-
-      // Auto refresh with token renewal
-      initAutoRefresh();
+    .then(function(r) {
+      if (r.status === 401) throw new Error('UNAUTHORIZED');
+      if (!r.ok) throw new Error('SHEETS_HTTP_' + r.status);
+      return r.json();
     })
-    .catch(function(err) {
-      console.error('❌ Error loading employee data:', err);
-      
-      // ✅ Fallback: use Google name
-      localStorage.setItem('pedroex-role', 'Employee');
-      localStorage.setItem('pedroex-firstname', u.given_name || 'team');
-      
-      document.getElementById('s-login').classList.remove('active');
-      document.getElementById('s-app').classList.add('active');
-      
-      updateGreeting(u.given_name || 'team');
+    .then(function(res) {
+      const rows   = res.values || [];
+      const empRow = rows.find(function(r) {
+        return (r[0] || '').toLowerCase() === email;
+      });
+
+      const firstName = empRow ? (empRow[1] || u.given_name || 'team') : (u.given_name || 'team');
+      const role      = empRow ? (empRow[3] || 'Employee') : 'Employee';
+
+      console.log('🎭 Role:', role, '| Name:', firstName);
+
+      localStorage.setItem('pedroex-role',      role);
+      localStorage.setItem('pedroex-firstname', firstName);
+
+      // ✅ Clear retry counter — we made it through successfully
+      sessionStorage.removeItem('pedroex-login-retry');
+
+      showApp();
+      updateGreeting(firstName);
       buildDashboard();
       loadDashboardStats();
 
       initPullToRefresh(
         document.querySelector('.page-wrap'),
-        function(done) {
-          loadDashboardStats();
-          setTimeout(done, 1000);
-        }
+        function(done) { loadDashboardStats(); setTimeout(done, 1000); }
       );
 
       initAutoRefresh();
     });
   })
-  .catch(function(err) { 
-    console.error('Load user error:', err);
-    localStorage.removeItem('pedroex-token');
-    localStorage.removeItem('pedroex-token-expiry');
-    document.getElementById('s-login').classList.add('active');
-    document.getElementById('s-app').classList.remove('active');
-    showToast('❌ Session expired. Please sign in again.');
+  .catch(function(err) {
+    console.error('❌ loadUser error:', err);
+
+    const isUnauthorized = err.message === 'UNAUTHORIZED';
+
+    if (isUnauthorized) {
+      // Token is definitely dead — clear and send to login immediately
+      console.warn('🔒 Token expired/invalid — clearing session');
+      localStorage.removeItem('pedroex-token');
+      localStorage.removeItem('pedroex-token-expiry');
+      sessionStorage.removeItem('pedroex-login-retry');
+      showLogin();
+      showToast('Session expired. Please sign in again.');
+      return;
+    }
+
+    // ✅ For network/transient errors: retry up to 2x before giving up
+    const retryCount = parseInt(sessionStorage.getItem('pedroex-login-retry') || '0');
+    console.log('🔄 Retry attempt:', retryCount + 1);
+
+    if (retryCount < 2) {
+      sessionStorage.setItem('pedroex-login-retry', retryCount + 1);
+      setTimeout(loadUser, 1200 + retryCount * 800); // 1.2s, then 2.0s
+    } else {
+      // Exhausted retries — fallback: use cached data if available
+      const cachedName = localStorage.getItem('pedroex-firstname');
+      const cachedRole = localStorage.getItem('pedroex-role');
+
+      sessionStorage.removeItem('pedroex-login-retry');
+
+      if (cachedName && cachedRole) {
+        console.warn('⚠️ Using cached user data after failed retries');
+        showApp();
+        updateGreeting(cachedName);
+        buildDashboard();
+        // Don't load stats if network is down — would just show errors
+        showToast('⚠️ Using cached data. Check connection.');
+      } else {
+        // No cached data at all — force login
+        localStorage.removeItem('pedroex-token');
+        localStorage.removeItem('pedroex-token-expiry');
+        showLogin();
+        showToast('❌ Could not connect. Please sign in again.');
+      }
+    }
   });
 }
 
-// UPDATE GREETING
+// ═══ UPDATE GREETING ═══
 function updateGreeting(firstName) {
-  var now = new Date();
-  var h = now.getHours();
-  var gr = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  
+  const now = new Date();
+  const h   = now.getHours();
+  const gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+
   document.getElementById('dash-name').textContent = gr + ', ' + firstName + '!';
   document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
     weekday:'long', year:'numeric', month:'long', day:'numeric'
   });
 }
 
-// BUILD DASHBOARD
+// ═══ BUILD DASHBOARD ═══
 function buildDashboard() {
   const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
-  const isAdmin = userRole === 'admin';
-  
-  console.log('🏗️ Building dashboard for role:', userRole, '(isAdmin:', isAdmin, ')');
-  
-  const visibleModules = ALL_MODULES.filter(m => {
+  const isAdmin  = userRole === 'admin';
+
+  console.log('🏗️ Building dashboard — role:', userRole);
+
+  const visibleModules = ALL_MODULES.filter(function(m) {
     if (m.adminOnly && !isAdmin) return false;
     return true;
   });
-  
-  document.getElementById('mod-grid').innerHTML = visibleModules.map(m => {
-    const icon = ICONS[m.icon] || '';
-    const onclick = m.link ? `location.href='${m.link}'` : '';
-    
+
+  document.getElementById('mod-grid').innerHTML = visibleModules.map(function(m) {
+    const icon    = ICONS[m.icon] || '';
+    const onclick = m.link ? "location.href='" + m.link + "'" : '';
+
     if (m.wide) {
-      return `<div class="mod-card wide" onclick="${onclick}">
-        <div class="mod-icon-box">${icon}</div>
-        <div>
-          <div class="mod-label">${m.label}</div>
-          <div class="mod-value" id="${m.stat}">—</div>
-          <div class="mod-sub">${m.sub}</div>
-        </div>
-      </div>`;
+      return '<div class="mod-card wide" onclick="' + onclick + '">' +
+        '<div class="mod-icon-box">' + icon + '</div>' +
+        '<div>' +
+          '<div class="mod-label">' + m.label + '</div>' +
+          '<div class="mod-value" id="' + m.stat + '">—</div>' +
+          '<div class="mod-sub">' + m.sub + '</div>' +
+        '</div>' +
+      '</div>';
     }
-    
-    return `<div class="mod-card" onclick="${onclick}">
-      <div class="mod-icon-box">${icon}</div>
-      <div class="mod-label">${m.label}</div>
-      <div class="mod-value" id="${m.stat}">—</div>
-      <div class="mod-sub">${m.sub}</div>
-    </div>`;
+
+    return '<div class="mod-card" onclick="' + onclick + '">' +
+      '<div class="mod-icon-box">' + icon + '</div>' +
+      '<div class="mod-label">' + m.label + '</div>' +
+      '<div class="mod-value" id="' + m.stat + '">—</div>' +
+      '<div class="mod-sub">' + m.sub + '</div>' +
+    '</div>';
   }).join('');
 }
 
-// LOAD DASHBOARD STATS
+// ═══ LOAD DASHBOARD STATS ═══
 function loadDashboardStats() {
   if (!token) return;
-  
+
   const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
-  const isAdmin = userRole === 'admin';
-  
-  function updateStat(id, value) {
+  const isAdmin  = userRole === 'admin';
+
+  function setStat(id, value) {
     const el = document.getElementById(id);
-    if (el) el.textContent = value > 0 ? value : '—';
+    if (el) el.textContent = (value !== null && value !== undefined && value !== 0) ? value : '—';
   }
-  
-  function updateStatError(id) {
+  function clearStat(id) {
     const el = document.getElementById(id);
     if (el) el.textContent = '—';
   }
 
-  // 1️⃣ TRUCKS
+  // 1️⃣ Trucks
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Truck%20Roster!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
-  .then(res => {
-    const count = (res.values || []).filter(row => row[0]).length;
-    updateStat('sv-trucks', count);
-  })
-  .catch(err => {
-    console.error('❌ Trucks load error:', err);
-    updateStatError('sv-trucks');
-  });
+  .then(res => setStat('sv-trucks', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-trucks'));
 
-  // 2️⃣ TRIPS
+  // 2️⃣ Trips (today)
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:B', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
   .then(res => {
     const today = new Date().toISOString().split('T')[0];
-    const rows = res.values || [];
-    const todayTrips = rows.filter(row => row[1] === today).length;
-    updateStat('sv-trips', todayTrips);
+    setStat('sv-trips', (res.values || []).filter(r => r[1] === today).length);
   })
-  .catch(err => {
-    console.error('❌ Trips load error:', err);
-    updateStatError('sv-trips');
-  });
+  .catch(() => clearStat('sv-trips'));
 
-  // 3️⃣ MANPOWER
+  // 3️⃣ Manpower (today)
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Manpower%20Roster!A2:D', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
   .then(res => {
     const today = new Date().toISOString().split('T')[0];
-    const rows = res.values || [];
-    const activeToday = rows.filter(row => row[0] === today).length;
-    updateStat('sv-manpower', activeToday);
+    setStat('sv-manpower', (res.values || []).filter(r => r[0] === today).length);
   })
-  .catch(err => {
-    console.error('❌ Manpower load error:', err);
-    updateStatError('sv-manpower');
-  });
+  .catch(() => clearStat('sv-manpower'));
 
-  // 4️⃣ EMPLOYEES
+  // 4️⃣ Employees
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
-  .then(res => {
-    const count = (res.values || []).filter(row => row[0]).length;
-    updateStat('sv-emp', count);
-  })
-  .catch(err => {
-    console.error('❌ Employees load error:', err);
-    updateStatError('sv-emp');
-  });
+  .then(res => setStat('sv-emp', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-emp'));
 
-  // 5️⃣ ATTENDANCE
+  // 5️⃣ Attendance (today)
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:K', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
   .then(res => {
     const today = new Date().toISOString().split('T')[0];
-    const rows = res.values || [];
-    
-    const todayLogs = rows.filter(row => {
+    const count = (res.values || []).filter(function(row) {
       if (!row[1]) return false;
-      
-      let rowDate = row[1];
-      if (!isNaN(rowDate) && rowDate > 1000) {
-        const excelEpoch = new Date(1899, 11, 30);
-        const date = new Date(excelEpoch.getTime() + parseFloat(rowDate) * 86400000);
-        rowDate = date.getFullYear() + '-' + 
-                  String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                  String(date.getDate()).padStart(2, '0');
+      let d = row[1];
+      if (!isNaN(d) && d > 1000) {
+        const epoch = new Date(1899, 11, 30);
+        const dt    = new Date(epoch.getTime() + parseFloat(d) * 86400000);
+        d = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
       }
-      
-      return rowDate === today;
+      return d === today;
     }).length;
-    
-    updateStat('sv-attend', todayLogs);
+    setStat('sv-attend', count);
   })
-  .catch(err => {
-    console.error('❌ Attendance load error:', err);
-    updateStatError('sv-attend');
-  });
+  .catch(() => clearStat('sv-attend'));
 
-  // 6️⃣ EMPLOYEE RECORDS
+  // 6️⃣ Emp Records
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Records!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
-  .then(res => {
-    const count = (res.values || []).filter(row => row[0]).length;
-    updateStat('sv-records', count);
-  })
-  .catch(err => {
-    console.error('❌ Employee Records load error:', err);
-    updateStatError('sv-records');
-  });
+  .then(res => setStat('sv-records', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-records'));
 
-  // 7️⃣ MATRIX
+  // 7️⃣ Matrix
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Matrix!A2:A', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
-  .then(res => {
-    const count = (res.values || []).filter(row => row[0]).length;
-    updateStat('sv-matrix', count);
-  })
-  .catch(err => {
-    console.error('❌ Matrix load error:', err);
-    updateStatError('sv-matrix');
-  });
+  .then(res => setStat('sv-matrix', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-matrix'));
 
-  // 8️⃣ EXPENSES
+  // 8️⃣ Expenses
   if (isAdmin) {
     fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
       headers: {'Authorization': 'Bearer ' + token}
     })
     .then(r => r.json())
     .then(res => {
-      const rows = res.values || [];
-      const pending = rows.filter(row => (row[4] || '').toLowerCase() === 'pending').length;
-      updateStat('sv-exp-admin', pending);
+      const pending = (res.values || []).filter(r => (r[4] || '').toLowerCase() === 'pending').length;
+      setStat('sv-exp-admin', pending);
     })
-    .catch(err => {
-      console.error('❌ Expenses (admin) load error:', err);
-      updateStatError('sv-exp-admin');
-    });
+    .catch(() => clearStat('sv-exp-admin'));
   } else {
     const userEmail = (localStorage.getItem('pedroex-email') || '').toLowerCase();
     fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
@@ -735,42 +708,34 @@ function loadDashboardStats() {
     })
     .then(r => r.json())
     .then(res => {
-      const rows = res.values || [];
-      const myExpenses = rows.filter(row => (row[1] || '').toLowerCase() === userEmail).length;
-      updateStat('sv-exp-emp', myExpenses);
+      const mine = (res.values || []).filter(r => (r[1] || '').toLowerCase() === userEmail).length;
+      setStat('sv-exp-emp', mine);
     })
-    .catch(err => {
-      console.error('❌ Expenses (employee) load error:', err);
-      updateStatError('sv-exp-emp');
-    });
+    .catch(() => clearStat('sv-exp-emp'));
   }
 
-  // 9️⃣ BILLING
+  // 9️⃣ Billing (unpaid)
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:G', {
     headers: {'Authorization': 'Bearer ' + token}
   })
   .then(r => r.json())
   .then(res => {
-    const rows = res.values || [];
-    const unpaid = rows.filter(row => (row[6] || '').toLowerCase() === 'no').length;
-    updateStat('sv-billing', unpaid);
+    const unpaid = (res.values || []).filter(r => (r[6] || '').toLowerCase() === 'no').length;
+    setStat('sv-billing', unpaid);
   })
-  .catch(err => {
-    console.error('❌ Billing load error:', err);
-    updateStatError('sv-billing');
-  });
+  .catch(() => clearStat('sv-billing'));
 
-  // 🔟 SETTINGS
-  updateStat('sv-set', '⚙️');
+  // 🔟 Settings
+  setStat('sv-set', '⚙️');
 }
 
-// ✅ AUTO REFRESH WITH TOKEN RENEWAL
+// ═══ AUTO REFRESH WITH TOKEN RENEWAL ═══
 function initAutoRefresh() {
   setInterval(function() {
-    var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    var bufferMs = 10 * 60 * 1000; // 10 min before expiry
-    
-    // Renew token if expiring soon
+    const expiry    = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    const bufferMs  = 10 * 60 * 1000;
+
+    // Renew if expiring soon
     if (token && Date.now() >= (expiry - bufferMs)) {
       if (typeof google !== 'undefined' && google.accounts) {
         google.accounts.oauth2.initTokenClient({
@@ -779,51 +744,52 @@ function initAutoRefresh() {
           callback: function(res) {
             if (!res.error) {
               token = res.access_token;
-              const expiresAt = Date.now() + (res.expires_in * 1000);
+              const newExpiry = Date.now() + (res.expires_in * 1000);
               localStorage.setItem('pedroex-token', token);
-              localStorage.setItem('pedroex-token-expiry', expiresAt);
-              console.log('🔄 Token renewed');
+              localStorage.setItem('pedroex-token-expiry', newExpiry);
+              console.log('🔄 Token renewed silently');
             }
           }
         }).requestAccessToken({ prompt: '' });
       }
       return;
     }
-    
-    // Refresh dashboard stats
+
+    // Refresh stats if token is still valid
     if (token && Date.now() < expiry) {
-      console.log('🔄 Auto-refresh dashboard stats');
+      console.log('🔄 Auto-refresh stats');
       loadDashboardStats();
     }
-  }, 5 * 60 * 1000); // Every 5 minutes
+  }, 5 * 60 * 1000);
 }
 
-// PULL TO REFRESH
+// ═══ PULL TO REFRESH ═══
 function initPullToRefresh(scrollEl, onRefresh) {
-  var startY = 0;
-  var pulling = false;
-  var threshold = 70;
-  var indicator = document.createElement('div');
+  let startY   = 0;
+  let pulling  = false;
+  const threshold = 70;
+
+  const indicator = document.createElement('div');
   indicator.className = 'ptr-indicator';
   indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
   document.body.appendChild(indicator);
 
   scrollEl.addEventListener('touchstart', function(e) {
     if (scrollEl.scrollTop === 0) {
-      startY = e.touches[0].clientY;
+      startY  = e.touches[0].clientY;
       pulling = true;
     }
   }, { passive: true });
 
   scrollEl.addEventListener('touchmove', function(e) {
     if (!pulling) return;
-    var dist = e.touches[0].clientY - startY;
+    const dist = e.touches[0].clientY - startY;
     if (dist < 0) { pulling = false; return; }
 
-    var progress = Math.min(dist / threshold, 1);
+    const progress = Math.min(dist / threshold, 1);
     indicator.classList.add('visible');
 
-    var arrow = document.getElementById('ptr-arrow');
+    const arrow = document.getElementById('ptr-arrow');
     if (arrow) {
       arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
       arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
@@ -834,7 +800,7 @@ function initPullToRefresh(scrollEl, onRefresh) {
     if (!pulling) return;
     pulling = false;
 
-    var dist = e.changedTouches[0].clientY - startY;
+    const dist = e.changedTouches[0].clientY - startY;
     if (dist >= threshold) {
       indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
       onRefresh(function() {
@@ -847,14 +813,14 @@ function initPullToRefresh(scrollEl, onRefresh) {
   });
 }
 
-// TOAST
+// ═══ TOAST ═══
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
 </script>
 </body>
