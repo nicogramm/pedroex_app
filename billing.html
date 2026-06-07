@@ -1938,7 +1938,7 @@ function showConfirm(title,msg,cb){
   document.getElementById('confirm-title').textContent=title;
   document.getElementById('confirm-msg').innerHTML=msg;
   _confirmCb=cb;
-  document.getElementById('confirm-ok-btn').onclick=()=>{closeConfirm();if(_confirmCb)_confirmCb();};
+  document.getElementById('confirm-ok-btn').onclick=()=>{const cb=_confirmCb;closeConfirm();if(cb)cb();};
   document.getElementById('confirm-overlay').classList.add('open');
 }
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null;}
