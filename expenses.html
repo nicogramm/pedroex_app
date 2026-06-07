@@ -28,8 +28,6 @@ body.dark {
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background 0.4s,color 0.4s}
-
-/* TOPBAR */
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);flex-shrink:0;position:relative;z-index:50}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .tb-back{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:22px;font-weight:400;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:1}
@@ -38,8 +36,6 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .tb-action{display:flex;gap:8px}
 .tb-btn{background:var(--bg);border:none;border-radius:12px;box-shadow:var(--neu-sm);width:40px;height:40px;color:var(--red);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
 .tb-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
-
-/* PAGE */
 .page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:calc(120px + env(safe-area-inset-bottom,0px));height:calc(100vh - 68px)}
 
 /* SUMMARY CARD */
@@ -48,6 +44,13 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .summary-period{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)}
 .summary-amount{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-0.5px;margin-bottom:6px}
 .summary-meta{font-size:12px;color:var(--text2)}
+
+/* SUMMARY CHIPS */
+.summary-chips{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.summary-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);border-radius:10px;box-shadow:var(--neu-xs);padding:6px 12px;font-size:12px;font-weight:600;color:var(--text2)}
+.summary-chip .chip-icon{font-size:13px}
+.summary-chip .chip-label{color:var(--text2)}
+.summary-chip .chip-val{color:var(--text);font-weight:700;margin-left:2px}
 
 /* VIEW TOGGLE */
 .view-toggle{display:flex;gap:8px;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);padding:4px;margin-bottom:16px}
@@ -60,7 +63,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .filter-btn.active{box-shadow:var(--neu-in);color:var(--red)}
 .filter-btn:active{transform:scale(0.98)}
 
-/* ═══ CALENDAR VIEW - BIGGER ICONS ═══ */
+/* CALENDAR VIEW */
 .calendar-view{display:none}
 .calendar-view.active{display:block}
 .calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -68,81 +71,25 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .cal-nav-btn{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);padding:8px 16px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
 .cal-nav-btn:active{box-shadow:var(--neu-in);transform:scale(0.95)}
 .cal-month{font-size:18px;font-weight:700;color:var(--text)}
-
 .calendar-grid{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px}
 .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:10px}
 .cal-weekday{text-align:center;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);padding:8px 0}
 .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-day{
-  background:var(--bg);
-  border-radius:12px;
-  box-shadow:var(--neu-sm);
-  padding:8px 4px;
-  text-align:center;
-  aspect-ratio:1/1;
-  cursor:pointer;
-  transition:box-shadow 0.15s;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  overflow:hidden;
-  position:relative;
-}
+.cal-day{background:var(--bg);border-radius:12px;box-shadow:var(--neu-sm);padding:8px 4px;text-align:center;aspect-ratio:1/1;cursor:pointer;transition:box-shadow 0.15s;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;overflow:hidden;position:relative}
 .cal-day:active{box-shadow:var(--neu-in);transform:scale(0.98)}
 .cal-day.today{box-shadow:var(--neu-in);border:2px solid var(--red)}
 .cal-day.other-month{opacity:0.3;pointer-events:none}
+.cal-day.has-expenses{border:1px solid rgba(179,37,51,0.2)}
+.cal-day.has-expenses .cal-date{color:var(--red);font-weight:800}
 .cal-date{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;flex-shrink:0}
-.cal-expenses{
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  flex:1;
-  scrollbar-width:none;
-}
+.cal-expenses{width:100%;display:flex;flex-direction:column;gap:3px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;scrollbar-width:none}
 .cal-expenses::-webkit-scrollbar{display:none}
-.cal-expense-dot{
-  font-size:11px;
-  display:flex;
-  align-items:center;
-  gap:3px;
-  justify-content:center;
-  font-weight:700;
-  padding:2px 0;
-  flex-shrink:0;
-}
-
-/* ✅ DAY INDICATOR — Shows if day has expenses */
-.cal-day-indicator {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--red);
-  box-shadow: 0 0 4px rgba(179, 37, 51, 0.6);
-  z-index: 10;
-}
-
-.cal-day.has-expenses {
-  border: 1px solid rgba(179, 37, 51, 0.2);
-}
-
-.cal-day.has-expenses .cal-date {
-  color: var(--red);
-  font-weight: 800;
-}
-
-
-/* ✅ BIGGER ICONS FOR MOBILE */
+.cal-expense-dot{font-size:11px;display:flex;align-items:center;gap:3px;justify-content:center;font-weight:700;padding:2px 0;flex-shrink:0}
+.cal-day-indicator{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 4px rgba(179,37,51,0.6);z-index:10}
 .cal-expense-dot .icon{font-size:16px;flex-shrink:0}
 .cal-expense-dot .amount{font-size:10px;font-weight:700;color:var(--text);white-space:nowrap}
 
-/* ═══ DAY DETAIL MODAL (FULL SCREEN) ═══ */
+/* DAY DETAIL MODAL */
 .day-detail-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .day-detail-overlay.open{display:block}
 .day-detail-header{background:var(--bg);padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);box-shadow:0 3px 10px rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
@@ -151,11 +98,9 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .day-detail-close:active{box-shadow:var(--neu-in);transform:scale(0.95)}
 .day-detail-title{font-size:17px;font-weight:700;color:var(--text)}
 .day-detail-content{padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
-
 .day-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
 .day-section-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .day-section-title .icon{font-size:20px}
-
 .day-expense-item{padding:12px 0;border-bottom:1px solid var(--shadow-d);display:flex;justify-content:space-between;align-items:flex-start;cursor:pointer;transition:background 0.2s}
 .day-expense-item:hover{background:var(--bg2);margin:0 -8px;padding:12px 8px}
 .day-expense-item:last-child{border-bottom:none}
@@ -163,12 +108,11 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .day-expense-truck{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
 .day-expense-sub{font-size:12px;color:var(--text2)}
 .day-expense-amount{font-size:16px;font-weight:700;color:var(--text);text-align:right}
-
 .day-total{background:var(--bg2);border-radius:12px;padding:16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center}
 .day-total-label{font-size:14px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
 .day-total-amount{font-size:24px;font-weight:700;color:var(--red)}
 
-/* ═══ LIST VIEW ═══ */
+/* LIST VIEW */
 .list-view{display:none}
 .list-view.active{display:block}
 .expense-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:12px;cursor:pointer;transition:transform 0.12s;position:relative}
@@ -188,52 +132,19 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .ec-notes{font-size:12px;color:var(--text2);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid var(--shadow-d)}
 .ec-receipt{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);margin-top:6px}
 
-/* ═══ REPORTS VIEW ═══ */
+/* REPORTS VIEW */
 .reports-view{display:none}
 .reports-view.active{display:block}
 .report-section{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:18px;margin-bottom:16px}
 .report-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .report-title .icon{font-size:20px}
-
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
-.stat-card{
-  background:var(--bg2);
-  border-radius:12px;
-  box-shadow:var(--neu-xs);
-  padding:14px;
-  text-align:center;
-  min-width:0;
-  overflow:hidden;
-}
-.stat-label{
-  font-size:10px;
-  font-weight:600;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  color:var(--text3);
-  margin-bottom:6px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.stat-value{
-  font-size:20px;
-  font-weight:700;
-  color:var(--text);
-  word-break:break-all;
-  line-height:1.2;
-}
-.stat-change{
-  font-size:10px;
-  color:var(--text2);
-  margin-top:4px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+.stat-card{background:var(--bg2);border-radius:12px;box-shadow:var(--neu-xs);padding:14px;text-align:center;min-width:0;overflow:hidden}
+.stat-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-value{font-size:20px;font-weight:700;color:var(--text);word-break:break-all;line-height:1.2}
+.stat-change{font-size:10px;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat-change.up{color:var(--red)}
 .stat-change.down{color:var(--manpower)}
-
 .breakdown-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--shadow-d)}
 .breakdown-item:last-child{border-bottom:none}
 .breakdown-left{display:flex;align-items:center;gap:12px}
@@ -244,7 +155,6 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .breakdown-right{text-align:right}
 .breakdown-amount{font-size:16px;font-weight:700;color:var(--text)}
 .breakdown-percent{font-size:11px;color:var(--text2)}
-
 .progress-bar{width:100%;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-top:6px;box-shadow:var(--neu-in)}
 .progress-fill{height:100%;transition:width 0.3s ease}
 .progress-fill.diesel{background:var(--diesel)}
@@ -252,8 +162,6 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .progress-fill.documentation{background:var(--documentation)}
 .progress-fill.miscellaneous{background:var(--miscellaneous)}
 .progress-fill.manpower{background:var(--manpower)}
-
-/* CHART CONTAINER */
 .chart-container{background:var(--bg2);border-radius:12px;padding:16px;margin-top:12px;box-shadow:var(--neu-in);position:relative;height:220px}
 .chart-canvas{width:100%;height:100%}
 
@@ -356,12 +264,6 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
 .saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
 .saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
 .saving-text{font-size:14px;color:var(--text2);font-weight:500}
-
-/* SUMMARY CHIPS */
-.summary-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);border-radius:10px;box-shadow:var(--neu-xs);padding:6px 12px;font-size:12px;font-weight:600;color:var(--text2)}
-.summary-chip .chip-icon{font-size:14px}
-.summary-chip .chip-val{color:var(--text);font-weight:700;margin-left:4px}
-
 </style>
 </head>
 <body>
@@ -376,6 +278,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
 </div>
 
 <div class="page-wrap">
+
   <!-- SUMMARY CARD -->
   <div class="summary-card">
     <div class="summary-top">
@@ -383,8 +286,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     </div>
     <div class="summary-amount" id="summary-amount">₱ 0.00</div>
     <div class="summary-meta" id="summary-meta">0 expenses recorded</div>
-    <div id="summary-category-chips" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
-  </div>
+    <div class="summary-chips" id="summary-chips"></div>
   </div>
 
   <!-- VIEW TOGGLE -->
@@ -404,7 +306,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     <button class="filter-btn" onclick="filterByTruck('CBJ')">CBJ</button>
   </div>
 
-  <!-- ═══ CALENDAR VIEW ═══ -->
+  <!-- CALENDAR VIEW -->
   <div class="calendar-view active" id="calendar-view">
     <div class="calendar-header">
       <div class="cal-nav">
@@ -428,7 +330,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     </div>
   </div>
 
-  <!-- ═══ LIST VIEW ═══ -->
+  <!-- LIST VIEW -->
   <div class="list-view" id="list-view">
     <div id="expenses-loading" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading expenses...</div>
     <div id="expenses-list"></div>
@@ -438,9 +340,8 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     </div>
   </div>
 
-  <!-- ═══ REPORTS VIEW ═══ -->
+  <!-- REPORTS VIEW -->
   <div class="reports-view" id="reports-view">
-    <!-- Overview Stats -->
     <div class="report-section">
       <div class="report-title"><span class="icon">📊</span> Overview</div>
       <div class="stat-grid">
@@ -466,16 +367,12 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
         </div>
       </div>
     </div>
-
-    <!-- Expense Trend Chart -->
     <div class="report-section">
       <div class="report-title"><span class="icon">📈</span> Expense Trend (Last 30 Days)</div>
       <div class="chart-container">
         <canvas id="trendChart" class="chart-canvas"></canvas>
       </div>
     </div>
-
-    <!-- Category Breakdown with Chart -->
     <div class="report-section">
       <div class="report-title"><span class="icon">📂</span> By Category</div>
       <div class="chart-container" style="height:200px">
@@ -483,8 +380,6 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
       </div>
       <div id="category-breakdown" style="margin-top:16px"></div>
     </div>
-
-    <!-- By Truck with Chart -->
     <div class="report-section">
       <div class="report-title"><span class="icon">🚛</span> By Truck</div>
       <div class="chart-container" style="height:200px">
@@ -492,14 +387,13 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
       </div>
       <div id="truck-breakdown" style="margin-top:16px"></div>
     </div>
-
-    <!-- Daily Breakdown -->
     <div class="report-section">
       <div class="report-title"><span class="icon">📅</span> Daily Breakdown (This Month)</div>
       <div id="daily-breakdown"></div>
     </div>
   </div>
-</div>
+
+</div><!-- END .page-wrap -->
 
 <!-- FAB -->
 <button class="fab" onclick="openAddDrawer()">+</button>
@@ -528,7 +422,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   </button>
 </div>
 
-<!-- ═══ DAY DETAIL MODAL (FULL SCREEN) ═══ -->
+<!-- DAY DETAIL MODAL -->
 <div class="day-detail-overlay" id="day-detail-overlay">
   <div class="day-detail-header">
     <button class="day-detail-close" onclick="closeDayDetail()">✕</button>
@@ -538,31 +432,29 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   <div class="day-detail-content" id="day-detail-content"></div>
 </div>
 
-<!-- ═══ ADD/EDIT DRAWER ═══ -->
+<!-- ADD/EDIT DRAWER -->
 <div class="overlay" id="add-drawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
     <div class="drawer-title" id="drawer-title">Add Expense</div>
     <div class="drawer-sub" id="drawer-sub">Record a new expense</div>
-
     <div class="row2">
       <div class="fg">
         <label class="fl">Truck *</label>
         <select class="fi" id="f-truck">
-        <option value="">Select Truck</option>
-        <option value="CAH 1415">CAH 1415</option>
-        <option value="CBQ 3244">CBQ 3244</option>
-        <option value="CAN 5652">CAN 5652</option>
-        <option value="NHE 1841">NHE 1841</option>
-        <option value="CBJ 1315">CBJ 1315</option>
-      </select>
+          <option value="">Select Truck</option>
+          <option value="CAH 1415">CAH 1415</option>
+          <option value="CBQ 3244">CBQ 3244</option>
+          <option value="CAN 5652">CAN 5652</option>
+          <option value="NHE 1841">NHE 1841</option>
+          <option value="CBJ 1315">CBJ 1315</option>
+        </select>
       </div>
       <div class="fg">
         <label class="fl">Date *</label>
         <input class="fi" id="f-date" type="date">
       </div>
     </div>
-
     <div class="fg">
       <label class="fl">Category *</label>
       <select class="fi" id="f-category" onchange="updateSubcategories()">
@@ -573,24 +465,20 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
         <option value="Miscellaneous">📦 Miscellaneous</option>
       </select>
     </div>
-
     <div class="fg">
       <label class="fl">Subcategory (Optional)</label>
       <select class="fi" id="f-subcategory">
         <option value="">Select category first</option>
       </select>
     </div>
-
     <div class="fg">
       <label class="fl">Amount (₱) *</label>
       <input class="fi" id="f-amount" type="number" step="0.01" placeholder="0.00" inputmode="decimal">
     </div>
-
     <div class="fg">
       <label class="fl">Receipt Number (Optional)</label>
       <input class="fi" id="f-receipt" placeholder="e.g. #12345">
     </div>
-
     <div class="fl">Receipt Photo (Optional)</div>
     <label class="photo-upload" onclick="triggerPhotoInput()">
       <input type="file" id="f-photo" accept="image/*" onchange="handlePhotoChange(this)">
@@ -600,12 +488,10 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
         <div class="photo-ph-text">Tap to upload receipt</div>
       </div>
     </label>
-
     <div class="fg">
       <label class="fl">Notes (Optional)</label>
       <textarea class="fi" id="f-notes" placeholder="Additional details..."></textarea>
     </div>
-
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeAddDrawer()">Cancel</button>
       <button class="btn btn-red" onclick="saveExpense()">Save Expense</button>
@@ -613,7 +499,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   </div>
 </div>
 
-<!-- ═══ DETAIL SHEET ═══ -->
+<!-- DETAIL SHEET -->
 <div class="detail-overlay" id="detail-overlay">
   <div class="detail-sheet">
     <div class="detail-handle"></div>
@@ -639,7 +525,7 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   </div>
 </div>
 
-<!-- ═══ CONFIRM DELETE ═══ -->
+<!-- CONFIRM DELETE -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-title">Delete Expense?</div>
@@ -651,41 +537,33 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
   </div>
 </div>
 
-<!-- ═══ SETTINGS DRAWER ═══ -->
+<!-- SETTINGS DRAWER -->
 <div class="overlay" id="settings-drawer">
   <div class="drawer">
     <div class="drawer-handle"></div>
     <div class="drawer-title">Expense Settings</div>
     <div class="drawer-sub">Configure daily rates and allowances</div>
-    
     <div class="fg">
       <label class="fl">Documentation Daily Rate (₱)</label>
       <input class="fi" id="s-doc-rate" type="number" step="0.01">
-      <div style="font-size:11px;color:var(--text3);margin-top:4px">
-        Based on ₱40,000/year = ₱109.59/day
-      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Based on ₱40,000/year = ₱109.59/day</div>
     </div>
-    
     <div class="fg">
       <label class="fl">Driver Daily Rate (₱)</label>
       <input class="fi" id="s-driver-rate" type="number" step="0.01">
     </div>
-    
     <div class="fg">
       <label class="fl">Helper Daily Rate (₱)</label>
       <input class="fi" id="s-helper-rate" type="number" step="0.01">
     </div>
-    
     <div class="fg">
       <label class="fl">Two-Man Team Bonus (₱)</label>
       <input class="fi" id="s-bonus" type="number" step="0.01">
     </div>
-    
     <div class="fg">
       <label class="fl">Meal Allowance (₱)</label>
       <input class="fi" id="s-meal" type="number" step="0.01">
     </div>
-    
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeSettingsDrawer()">Cancel</button>
       <button class="btn btn-red" onclick="saveSettings()">Save Settings</button>
@@ -705,7 +583,6 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// ═══ CONFIG ═══════════════════════════════════════════
 const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const EXPENSES_SHEET = 'Expenses_Master';
 const CATEGORIES_SHEET = 'Expense_Categories';
@@ -713,14 +590,12 @@ const ATTENDANCE_SHEET = 'Attendance';
 const EMPLOYEES_SHEET = 'Employees';
 const SETTINGS_SHEET = 'Expense_Categories';
 
-// ═══ MANPOWER & DOCUMENTATION RATES ═══════════════════
 let DOCUMENTATION_DAILY_RATE = 40000 / 365;
 let DRIVER_DAILY_RATE = 500;
 let HELPER_DAILY_RATE = 350;
 let TWO_MAN_BONUS = 280;
 let MEAL_ALLOWANCE = 210;
 
-// ═══ STATE ════════════════════════════════════════════
 let token = '';
 let isAdmin = false;
 let allExpenses = [];
@@ -735,53 +610,29 @@ let currentTruckFilter = 'All';
 let currentView = 'calendar';
 let currentMonth = new Date();
 
-// Chart instances
 let trendChart = null;
 let categoryChart = null;
 let truckChart = null;
 
-// ═══ CATEGORY ICONS ═══════════════════════════════════
 const CATEGORY_ICONS = {
-  'Diesel': '⛽',
-  'Maintenance': '🔧',
-  'Documentation': '📄',
-  'Miscellaneous': '📦',
-  'Manpower': '👷'
+  'Diesel': '⛽', 'Maintenance': '🔧', 'Documentation': '📄',
+  'Miscellaneous': '📦', 'Manpower': '👷'
 };
-
 const CATEGORY_COLORS = {
-  'Diesel': '#f59e0b',
-  'Maintenance': '#ef4444',
-  'Documentation': '#3b82f6',
-  'Miscellaneous': '#8b5cf6',
-  'Manpower': '#10b981'
+  'Diesel': '#f59e0b', 'Maintenance': '#ef4444', 'Documentation': '#3b82f6',
+  'Miscellaneous': '#8b5cf6', 'Manpower': '#10b981'
 };
 
-// ═══ INIT ═════════════════════════════════════════════
 (function init() {
   const dark = localStorage.getItem('pedroex-theme') === 'dark';
   document.body.classList.toggle('dark', dark);
-
   token = localStorage.getItem('pedroex-token') || '';
   const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-  if (!token || Date.now() >= expiry) {
-    location.href = 'index.html';
-    return;
-  }
-
+  if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
   isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
-  if (!isAdmin) {
-    location.href = 'index.html';
-    showToast('⚠️ Admin access only');
-    return;
-  }
-
+  if (!isAdmin) { location.href = 'index.html'; showToast('⚠️ Admin access only'); return; }
   const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
-
+  document.getElementById('f-date').value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   loadSettings();
   loadCategories();
   loadEmployeeRoles();
@@ -789,7 +640,6 @@ const CATEGORY_COLORS = {
   loadExpenses();
 })();
 
-// ═══ API HELPERS ══════════════════════════════════════
 function apiGet(range) {
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`, {
     headers: { Authorization: 'Bearer ' + token }
@@ -799,30 +649,21 @@ function apiGet(range) {
     return r.json();
   });
 }
-
 function apiUpdate(range, values) {
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
     method: 'PUT',
     headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ values })
-  }).then(r => {
-    if (!r.ok) throw new Error('Update failed');
-    return r.json();
-  });
+  }).then(r => { if (!r.ok) throw new Error('Update failed'); return r.json(); });
 }
-
 function apiAppend(range, values) {
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
     method: 'POST',
     headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ values })
-  }).then(r => {
-    if (!r.ok) throw new Error('Append failed');
-    return r.json();
-  });
+  }).then(r => { if (!r.ok) throw new Error('Append failed'); return r.json(); });
 }
 
-// ═══ PHOTO HANDLING ═══════════════════════════════════
 function compressPhoto(base64DataUrl) {
   return new Promise(resolve => {
     const img = new Image();
@@ -848,43 +689,23 @@ function uploadPhotoToDrive(base64DataUrl) {
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i) & 0xff;
-
     const filename = 'pedroex-expense-' + Date.now() + '.jpg';
     const boundary = 'pedroex_bnd';
     const metaStr = JSON.stringify({ name: filename });
-
     function strToBytes(s) {
       const a = new Uint8Array(s.length);
       for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i) & 0xff;
       return a;
     }
-
-    const p1 = strToBytes(
-      '--' + boundary + '\r\n' +
-      'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-      metaStr + '\r\n' +
-      '--' + boundary + '\r\n' +
-      'Content-Type: image/jpeg\r\n\r\n'
-    );
+    const p1 = strToBytes('--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + metaStr + '\r\n--' + boundary + '\r\nContent-Type: image/jpeg\r\n\r\n');
     const p3 = strToBytes('\r\n--' + boundary + '--');
-
     const body = new Uint8Array(p1.length + bytes.length + p3.length);
-    body.set(p1, 0);
-    body.set(bytes, p1.length);
-    body.set(p3, p1.length + bytes.length);
-
+    body.set(p1, 0); body.set(bytes, p1.length); body.set(p3, p1.length + bytes.length);
     return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
       method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + token,
-        'Content-Type': 'multipart/related; boundary=' + boundary,
-      },
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'multipart/related; boundary=' + boundary },
       body: body,
-    })
-    .then(r => {
-      if (!r.ok) return r.text().then(t => { throw new Error('Upload failed: ' + t); });
-      return r.json();
-    })
+    }).then(r => { if (!r.ok) return r.text().then(t => { throw new Error('Upload failed: ' + t); }); return r.json(); })
     .then(file => {
       if (!file.id) throw new Error('No file ID returned');
       return fetch('https://www.googleapis.com/drive/v3/files/' + file.id + '/permissions', {
@@ -896,22 +717,14 @@ function uploadPhotoToDrive(base64DataUrl) {
   });
 }
 
-function triggerPhotoInput() {
-  document.getElementById('f-photo').click();
-}
-
+function triggerPhotoInput() { document.getElementById('f-photo').click(); }
 function handlePhotoChange(input) {
   if (!input.files || !input.files[0]) return;
   const file = input.files[0];
-  if (file.size > 5 * 1024 * 1024) {
-    showToast('Photo must be under 5MB');
-    input.value = '';
-    return;
-  }
+  if (file.size > 5 * 1024 * 1024) { showToast('Photo must be under 5MB'); input.value = ''; return; }
   const reader = new FileReader();
   reader.onload = e => {
-    newPhotoBase64 = e.target.result;
-    hasNewPhoto = true;
+    newPhotoBase64 = e.target.result; hasNewPhoto = true;
     document.getElementById('photo-preview').src = newPhotoBase64;
     document.getElementById('photo-preview').style.display = 'block';
     document.getElementById('photo-ph').style.display = 'none';
@@ -919,7 +732,6 @@ function handlePhotoChange(input) {
   reader.readAsDataURL(file);
 }
 
-// ═══ LOAD EMPLOYEE ROLES ══════════════════════════════
 function loadEmployeeRoles() {
   apiGet(EMPLOYEES_SHEET + '!A2:E').then(res => {
     const rows = res.values || [];
@@ -928,66 +740,35 @@ function loadEmployeeRoles() {
       const firstName = (r[1] || '').trim();
       const lastName = (r[2] || '').trim();
       const position = (r[4] || '').toLowerCase().trim();
-      
       if (firstName && position) {
-        const fullName = `${firstName} ${lastName}`;
-        employeeRoles[fullName] = position;
+        employeeRoles[`${firstName} ${lastName}`] = position;
         employeeRoles[firstName] = position;
       }
     });
-    console.log('✅ Employee roles loaded:', Object.keys(employeeRoles).length);
-  }).catch(err => {
-    console.error('❌ Employee roles load failed:', err);
-    employeeRoles = {};
-  });
+  }).catch(() => { employeeRoles = {}; });
 }
 
-// ═══ LOAD SETTINGS ════════════════════════════════════
 function loadSettings() {
   apiGet(SETTINGS_SHEET + '!A2:B').then(res => {
-    const rows = res.values || [];
-    rows.forEach(r => {
-      const setting = r[0];
-      const value = parseFloat(r[1]) || 0;
-      
-      switch(setting) {
-        case 'Documentation_Daily_Rate':
-          DOCUMENTATION_DAILY_RATE = value;
-          break;
-        case 'Driver_Daily_Rate':
-          DRIVER_DAILY_RATE = value;
-          break;
-        case 'Helper_Daily_Rate':
-          HELPER_DAILY_RATE = value;
-          break;
-        case 'Two_Man_Bonus':
-          TWO_MAN_BONUS = value;
-          break;
-        case 'Meal_Allowance':
-          MEAL_ALLOWANCE = value;
-          break;
-      }
+    (res.values || []).forEach(r => {
+      const v = parseFloat(r[1]) || 0;
+      if (r[0] === 'Documentation_Daily_Rate') DOCUMENTATION_DAILY_RATE = v;
+      if (r[0] === 'Driver_Daily_Rate') DRIVER_DAILY_RATE = v;
+      if (r[0] === 'Helper_Daily_Rate') HELPER_DAILY_RATE = v;
+      if (r[0] === 'Two_Man_Bonus') TWO_MAN_BONUS = v;
+      if (r[0] === 'Meal_Allowance') MEAL_ALLOWANCE = v;
     });
-    console.log('✅ Settings loaded');
-  }).catch(err => {
-    console.warn('⚠️ Settings load failed, using defaults:', err);
-  });
+  }).catch(() => {});
 }
 
-// ═══ LOAD CATEGORIES ══════════════════════════════════
 function loadCategories() {
   apiGet(CATEGORIES_SHEET + '!A2:B').then(res => {
-    const rows = res.values || [];
     categories = {};
-    rows.forEach(r => {
-      const cat = r[0];
-      const sub = r[1];
-      if (!categories[cat]) categories[cat] = [];
-      categories[cat].push(sub);
+    (res.values || []).forEach(r => {
+      if (!categories[r[0]]) categories[r[0]] = [];
+      categories[r[0]].push(r[1]);
     });
-    console.log('✅ Categories loaded');
-  }).catch(err => {
-    console.error('❌ Categories load failed:', err);
+  }).catch(() => {
     categories = {
       'Diesel': ['Fuel'],
       'Maintenance': ['Engine', 'Tires', 'Brakes', 'Oil Change', 'Electrical', 'Body/Paint'],
@@ -1000,422 +781,214 @@ function loadCategories() {
 function updateSubcategories() {
   const cat = document.getElementById('f-category').value;
   const subSelect = document.getElementById('f-subcategory');
-  
-  if (!cat) {
-    subSelect.innerHTML = '<option value="">Select category first</option>';
-    return;
-  }
-
+  if (!cat) { subSelect.innerHTML = '<option value="">Select category first</option>'; return; }
   const subs = categories[cat] || [];
-  subSelect.innerHTML = '<option value="">Select Subcategory</option>' +
-    subs.map(s => `<option value="${s}">${s}</option>`).join('');
+  subSelect.innerHTML = '<option value="">Select Subcategory</option>' + subs.map(s => `<option value="${s}">${s}</option>`).join('');
 }
 
-// ═══ LOAD ATTENDANCE ══════════════════════════════════
 function loadAttendance() {
   apiGet(ATTENDANCE_SHEET + '!A2:J').then(res => {
-    const rows = res.values || [];
-    allAttendance = rows.map(r => ({
-      id: r[0] || '',
-      date: r[1] || '',
-      employee: r[2] || '',
-      twoManTeam: (r[3] || '').toLowerCase() === 'yes',
-      crates: parseInt(r[4]) || 0,
-      mealAllowance: ['yes', 'meals only'].includes((r[5] || '').toLowerCase()),
-      truck: r[6] || '',
-      location: r[7] || '',
-      latitude: r[8] || '',
-      longitude: r[9] || '',
-      timestamp: r[10] || ''
+    allAttendance = (res.values || []).map(r => ({
+      id: r[0]||'', date: r[1]||'', employee: r[2]||'',
+      twoManTeam: (r[3]||'').toLowerCase() === 'yes',
+      crates: parseInt(r[4])||0,
+      mealAllowance: ['yes','meals only'].includes((r[5]||'').toLowerCase()),
+      truck: r[6]||'', location: r[7]||'', latitude: r[8]||'', longitude: r[9]||''
     })).filter(a => a.date && a.employee);
-    
-    console.log('✅ Attendance loaded:', allAttendance.length, 'records');
-  }).catch(err => {
-    console.error('❌ Attendance load failed:', err);
-    allAttendance = [];
-  });
+  }).catch(() => { allAttendance = []; });
 }
 
-// ✅ FIX: CALCULATE COSTS CORRECTLY
 function calculateManpowerCost(attendance) {
-  const employeeName = attendance.employee;
-  const role = employeeRoles[employeeName] || 'helper';
-  
+  const role = employeeRoles[attendance.employee] || 'helper';
   let cost = (role === 'driver') ? DRIVER_DAILY_RATE : HELPER_DAILY_RATE;
-  
   if (attendance.twoManTeam) cost += TWO_MAN_BONUS;
   if (attendance.mealAllowance) cost += MEAL_ALLOWANCE;
-  
   return cost;
 }
 
 function getManpowerExpensesForDate(dateStr) {
-  const dayAttendance = allAttendance.filter(a => a.date === dateStr);
-  return dayAttendance.map(a => {
+  return allAttendance.filter(a => a.date === dateStr).map(a => {
     const role = employeeRoles[a.employee] || 'helper';
     return {
-      category: 'Manpower',
-      subcategory: role === 'driver' ? 'Driver' : 'Helper',
-      truck: a.truck || 'N/A',
-      employee: a.employee,
-      amount: calculateManpowerCost(a),
-      twoManTeam: a.twoManTeam,
-      mealAllowance: a.mealAllowance,
-      role: role,
-      date: dateStr
+      category: 'Manpower', subcategory: role === 'driver' ? 'Driver' : 'Helper',
+      truck: a.truck || 'N/A', employee: a.employee, amount: calculateManpowerCost(a),
+      twoManTeam: a.twoManTeam, mealAllowance: a.mealAllowance, role, date: dateStr
     };
   });
 }
 
 function getDocumentationExpensesForDate(dateStr) {
-  const dayAttendance = allAttendance.filter(a => a.date === dateStr);
-  const trucks = [...new Set(dayAttendance.map(a => a.truck))].filter(t => t);
-  
+  const trucks = [...new Set(allAttendance.filter(a => a.date === dateStr).map(a => a.truck))].filter(t => t);
   return trucks.map(truck => ({
-    category: 'Documentation',
-    subcategory: 'Daily Allocation',
-    truck: truck,
-    amount: DOCUMENTATION_DAILY_RATE,
-    date: dateStr,
-    isAutoGenerated: true
+    category: 'Documentation', subcategory: 'Daily Allocation',
+    truck, amount: DOCUMENTATION_DAILY_RATE, date: dateStr, isAutoGenerated: true
   }));
 }
 
-// ═══ LOAD EXPENSES ════════════════════════════════════
 function loadExpenses() {
   document.getElementById('expenses-loading').style.display = 'flex';
   document.getElementById('expenses-list').innerHTML = '';
   document.getElementById('expenses-empty').style.display = 'none';
-
   apiGet(EXPENSES_SHEET + '!A2:M').then(res => {
-    const rows = res.values || [];
-    
-    allExpenses = rows.map((r, i) => ({
-      rowIndex: i + 2,
-      id: r[0] || '',
-      date: r[1] || '',
-      truck: r[2] || '',
-      category: r[3] || '',
-      subcategory: r[4] || '',
-      amount: parseFloat(r[5]) || 0,
-      receipt: r[6] || '',
-      notes: r[7] || '',
-      addedBy: r[8] || '',
-      timestamp: r[9] || '',
-      weekNumber: r[10] || '',
-      month: r[11] || '',
-      photo: r[12] || ''
+    allExpenses = (res.values || []).map((r, i) => ({
+      rowIndex: i + 2, id: r[0]||'', date: r[1]||'', truck: r[2]||'',
+      category: r[3]||'', subcategory: r[4]||'', amount: parseFloat(r[5])||0,
+      receipt: r[6]||'', notes: r[7]||'', addedBy: r[8]||'',
+      timestamp: r[9]||'', weekNumber: r[10]||'', month: r[11]||'', photo: r[12]||''
     })).filter(e => e.truck);
-
-    console.log('✅ Expenses loaded:', allExpenses.length);
     document.getElementById('expenses-loading').style.display = 'none';
     renderCurrentView();
   }).catch(err => {
     document.getElementById('expenses-loading').style.display = 'none';
     showToast('Cannot load expenses: ' + err.message);
-    console.error(err);
   });
 }
 
-// ═══ VIEW SWITCHING ═══════════════════════════════════
 function switchView(view) {
   currentView = view;
-  
   document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
   event.target.classList.add('active');
-  
   document.querySelectorAll('.calendar-view, .list-view, .reports-view').forEach(v => v.classList.remove('active'));
   document.getElementById(view + '-view').classList.add('active');
-  
   document.getElementById('truck-filters').style.display = view === 'reports' ? 'none' : 'flex';
-  
   renderCurrentView();
 }
 
 function renderCurrentView() {
-  if (currentView === 'calendar') {
-    renderCalendar();
-  } else if (currentView === 'list') {
-    renderList();
-  } else if (currentView === 'reports') {
-    renderReports();
-  }
+  if (currentView === 'calendar') renderCalendar();
+  else if (currentView === 'list') renderList();
+  else if (currentView === 'reports') renderReports();
   updateSummary();
 }
 
-// ═══ CALENDAR RENDERING ═══════════════════════════════
-function changeMonth(delta) {
-  currentMonth.setMonth(currentMonth.getMonth() + delta);
-  renderCalendar();
-}
-
-function goToToday() {
-  currentMonth = new Date();
-  renderCalendar();
-}
+function changeMonth(delta) { currentMonth.setMonth(currentMonth.getMonth() + delta); renderCalendar(); }
+function goToToday() { currentMonth = new Date(); renderCalendar(); }
 
 function renderCalendar() {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
-  
-  document.getElementById('cal-month').textContent = 
-    currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  
+  document.getElementById('cal-month').textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const startDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
   const daysInMonth = lastDay.getDate();
-  
   const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   let html = '';
-  
-  // Previous month days
   const prevMonthDays = new Date(year, month, 0).getDate();
   for (let i = startDay - 1; i >= 0; i--) {
     html += `<div class="cal-day other-month"><div class="cal-date">${prevMonthDays - i}</div></div>`;
   }
-  
-  // Current month days
   for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
     const isToday = dateStr === todayStr;
-    
-    // ✅ GET ALL EXPENSES INCLUDING MANPOWER & DOCUMENTATION
     let dayExpenses = allExpenses.filter(e => e.date === dateStr);
     const manpowerExpenses = getManpowerExpensesForDate(dateStr);
     const documentationExpenses = getDocumentationExpensesForDate(dateStr);
-    
-    // Apply truck filter
+    let allDayExpenses;
     if (currentTruckFilter !== 'All') {
       dayExpenses = dayExpenses.filter(e => e.truck === currentTruckFilter);
-      var filteredManpower = manpowerExpenses.filter(e => e.truck === currentTruckFilter);
-      var filteredDocumentation = documentationExpenses.filter(e => e.truck === currentTruckFilter);
-      var allDayExpenses = [...dayExpenses, ...filteredManpower, ...filteredDocumentation];
+      allDayExpenses = [...dayExpenses, ...manpowerExpenses.filter(e => e.truck === currentTruckFilter), ...documentationExpenses.filter(e => e.truck === currentTruckFilter)];
     } else {
-      var allDayExpenses = [...dayExpenses, ...manpowerExpenses, ...documentationExpenses];
+      allDayExpenses = [...dayExpenses, ...manpowerExpenses, ...documentationExpenses];
     }
-    
-    // ✅ CHECK IF DAY HAS EXPENSES
     const hasExpenses = allDayExpenses.length > 0;
-    
-    // Group by category and show totals
     const categoryTotals = {};
-    allDayExpenses.forEach(e => {
-      if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
-      categoryTotals[e.category] += e.amount;
-    });
-    
-    // Show top 4 categories with icons + amounts
-    const expensesHtml = Object.entries(categoryTotals)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 4)
-      .map(([cat, amt]) => {
-        const icon = CATEGORY_ICONS[cat] || '💰';
-        const amtStr = amt >= 1000 ? `${(amt/1000).toFixed(1)}k` : amt.toFixed(0);
-        return `<div class="cal-expense-dot"><span class="icon">${icon}</span><span class="amount">₱${amtStr}</span></div>`;
-      }).join('');
-    
-    // ✅ ADD INDICATOR DOT & has-expenses CLASS
-    const indicatorHtml = hasExpenses ? '<div class="cal-day-indicator"></div>' : '';
-    const hasExpensesClass = hasExpenses ? 'has-expenses' : '';
-    
-    html += `<div class="cal-day ${isToday ? 'today' : ''} ${hasExpensesClass}" onclick="showDayDetail('${dateStr}')">
-      ${indicatorHtml}
+    allDayExpenses.forEach(e => { categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount; });
+    const expensesHtml = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([cat, amt]) => {
+      const icon = CATEGORY_ICONS[cat] || '💰';
+      const amtStr = amt >= 1000 ? `${(amt/1000).toFixed(1)}k` : amt.toFixed(0);
+      return `<div class="cal-expense-dot"><span class="icon">${icon}</span><span class="amount">₱${amtStr}</span></div>`;
+    }).join('');
+    html += `<div class="cal-day ${isToday ? 'today' : ''} ${hasExpenses ? 'has-expenses' : ''}" onclick="showDayDetail('${dateStr}')">
+      ${hasExpenses ? '<div class="cal-day-indicator"></div>' : ''}
       <div class="cal-date">${day}</div>
       <div class="cal-expenses">${expensesHtml}</div>
     </div>`;
   }
-  
-  // Next month days
   const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
-  const nextMonthDays = totalCells - (startDay + daysInMonth);
-  for (let i = 1; i <= nextMonthDays; i++) {
+  for (let i = 1; i <= totalCells - (startDay + daysInMonth); i++) {
     html += `<div class="cal-day other-month"><div class="cal-date">${i}</div></div>`;
   }
-  
   document.getElementById('cal-days').innerHTML = html;
 }
 
-
-
-// ═══ DAY DETAIL MODAL ═════════════════════════════════
 function showDayDetail(dateStr) {
   let dayExpenses = allExpenses.filter(e => e.date === dateStr);
   let manpowerExpenses = getManpowerExpensesForDate(dateStr);
   let documentationExpenses = getDocumentationExpensesForDate(dateStr);
-  
   if (currentTruckFilter !== 'All') {
     dayExpenses = dayExpenses.filter(e => e.truck === currentTruckFilter);
     manpowerExpenses = manpowerExpenses.filter(e => e.truck === currentTruckFilter);
     documentationExpenses = documentationExpenses.filter(e => e.truck === currentTruckFilter);
   }
-  
-  if (dayExpenses.length === 0 && manpowerExpenses.length === 0 && documentationExpenses.length === 0) {
-    showToast('No expenses on this date');
-    return;
-  }
-  
+  if (!dayExpenses.length && !manpowerExpenses.length && !documentationExpenses.length) { showToast('No expenses on this date'); return; }
   const [y, m, d] = dateStr.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  const dateText = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  
-  document.getElementById('day-detail-title').textContent = dateText;
-  
-  const categories = {};
-  dayExpenses.forEach(e => {
-    if (!categories[e.category]) categories[e.category] = [];
-    categories[e.category].push(e);
-  });
-  
+  document.getElementById('day-detail-title').textContent = new Date(y, m-1, d).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const cats = {};
+  dayExpenses.forEach(e => { if (!cats[e.category]) cats[e.category] = []; cats[e.category].push(e); });
   let html = '';
-  
-  // Operational Expenses
   if (dayExpenses.length > 0) {
-    html += `<div class="day-section">
-      <div class="day-section-title"><span class="icon">💰</span> Operational Expenses</div>`;
-    
-    Object.entries(categories).forEach(([cat, expenses]) => {
+    html += `<div class="day-section"><div class="day-section-title"><span class="icon">💰</span> Operational Expenses</div>`;
+    Object.entries(cats).forEach(([cat, expenses]) => {
       const icon = CATEGORY_ICONS[cat] || '💰';
-      const subtotal = expenses.reduce((sum, e) => sum + e.amount, 0);
-      
-      html += `<div style="margin-bottom:16px">
-        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">${icon} ${cat}</div>`;
-      
+      const subtotal = expenses.reduce((s, e) => s + e.amount, 0);
+      html += `<div style="margin-bottom:16px"><div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">${icon} ${cat}</div>`;
       expenses.forEach(e => {
-        html += `<div class="day-expense-item" onclick="openDetail(${e.rowIndex})">
-          <div class="day-expense-left">
-            <div class="day-expense-truck">${e.truck}</div>
-            <div class="day-expense-sub">${e.subcategory}</div>
-          </div>
-          <div class="day-expense-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-        </div>`;
+        html += `<div class="day-expense-item" onclick="openDetail(${e.rowIndex})"><div class="day-expense-left"><div class="day-expense-truck">${e.truck}</div><div class="day-expense-sub">${e.subcategory}</div></div><div class="day-expense-amount">₱${e.amount.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>`;
       });
-      
-      html += `<div style="text-align:right;font-size:13px;font-weight:600;color:var(--text2);margin-top:6px">
-        Subtotal: ₱${subtotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}
-      </div></div>`;
+      html += `<div style="text-align:right;font-size:13px;font-weight:600;color:var(--text2);margin-top:6px">Subtotal: ₱${subtotal.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>`;
     });
-    
     html += `</div>`;
   }
-  
-  // Manpower Expenses
   if (manpowerExpenses.length > 0) {
-    const manpowerTotal = manpowerExpenses.reduce((sum, e) => sum + e.amount, 0);
-    
-    html += `<div class="day-section">
-      <div class="day-section-title"><span class="icon">👷</span> Manpower Expenses</div>`;
-    
+    const manpowerTotal = manpowerExpenses.reduce((s, e) => s + e.amount, 0);
+    html += `<div class="day-section"><div class="day-section-title"><span class="icon">👷</span> Manpower Expenses</div>`;
     manpowerExpenses.forEach(e => {
-      const details = [];
-      details.push(e.role === 'driver' ? 'Driver' : 'Helper');
+      const details = [e.role === 'driver' ? 'Driver' : 'Helper'];
       if (e.twoManTeam) details.push('2-Man');
       if (e.mealAllowance) details.push('Meals');
-      const detailsStr = details.length > 0 ? ` (${details.join(', ')})` : '';
-      
-      html += `<div class="day-expense-item">
-        <div class="day-expense-left">
-          <div class="day-expense-truck">${e.employee}</div>
-          <div class="day-expense-sub">${e.truck}${detailsStr}</div>
-        </div>
-        <div class="day-expense-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-      </div>`;
+      html += `<div class="day-expense-item"><div class="day-expense-left"><div class="day-expense-truck">${e.employee}</div><div class="day-expense-sub">${e.truck} (${details.join(', ')})</div></div><div class="day-expense-amount">₱${e.amount.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>`;
     });
-    
-    html += `<div style="text-align:right;font-size:13px;font-weight:600;color:var(--text2);margin-top:6px">
-      Subtotal: ₱${manpowerTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}
-    </div></div>`;
+    html += `<div style="text-align:right;font-size:13px;font-weight:600;color:var(--text2);margin-top:6px">Subtotal: ₱${manpowerTotal.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>`;
   }
-  
-  // Documentation Expenses
   if (documentationExpenses.length > 0) {
-    const documentationTotal = documentationExpenses.reduce((sum, e) => sum + e.amount, 0);
-    
-    html += `<div class="day-section">
-      <div class="day-section-title"><span class="icon">📄</span> Documentation Expenses</div>`;
-    
+    const docTotal = documentationExpenses.reduce((s, e) => s + e.amount, 0);
+    html += `<div class="day-section"><div class="day-section-title"><span class="icon">📄</span> Documentation Expenses</div>`;
     documentationExpenses.forEach(e => {
-      html += `<div class="day-expense-item">
-        <div class="day-expense-left">
-          <div class="day-expense-truck">${e.truck}</div>
-          <div class="day-expense-sub">Daily Allocation (₱40k/year)</div>
-        </div>
-        <div class="day-expense-amount">₱${e.amount.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-      </div>`;
+      html += `<div class="day-expense-item"><div class="day-expense-left"><div class="day-expense-truck">${e.truck}</div><div class="day-expense-sub">Daily Allocation (₱40k/year)</div></div><div class="day-expense-amount">₱${e.amount.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>`;
     });
-    
-    html += `<div style="text-align:right;font-size:13px;font-weight:600;color:var(--text2);margin-top:6px">
-      Subtotal: ₱${documentationTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}
-    </div></div>`;
+    html += `<div style="text-align:right;font-size:13px;font-weight:600;color:var(--text2);margin-top:6px">Subtotal: ₱${docTotal.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>`;
   }
-  
-  // Total
-  const grandTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0) + 
-                     manpowerExpenses.reduce((sum, e) => sum + e.amount, 0) +
-                     documentationExpenses.reduce((sum, e) => sum + e.amount, 0);
-  
-  html += `<div class="day-total">
-    <div class="day-total-label">Total for the Day</div>
-    <div class="day-total-amount">₱${grandTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-  </div>`;
-  
+  const grandTotal = [...dayExpenses, ...manpowerExpenses, ...documentationExpenses].reduce((s, e) => s + e.amount, 0);
+  html += `<div class="day-total"><div class="day-total-label">Total for the Day</div><div class="day-total-amount">₱${grandTotal.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>`;
   document.getElementById('day-detail-content').innerHTML = html;
   document.getElementById('day-detail-overlay').classList.add('open');
 }
 
-function closeDayDetail() {
-  document.getElementById('day-detail-overlay').classList.remove('open');
-}
+function closeDayDetail() { document.getElementById('day-detail-overlay').classList.remove('open'); }
 
-// ═══ LIST RENDERING ═══════════════════════════════════
 function filterByTruck(truck) {
   currentTruckFilter = truck;
   document.querySelectorAll('#truck-filters .filter-btn').forEach(b => {
-    if (b.textContent.includes(truck) || (truck === 'All' && b.textContent === 'All Trucks')) {
-      b.classList.add('active');
-    } else {
-      b.classList.remove('active');
-    }
+    b.classList.toggle('active', b.textContent.includes(truck) || (truck === 'All' && b.textContent === 'All Trucks'));
   });
   renderCurrentView();
 }
 
 function renderList() {
   let filtered = allExpenses;
-  if (currentTruckFilter !== 'All') {
-    filtered = filtered.filter(e => e.truck === currentTruckFilter);
-  }
-  
+  if (currentTruckFilter !== 'All') filtered = filtered.filter(e => e.truck === currentTruckFilter);
   const container = document.getElementById('expenses-list');
   const empty = document.getElementById('expenses-empty');
-  
-  if (!filtered.length) {
-    container.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  
+  if (!filtered.length) { container.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-
   container.innerHTML = filtered.map(e => {
     const icon = CATEGORY_ICONS[e.category] || '💰';
-    const catClass = e.category.toLowerCase();
     const dateStr = new Date(e.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    
-    return `<div class="expense-card ${catClass}" onclick="openDetail(${e.rowIndex})">
-      <div class="ec-head">
-        <div class="ec-left">
-          <div class="ec-category">
-            <span class="ec-icon">${icon}</span>
-            ${e.category}
-          </div>
-          <div class="ec-meta">${e.truck} · ${dateStr}</div>
-        </div>
-        <div class="ec-amount">₱ ${e.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
-      </div>
+    return `<div class="expense-card ${e.category.toLowerCase()}" onclick="openDetail(${e.rowIndex})">
+      <div class="ec-head"><div class="ec-left"><div class="ec-category"><span class="ec-icon">${icon}</span>${e.category}</div><div class="ec-meta">${e.truck} · ${dateStr}</div></div><div class="ec-amount">₱ ${e.amount.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
       <div class="ec-subcategory">${e.subcategory}</div>
       ${e.receipt ? `<div class="ec-receipt">🧾 ${e.receipt}</div>` : ''}
       ${e.notes ? `<div class="ec-notes">${e.notes}</div>` : ''}
@@ -1423,420 +996,171 @@ function renderList() {
   }).join('');
 }
 
-// ✅ FIX: REPORTS RENDERING WITH CORRECT CALCULATIONS
 function renderReports() {
   const now = new Date();
   const thisMonth = now.toISOString().slice(0, 7);
-  const thisYear = now.getFullYear();
-  
-  const weekAgo = new Date(now);
-  weekAgo.setDate(weekAgo.getDate() - 7);
-  
-  const yearStart = new Date(thisYear, 0, 1);
-  
+  const weekAgo = new Date(now); weekAgo.setDate(weekAgo.getDate() - 7);
+  const yearStart = new Date(now.getFullYear(), 0, 1);
   const thisWeekExpenses = allExpenses.filter(e => new Date(e.date + 'T00:00:00') >= weekAgo);
   const thisMonthExpenses = allExpenses.filter(e => e.date && e.date.startsWith(thisMonth));
   const ytdExpenses = allExpenses.filter(e => new Date(e.date + 'T00:00:00') >= yearStart);
-  
-  // ✅ FIX: Calculate manpower and documentation for THIS MONTH
-  const thisMonthDates = [...new Set(thisMonthExpenses.map(e => e.date))];
-  let thisMonthManpowerTotal = 0;
-  let thisMonthDocumentationTotal = 0;
-  
-  // ✅ ADD: Get ALL dates in this month that have attendance
   const allThisMonthDates = [...new Set(allAttendance.filter(a => a.date.startsWith(thisMonth)).map(a => a.date))];
-  
+  let thisMonthManpowerTotal = 0, thisMonthDocumentationTotal = 0;
   allThisMonthDates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    thisMonthManpowerTotal += manpower.reduce((sum, e) => sum + e.amount, 0);
-    thisMonthDocumentationTotal += documentation.reduce((sum, e) => sum + e.amount, 0);
+    thisMonthManpowerTotal += getManpowerExpensesForDate(date).reduce((s, e) => s + e.amount, 0);
+    thisMonthDocumentationTotal += getDocumentationExpensesForDate(date).reduce((s, e) => s + e.amount, 0);
   });
-  
   const lastWeekExpenses = allExpenses.filter(e => {
     const d = new Date(e.date + 'T00:00:00');
     return d >= new Date(weekAgo.getTime() - 7*24*60*60*1000) && d < weekAgo;
   });
-  
-    const lastMonthExpenses = allExpenses.filter(e => {
-      const lastMonth = new Date(now);
-      lastMonth.setMonth(lastMonth.getMonth() - 1);
-      const lm = lastMonth.toISOString().slice(0, 7);
-      return e.date && e.date.startsWith(lm);  // ← fixed
-    });
-  
-  const weekTotal = thisWeekExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const monthTotal = thisMonthExpenses.reduce((sum, e) => sum + e.amount, 0) + 
-                     thisMonthManpowerTotal + thisMonthDocumentationTotal;
-  const ytdTotal = ytdExpenses.reduce((sum, e) => sum + e.amount, 0);
+  const lastMonthExpenses = allExpenses.filter(e => {
+    const lm = new Date(now); lm.setMonth(lm.getMonth() - 1);
+    return e.date && e.date.startsWith(lm.toISOString().slice(0, 7));
+  });
+  const weekTotal = thisWeekExpenses.reduce((s, e) => s + e.amount, 0);
+  const monthTotal = thisMonthExpenses.reduce((s, e) => s + e.amount, 0) + thisMonthManpowerTotal + thisMonthDocumentationTotal;
+  const ytdTotal = ytdExpenses.reduce((s, e) => s + e.amount, 0);
   const avgPerDay = monthTotal / now.getDate();
-  
-  const lastWeekTotal = lastWeekExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const lastMonthTotal = lastMonthExpenses.reduce((sum, e) => sum + e.amount, 0);
-  
+  const lastWeekTotal = lastWeekExpenses.reduce((s, e) => s + e.amount, 0);
+  const lastMonthTotal = lastMonthExpenses.reduce((s, e) => s + e.amount, 0);
   const weekChange = lastWeekTotal > 0 ? ((weekTotal - lastWeekTotal) / lastWeekTotal * 100).toFixed(1) : 0;
   const monthChange = lastMonthTotal > 0 ? ((monthTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1) : 0;
-  
-  function formatCompactCurrency(amount) {
-    if (amount >= 1000000) return '₱' + (amount / 1000000).toFixed(1) + 'M';
-    else if (amount >= 1000) return '₱' + (amount / 1000).toFixed(1) + 'k';
-    else return '₱' + amount.toFixed(0);
-  }
-  
-  document.getElementById('stat-month').textContent = formatCompactCurrency(monthTotal);
-  document.getElementById('stat-week').textContent = formatCompactCurrency(weekTotal);
-  document.getElementById('stat-ytd').textContent = formatCompactCurrency(ytdTotal);
-  document.getElementById('stat-avg').textContent = formatCompactCurrency(avgPerDay);
-  
+  function fmtC(a) { return a >= 1000000 ? '₱'+(a/1000000).toFixed(1)+'M' : a >= 1000 ? '₱'+(a/1000).toFixed(1)+'k' : '₱'+a.toFixed(0); }
+  document.getElementById('stat-month').textContent = fmtC(monthTotal);
+  document.getElementById('stat-week').textContent = fmtC(weekTotal);
+  document.getElementById('stat-ytd').textContent = fmtC(ytdTotal);
+  document.getElementById('stat-avg').textContent = fmtC(avgPerDay);
   const weekChangeEl = document.getElementById('stat-week-change');
-  weekChangeEl.textContent = weekChange > 0 ? `↑ ${weekChange}% vs last week` : 
-                             weekChange < 0 ? `↓ ${Math.abs(weekChange)}% vs last week` : '—';
+  weekChangeEl.textContent = weekChange > 0 ? `↑ ${weekChange}% vs last week` : weekChange < 0 ? `↓ ${Math.abs(weekChange)}% vs last week` : '—';
   weekChangeEl.className = 'stat-change ' + (weekChange > 0 ? 'up' : weekChange < 0 ? 'down' : '');
-  
   const monthChangeEl = document.getElementById('stat-month-change');
-  monthChangeEl.textContent = monthChange > 0 ? `↑ ${monthChange}% vs last month` : 
-                              monthChange < 0 ? `↓ ${Math.abs(monthChange)}% vs last month` : '—';
+  monthChangeEl.textContent = monthChange > 0 ? `↑ ${monthChange}% vs last month` : monthChange < 0 ? `↓ ${Math.abs(monthChange)}% vs last month` : '—';
   monthChangeEl.className = 'stat-change ' + (monthChange > 0 ? 'up' : monthChange < 0 ? 'down' : '');
-  
   renderTrendChart();
-  
-  // ✅ FIX: Category breakdown with manpower & documentation
   const categoryTotals = {};
-  thisMonthExpenses.forEach(e => {
-    if (!categoryTotals[e.category]) categoryTotals[e.category] = 0;
-    categoryTotals[e.category] += e.amount;
-  });
-  
-  if (thisMonthManpowerTotal > 0) {
-    categoryTotals['Manpower'] = thisMonthManpowerTotal;
-  }
-  
-  if (thisMonthDocumentationTotal > 0) {
-    if (!categoryTotals['Documentation']) categoryTotals['Documentation'] = 0;
-    categoryTotals['Documentation'] += thisMonthDocumentationTotal;
-  }
-  
+  thisMonthExpenses.forEach(e => { categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount; });
+  if (thisMonthManpowerTotal > 0) categoryTotals['Manpower'] = thisMonthManpowerTotal;
+  if (thisMonthDocumentationTotal > 0) categoryTotals['Documentation'] = (categoryTotals['Documentation'] || 0) + thisMonthDocumentationTotal;
   renderCategoryChart(categoryTotals);
-  
-  const categoryHtml = Object.entries(categoryTotals)
-    .sort((a, b) => b[1] - a[1])
-    .map(([cat, amt]) => {
-      const icon = CATEGORY_ICONS[cat] || '💰';
-      const percent = ((amt / monthTotal) * 100).toFixed(1);
-      
-      let count;
-      if (cat === 'Manpower') {
-        count = allAttendance.filter(a => a.date.startsWith(thisMonth)).length;
-      } else {
-        count = thisMonthExpenses.filter(e => e.category === cat).length;
-      }
-      
-      return `<div class="breakdown-item">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">${icon}</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label">${cat}</div>
-            <div class="breakdown-meta">${count} ${cat === 'Manpower' ? 'attendance' : 'transaction'}${count !== 1 ? 's' : ''}</div>
-          </div>
-        </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount">₱${amt.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>
-          <div class="breakdown-percent">${percent}%</div>
-        </div>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill ${cat.toLowerCase()}" style="width:${percent}%"></div>
-      </div>`;
-    }).join('');
-  
-  document.getElementById('category-breakdown').innerHTML = categoryHtml || 
-    '<div class="empty-state"><p>No data for this month</p></div>';
-  
-  // ✅ FIX: Truck breakdown with manpower & documentation
+  document.getElementById('category-breakdown').innerHTML = Object.entries(categoryTotals).sort((a,b)=>b[1]-a[1]).map(([cat, amt]) => {
+    const icon = CATEGORY_ICONS[cat] || '💰';
+    const percent = ((amt / monthTotal) * 100).toFixed(1);
+    const count = cat === 'Manpower' ? allAttendance.filter(a => a.date.startsWith(thisMonth)).length : thisMonthExpenses.filter(e => e.category === cat).length;
+    return `<div class="breakdown-item"><div class="breakdown-left"><div class="breakdown-icon">${icon}</div><div class="breakdown-info"><div class="breakdown-label">${cat}</div><div class="breakdown-meta">${count} ${cat==='Manpower'?'attendance':'transaction'}${count!==1?'s':''}</div></div></div><div class="breakdown-right"><div class="breakdown-amount">₱${amt.toLocaleString('en-PH',{minimumFractionDigits:0})}</div><div class="breakdown-percent">${percent}%</div></div></div><div class="progress-bar"><div class="progress-fill ${cat.toLowerCase()}" style="width:${percent}%"></div></div>`;
+  }).join('') || '<div class="empty-state"><p>No data for this month</p></div>';
   const truckTotals = {};
-  
-  thisMonthExpenses.forEach(e => {
-    if (!truckTotals[e.truck]) truckTotals[e.truck] = 0;
-    truckTotals[e.truck] += e.amount;
-  });
-  
+  thisMonthExpenses.forEach(e => { truckTotals[e.truck] = (truckTotals[e.truck] || 0) + e.amount; });
   allThisMonthDates.forEach(date => {
-    const manpower = getManpowerExpensesForDate(date);
-    const documentation = getDocumentationExpensesForDate(date);
-    
-    manpower.forEach(m => {
-      if (!truckTotals[m.truck]) truckTotals[m.truck] = 0;
-      truckTotals[m.truck] += m.amount;
-    });
-    
-    documentation.forEach(d => {
-      if (!truckTotals[d.truck]) truckTotals[d.truck] = 0;
-      truckTotals[d.truck] += d.amount;
-    });
+    [...getManpowerExpensesForDate(date), ...getDocumentationExpensesForDate(date)].forEach(e => { truckTotals[e.truck] = (truckTotals[e.truck] || 0) + e.amount; });
   });
-  
   renderTruckChart(truckTotals);
-  
-  const truckHtml = Object.entries(truckTotals)
-    .sort((a, b) => b[1] - a[1])
-    .map(([truck, amt]) => {
-      const percent = ((amt / monthTotal) * 100).toFixed(1);
-      const count = thisMonthExpenses.filter(e => e.truck === truck).length;
-      return `<div class="breakdown-item">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">🚛</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label">${truck}</div>
-            <div class="breakdown-meta">${count} transaction${count !== 1 ? 's' : ''}</div>
-          </div>
-        </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount">₱${amt.toLocaleString('en-PH', {minimumFractionDigits: 0})}</div>
-          <div class="breakdown-percent">${percent}%</div>
-        </div>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" style="width:${percent}%;background:var(--red)"></div>
-      </div>`;
-    }).join('');
-  
-  document.getElementById('truck-breakdown').innerHTML = truckHtml || 
-    '<div class="empty-state"><p>No data for this month</p></div>';
-  
-  // Daily breakdown
+  document.getElementById('truck-breakdown').innerHTML = Object.entries(truckTotals).sort((a,b)=>b[1]-a[1]).map(([truck, amt]) => {
+    const percent = ((amt / monthTotal) * 100).toFixed(1);
+    const count = thisMonthExpenses.filter(e => e.truck === truck).length;
+    return `<div class="breakdown-item"><div class="breakdown-left"><div class="breakdown-icon">🚛</div><div class="breakdown-info"><div class="breakdown-label">${truck}</div><div class="breakdown-meta">${count} transaction${count!==1?'s':''}</div></div></div><div class="breakdown-right"><div class="breakdown-amount">₱${amt.toLocaleString('en-PH',{minimumFractionDigits:0})}</div><div class="breakdown-percent">${percent}%</div></div></div><div class="progress-bar"><div class="progress-fill" style="width:${percent}%;background:var(--red)"></div></div>`;
+  }).join('') || '<div class="empty-state"><p>No data for this month</p></div>';
   let dailyHtml = '';
   for (let day = 1; day <= now.getDate(); day++) {
-    const dateStr = `${thisMonth}-${String(day).padStart(2, '0')}`;
-    const dayExpenses = thisMonthExpenses.filter(e => e.date === dateStr);
-    const manpowerExpenses = getManpowerExpensesForDate(dateStr);
-    const documentationExpenses = getDocumentationExpensesForDate(dateStr);
-    
-    const operationalTotal = dayExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const manpowerTotal = manpowerExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const documentationTotal = documentationExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const dayTotal = operationalTotal + manpowerTotal + documentationTotal;
-    
+    const dateStr = `${thisMonth}-${String(day).padStart(2,'0')}`;
+    const de = thisMonthExpenses.filter(e => e.date === dateStr);
+    const me = getManpowerExpensesForDate(dateStr);
+    const doce = getDocumentationExpensesForDate(dateStr);
+    const opT = de.reduce((s,e)=>s+e.amount,0), mT = me.reduce((s,e)=>s+e.amount,0), dT = doce.reduce((s,e)=>s+e.amount,0);
+    const dayTotal = opT + mT + dT;
     if (dayTotal > 0) {
       const [y, m, d] = dateStr.split('-').map(Number);
-      const date = new Date(y, m - 1, d);
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-      
-      let breakdownDetails = [];
-      if (operationalTotal > 0) {
-        breakdownDetails.push(`Operational: ₱${operationalTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
-      }
-      if (manpowerTotal > 0) {
-        breakdownDetails.push(`Manpower: ₱${manpowerTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
-      }
-      if (documentationTotal > 0) {
-        breakdownDetails.push(`Documentation: ₱${documentationTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}`);
-      }
-      
-      const totalCount = dayExpenses.length + manpowerExpenses.length + documentationExpenses.length;
-      
-      dailyHtml += `<div class="breakdown-item" onclick="showDayDetail('${dateStr}')" style="cursor:pointer">
-        <div class="breakdown-left">
-          <div class="breakdown-icon">📅</div>
-          <div class="breakdown-info">
-            <div class="breakdown-label">${dayName}</div>
-            <div class="breakdown-meta">${breakdownDetails.join(' • ')}</div>
-          </div>
-        </div>
-        <div class="breakdown-right">
-          <div class="breakdown-amount">₱${dayTotal.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
-          <div class="breakdown-percent">${totalCount} item${totalCount !== 1 ? 's' : ''}</div>
-        </div>
-      </div>`;
+      const dayName = new Date(y, m-1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const parts = [];
+      if (opT > 0) parts.push(`Operational: ₱${opT.toLocaleString('en-PH',{minimumFractionDigits:2})}`);
+      if (mT > 0) parts.push(`Manpower: ₱${mT.toLocaleString('en-PH',{minimumFractionDigits:2})}`);
+      if (dT > 0) parts.push(`Documentation: ₱${dT.toLocaleString('en-PH',{minimumFractionDigits:2})}`);
+      const totalCount = de.length + me.length + doce.length;
+      dailyHtml += `<div class="breakdown-item" onclick="showDayDetail('${dateStr}')" style="cursor:pointer"><div class="breakdown-left"><div class="breakdown-icon">📅</div><div class="breakdown-info"><div class="breakdown-label">${dayName}</div><div class="breakdown-meta">${parts.join(' • ')}</div></div></div><div class="breakdown-right"><div class="breakdown-amount">₱${dayTotal.toLocaleString('en-PH',{minimumFractionDigits:2})}</div><div class="breakdown-percent">${totalCount} item${totalCount!==1?'s':''}</div></div></div>`;
     }
   }
-  document.getElementById('daily-breakdown').innerHTML = dailyHtml || 
-    '<div class="empty-state"><p>No expenses yet this month</p></div>';
+  document.getElementById('daily-breakdown').innerHTML = dailyHtml || '<div class="empty-state"><p>No expenses yet this month</p></div>';
 }
 
-// ═══ CHART RENDERING ══════════════════════════════════
 function renderTrendChart() {
-  const ctx = document.getElementById('trendChart');
-  if (!ctx) return;
-  
+  const ctx = document.getElementById('trendChart'); if (!ctx) return;
   if (trendChart) trendChart.destroy();
-  
   const last30Days = [];
-  const startDate = new Date('2026-04-30');
-  const now = new Date();
-
+  const startDate = new Date(); startDate.setDate(startDate.getDate() - 29);
   let current = new Date(startDate);
+  const now = new Date();
   while (current <= now) {
-    const yyyy = current.getFullYear();
-    const mm = String(current.getMonth() + 1).padStart(2, '0');
-    const dd = String(current.getDate()).padStart(2, '0');
+    const yyyy = current.getFullYear(), mm = String(current.getMonth()+1).padStart(2,'0'), dd = String(current.getDate()).padStart(2,'0');
     last30Days.push(`${yyyy}-${mm}-${dd}`);
     current.setDate(current.getDate() + 1);
   }
-  
   const dailyTotals = last30Days.map(dateStr => {
-    const dayExpenses = allExpenses.filter(e => e.date === dateStr);
-    const manpower = getManpowerExpensesForDate(dateStr);
-    const documentation = getDocumentationExpensesForDate(dateStr);
-    return dayExpenses.reduce((sum, e) => sum + e.amount, 0) +
-           manpower.reduce((sum, e) => sum + e.amount, 0) +
-           documentation.reduce((sum, e) => sum + e.amount, 0);
+    return allExpenses.filter(e => e.date === dateStr).reduce((s,e)=>s+e.amount,0) +
+           getManpowerExpensesForDate(dateStr).reduce((s,e)=>s+e.amount,0) +
+           getDocumentationExpensesForDate(dateStr).reduce((s,e)=>s+e.amount,0);
   });
-  
   trendChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: last30Days.map(d => parseInt(d.split('-')[2])),
-      datasets: [{
-        label: 'Daily Expenses',
-        data: dailyTotals,
-        borderColor: '#B32533',
-        backgroundColor: 'rgba(179, 37, 51, 0.1)',
-        tension: 0.4,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (context) => '₱' + context.parsed.y.toLocaleString('en-PH', {minimumFractionDigits: 0})
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: (value) => '₱' + (value/1000).toFixed(0) + 'k'
-          }
-        }
-      }
-    }
+    data: { labels: last30Days.map(d => parseInt(d.split('-')[2])), datasets: [{ label: 'Daily Expenses', data: dailyTotals, borderColor: '#B32533', backgroundColor: 'rgba(179,37,51,0.1)', tension: 0.4, fill: true }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '₱' + c.parsed.y.toLocaleString('en-PH',{minimumFractionDigits:0}) } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '₱' + (v/1000).toFixed(0) + 'k' } } } }
   });
 }
 
 function renderCategoryChart(categoryTotals) {
-  const ctx = document.getElementById('categoryChart');
-  if (!ctx) return;
-  
+  const ctx = document.getElementById('categoryChart'); if (!ctx) return;
   if (categoryChart) categoryChart.destroy();
-  
   const labels = Object.keys(categoryTotals);
-  const data = Object.values(categoryTotals);
-  const colors = labels.map(cat => CATEGORY_COLORS[cat] || '#888');
-  
   categoryChart = new Chart(ctx, {
     type: 'doughnut',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: colors,
-        borderWidth: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (context) => context.label + ': ₱' + context.parsed.toLocaleString('en-PH', {minimumFractionDigits: 0})
-          }
-        }
-      }
-    }
+    data: { labels, datasets: [{ data: Object.values(categoryTotals), backgroundColor: labels.map(c => CATEGORY_COLORS[c] || '#888'), borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.label + ': ₱' + c.parsed.toLocaleString('en-PH',{minimumFractionDigits:0}) } } } }
   });
 }
 
 function renderTruckChart(truckTotals) {
-  const ctx = document.getElementById('truckChart');
-  if (!ctx) return;
-  
+  const ctx = document.getElementById('truckChart'); if (!ctx) return;
   if (truckChart) truckChart.destroy();
-  
-  const labels = Object.keys(truckTotals);
-  const data = Object.values(truckTotals);
-  
   truckChart = new Chart(ctx, {
     type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Total Expenses',
-        data: data,
-        backgroundColor: '#B32533'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (context) => '₱' + context.parsed.y.toLocaleString('en-PH', {minimumFractionDigits: 0})
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: (value) => '₱' + (value/1000).toFixed(0) + 'k'
-          }
-        }
-      }
-    }
+    data: { labels: Object.keys(truckTotals), datasets: [{ label: 'Total Expenses', data: Object.values(truckTotals), backgroundColor: '#B32533' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '₱' + c.parsed.y.toLocaleString('en-PH',{minimumFractionDigits:0}) } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '₱' + (v/1000).toFixed(0) + 'k' } } } }
   });
 }
 
-// ✅ FIX: UPDATE SUMMARY WITH ALL EXPENSES
+// ═══ UPDATE SUMMARY WITH CHIPS ════════════════════════
 function updateSummary() {
   const now = new Date();
   const thisMonth = now.toISOString().slice(0, 7);
-  
- let filtered = allExpenses.filter(e => e.date && e.date.startsWith(thisMonth));
+
+  let filtered = allExpenses.filter(e => e.date && e.date.startsWith(thisMonth));
   if (currentTruckFilter !== 'All' && currentView !== 'reports') {
     filtered = filtered.filter(e => e.truck === currentTruckFilter);
   }
-  
-  // ✅ FIX: Get ALL dates with attendance for this month
+
   const allThisMonthDates = [...new Set(allAttendance.filter(a => a.date.startsWith(thisMonth)).map(a => a.date))];
-  let manpowerTotal = 0;
-  let documentationTotal = 0;
-  
+  let manpowerTotal = 0, documentationTotal = 0;
+
   allThisMonthDates.forEach(date => {
     let manpower = getManpowerExpensesForDate(date);
     let documentation = getDocumentationExpensesForDate(date);
-    
     if (currentTruckFilter !== 'All' && currentView !== 'reports') {
       manpower = manpower.filter(e => e.truck === currentTruckFilter);
       documentation = documentation.filter(e => e.truck === currentTruckFilter);
     }
-    
-    manpowerTotal += manpower.reduce((sum, e) => sum + e.amount, 0);
-    documentationTotal += documentation.reduce((sum, e) => sum + e.amount, 0);
+    manpowerTotal += manpower.reduce((s, e) => s + e.amount, 0);
+    documentationTotal += documentation.reduce((s, e) => s + e.amount, 0);
   });
-  
-  const total = filtered.reduce((sum, e) => sum + e.amount, 0) + manpowerTotal + documentationTotal;
-  
+
+  const total = filtered.reduce((s, e) => s + e.amount, 0) + manpowerTotal + documentationTotal;
   document.getElementById('summary-amount').textContent = '₱ ' + total.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  
-  const totalItems = filtered.length + 
+
+  const totalItems = filtered.length +
     allAttendance.filter(a => a.date.startsWith(thisMonth) && (currentTruckFilter === 'All' || a.truck === currentTruckFilter)).length +
     (documentationTotal > 0 ? Math.ceil(documentationTotal / DOCUMENTATION_DAILY_RATE) : 0);
-  
   document.getElementById('summary-meta').textContent = `${totalItems} expense${totalItems !== 1 ? 's' : ''} this month`;
-
   document.getElementById('summary-period').textContent = 'THIS MONTH';
 
-  // Category chips: Diesel, Maintenance, Manpower
+  // ── Category chips ─────────────────────────────────
   const chipDefs = [
     { key: 'Diesel',      icon: '⛽' },
     { key: 'Maintenance', icon: '🔧' },
@@ -1849,80 +1173,43 @@ function updateSummary() {
     }
   });
   if (manpowerTotal > 0) chipTotals['Manpower'] = (chipTotals['Manpower'] || 0) + manpowerTotal;
-  const chipsEl = document.getElementById('summary-category-chips');
-  chipsEl.innerHTML = chipDefs
+
+  function fmtChip(amt) { return amt >= 1000 ? '₱' + (amt/1000).toFixed(1) + 'k' : '₱' + amt.toFixed(0); }
+
+  document.getElementById('summary-chips').innerHTML = chipDefs
     .filter(c => chipTotals[c.key] > 0)
-    .map(c => {
-      const amt = chipTotals[c.key];
-      const fmt = amt >= 1000 ? '₱' + (amt/1000).toFixed(1) + 'k' : '₱' + amt.toFixed(0);
-      return '<div class="summary-chip"><span class="chip-icon">' + c.icon + '</span>' + c.key + '<span class="chip-val">' + fmt + '</span></div>';
-    }).join('');
+    .map(c => `<div class="summary-chip"><span class="chip-icon">${c.icon}</span><span class="chip-label">${c.key}</span><span class="chip-val">${fmtChip(chipTotals[c.key])}</span></div>`)
+    .join('');
 }
 
-
-// ═══ DETAIL SHEET ═════════════════════════════════════
 function openDetail(rowIndex) {
   selectedExpense = allExpenses.find(e => e.rowIndex === rowIndex);
   if (!selectedExpense) return;
-
   const e = selectedExpense;
   const icon = CATEGORY_ICONS[e.category] || '💰';
-
   document.getElementById('detail-category').textContent = icon + ' ' + e.category;
   document.getElementById('d-truck').textContent = e.truck;
-  
   const [y, m, d] = e.date.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  document.getElementById('d-date').textContent = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  
+  document.getElementById('d-date').textContent = new Date(y, m-1, d).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   document.getElementById('d-amount').textContent = '₱ ' + e.amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   document.getElementById('d-subcategory').textContent = e.subcategory;
-
   const receiptWrap = document.getElementById('d-receipt-wrap');
-  if (e.receipt) {
-    document.getElementById('d-receipt').textContent = e.receipt;
-    receiptWrap.style.display = 'block';
-  } else {
-    receiptWrap.style.display = 'none';
-  }
-
+  if (e.receipt) { document.getElementById('d-receipt').textContent = e.receipt; receiptWrap.style.display = 'block'; } else { receiptWrap.style.display = 'none'; }
   const notesWrap = document.getElementById('d-notes-wrap');
-  if (e.notes) {
-    document.getElementById('d-notes').textContent = e.notes;
-    notesWrap.style.display = 'block';
-  } else {
-    notesWrap.style.display = 'none';
-  }
-
-  const photoWrap = document.getElementById('detail-photo-wrap');
-  photoWrap.innerHTML = e.photo
-    ? `<img src="${e.photo}" alt="Receipt">`
-    : '<div class="detail-photo-ph">🧾</div>';
-
+  if (e.notes) { document.getElementById('d-notes').textContent = e.notes; notesWrap.style.display = 'block'; } else { notesWrap.style.display = 'none'; }
+  document.getElementById('detail-photo-wrap').innerHTML = e.photo ? `<img src="${e.photo}" alt="Receipt">` : '<div class="detail-photo-ph">🧾</div>';
   document.getElementById('detail-overlay').classList.add('open');
 }
 
-function closeDetail() {
-  document.getElementById('detail-overlay').classList.remove('open');
-  selectedExpense = null;
-}
+function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); selectedExpense = null; }
 
-// ═══ ADD DRAWER ═══════════════════════════════════════
 function openAddDrawer() {
-  editingRow = null;
-  newPhotoBase64 = '';
-  hasNewPhoto = false;
-
+  editingRow = null; newPhotoBase64 = ''; hasNewPhoto = false;
   document.getElementById('drawer-title').textContent = 'Add Expense';
   document.getElementById('drawer-sub').textContent = 'Record a new expense';
   document.getElementById('f-truck').value = '';
-  
   const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  document.getElementById('f-date').value = `${yyyy}-${mm}-${dd}`;
-  
+  document.getElementById('f-date').value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
   document.getElementById('f-category').value = '';
   document.getElementById('f-subcategory').innerHTML = '<option value="">Select category first</option>';
   document.getElementById('f-amount').value = '';
@@ -1931,57 +1218,33 @@ function openAddDrawer() {
   document.getElementById('f-photo').value = '';
   document.getElementById('photo-preview').style.display = 'none';
   document.getElementById('photo-ph').style.display = 'block';
-
   document.getElementById('add-drawer').classList.add('open');
 }
 
 function openEditDrawer() {
   if (!selectedExpense) return;
   closeDetail();
-
   const e = selectedExpense;
-  editingRow = e.rowIndex;
-  newPhotoBase64 = '';
-  hasNewPhoto = false;
-
+  editingRow = e.rowIndex; newPhotoBase64 = ''; hasNewPhoto = false;
   document.getElementById('drawer-title').textContent = 'Edit Expense';
   document.getElementById('drawer-sub').textContent = 'Editing ' + e.category + ' expense';
   document.getElementById('f-truck').value = e.truck;
   document.getElementById('f-date').value = e.date;
   document.getElementById('f-category').value = e.category;
   updateSubcategories();
-  setTimeout(() => {
-    document.getElementById('f-subcategory').value = e.subcategory;
-  }, 100);
+  setTimeout(() => { document.getElementById('f-subcategory').value = e.subcategory; }, 100);
   document.getElementById('f-amount').value = e.amount;
   document.getElementById('f-receipt').value = e.receipt;
   document.getElementById('f-notes').value = e.notes;
   document.getElementById('f-photo').value = '';
-
   const preview = document.getElementById('photo-preview');
-  const ph = document.getElementById('photo-ph');
-  if (e.photo) {
-    preview.src = e.photo;
-    preview.style.display = 'block';
-    ph.style.display = 'none';
-  } else {
-    preview.style.display = 'none';
-    ph.style.display = 'block';
-  }
-
-  setTimeout(() => {
-    document.getElementById('add-drawer').classList.add('open');
-  }, 200);
+  if (e.photo) { preview.src = e.photo; preview.style.display = 'block'; document.getElementById('photo-ph').style.display = 'none'; }
+  else { preview.style.display = 'none'; document.getElementById('photo-ph').style.display = 'block'; }
+  setTimeout(() => { document.getElementById('add-drawer').classList.add('open'); }, 200);
 }
 
-function closeAddDrawer() {
-  document.getElementById('add-drawer').classList.remove('open');
-  editingRow = null;
-  newPhotoBase64 = '';
-  hasNewPhoto = false;
-}
+function closeAddDrawer() { document.getElementById('add-drawer').classList.remove('open'); editingRow = null; newPhotoBase64 = ''; hasNewPhoto = false; }
 
-// ═══ SAVE EXPENSE ═════════════════════════════════════
 function saveExpense() {
   const truck = document.getElementById('f-truck').value.trim();
   const date = document.getElementById('f-date').value.trim();
@@ -1990,92 +1253,44 @@ function saveExpense() {
   const amount = parseFloat(document.getElementById('f-amount').value) || 0;
   const receipt = document.getElementById('f-receipt').value.trim();
   const notes = document.getElementById('f-notes').value.trim();
-
-  if (!truck || !date || !category || amount <= 0) {
-    showToast('❌ Please fill all required fields');
-    return;
-  }
-
+  if (!truck || !date || !category || amount <= 0) { showToast('❌ Please fill all required fields'); return; }
   showSaving('Saving expense...');
-
   let photoPromise;
-  if (hasNewPhoto && newPhotoBase64) {
-    photoPromise = uploadPhotoToDrive(newPhotoBase64);
-  } else if (editingRow) {
-    const existing = allExpenses.find(e => e.rowIndex === editingRow);
-    photoPromise = Promise.resolve(existing ? existing.photo : '');
-  } else {
-    photoPromise = Promise.resolve('');
-  }
-
+  if (hasNewPhoto && newPhotoBase64) photoPromise = uploadPhotoToDrive(newPhotoBase64);
+  else if (editingRow) { const ex = allExpenses.find(e => e.rowIndex === editingRow); photoPromise = Promise.resolve(ex ? ex.photo : ''); }
+  else photoPromise = Promise.resolve('');
   photoPromise.then(photoUrl => {
     const timestamp = new Date().toISOString();
     const dateObj = new Date(date + 'T00:00:00');
     const weekNumber = getWeekNumber(dateObj);
     const month = date.slice(0, 7);
     const email = localStorage.getItem('pedroex-email') || 'admin';
-
-    let row;
     if (editingRow) {
       const e = allExpenses.find(x => x.rowIndex === editingRow);
       if (!e) { hideSaving(); showToast('Expense not found.'); return; }
-      row = [e.id, date, truck, category, subcategory, amount, receipt, notes, email, timestamp, weekNumber, month, photoUrl];
-      return apiUpdate(EXPENSES_SHEET + '!A' + editingRow + ':M' + editingRow, [row])
-        .then(() => {
-          hideSaving();
-          showToast('✅ Expense updated!');
-          closeAddDrawer();
-          setTimeout(loadExpenses, 400);
-        });
+      return apiUpdate(EXPENSES_SHEET + '!A' + editingRow + ':M' + editingRow, [[e.id, date, truck, category, subcategory, amount, receipt, notes, email, timestamp, weekNumber, month, photoUrl]])
+        .then(() => { hideSaving(); showToast('✅ Expense updated!'); closeAddDrawer(); setTimeout(loadExpenses, 400); });
     } else {
-      const id = 'EXP-' + Date.now();
-      row = [id, date, truck, category, subcategory, amount, receipt, notes, email, timestamp, weekNumber, month, photoUrl];
-      return apiAppend(EXPENSES_SHEET + '!A:M', [row])
-        .then(() => {
-          hideSaving();
-          showToast('✅ Expense added!');
-          closeAddDrawer();
-          setTimeout(loadExpenses, 400);
-        });
+      return apiAppend(EXPENSES_SHEET + '!A:M', [['EXP-' + Date.now(), date, truck, category, subcategory, amount, receipt, notes, email, timestamp, weekNumber, month, photoUrl]])
+        .then(() => { hideSaving(); showToast('✅ Expense added!'); closeAddDrawer(); setTimeout(loadExpenses, 400); });
     }
-  }).catch(err => {
-    hideSaving();
-    showToast('❌ Save failed: ' + (err.message || 'try again'));
-    console.error(err);
-  });
+  }).catch(err => { hideSaving(); showToast('❌ Save failed: ' + (err.message || 'try again')); });
 }
 
-// ═══ DELETE ═══════════════════════════════════════════
 function promptDelete() {
   if (!selectedExpense) return;
   document.getElementById('confirm-name').textContent = selectedExpense.category;
   document.getElementById('confirm-overlay').classList.add('open');
 }
-
-function closeConfirm() {
-  document.getElementById('confirm-overlay').classList.remove('open');
-}
-
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
 function doDelete() {
   if (!selectedExpense) return;
   showSaving('Deleting...');
-  apiUpdate(EXPENSES_SHEET + '!A' + selectedExpense.rowIndex + ':M' + selectedExpense.rowIndex,
-    [['', '', '', '', '', '', '', '', '', '', '', '', '']])
-    .then(() => {
-      hideSaving();
-      showToast('✅ Expense deleted.');
-      closeConfirm();
-      closeDetail();
-      setTimeout(loadExpenses, 400);
-    })
-    .catch(err => {
-      hideSaving();
-      showToast('❌ Delete failed.');
-      console.error(err);
-    });
+  apiUpdate(EXPENSES_SHEET + '!A' + selectedExpense.rowIndex + ':M' + selectedExpense.rowIndex, [['','','','','','','','','','','','','']])
+    .then(() => { hideSaving(); showToast('✅ Expense deleted.'); closeConfirm(); closeDetail(); setTimeout(loadExpenses, 400); })
+    .catch(err => { hideSaving(); showToast('❌ Delete failed.'); });
 }
 
-// ═══ SETTINGS DRAWER ══════════════════════════════════
 function openSettingsDrawer() {
   document.getElementById('s-doc-rate').value = DOCUMENTATION_DAILY_RATE.toFixed(2);
   document.getElementById('s-driver-rate').value = DRIVER_DAILY_RATE;
@@ -2084,48 +1299,24 @@ function openSettingsDrawer() {
   document.getElementById('s-meal').value = MEAL_ALLOWANCE;
   document.getElementById('settings-drawer').classList.add('open');
 }
-
-function closeSettingsDrawer() {
-  document.getElementById('settings-drawer').classList.remove('open');
-}
-
+function closeSettingsDrawer() { document.getElementById('settings-drawer').classList.remove('open'); }
 function saveSettings() {
   const newDocRate = parseFloat(document.getElementById('s-doc-rate').value) || DOCUMENTATION_DAILY_RATE;
   const newDriverRate = parseFloat(document.getElementById('s-driver-rate').value) || DRIVER_DAILY_RATE;
   const newHelperRate = parseFloat(document.getElementById('s-helper-rate').value) || HELPER_DAILY_RATE;
   const newBonus = parseFloat(document.getElementById('s-bonus').value) || TWO_MAN_BONUS;
   const newMeal = parseFloat(document.getElementById('s-meal').value) || MEAL_ALLOWANCE;
-  
   showSaving('Saving settings...');
-  
-  const updates = [
-    ['Documentation_Daily_Rate', newDocRate],
-    ['Driver_Daily_Rate', newDriverRate],
-    ['Helper_Daily_Rate', newHelperRate],
-    ['Two_Man_Bonus', newBonus],
-    ['Meal_Allowance', newMeal]
-  ];
-  
-  apiUpdate(SETTINGS_SHEET + '!A2:B6', updates)
-    .then(() => {
-      DOCUMENTATION_DAILY_RATE = newDocRate;
-      DRIVER_DAILY_RATE = newDriverRate;
-      HELPER_DAILY_RATE = newHelperRate;
-      TWO_MAN_BONUS = newBonus;
-      MEAL_ALLOWANCE = newMeal;
-      
-      hideSaving();
-      showToast('✅ Settings saved!');
-      closeSettingsDrawer();
-      loadExpenses();
-    })
-    .catch(err => {
-      hideSaving();
-      showToast('❌ Save failed: ' + err.message);
-    });
+  apiUpdate(SETTINGS_SHEET + '!A2:B6', [
+    ['Documentation_Daily_Rate', newDocRate], ['Driver_Daily_Rate', newDriverRate],
+    ['Helper_Daily_Rate', newHelperRate], ['Two_Man_Bonus', newBonus], ['Meal_Allowance', newMeal]
+  ]).then(() => {
+    DOCUMENTATION_DAILY_RATE = newDocRate; DRIVER_DAILY_RATE = newDriverRate;
+    HELPER_DAILY_RATE = newHelperRate; TWO_MAN_BONUS = newBonus; MEAL_ALLOWANCE = newMeal;
+    hideSaving(); showToast('✅ Settings saved!'); closeSettingsDrawer(); loadExpenses();
+  }).catch(err => { hideSaving(); showToast('❌ Save failed: ' + err.message); });
 }
 
-// ═══ HELPERS ══════════════════════════════════════════
 function getWeekNumber(date) {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = d.getUTCDay() || 7;
@@ -2133,24 +1324,13 @@ function getWeekNumber(date) {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
-
-function showSaving(msg) {
-  document.getElementById('saving-text').textContent = msg || 'Saving...';
-  document.getElementById('saving-overlay').classList.add('show');
-}
-
-function hideSaving() {
-  document.getElementById('saving-overlay').classList.remove('show');
-}
-
+function showSaving(msg) { document.getElementById('saving-text').textContent = msg || 'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
+function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.style.whiteSpace = 'pre-line';
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+  t.style.whiteSpace = 'pre-line'; t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
 }
 
 ['add-drawer', 'detail-overlay', 'confirm-overlay', 'settings-drawer'].forEach(id => {
