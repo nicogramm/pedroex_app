@@ -278,8 +278,9 @@ body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
 .info-box.blue{background:var(--blue-soft);border-left:3px solid var(--blue);color:var(--text2)}
 .info-box.orange{background:var(--orange-soft);border-left:3px solid var(--orange);color:var(--text2)}
 .info-box.green{background:var(--green-soft);border-left:3px solid var(--green);color:var(--text2)}
+.info-box.red{background:var(--red-soft);border-left:3px solid var(--red);color:var(--text2)}
 
-/* ── BILLING CALENDAR ── */
+/* BILLING CALENDAR */
 .bil-cal-day{border-radius:10px;background:var(--bg);box-shadow:var(--xs);padding:5px 3px;min-height:54px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:box-shadow .15s}
 .bil-cal-day:active{box-shadow:var(--in);transform:scale(.97)}
 .bil-cal-day.empty{background:transparent;box-shadow:none;cursor:default;pointer-events:none;min-height:54px}
@@ -290,18 +291,7 @@ body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
 .bil-cal-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .bil-cal-count{font-size:8px;font-weight:700;color:var(--text3);margin-top:1px}
 
-/* ── SOA TIMELINE ── */
-.soa-tl-item{background:var(--bg);border-radius:var(--radius);box-shadow:var(--out);margin-bottom:12px;overflow:hidden}
-.soa-tl-head{padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.soa-tl-num{font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono);margin-bottom:4px}
-.soa-tl-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
-.soa-tl-body{padding:0 14px 12px}
-.soa-tl-progress{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.soa-tl-prog-label{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
-.soa-tl-actions{padding:10px 14px;border-top:1px solid rgba(0,0,0,.05);display:flex;gap:7px;flex-wrap:wrap}
-body.dark .soa-tl-actions{border-top-color:rgba(255,255,255,.04)}
-
-/* ── LIQ MODAL ── */
+/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
 .modal-sheet{background:var(--bg);border-radius:24px 24px 0 0;width:100%;max-height:90dvh;overflow-y:auto;padding:8px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.2)}
@@ -309,43 +299,11 @@ body.dark .soa-tl-actions{border-top-color:rgba(255,255,255,.04)}
 .modal-head{padding:0 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06)}
 body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
 .modal-title{font-size:16px;font-weight:700;color:var(--text)}
-.modal-close{width:30px;height:30px;border-radius:var(--radius-sm);background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal-close{width:30px;height:30px;border-radius:var(--rsm);background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center}
 .modal-close:active{box-shadow:var(--in)}
 .modal-body{padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px))}
-.liq-input{width:100%;padding:11px 13px;border:none;border-radius:var(--radius-sm);background:var(--bg);box-shadow:var(--in);font-size:14px;font-weight:600;color:var(--text);font-family:var(--font)}
-.liq-input:focus{outline:none}
 
-/* ── CONFIRM ── */
-.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;padding:20px}
-.confirm-overlay.open{display:flex}
-.confirm-box{background:var(--bg);border-radius:20px;padding:24px;max-width:360px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
-.confirm-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px}
-.confirm-msg{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:18px}
-.confirm-btns{display:flex;gap:10px}
-.cb{flex:1;padding:12px;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;border:none}
-.cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--sm)}
-.cb-cancel:active{box-shadow:var(--in)}
-.cb-confirm{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(192,57,43,.3)}
-
-/* ── INFO BOX ── */
-.info-box{border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:12px;font-size:12px;line-height:1.7}
-.info-box.blue{background:var(--blue-soft);border-left:3px solid var(--blue);color:var(--text2)}
-.info-box.orange{background:var(--orange-soft);border-left:3px solid var(--orange);color:var(--text2)}
-.info-box.red{background:var(--red-soft);border-left:3px solid var(--red);color:var(--text2)}
-
-/* ── MATCH CANDIDATE ── */
-.match-candidate{background:var(--bg);border-radius:var(--radius-sm);box-shadow:var(--sm);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:box-shadow .15s;border:1px solid transparent}
-.match-candidate:active{box-shadow:var(--in)}
-.match-candidate.selected{box-shadow:var(--in);border-color:var(--green)}
-.mc-num{font-size:12px;font-weight:700;color:var(--text);font-family:var(--mono)}
-.mc-meta{font-size:10px;color:var(--text2);margin-top:2px}
-.mc-score{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0}
-.mc-score.high{background:var(--green-soft);color:var(--green)}
-.mc-score.med{background:var(--orange-soft);color:var(--orange)}
-.mc-score.low{background:var(--red-soft);color:var(--red)}
-
-
-/* ── SCAN ISSUE ITEMS ── */
+/* SCAN ISSUE ITEMS */
 .scan-item{border-radius:var(--rsm);padding:11px 13px;margin-bottom:8px}
 .scan-item.typo{background:var(--orange-soft);border-left:3px solid var(--orange)}
 .scan-item.dup{background:var(--red-soft);border-left:3px solid var(--red)}
@@ -354,7 +312,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
 .scan-num{font-size:13px;font-weight:700;font-family:var(--mono);margin-bottom:3px}
 .scan-meta{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:5px}
 .scan-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-
 </style>
 </head>
 <body>
@@ -374,12 +331,12 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
   </div>
 
   <div class="tab-bar" id="tab-bar" style="display:none">
-    <button class="tab-btn active" id="tab-upload"      onclick="switchTab('upload')">📤 Upload</button>
-    <button class="tab-btn"        id="tab-soa"         onclick="switchTab('soa')">📋 SOA Manager</button>
-    <button class="tab-btn"        id="tab-billed"      onclick="switchTab('billed')">✅ Billed</button>
-    <button class="tab-btn"        id="tab-unbilled"    onclick="switchTab('unbilled')">⚠️ Unbilled</button>
-    <button class="tab-btn"        id="tab-billedout"   onclick="switchTab('billedout')">📤 Billed Out</button>
-    <button class="tab-btn"        id="tab-report"      onclick="switchTab('report')">📊 Report</button>
+    <button class="tab-btn active" id="tab-upload"    onclick="switchTab('upload')">📤 Upload</button>
+    <button class="tab-btn"        id="tab-soa"       onclick="switchTab('soa')">📋 SOA Manager</button>
+    <button class="tab-btn"        id="tab-billed"    onclick="switchTab('billed')">✅ Billed</button>
+    <button class="tab-btn"        id="tab-unbilled"  onclick="switchTab('unbilled')">⚠️ Unbilled</button>
+    <button class="tab-btn"        id="tab-billedout" onclick="switchTab('billedout')">📤 Billed Out</button>
+    <button class="tab-btn"        id="tab-report"    onclick="switchTab('report')">📊 Report</button>
   </div>
 
   <div class="page-wrap" id="page-wrap">
@@ -397,11 +354,9 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
     <div id="pane-upload" style="display:none">
       <div class="page-eyebrow">Billing Statement</div>
       <div class="page-title">Upload SOA Excel</div>
-
       <div class="info-box blue">
         <b>📌 How it works:</b> Upload the Excel SOA file from San Miguel. The system will parse all shipment numbers, cross-check against your Trips sheet, and flag any discrepancies — including typos entered by helpers.
       </div>
-
       <div class="dz" id="dz">
         <input type="file" id="fi" accept=".xlsx,.xls" multiple>
         <div class="dz-icon">
@@ -411,14 +366,12 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         <div class="dz-sub">SOA No. format: 501466_XXXX · Shipment numbers: 10–11 digits</div>
         <span class="badge badge-red">Excel Only (.xlsx / .xls)</span>
       </div>
-
       <div class="uprog" id="uprog">
         <div class="uprog-lbl">Processing</div>
         <div class="uprog-bar-wrap"><div class="uprog-bar" id="upb"></div></div>
         <div class="uprog-msg" id="upm"></div>
         <div class="uprog-ct" id="upc"></div>
       </div>
-
       <div class="card hidden" id="preview-card">
         <div class="card-head">
           <span class="card-title">Preview — Ready to Save</span>
@@ -431,9 +384,7 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
           </table>
         </div>
       </div>
-
       <button class="btn-full btn-full-red" id="save-btn" style="display:none;margin-bottom:12px" onclick="saveToSheet()">💾 Save &amp; Cross-Check Trips</button>
-
       <!-- CROSS-CHECK RESULTS -->
       <div class="card hidden" id="cc-card">
         <div class="card-head">
@@ -441,26 +392,18 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
           <span class="badge badge-red" id="cc-bdg"></span>
         </div>
         <div style="padding:0 16px 14px">
-
-          <!-- DUPLICATE SOA WARNING -->
           <div id="cc-dup-wrap" style="display:none">
             <div class="info-box orange" id="cc-dup-msg"></div>
           </div>
-
-          <!-- INVALID -->
           <div id="cc-inv-wrap" style="display:none">
             <div class="cc-section-label r">⛔ Invalid Shipment Numbers</div>
             <div id="cc-inv-list"></div>
           </div>
-
-          <!-- EXACT MATCHES -->
           <div id="cc-ex-wrap" style="display:none">
             <div class="cc-section-label g">✅ Exact Matches — Found in Trips</div>
             <div id="cc-ex-list"></div>
             <button class="btn-full btn-full-green" id="apply-btn" onclick="applyExact()" style="margin-top:8px">✅ Mark All Exact Matches as Billed</button>
           </div>
-
-          <!-- FUZZY MATCHES (with diff) -->
           <div id="cc-fz-wrap" style="display:none">
             <div class="cc-section-label o">⚠️ Possible Matches — Helper Entry Errors</div>
             <div class="info-box orange" style="margin-bottom:10px">
@@ -468,16 +411,12 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
             </div>
             <div id="cc-fz-list"></div>
           </div>
-
-          <!-- NOT FOUND -->
           <div id="cc-nm-wrap" style="display:none">
             <div class="cc-section-label r">❌ Not Found in Trips</div>
             <div id="cc-nm-list"></div>
           </div>
-
         </div>
       </div>
-
       <!-- SOA SUMMARY -->
       <div class="card hidden" id="soa-card">
         <div class="card-head">
@@ -557,6 +496,7 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
       </div>
       <div id="billed-list-view" style="display:none"><div id="billed-list"></div></div>
     </div>
+
     <!-- ════ UNBILLED TAB ════ -->
     <div id="pane-unbilled" style="display:none">
       <div class="page-eyebrow">Trips — Not Yet Billed</div>
@@ -574,7 +514,7 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         </div>
       </div>
 
-      <!-- SCAN RESULTS (hidden until scan runs) -->
+      <!-- SCAN RESULTS -->
       <div id="scan-results-wrap" style="display:none">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">Scan Results</div>
@@ -594,7 +534,7 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
           <div id="scan-typo-list"></div>
         </div>
 
-        <!-- NEAR DUPES WITHIN UNBILLED -->
+        <!-- NEAR DUPES -->
         <div id="scan-nd-wrap" style="display:none">
           <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin:10px 0 6px;display:flex;align-items:center;gap:6px">
             <span style="width:3px;height:10px;background:var(--orange);border-radius:2px;display:inline-block"></span>
@@ -624,7 +564,7 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         <!-- ALL CLEAN -->
         <div id="scan-clean-wrap" style="display:none">
           <div style="background:var(--green-soft);border-left:3px solid var(--green);border-radius:var(--rsm);padding:11px 13px;font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px">
-            ✅ All unbilled numbers look clean — no typos or format issues detected. These are genuinely waiting for an SOA upload.
+            ✅ All unbilled numbers look clean — no typos or format issues detected.
           </div>
         </div>
 
@@ -662,16 +602,11 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
       <div id="bo-list"></div>
     </div>
 
-    
     <!-- ════ REPORT TAB ════ -->
     <div id="pane-report" style="display:none">
       <div class="page-eyebrow">Billing Analytics</div>
       <div class="page-title">Full Report</div>
-
-      <!-- OVERALL KPIs -->
       <div class="stat-strip" id="rpt-stats"></div>
-
-      <!-- FINANCIAL SUMMARY -->
       <div class="card" style="margin-bottom:12px">
         <div class="card-head"><span class="card-title">💰 Financial Summary</span></div>
         <div style="padding:12px 16px">
@@ -679,8 +614,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
           <div id="rpt-receivables"></div>
         </div>
       </div>
-
-      <!-- BILLED OUT vs LIQUIDATION COMPARISON -->
       <div class="card" style="margin-bottom:12px">
         <div class="card-head"><span class="card-title">📊 Billed Out vs Liquidation</span></div>
         <div style="padding:12px 16px">
@@ -688,8 +621,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
           <div id="rpt-cmp-detail"></div>
         </div>
       </div>
-
-      <!-- SHIPMENT ACCURACY -->
       <div class="card" style="margin-bottom:12px">
         <div class="card-head"><span class="card-title">🎯 Shipment Number Accuracy</span></div>
         <div style="padding:12px 16px">
@@ -697,7 +628,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
           <div id="rpt-acc-detail"></div>
         </div>
       </div>
-
       <div class="report-section">✅ Billed Shipments</div>
       <div class="filters">
         <input class="f-search" id="rs" type="text" placeholder="🔍 Search..." oninput="renderReport()">
@@ -705,7 +635,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         <select class="f-sel" id="rso" onchange="renderReport()"><option value="">All SOA</option></select>
         <select class="f-sel" id="rt"  onchange="renderReport()"><option value="">All Trucks</option></select>
       </div>
-
       <div class="card" id="rpt-soa-card" style="margin-bottom:12px">
         <div class="card-head">
           <span class="card-title">Per SOA Breakdown</span>
@@ -713,20 +642,16 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         </div>
         <div id="rpt-soa-list"></div>
       </div>
-
       <div class="card" style="margin-bottom:12px">
         <div class="card-head"><span class="card-title">Per Month — Billed</span></div>
         <div style="padding:0 16px 14px" id="rpt-month-list"></div>
       </div>
-
       <div class="card" style="margin-bottom:12px">
         <div class="card-head"><span class="card-title">Per Truck — Billed Revenue</span></div>
         <div style="padding:0 16px 14px" id="rpt-truck-list"></div>
       </div>
-
       <div class="divider"></div>
       <div class="report-section">⚠️ Unbilled Shipments</div>
-
       <div class="card" style="margin-bottom:12px">
         <div class="card-head">
           <span class="card-title">Per Month — Unbilled</span>
@@ -734,15 +659,12 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         </div>
         <div style="padding:0 16px 14px" id="rpt-umonth-list"></div>
       </div>
-
       <div class="card" style="margin-bottom:12px">
         <div class="card-head"><span class="card-title">Per Truck — Unbilled</span></div>
         <div style="padding:0 16px 14px" id="rpt-utruck-list"></div>
       </div>
-
       <div class="divider"></div>
       <div class="report-section">🔍 Trips Number Corrections Log</div>
-
       <div class="card" style="margin-bottom:12px">
         <div class="card-head">
           <span class="card-title">Confirmed Corrections (SOA vs Trips)</span>
@@ -791,7 +713,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
   </div>
 </div>
 
-
 <!-- LIQUIDATION MODAL -->
 <div class="modal-overlay" id="liq-modal">
   <div class="modal-sheet">
@@ -803,7 +724,7 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
     <div class="modal-body">
       <div id="liq-modal-summary" style="margin-bottom:14px"></div>
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Payment Amount (₱)</div>
-      <input class="liq-input" id="liq-modal-amt" type="number" placeholder="Enter amount received...">
+      <input class="liq-input" id="liq-modal-amt" type="number" placeholder="Enter amount received..." style="width:100%;padding:11px 13px;border:none;border-radius:var(--rsm);background:var(--bg);box-shadow:var(--in);font-size:14px;font-weight:600;color:var(--text);font-family:var(--font)">
       <div style="font-size:11px;color:var(--text2);margin-top:6px" id="liq-modal-hint"></div>
       <button class="btn-full btn-full-green" style="margin-top:16px" onclick="saveLiquidation()">💰 Record Payment</button>
     </div>
@@ -834,7 +755,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
   </div>
 </div>
 
-
 <div class="toast" id="toast"></div>
 <div class="loader-overlay" id="lov">
   <div class="loader-box">
@@ -850,9 +770,7 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
 const SHEET_ID      = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SHEET_BILLING = 'Billing Statement';
 const SHEET_TRIPS   = 'Trips';
-
-// Shipment number validation: 10 or 11 digits (SMFI uses both formats)
-const SHIP_VALID = /^\d{10,11}$/;
+const SHIP_VALID    = /^\d{10,11}$/;
 
 let token   = null;
 let isAdmin = false;
@@ -862,10 +780,17 @@ let trips   = [];
 let unbilled= [];
 let ccR     = { exact:[], fuzzy:[], noMatch:[], invalid:[] };
 let bSt = 'cal', uSt = 'all';
-let soaMasterData = []; // all SOAs for SOA Manager
-
-// Track corrections made this session
+let soaMasterData = [];
 let correctionsLog = [];
+
+/* ── SCAN STATE — persisted across re-renders ── */
+/* Each entry gets a `resolved` flag after successful fix/skip */
+let scanTypos     = [];
+let scanDups      = [];
+let scanInvalids  = [];
+let scanNearDupes = [];
+/* Track numbers fixed this session so re-scan excludes them */
+let fixedNumbers  = new Set();
 
 /* ── INIT ── */
 (function(){
@@ -889,12 +814,11 @@ function switchTab(t){
     const tab = document.getElementById('tab-'+x);
     if(tab) tab.classList.toggle('active', x===t);
   });
-  if(t==='soa')         loadSOAManager();
-  if(t==='soa')         loadSOAManager();
-  if(t==='billed')      loadBilled();
-  if(t==='unbilled')    loadUnbilled();
-  if(t==='billedout')   loadBilledOut();
-  if(t==='report')      loadReport();
+  if(t==='soa')       loadSOAManager();
+  if(t==='billed')    loadBilled();
+  if(t==='unbilled')  loadUnbilled();
+  if(t==='billedout') loadBilledOut();
+  if(t==='report')    loadReport();
 }
 
 /* ── DATE HELPERS ── */
@@ -955,33 +879,21 @@ function parseExcel(file){
     r.onload = function(e){
       try{
         const wb = XLSX.read(e.target.result,{type:'array'});
-        // Try each sheet, prefer Routing sheet
-        const sn = wb.SheetNames.find(n=>
-          n.toLowerCase().includes('routing')
-        ) || wb.SheetNames.find(n=>
-          n.toLowerCase().includes('billing')||n.toLowerCase().includes('soa')
-        ) || wb.SheetNames[0];
-
+        const sn = wb.SheetNames.find(n=>n.toLowerCase().includes('routing'))
+          || wb.SheetNames.find(n=>n.toLowerCase().includes('billing')||n.toLowerCase().includes('soa'))
+          || wb.SheetNames[0];
         const raw = XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
-
-        // Find header row: must have SHIPMENT NO and RATE columns
         let hR=-1, cDate=-1, cPlate=-1, cShip=-1, cRate=-1;
         for(let i=0;i<raw.length;i++){
           const row = raw[i].map(c=>String(c).toUpperCase().trim());
           const si  = row.findIndex(c=>c.includes('SHIPMENT NO'));
           const ri  = row.findIndex(c=>c==='RATE');
           if(si!==-1&&ri!==-1){
-            hR=i;
-            cDate  = row.findIndex(c=>c==='DATE');
-            cPlate = row.findIndex(c=>c.includes('PLATE'));
-            cShip  = si;
-            cRate  = ri;
-            break;
+            hR=i; cDate=row.findIndex(c=>c==='DATE');
+            cPlate=row.findIndex(c=>c.includes('PLATE')); cShip=si; cRate=ri; break;
           }
         }
         if(hR===-1){ res([]); return; }
-
-        // Extract SOA number from header area
         let soa = '';
         for(let i=0;i<hR&&!soa;i++){
           raw[i].forEach((cell,ci)=>{
@@ -995,21 +907,15 @@ function parseExcel(file){
             }
           });
         }
-
         const rows = [];
         for(let i=hR+1;i<raw.length;i++){
           const row = raw[i];
           const rawShip = row[cShip];
-          // Normalize: if number, round to integer; else string
-          const ship = String(
-            typeof rawShip==='number' ? Math.round(rawShip) : (rawShip||'')
-          ).trim().replace(/\s/g,'');
-
+          const ship = String(typeof rawShip==='number'?Math.round(rawShip):(rawShip||'')).trim().replace(/\s/g,'');
           if(!ship) continue;
           const shipUpper = ship.toUpperCase();
           if(shipUpper.includes('TOTAL')||shipUpper.includes('GRAND')) continue;
           if(ship.length<5) continue;
-
           const valid = SHIP_VALID.test(ship);
           let invalidReason = '';
           if(!valid){
@@ -1017,16 +923,7 @@ function parseExcel(file){
             else if(ship.length<10) invalidReason = ship.length+' digit(s) — min 10';
             else invalidReason = ship.length+' digit(s) — max 11';
           }
-
-          rows.push({
-            date:  xDate(cDate!==-1?row[cDate]:''),
-            shipment: ship,
-            soa,
-            truck: cPlate!==-1 ? String(row[cPlate]||'').trim() : '',
-            rate:  cRate!==-1  ? parseFloat(row[cRate])||0 : 0,
-            invalid: !valid,
-            invalidReason
-          });
+          rows.push({ date:xDate(cDate!==-1?row[cDate]:''), shipment:ship, soa, truck:cPlate!==-1?String(row[cPlate]||'').trim():'', rate:cRate!==-1?parseFloat(row[cRate])||0:0, invalid:!valid, invalidReason });
         }
         res(rows);
       }catch(err){ rej(err); }
@@ -1039,8 +936,7 @@ function parseExcel(file){
 function renderPreview(rows){
   const invalid = rows.filter(r=>r.invalid).length;
   const soaSet  = new Set(rows.map(r=>r.soa).filter(Boolean));
-  document.getElementById('preview-bdg').textContent =
-    rows.length+' rows · '+soaSet.size+' SOA'+(invalid?' · ⚠️ '+invalid+' invalid':'');
+  document.getElementById('preview-bdg').textContent = rows.length+' rows · '+soaSet.size+' SOA'+(invalid?' · ⚠️ '+invalid+' invalid':'');
   document.getElementById('preview-body').innerHTML = rows.map(r=>{
     if(r.invalid) return `<tr style="background:rgba(192,57,43,0.07)"><td class="nowrap">${r.date}</td><td style="color:var(--red)"><b>${r.shipment}</b> ⛔</td><td class="ell">${r.soa}</td><td class="nowrap">${r.truck}</td><td style="color:var(--red)">₱${Number(r.rate||0).toLocaleString()}</td><td style="color:var(--red);font-size:10px">${r.invalidReason}</td></tr>`;
     return `<tr><td class="nowrap">${r.date}</td><td><b>${r.shipment}</b></td><td class="ell">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td><span class="pill pill-billed">Valid</span></td></tr>`;
@@ -1049,8 +945,6 @@ function renderPreview(rows){
 
 async function saveToSheet(){
   if(!parsed.length||!token) return;
-
-  // ── Duplicate SOA check ──
   showLoad(true,'Checking for duplicate SOA...');
   try{
     const ex = await apiGet(SHEET_BILLING+'!A2:M');
@@ -1058,45 +952,25 @@ async function saveToSheet(){
     const existSOAs = new Set(existing.map(r=>r.soa).filter(Boolean));
     const newSOAs   = [...new Set(parsed.map(r=>r.soa).filter(Boolean))];
     const dups = newSOAs.filter(s=>existSOAs.has(s));
-
     if(dups.length){
       showLoad(false);
-      // Show warning in CC card
       const cc = document.getElementById('cc-card');
       cc.style.display=''; cc.classList.remove('hidden');
       document.getElementById('cc-dup-wrap').style.display='';
-      document.getElementById('cc-dup-msg').innerHTML =
-        `<b>⚠️ Duplicate SOA Detected:</b> ${dups.join(', ')}<br>These SOAs already exist in the Billing sheet. <b>Please delete the existing SOA first</b> using the SOA Manager tab before re-uploading.`;
-      cc.scrollIntoView({behavior:'smooth',block:'start'});
-      return;
+      document.getElementById('cc-dup-msg').innerHTML = `<b>⚠️ Duplicate SOA Detected:</b> ${dups.join(', ')}<br>These SOAs already exist in the Billing sheet. <b>Please delete the existing SOA first</b> using the SOA Manager tab before re-uploading.`;
+      cc.scrollIntoView({behavior:'smooth',block:'start'}); return;
     }
-
     showLoad(true,'Saving to Google Sheet...');
     const sb = document.getElementById('save-btn'); sb.disabled=true;
-
     let nid = existing.filter(r=>r.id).length+1;
-    await apiAppend(SHEET_BILLING+'!A:M', parsed.map(r=>[
-      nid++, r.date, r.shipment, r.soa, r.truck, r.rate,
-      r.invalid?'No':'Yes','No','','','No','',''
-    ]));
-
+    await apiAppend(SHEET_BILLING+'!A:M', parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes','No','','','No','','']));
     showLoad(false);
     showToast(parsed.length+' rows saved!','ok');
-    const pc = document.getElementById('preview-card');
-    pc.style.display='none'; pc.classList.add('hidden');
-    sb.style.display='none'; sb.disabled=false;
-    hideUprog(); fi.value='';
-
-    // Clear dup warning
+    const pc = document.getElementById('preview-card'); pc.style.display='none'; pc.classList.add('hidden');
+    sb.style.display='none'; sb.disabled=false; hideUprog(); fi.value='';
     document.getElementById('cc-dup-wrap').style.display='none';
-
-    await runCC(parsed);
-    renderSOASummary(parsed);
-
-  }catch(err){
-    console.error(err); showLoad(false);
-    showToast('Save failed'); document.getElementById('save-btn').disabled=false;
-  }
+    await runCC(parsed); renderSOASummary(parsed);
+  }catch(err){ console.error(err); showLoad(false); showToast('Save failed'); document.getElementById('save-btn').disabled=false; }
 }
 
 /* ══════════════════════════════════════
@@ -1107,65 +981,44 @@ async function runCC(rows){
   try{
     const res = await apiGet(SHEET_TRIPS+'!A2:I');
     trips = (res.values||[]).filter(r=>r[0]).map((r,i)=>({
-      rowIndex: i+2,
-      deliveryDate: r[1]||'', truck: r[2]||'',
-      shipmentDate: r[3]||'', type: r[4]||'',
-      shipmentNumber: String(r[5]||'').trim(),
-      billed: String(r[6]||'').trim(),
-      route: r[7]||'', rate: r[8]||''
+      rowIndex:i+2, deliveryDate:r[1]||'', truck:r[2]||'', shipmentDate:r[3]||'', type:r[4]||'',
+      shipmentNumber:String(r[5]||'').trim(), billed:String(r[6]||'').trim(), route:r[7]||'', rate:r[8]||''
     }));
-
     const byShip = {};
     trips.forEach(t=>{ if(SHIP_VALID.test(t.shipmentNumber)) byShip[t.shipmentNumber]=t; });
-
     ccR = { exact:[], fuzzy:[], noMatch:[], invalid:[] };
     rows.forEach(bRow=>{
       const bNum = bRow.shipment;
       if(bRow.invalid){ ccR.invalid.push({billing:bRow}); return; }
       if(byShip[bNum]){ ccR.exact.push({billing:bRow,trip:byShip[bNum]}); return; }
-      // Fuzzy match
       let bestTrip=null, bestReason='', bestScore=99;
       for(const tNum of Object.keys(byShip)){
         const result = fuzzyMatch(bNum, tNum);
-        if(result && result.score < bestScore){
-          bestTrip=byShip[tNum]; bestReason=result.reason; bestScore=result.score;
-        }
+        if(result && result.score < bestScore){ bestTrip=byShip[tNum]; bestReason=result.reason; bestScore=result.score; }
       }
       if(bestTrip) ccR.fuzzy.push({billing:bRow, trip:bestTrip, reason:bestReason});
       else ccR.noMatch.push({billing:bRow});
     });
-
-    showLoad(false);
-    renderCC();
+    showLoad(false); renderCC();
   }catch(err){ console.error(err); showLoad(false); showToast('Cross-check failed'); }
 }
 
 function fuzzyMatch(soaNum, tripsNum){
   if(!SHIP_VALID.test(soaNum)||!SHIP_VALID.test(tripsNum)) return null;
   const a = soaNum, b = tripsNum;
-
-  // Extra repeated digit in SOA (11-digit SOA vs 10-digit Trips)
   if(a.length===11 && b.length===10){
     for(let i=0;i<a.length-1;i++){
-      if(a[i]===a[i+1] && a.slice(0,i)+a.slice(i+1)===b)
-        return { reason:'Extra repeated digit "'+a[i]+'" at position '+(i+1)+' in SOA entry', score:1 };
+      if(a[i]===a[i+1] && a.slice(0,i)+a.slice(i+1)===b) return { reason:'Extra repeated digit "'+a[i]+'" at position '+(i+1)+' in SOA entry', score:1 };
     }
-    // General: removing any one char from SOA gives Trips
     for(let i=0;i<a.length;i++){
-      if(a.slice(0,i)+a.slice(i+1)===b)
-        return { reason:'SOA has extra digit "'+a[i]+'" at position '+(i+1), score:2 };
+      if(a.slice(0,i)+a.slice(i+1)===b) return { reason:'SOA has extra digit "'+a[i]+'" at position '+(i+1), score:2 };
     }
   }
-
-  // Missing digit in SOA (9-digit vs 10-digit)
   if(a.length===9 && b.length===10){
     for(let i=0;i<=b.length;i++){
-      if(a.slice(0,i)===b.slice(0,i)&&a.slice(i)===b.slice(i+1))
-        return { reason:'Missing digit "'+b[i]+'" at position '+(i+1)+' in Trips entry', score:1 };
+      if(a.slice(0,i)===b.slice(0,i)&&a.slice(i)===b.slice(i+1)) return { reason:'Missing digit "'+b[i]+'" at position '+(i+1)+' in Trips entry', score:1 };
     }
   }
-
-  // Same length, single digit difference (typo)
   if(a.length===b.length){
     let diff=0, pos=-1;
     for(let i=0;i<a.length;i++) if(a[i]!==b[i]){ diff++; pos=i; }
@@ -1175,174 +1028,80 @@ function fuzzyMatch(soaNum, tripsNum){
   return null;
 }
 
-/* Build side-by-side character diff HTML */
 function buildDiffHTML(soaNum, tripsNum){
   const maxLen = Math.max(soaNum.length, tripsNum.length);
   let soaHTML='', tripsHTML='';
-
-  // Align by padding shorter string
-  const a = soaNum.padEnd(maxLen,' ');
-  const b = tripsNum.padEnd(maxLen,' ');
-
+  const a = soaNum.padEnd(maxLen,' '), b = tripsNum.padEnd(maxLen,' ');
   for(let i=0;i<maxLen;i++){
-    const ac = a[i]||' ', bc = b[i]||' ';
-    const same = ac===bc;
-    soaHTML   += `<span class="diff-char ${same?'same':'diff-soa'}">${ac==' '?'&nbsp;':ac}</span>`;
-    tripsHTML += `<span class="diff-char ${same?'same':'diff-trips'}">${bc==' '?'&nbsp;':bc}</span>`;
+    const ac=a[i]||' ', bc=b[i]||' ';
+    const same=ac===bc;
+    soaHTML   += `<span class="diff-char ${same?'same':'diff-soa'}">${ac===' '?'&nbsp;':ac}</span>`;
+    tripsHTML += `<span class="diff-char ${same?'same':'diff-trips'}">${bc===' '?'&nbsp;':bc}</span>`;
   }
-
-  return `<div class="diff-wrap">
-    <div class="diff-row"><span class="diff-label soa-lbl">SOA ✓</span><span>${soaHTML}</span></div>
-    <div class="diff-row"><span class="diff-label trips-lbl">Trips</span><span>${tripsHTML}</span></div>
-  </div>`;
+  return `<div class="diff-wrap"><div class="diff-row"><span class="diff-label soa-lbl">SOA ✓</span><span>${soaHTML}</span></div><div class="diff-row"><span class="diff-label trips-lbl">Trips</span><span>${tripsHTML}</span></div></div>`;
 }
 
 function renderCC(){
   const cc = document.getElementById('cc-card');
   cc.style.display=''; cc.classList.remove('hidden');
   const {exact,fuzzy,noMatch,invalid} = ccR;
-  document.getElementById('cc-bdg').textContent =
-    exact.length+'✅ '+fuzzy.length+'⚠️ '+noMatch.length+'❌'+(invalid.length?' '+invalid.length+'⛔':'');
-
-  // Invalid
+  document.getElementById('cc-bdg').textContent = exact.length+'✅ '+fuzzy.length+'⚠️ '+noMatch.length+'❌'+(invalid.length?' '+invalid.length+'⛔':'');
   const iw=document.getElementById('cc-inv-wrap');
-  if(invalid.length){
-    iw.style.display='';
-    document.getElementById('cc-inv-list').innerHTML = invalid.map(m=>`
-      <div class="cc-item nm">
-        <div class="cc-ship" style="color:var(--red)">${m.billing.shipment} ⛔</div>
-        <div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.billing.truck}</div>
-        <div class="cc-reason" style="color:var(--red);font-weight:600">❌ ${m.billing.invalidReason}</div>
-      </div>`).join('');
-  } else iw.style.display='none';
-
-  // Exact
+  if(invalid.length){ iw.style.display=''; document.getElementById('cc-inv-list').innerHTML=invalid.map(m=>`<div class="cc-item nm"><div class="cc-ship" style="color:var(--red)">${m.billing.shipment} ⛔</div><div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.billing.truck}</div><div class="cc-reason" style="color:var(--red);font-weight:600">❌ ${m.billing.invalidReason}</div></div>`).join(''); } else iw.style.display='none';
   const ew=document.getElementById('cc-ex-wrap');
-  if(exact.length){
-    ew.style.display='';
-    document.getElementById('cc-ex-list').innerHTML = exact.map(m=>`
-      <div class="cc-item ex">
-        <div class="cc-ship">${m.billing.shipment}</div>
-        <div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.trip.truck} · ${m.trip.deliveryDate}</div>
-      </div>`).join('');
-  } else ew.style.display='none';
-
-  // Fuzzy — with diff display + 3-option action
+  if(exact.length){ ew.style.display=''; document.getElementById('cc-ex-list').innerHTML=exact.map(m=>`<div class="cc-item ex"><div class="cc-ship">${m.billing.shipment}</div><div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.trip.truck} · ${m.trip.deliveryDate}</div></div>`).join(''); } else ew.style.display='none';
   const fw=document.getElementById('cc-fz-wrap');
-  if(fuzzy.length){
-    fw.style.display='';
-    document.getElementById('cc-fz-list').innerHTML = fuzzy.map((m,i)=>`
-      <div class="cc-item fz" id="fi-${i}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-          <div>
-            <div class="cc-ship">SOA Shipment: <b style="color:var(--blue)">${m.billing.shipment}</b></div>
-            <div class="cc-det">Found in Trips as: <b style="color:var(--orange)">${m.trip.shipmentNumber}</b></div>
-          </div>
-          <span class="badge badge-orange" style="flex-shrink:0">${m.trip.truck}</span>
-        </div>
-        ${buildDiffHTML(m.billing.shipment, m.trip.shipmentNumber)}
-        <div class="cc-reason" style="color:var(--orange);font-size:11px;margin-top:4px">🔎 ${m.reason}</div>
-        <div class="cc-det" style="margin-top:3px">Trip date: ${m.trip.deliveryDate} · Route: ${m.trip.route||'—'}</div>
-        <div class="cc-acts">
-          <button class="btn btn-blue" onclick="confirmFuzzyFix(${i})" title="Mark billed AND correct the number in Trips">✅ Mark Billed + Fix Trips #</button>
-          <button class="btn btn-green" onclick="confirmFuzzyBillOnly(${i})" title="Mark billed but keep original Trips number">Mark Billed Only</button>
-          <button class="btn btn-ghost" onclick="skipFuzzy(${i},this)">Skip</button>
-        </div>
-      </div>`).join('');
-  } else fw.style.display='none';
-
-  // Not found
+  if(fuzzy.length){ fw.style.display=''; document.getElementById('cc-fz-list').innerHTML=fuzzy.map((m,i)=>`<div class="cc-item fz" id="fi-${i}"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px"><div><div class="cc-ship">SOA Shipment: <b style="color:var(--blue)">${m.billing.shipment}</b></div><div class="cc-det">Found in Trips as: <b style="color:var(--orange)">${m.trip.shipmentNumber}</b></div></div><span class="badge badge-orange" style="flex-shrink:0">${m.trip.truck}</span></div>${buildDiffHTML(m.billing.shipment,m.trip.shipmentNumber)}<div class="cc-reason" style="color:var(--orange);font-size:11px;margin-top:4px">🔎 ${m.reason}</div><div class="cc-det" style="margin-top:3px">Trip date: ${m.trip.deliveryDate} · Route: ${m.trip.route||'—'}</div><div class="cc-acts"><button class="btn btn-blue" onclick="confirmFuzzyFix(${i})">✅ Mark Billed + Fix Trips #</button><button class="btn btn-green" onclick="confirmFuzzyBillOnly(${i})">Mark Billed Only</button><button class="btn btn-ghost" onclick="skipFuzzy(${i},this)">Skip</button></div></div>`).join(''); } else fw.style.display='none';
   const nw=document.getElementById('cc-nm-wrap');
-  if(noMatch.length){
-    nw.style.display='';
-    document.getElementById('cc-nm-list').innerHTML = noMatch.map(m=>`
-      <div class="cc-item nm">
-        <div class="cc-ship">${m.billing.shipment}</div>
-        <div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.billing.truck} · ${m.billing.date}</div>
-        <div class="cc-reason" style="color:var(--red)">❌ Not found in Trips — helper may not have entered this trip yet, or entered a completely different number</div>
-      </div>`).join('');
-  } else nw.style.display='none';
-
+  if(noMatch.length){ nw.style.display=''; document.getElementById('cc-nm-list').innerHTML=noMatch.map(m=>`<div class="cc-item nm"><div class="cc-ship">${m.billing.shipment}</div><div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.billing.truck} · ${m.billing.date}</div><div class="cc-reason" style="color:var(--red)">❌ Not found in Trips</div></div>`).join(''); } else nw.style.display='none';
   setTimeout(()=>document.getElementById('cc-card').scrollIntoView({behavior:'smooth',block:'start'}),200);
 }
 
 async function applyExact(){
-  const btn=document.getElementById('apply-btn');
-  btn.disabled=true; showLoad(true,'Marking trips as Billed...');
+  const btn=document.getElementById('apply-btn'); btn.disabled=true; showLoad(true,'Marking trips as Billed...');
   let ok=0;
-  for(const m of ccR.exact){
-    if(m.trip.billed==='Yes'){ ok++; continue; }
-    try{ await apiPut(SHEET_TRIPS+'!G'+m.trip.rowIndex,[['Yes']]); m.trip.billed='Yes'; ok++; }
-    catch(e){ console.error(e); }
-  }
-  showLoad(false);
-  btn.textContent='✅ Done — '+ok+' trip(s) marked as Billed';
-  btn.style.background='var(--text3)';
+  for(const m of ccR.exact){ if(m.trip.billed==='Yes'){ok++;continue;} try{await apiPut(SHEET_TRIPS+'!G'+m.trip.rowIndex,[['Yes']]);m.trip.billed='Yes';ok++;}catch(e){console.error(e);} }
+  showLoad(false); btn.textContent='✅ Done — '+ok+' trip(s) marked as Billed'; btn.style.background='var(--text3)';
   showToast(ok+' marked as Billed!','ok');
 }
 
-// Fix Trips number AND mark billed
 async function confirmFuzzyFix(i){
   const m = ccR.fuzzy[i]; if(!m) return;
-  const oldNum = m.trip.shipmentNumber;
-  const newNum = m.billing.shipment;
-  showConfirm(
-    'Fix Trips Number + Mark Billed',
-    `Change Trips shipment number from:\n\n${oldNum} → ${newNum}\n\nTruck: ${m.trip.truck} · ${m.trip.deliveryDate}\n\nThis confirms the SOA number is correct.`,
-    async ()=>{
-      showLoad(true,'Updating Trips + marking Billed...');
-      try{
-        // Update shipment number (col F = index 6) AND billed status (col G = index 7)
-        await apiPut(SHEET_TRIPS+'!F'+m.trip.rowIndex+':G'+m.trip.rowIndex,[[newNum,'Yes']]);
-        m.trip.shipmentNumber = newNum;
-        m.trip.billed = 'Yes';
-        // Log the correction
-        correctionsLog.push({ soaNum: newNum, oldTripsNum: oldNum, truck: m.trip.truck, date: m.trip.deliveryDate, action:'Fixed + Billed' });
-        showLoad(false);
-        showToast('Trips number corrected + marked as Billed!','ok');
-        markFuzzyDone(i,'✅ Fixed + Marked Billed');
-      }catch(e){ showLoad(false); showToast('Failed to update'); }
-    }
-  );
+  showConfirm('Fix Trips Number + Mark Billed',`Change Trips shipment number from:\n\n${m.trip.shipmentNumber} → ${m.billing.shipment}\n\nTruck: ${m.trip.truck} · ${m.trip.deliveryDate}`,async()=>{
+    showLoad(true,'Updating Trips + marking Billed...');
+    try{
+      await apiPut(SHEET_TRIPS+'!F'+m.trip.rowIndex+':G'+m.trip.rowIndex,[[m.billing.shipment,'Yes']]);
+      m.trip.shipmentNumber=m.billing.shipment; m.trip.billed='Yes';
+      correctionsLog.push({soaNum:m.billing.shipment,oldTripsNum:m.trip.shipmentNumber,truck:m.trip.truck,date:m.trip.deliveryDate,action:'Fixed + Billed'});
+      showLoad(false); showToast('Trips number corrected + marked as Billed!','ok');
+      markFuzzyDone(i,'✅ Fixed + Marked Billed');
+    }catch(e){showLoad(false);showToast('Failed to update');}
+  });
 }
 
-// Mark billed only, don't change Trips number
 async function confirmFuzzyBillOnly(i){
   const m = ccR.fuzzy[i]; if(!m) return;
   showLoad(true,'Marking as Billed...');
   try{
-    await apiPut(SHEET_TRIPS+'!G'+m.trip.rowIndex,[['Yes']]);
-    m.trip.billed='Yes';
-    correctionsLog.push({ soaNum: m.billing.shipment, oldTripsNum: m.trip.shipmentNumber, truck: m.trip.truck, date: m.trip.deliveryDate, action:'Billed Only (no fix)' });
-    showLoad(false);
-    showToast('Marked as Billed!','ok');
-    markFuzzyDone(i,'✅ Marked Billed (number kept)');
-  }catch(e){ showLoad(false); showToast('Failed'); }
+    await apiPut(SHEET_TRIPS+'!G'+m.trip.rowIndex,[['Yes']]); m.trip.billed='Yes';
+    correctionsLog.push({soaNum:m.billing.shipment,oldTripsNum:m.trip.shipmentNumber,truck:m.trip.truck,date:m.trip.deliveryDate,action:'Billed Only (no fix)'});
+    showLoad(false); showToast('Marked as Billed!','ok'); markFuzzyDone(i,'✅ Marked Billed (number kept)');
+  }catch(e){showLoad(false);showToast('Failed');}
 }
 
 function skipFuzzy(i,btn){ btn.textContent='Skipped'; btn.disabled=true; const el=document.getElementById('fi-'+i); if(el) el.style.opacity='.4'; }
-function markFuzzyDone(i,msg){
-  const el=document.getElementById('fi-'+i);
-  if(el){ el.style.opacity='.4'; el.querySelector('.cc-acts').innerHTML=`<span style="font-size:11px;color:var(--green);font-weight:600">${msg}</span>`; }
-}
+function markFuzzyDone(i,msg){ const el=document.getElementById('fi-'+i); if(el){el.style.opacity='.4';el.querySelector('.cc-acts').innerHTML=`<span style="font-size:11px;color:var(--green);font-weight:600">${msg}</span>`;} }
 
 function renderSOASummary(rows){
   const map={};
   rows.forEach(r=>{
     if(!map[r.soa]) map[r.soa]={soa:r.soa,count:0,total:0,trucks:new Set()};
-    map[r.soa].count++; map[r.soa].total+=Number(r.rate||0);
-    if(r.truck) map[r.soa].trucks.add(r.truck);
+    map[r.soa].count++; map[r.soa].total+=Number(r.rate||0); if(r.truck) map[r.soa].trucks.add(r.truck);
   });
   const list=Object.values(map);
   document.getElementById('soa-bdg').textContent=list.length+' SOA(s)';
-  document.getElementById('soa-list').innerHTML=list.map(s=>`
-    <div class="soa-row">
-      <div class="soa-row-top"><div class="soa-number">${s.soa}</div><div class="soa-amount">₱${s.total.toLocaleString()}</div></div>
-      <div class="soa-meta"><span>${s.count} shipment(s)</span></div>
-      <div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
-    </div>`).join('');
-  const sc=document.getElementById('soa-card');
-  sc.style.display=''; sc.classList.remove('hidden');
+  document.getElementById('soa-list').innerHTML=list.map(s=>`<div class="soa-row"><div class="soa-row-top"><div class="soa-number">${s.soa}</div><div class="soa-amount">₱${s.total.toLocaleString()}</div></div><div class="soa-meta"><span>${s.count} shipment(s)</span></div><div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div></div>`).join('');
+  const sc=document.getElementById('soa-card'); sc.style.display=''; sc.classList.remove('hidden');
 }
 
 /* ══════════════════════════════════════
@@ -1354,16 +1113,10 @@ async function loadSOAManager(){
   document.getElementById('soa-mgr-empty').style.display='none';
   try{
     const res = await apiGet(SHEET_BILLING+'!A2:M');
-    master = mapMaster(res.values||[]);
-    soaMasterData = master;
-    buildSOAMgrFilters();
-    renderSOAMgrStats();
-    renderSOAManager();
+    master = mapMaster(res.values||[]); soaMasterData = master;
+    buildSOAMgrFilters(); renderSOAMgrStats(); renderSOAManager();
     document.getElementById('soa-loading').style.display='none';
-  }catch(e){
-    document.getElementById('soa-loading').style.display='none';
-    showToast('Failed to load');
-  }
+  }catch(e){ document.getElementById('soa-loading').style.display='none'; showToast('Failed to load'); }
 }
 
 function buildSOAMgrFilters(){
@@ -1376,7 +1129,7 @@ function renderSOAMgrStats(){
   const total=Object.keys(soaMap).length;
   const totalAmt=master.reduce((s,r)=>s+Number(r.rate||0),0);
   const liqAmt=master.reduce((s,r)=>s+Number(r.liquidatedAmount||0),0);
-  document.getElementById('soa-mgr-stats').innerHTML=`
+  document.getElementById('soa-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-blue">${total}</div><div class="stat-lbl">Total SOA</div></div>
     <div class="stat-card"><div class="stat-val sv-green" style="font-size:13px">₱${(totalAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Billed</div></div>
     <div class="stat-card"><div class="stat-val sv-purple" style="font-size:13px">₱${(liqAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
@@ -1386,18 +1139,11 @@ function renderSOAMgrStats(){
 function renderSOAManager(){
   const srch=(document.getElementById('soa-search').value||'').toLowerCase();
   const monF=document.getElementById('soa-filter-month').value;
-
-  // Group by SOA
   const soaMap={};
   master.forEach(r=>{
-    if(!soaMap[r.soa]) soaMap[r.soa]={
-      soa:r.soa, count:0, total:0, trucks:new Set(),
-      months:new Set(), billedOut:0, liquidated:0, liquidatedAmt:0,
-      invalid:0, rows:[]
-    };
+    if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,count:0,total:0,trucks:new Set(),months:new Set(),billedOut:0,liquidated:0,liquidatedAmt:0,invalid:0,rows:[]};
     const s=soaMap[r.soa];
-    s.count++; s.total+=Number(r.rate||0);
-    if(r.truck) s.trucks.add(r.truck);
+    s.count++; s.total+=Number(r.rate||0); if(r.truck) s.trucks.add(r.truck);
     const m=dateMonth(r.date); if(m) s.months.add(m);
     if(r.billedOut==='Yes') s.billedOut++;
     if(r.liquidated==='Yes'||r.liquidated==='Partial') s.liquidated++;
@@ -1405,40 +1151,24 @@ function renderSOAManager(){
     if(r.valid==='No') s.invalid++;
     s.rows.push(r);
   });
-
   let soas=Object.values(soaMap).filter(s=>{
     if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
     if(monF&&![...s.months].includes(monF)) return false;
     return true;
   }).sort((a,b)=>b.soa.localeCompare(a.soa));
-
   const list=document.getElementById('soa-manager-list');
-  if(!soas.length){
-    list.innerHTML='';
-    document.getElementById('soa-mgr-empty').style.display='block';
-    return;
-  }
+  if(!soas.length){ list.innerHTML=''; document.getElementById('soa-mgr-empty').style.display='block'; return; }
   document.getElementById('soa-mgr-empty').style.display='none';
-
   list.innerHTML='<div class="soa-manager-card">'+soas.map(s=>{
-    const billedPct = s.count>0?(s.billedOut/s.count*100):0;
-    const liqPct    = s.total>0?Math.min(100,s.liquidatedAmt/s.total*100):0;
+    const billedPct=s.count>0?(s.billedOut/s.count*100):0;
+    const liqPct=s.total>0?Math.min(100,s.liquidatedAmt/s.total*100):0;
     const monthLabels=[...s.months].sort().reverse().map(monthLabel).join(', ');
-    const statusPill = s.billedOut>=s.count
-      ? '<span class="pill pill-billedout">Billed Out</span>'
-      : '<span class="pill pill-unbilled">Pending BO</span>';
+    const statusPill=s.billedOut>=s.count?'<span class="pill pill-billedout">Billed Out</span>':'<span class="pill pill-unbilled">Pending BO</span>';
     return `<div class="soa-mgr-row">
       <div class="soa-mgr-left">
         <div class="soa-mgr-num">${s.soa} ${s.invalid?`<span style="color:var(--red);font-size:11px">⛔ ${s.invalid} invalid</span>`:''}</div>
-        <div class="soa-mgr-meta">
-          ${statusPill}
-          ${s.liquidatedAmt>0?`<span class="pill pill-full" style="margin-left:4px">₱${s.liquidatedAmt.toLocaleString()} collected</span>`:''}
-        </div>
-        <div class="soa-mgr-meta" style="margin-top:5px">
-          <b>${s.count}</b> shipments ·
-          <b style="color:var(--green)">₱${s.total.toLocaleString()}</b> ·
-          ${[...s.trucks].map(t=>'🚛 '+t).join(' · ')}
-        </div>
+        <div class="soa-mgr-meta">${statusPill} ${s.liquidatedAmt>0?`<span class="pill pill-full" style="margin-left:4px">₱${s.liquidatedAmt.toLocaleString()} collected</span>`:''}</div>
+        <div class="soa-mgr-meta" style="margin-top:5px"><b>${s.count}</b> shipments · <b style="color:var(--green)">₱${s.total.toLocaleString()}</b> · ${[...s.trucks].map(t=>'🚛 '+t).join(' · ')}</div>
         <div class="soa-mgr-meta">${monthLabels}</div>
         <div style="margin-top:8px">
           <div style="font-size:9px;color:var(--text3);margin-bottom:3px;font-weight:600">BILLED OUT</div>
@@ -1450,65 +1180,39 @@ function renderSOAManager(){
         </div>
       </div>
       <div class="soa-mgr-actions">
+        <button class="btn btn-ghost" style="margin-bottom:6px" onclick="openLiqModal('${s.soa}')">💰 Pay</button>
         <button class="btn btn-danger" onclick="promptDeleteSOA('${s.soa}',${s.count})">🗑️ Delete</button>
       </div>
     </div>`;
   }).join('')+'</div>';
 }
 
-function promptDeleteSOA(soa, count){
-  showConfirm(
-    '⚠️ Delete SOA?',
-    `You are about to delete SOA <b>${soa}</b>.\n\nThis will:\n• Remove all ${count} shipment record(s) from the Billing sheet\n• Reset Billed = "No" on matching Trips\n\nThis cannot be undone.`,
-    ()=>executeDeleteSOA(soa)
-  );
+function promptDeleteSOA(soa,count){
+  showConfirm('⚠️ Delete SOA?',`You are about to delete SOA <b>${soa}</b>.\n\nThis will:\n• Remove all ${count} shipment record(s) from the Billing sheet\n• Reset Billed = "No" on matching Trips\n\nThis cannot be undone.`,()=>executeDeleteSOA(soa));
 }
 
 async function executeDeleteSOA(soa){
   showLoad(true,`Deleting SOA ${soa}...`);
   try{
-    // 1. Get all current billing rows
     const res = await apiGet(SHEET_BILLING+'!A2:M');
     const allRows = res.values||[];
-
-    // 2. Find rows to delete (matching SOA) and get their shipment numbers
     const toDelete=[], shipToUnbill=[];
     allRows.forEach((r,i)=>{
-      if((r[3]||'')===soa){
-        toDelete.push(i+2); // 1-indexed row in sheet
-        const ship=String(r[2]||'').trim();
-        if(ship) shipToUnbill.push(ship);
-      }
+      if((r[3]||'')===soa){ toDelete.push(i+2); const ship=String(r[2]||'').trim(); if(ship) shipToUnbill.push(ship); }
     });
-
-    if(!toDelete.length){ showLoad(false); showToast('No rows found for this SOA'); return; }
-
-    // 3. Clear those rows in Billing sheet (can't delete rows via Sheets API easily, so blank them)
-    // Sort descending to clear from bottom up
-    const blankRow = ['','','','','','','','','','','','',''];
-    for(const rowNum of toDelete.sort((a,b)=>b-a)){
-      await apiPut(SHEET_BILLING+'!A'+rowNum+':M'+rowNum,[blankRow]);
-    }
-
-    // 4. Reset Billed = "No" in Trips for matching shipment numbers
+    if(!toDelete.length){showLoad(false);showToast('No rows found for this SOA');return;}
+    const blankRow=['','','','','','','','','','','','',''];
+    for(const rowNum of toDelete.sort((a,b)=>b-a)) await apiPut(SHEET_BILLING+'!A'+rowNum+':M'+rowNum,[blankRow]);
     const tripsRes = await apiGet(SHEET_TRIPS+'!A2:I');
     const tripsRows = tripsRes.values||[];
     let tripsFixed=0;
     for(let i=0;i<tripsRows.length;i++){
       const tNum=String(tripsRows[i][5]||'').trim();
-      if(shipToUnbill.includes(tNum)){
-        await apiPut(SHEET_TRIPS+'!G'+(i+2),[['No']]);
-        tripsFixed++;
-      }
+      if(shipToUnbill.includes(tNum)){ await apiPut(SHEET_TRIPS+'!G'+(i+2),[['No']]); tripsFixed++; }
     }
-
-    showLoad(false);
-    showToast(`✅ SOA ${soa} deleted. ${toDelete.length} billing rows cleared, ${tripsFixed} trips reset.`,'ok');
-    loadSOAManager(); // Refresh
-  }catch(err){
-    console.error(err); showLoad(false);
-    showToast('Delete failed: '+err.message);
-  }
+    showLoad(false); showToast(`✅ SOA ${soa} deleted. ${toDelete.length} billing rows cleared, ${tripsFixed} trips reset.`,'ok');
+    loadSOAManager();
+  }catch(err){ console.error(err); showLoad(false); showToast('Delete failed: '+err.message); }
 }
 
 /* ══════════════════════════════════════
@@ -1519,11 +1223,8 @@ async function loadBilled(){
   showLoad(true,'Loading billed records...');
   try{
     const res=await apiGet(SHEET_BILLING+'!A2:M');
-    master=mapMaster(res.values||[]);
-    buildTruckColorMap();
-    buildBFilters();renderBStats();
-    if(bSt==='cal') renderBilledCal();
-    else renderBilledList();
+    master=mapMaster(res.values||[]); buildTruckColorMap(); buildBFilters(); renderBStats();
+    if(bSt==='cal') renderBilledCal(); else renderBilledList();
     showLoad(false);
   }catch(e){showLoad(false);showToast('Failed to load');}
 }
@@ -1554,10 +1255,8 @@ function renderBStats(){
 function bSub(s){
   bSt=s;
   ['cal','list','soa','truck'].forEach(x=>{const el=document.getElementById('bsub-'+x);if(el)el.classList.toggle('active',x===s);});
-  const calV=document.getElementById('billed-cal-view');
-  const listV=document.getElementById('billed-list-view');
-  const calF=document.getElementById('billed-cal-filters');
-  const listF=document.getElementById('billed-list-filters');
+  const calV=document.getElementById('billed-cal-view'), listV=document.getElementById('billed-list-view');
+  const calF=document.getElementById('billed-cal-filters'), listF=document.getElementById('billed-list-filters');
   if(calV)calV.style.display=s==='cal'?'block':'none';
   if(listV)listV.style.display=s==='cal'?'none':'block';
   if(calF)calF.style.display=s==='cal'?'flex':'none';
@@ -1567,376 +1266,362 @@ function bSub(s){
 
 function renderBilledList(){
   const srch=document.getElementById('bs').value.toLowerCase();
-  const mo=document.getElementById('bm').value;
-  const so=document.getElementById('bso').value;
-  const tr=document.getElementById('bt').value;
+  const mo=document.getElementById('bm').value, so=document.getElementById('bso').value, tr=document.getElementById('bt').value;
   let rows=master.filter(r=>{
     if(srch&&!r.shipment.toLowerCase().includes(srch)&&!r.soa.toLowerCase().includes(srch)) return false;
-    if(so&&r.soa!==so) return false;
-    if(tr&&r.truck!==tr) return false;
-    if(mo&&dateMonth(r.date)!==mo) return false;
+    if(so&&r.soa!==so) return false; if(tr&&r.truck!==tr) return false; if(mo&&dateMonth(r.date)!==mo) return false;
     return true;
   });
   const list=document.getElementById('billed-list');
-  if(!rows.length){ list.innerHTML=emptyH('No billed records','Try adjusting your filters.'); return; }
+  if(!rows.length){list.innerHTML=emptyH('No billed records','Try adjusting your filters.');return;}
   const cardFn=r=>{
     const inv=r.valid==='No';
-    return `<div class="ship-card${inv?' invalid-card':''}">
-      <div class="ship-card-top">
-        <div>
-          <div class="ship-num" style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</div>
-          <span class="pill ${inv?'pill-invalid':'pill-billed'}">${inv?'⛔ Invalid #':'✅ Billed'}</span>
-        </div>
-        <div class="ship-rate ${inv?'ship-rate-orange':'ship-rate-green'}">₱${Number(r.rate||0).toLocaleString()}</div>
-      </div>
-      <div class="ship-meta"><span>📅 ${r.date}</span><span>🚛 ${r.truck}</span><span>${r.soa}</span></div>
-    </div>`;
+    return `<div class="ship-card${inv?' invalid-card':''}"><div class="ship-card-top"><div><div class="ship-num" style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</div><span class="pill ${inv?'pill-invalid':'pill-billed'}">${inv?'⛔ Invalid #':'✅ Billed'}</span></div><div class="ship-rate ${inv?'ship-rate-orange':'ship-rate-green'}">₱${Number(r.rate||0).toLocaleString()}</div></div><div class="ship-meta"><span>📅 ${r.date}</span><span>🚛 ${r.truck}</span><span>${r.soa}</span></div></div>`;
   };
-  if(bSt==='all')   list.innerHTML=rows.map(cardFn).join('');
+  if(bSt==='list')  list.innerHTML=rows.map(cardFn).join('');
   else if(bSt==='soa')   list.innerHTML=grpBy(rows,'soa').map(({key,items})=>grpHTML(key,items,cardFn,'SOA: ','green')).join('');
   else if(bSt==='month') list.innerHTML=grpByMonth(rows).map(({label,items})=>grpHTML(label,items,cardFn,'','green')).join('');
   else if(bSt==='truck') list.innerHTML=grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','green')).join('');
+  else list.innerHTML=rows.map(cardFn).join('');
 }
 
 /* ══════════════════════════════════════
-   UNBILLED TAB
+   UNBILLED SCAN — FIXED
+   Key fix: after a successful Fix, splice the item from scanTypos
+   and re-render the scan results so it disappears immediately.
+   On re-scan, fixedNumbers set ensures already-fixed numbers are
+   not flagged as typos again even if the sheet hasn't refreshed yet.
 ══════════════════════════════════════ */
-
-/* ══ UNBILLED SCAN ══ */
-let scanTypos = [], scanDups = [], scanInvalids = [], scanNearDupes = [];
-
-async function runUnbilledScan() {
+async function runUnbilledScan(){
   const btn = document.getElementById('scan-issues-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Scanning...';
-
-  try {
-    // Need fresh data from both sheets
-    showLoad(true, 'Loading data for scan...');
-    const [tRes, bRes] = await Promise.all([
-      apiGet(SHEET_TRIPS + '!A2:I'),
-      apiGet(SHEET_BILLING + '!A2:M')
-    ]);
+  btn.disabled=true; btn.textContent='⏳ Scanning...';
+  try{
+    showLoad(true,'Loading data for scan...');
+    const [tRes,bRes] = await Promise.all([apiGet(SHEET_TRIPS+'!A2:I'), apiGet(SHEET_BILLING+'!A2:M')]);
     showLoad(false);
 
-    const allTrips = (tRes.values || []).map((r, i) => ({
-      rowIndex: i + 2,
-      deliveryDate: r[1] || '', truck: r[2] || '',
-      shipmentDate: r[3] || '', type: r[4] || '',
-      shipmentNumber: String(r[5] || '').trim(),
-      billed: String(r[6] || '').trim(),
-      route: r[7] || '', rate: r[8] || ''
-    })).filter(r => r.shipmentNumber || r.deliveryDate || r.truck);
+    const allTrips = (tRes.values||[]).map((r,i)=>({
+      rowIndex:i+2, deliveryDate:r[1]||'', truck:r[2]||'', shipmentDate:r[3]||'', type:r[4]||'',
+      shipmentNumber:String(r[5]||'').trim(), billed:String(r[6]||'').trim(), route:r[7]||'', rate:r[8]||''
+    })).filter(r=>r.shipmentNumber||r.deliveryDate||r.truck);
 
-    // All billed numbers — from Billing sheet AND Trips where Billed=Yes
     const billedFromSheet = new Set(
-      (bRes.values || []).filter(r => r[2]).map(r => String(r[2]).trim()).filter(s => SHIP_VALID.test(s))
+      (bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()).filter(s=>SHIP_VALID.test(s))
     );
     const billedFromTrips = new Set(
-      allTrips.filter(t => t.billed === 'Yes' && SHIP_VALID.test(t.shipmentNumber)).map(t => t.shipmentNumber)
+      allTrips.filter(t=>t.billed==='Yes'&&SHIP_VALID.test(t.shipmentNumber)).map(t=>t.shipmentNumber)
     );
-    const allBilled = new Set([...billedFromSheet, ...billedFromTrips]);
+    const allBilled = new Set([...billedFromSheet,...billedFromTrips]);
     const allBilledArr = [...allBilled];
 
-    // Unbilled trips
-    const unb = allTrips.filter(t => t.billed !== 'Yes' && !billedFromSheet.has(t.shipmentNumber));
+    /* Also add any numbers we fixed this session to allBilled so they
+       don't re-appear as typo targets after a re-scan before the sheet syncs */
+    fixedNumbers.forEach(n=>allBilled.add(n));
 
-    // Classify each
-    scanTypos = []; scanDups = []; scanInvalids = []; scanNearDupes = [];
-    const seen = {}, cleanList = [];
+    const unb = allTrips.filter(t=>t.billed!=='Yes'&&!billedFromSheet.has(t.shipmentNumber));
 
-    unb.forEach(t => {
+    scanTypos=[]; scanDups=[]; scanInvalids=[]; scanNearDupes=[];
+    const seen={}, cleanList=[];
+
+    unb.forEach(t=>{
       const num = t.shipmentNumber;
 
-      // Invalid format
-      if (!SHIP_VALID.test(num)) {
-        scanInvalids.push({ trip: t, reason: scanInvalidReason(num) });
-        return;
-      }
+      /* Skip numbers we already fixed this session */
+      if(fixedNumbers.has(num)) return;
 
-      // Exact duplicate within unbilled
-      if (seen[num]) {
-        scanDups.push({ trip: t, other: seen[num] });
-      } else {
-        seen[num] = t;
-      }
+      if(!SHIP_VALID.test(num)){ scanInvalids.push({trip:t,reason:scanInvalidReason(num)}); return; }
 
-      // Typo check: 1-2 edit distance from any billed number
-      let bestMatch = null, bestDist = 99;
-      for (const bn of allBilledArr) {
-        if (Math.abs(num.length - bn.length) > 2) continue; // skip obvious mismatches
-        const d = scanEditDist(num, bn);
-        if (d > 0 && d < bestDist) { bestMatch = bn; bestDist = d; }
-        if (bestDist === 1) break; // can't do better
-      }
-      if (bestMatch && bestDist <= 2) {
-        scanTypos.push({ trip: t, similar: bestMatch, dist: bestDist });
-        return;
-      }
+      if(seen[num]) scanDups.push({trip:t,other:seen[num]});
+      else seen[num]=t;
 
+      let bestMatch=null, bestDist=99;
+      for(const bn of allBilledArr){
+        if(Math.abs(num.length-bn.length)>2) continue;
+        const d=scanEditDist(num,bn);
+        if(d>0&&d<bestDist){bestMatch=bn;bestDist=d;}
+        if(bestDist===1) break;
+      }
+      if(bestMatch&&bestDist<=2){ scanTypos.push({trip:t,similar:bestMatch,dist:bestDist,resolved:false}); return; }
       cleanList.push(t);
     });
 
-    // Near-dupes within unbilled (pairs with dist=1, not already in typos)
-    const validUnb = unb.filter(t => SHIP_VALID.test(t.shipmentNumber));
-    const typoNums = new Set(scanTypos.map(x => x.trip.shipmentNumber));
-    for (let i = 0; i < validUnb.length; i++) {
-      for (let j = i + 1; j < validUnb.length; j++) {
-        if (typoNums.has(validUnb[i].shipmentNumber) || typoNums.has(validUnb[j].shipmentNumber)) continue;
-        if (scanEditDist(validUnb[i].shipmentNumber, validUnb[j].shipmentNumber) === 1) {
-          scanNearDupes.push({ a: validUnb[i], b: validUnb[j] });
-        }
+    /* Near-dupes within unbilled */
+    const validUnb=unb.filter(t=>SHIP_VALID.test(t.shipmentNumber)&&!fixedNumbers.has(t.shipmentNumber));
+    const typoNums=new Set(scanTypos.map(x=>x.trip.shipmentNumber));
+    for(let i=0;i<validUnb.length;i++){
+      for(let j=i+1;j<validUnb.length;j++){
+        if(typoNums.has(validUnb[i].shipmentNumber)||typoNums.has(validUnb[j].shipmentNumber)) continue;
+        if(scanEditDist(validUnb[i].shipmentNumber,validUnb[j].shipmentNumber)===1)
+          scanNearDupes.push({a:validUnb[i],b:validUnb[j]});
       }
     }
 
     renderScanResults(cleanList.length, unb.length);
-    btn.textContent = '🔄 Re-Scan';
-    btn.disabled = false;
-
-  } catch (e) {
-    showLoad(false);
-    console.error(e);
-    showToast('Scan failed — check connection', 'warn');
-    btn.textContent = 'Scan for Issues';
-    btn.disabled = false;
+    btn.textContent='🔄 Re-Scan'; btn.disabled=false;
+  }catch(e){
+    showLoad(false); console.error(e);
+    showToast('Scan failed — check connection','warn');
+    btn.textContent='Scan for Issues'; btn.disabled=false;
   }
 }
 
-function renderScanResults(cleanCount, totalUnb) {
-  const wrap = document.getElementById('scan-results-wrap');
-  wrap.style.display = 'block';
-  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+/* ── Re-render scan results in place (called after fix/skip) ── */
+function refreshScanResults(){
+  /* Count active (non-resolved) items */
+  const activeTypos     = scanTypos.filter(x=>!x.resolved);
+  const activeDups      = scanDups;
+  const activeInvalids  = scanInvalids;
+  const activeNearDupes = scanNearDupes;
+  const flagged = activeTypos.length + activeDups.length + activeInvalids.length + activeNearDupes.length;
+  const totalScanned = activeTypos.length + activeDups.length + activeInvalids.length + activeNearDupes.length;
 
-  const flagged = scanTypos.length + scanDups.length + scanInvalids.length + scanNearDupes.length;
+  /* Update summary stats */
+  document.getElementById('scan-summary-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-blue">${scanTypos.length + scanDups.length + scanInvalids.length}</div><div class="stat-lbl">Scanned</div></div>
+    <div class="stat-card"><div class="stat-val ${flagged>0?'sv-red':'sv-green'}">${flagged}</div><div class="stat-lbl">Flagged</div></div>
+    <div class="stat-card"><div class="stat-val sv-orange">${activeTypos.length}</div><div class="stat-lbl">Typos</div></div>
+    <div class="stat-card"><div class="stat-val sv-green">${fixedNumbers.size}</div><div class="stat-lbl">Fixed</div></div>`;
 
-  // Summary stats
-  document.getElementById('scan-summary-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val sv-blue">${totalUnb}</div><div class="stat-lbl">Scanned</div></div>
-    <div class="stat-card"><div class="stat-val ${flagged > 0 ? 'sv-red' : 'sv-green'}">${flagged}</div><div class="stat-lbl">Flagged</div></div>
-    <div class="stat-card"><div class="stat-val sv-orange">${scanTypos.length}</div><div class="stat-lbl">Typos</div></div>
-    <div class="stat-card"><div class="stat-val sv-green">${cleanCount}</div><div class="stat-lbl">Clean</div></div>`;
-
-  // TYPOS
-  const typoWrap = document.getElementById('scan-typo-wrap');
-  if (scanTypos.length) {
-    typoWrap.style.display = 'block';
-    document.getElementById('scan-typo-list').innerHTML = scanTypos.map((item, i) => {
+  /* Re-render typo list — only show non-resolved items */
+  const typoWrap=document.getElementById('scan-typo-wrap');
+  if(activeTypos.length){
+    typoWrap.style.display='block';
+    document.getElementById('scan-typo-list').innerHTML=activeTypos.map((item,_)=>{
+      /* use the index in the FULL scanTypos array for the button callbacks */
+      const realIdx = scanTypos.indexOf(item);
       const t = item.trip;
-      return `<div class="scan-item typo" id="st-${i}">
+      return `<div class="scan-item typo" id="st-${realIdx}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
           <div>
-            <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">
-              ⚠️ Typo — ${item.dist} digit${item.dist > 1 ? 's' : ''} off from a billed number
-            </div>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">⚠️ Typo — ${item.dist} digit${item.dist>1?'s':''} off from a billed number</div>
             <div class="scan-num" style="color:var(--orange)">${t.shipmentNumber}</div>
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ${t.rowIndex}</div>
-            <div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">₱${Number(t.rate || 0).toLocaleString()}</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">₱${Number(t.rate||0).toLocaleString()}</div>
           </div>
         </div>
-        <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route || '—'}</div>
-        ${scanBuildDiff(t.shipmentNumber, item.similar)}
-        <div style="font-size:11px;color:var(--text2);margin-top:3px">
-          Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
+        <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route||'—'}</div>
+        ${scanBuildDiff(t.shipmentNumber,item.similar)}
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b></div>
+        <div class="scan-acts" id="st-acts-${realIdx}">
+          <button class="btn btn-blue" onclick="fixScanTypo(${realIdx})">✏️ Fix → Use <span style="font-family:var(--mono)">${item.similar}</span></button>
+          <button class="btn btn-ghost" onclick="scanSkip(${realIdx})">Skip</button>
         </div>
+        <div id="st-done-${realIdx}" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>
+      </div>`;
+    }).join('');
+  } else {
+    typoWrap.style.display='none';
+  }
+
+  /* Show "all clean" banner if nothing left */
+  document.getElementById('scan-clean-wrap').style.display=(flagged===0)?'block':'none';
+}
+
+function renderScanResults(cleanCount, totalUnb){
+  const wrap=document.getElementById('scan-results-wrap');
+  wrap.style.display='block';
+  wrap.scrollIntoView({behavior:'smooth',block:'start'});
+  const flagged=scanTypos.length+scanDups.length+scanInvalids.length+scanNearDupes.length;
+
+  document.getElementById('scan-summary-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-blue">${totalUnb}</div><div class="stat-lbl">Scanned</div></div>
+    <div class="stat-card"><div class="stat-val ${flagged>0?'sv-red':'sv-green'}">${flagged}</div><div class="stat-lbl">Flagged</div></div>
+    <div class="stat-card"><div class="stat-val sv-orange">${scanTypos.length}</div><div class="stat-lbl">Typos</div></div>
+    <div class="stat-card"><div class="stat-val sv-green">${cleanCount}</div><div class="stat-lbl">Clean</div></div>`;
+
+  /* TYPOS */
+  const typoWrap=document.getElementById('scan-typo-wrap');
+  if(scanTypos.length){
+    typoWrap.style.display='block';
+    document.getElementById('scan-typo-list').innerHTML=scanTypos.map((item,i)=>{
+      const t=item.trip;
+      return `<div class="scan-item typo" id="st-${i}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
+          <div>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">⚠️ Typo — ${item.dist} digit${item.dist>1?'s':''} off from a billed number</div>
+            <div class="scan-num" style="color:var(--orange)">${t.shipmentNumber}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ${t.rowIndex}</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">₱${Number(t.rate||0).toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route||'—'}</div>
+        ${scanBuildDiff(t.shipmentNumber,item.similar)}
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b></div>
         <div class="scan-acts" id="st-acts-${i}">
           <button class="btn btn-blue" onclick="fixScanTypo(${i})">✏️ Fix → Use <span style="font-family:var(--mono)">${item.similar}</span></button>
-          <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>
+          <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>
         </div>
         <div id="st-done-${i}" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>
       </div>`;
     }).join('');
-  } else typoWrap.style.display = 'none';
+  } else typoWrap.style.display='none';
 
-  // NEAR DUPES
-  const ndWrap = document.getElementById('scan-nd-wrap');
-  if (scanNearDupes.length) {
-    ndWrap.style.display = 'block';
-    document.getElementById('scan-nd-list').innerHTML = scanNearDupes.map((item, i) => `
+  /* NEAR DUPES */
+  const ndWrap=document.getElementById('scan-nd-wrap');
+  if(scanNearDupes.length){
+    ndWrap.style.display='block';
+    document.getElementById('scan-nd-list').innerHTML=scanNearDupes.map(item=>`
       <div class="scan-item nd">
         <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:6px">🔄 Near-Duplicate Pair (1 digit apart)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px">
-          <div>
-            <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Row ${item.a.rowIndex}</div>
-            <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange)">${item.a.shipmentNumber}</div>
-            <div style="font-size:10px;color:var(--text2);margin-top:1px">🚛 ${item.a.truck} · ${item.a.deliveryDate}</div>
-          </div>
-          <div>
-            <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Row ${item.b.rowIndex}</div>
-            <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange)">${item.b.shipmentNumber}</div>
-            <div style="font-size:10px;color:var(--text2);margin-top:1px">🚛 ${item.b.truck} · ${item.b.deliveryDate}</div>
-          </div>
+          <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Row ${item.a.rowIndex}</div><div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange)">${item.a.shipmentNumber}</div><div style="font-size:10px;color:var(--text2);margin-top:1px">🚛 ${item.a.truck} · ${item.a.deliveryDate}</div></div>
+          <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Row ${item.b.rowIndex}</div><div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange)">${item.b.shipmentNumber}</div><div style="font-size:10px;color:var(--text2);margin-top:1px">🚛 ${item.b.truck} · ${item.b.deliveryDate}</div></div>
         </div>
-        ${scanBuildDiff(item.a.shipmentNumber, item.b.shipmentNumber)}
+        ${scanBuildDiff(item.a.shipmentNumber,item.b.shipmentNumber)}
         <div style="font-size:11px;color:var(--text2);margin-top:4px">Check if one of these is a typo of the other, or if they're two separate valid shipments.</div>
       </div>`).join('');
-  } else ndWrap.style.display = 'none';
+  } else ndWrap.style.display='none';
 
-  // EXACT DUPES
-  const dupWrap = document.getElementById('scan-dup-wrap');
-  if (scanDups.length) {
-    dupWrap.style.display = 'block';
-    document.getElementById('scan-dup-list').innerHTML = scanDups.map(item => `
+  /* EXACT DUPES */
+  const dupWrap=document.getElementById('scan-dup-wrap');
+  if(scanDups.length){
+    dupWrap.style.display='block';
+    document.getElementById('scan-dup-list').innerHTML=scanDups.map(item=>`
       <div class="scan-item dup">
         <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:5px">🚨 Exact Duplicate Number</div>
         <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)">${item.trip.shipmentNumber}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:5px;line-height:1.7">
-          Row ${item.other.rowIndex}: 🚛 ${item.other.truck} · ${item.other.deliveryDate}<br>
-          Row ${item.trip.rowIndex}: 🚛 ${item.trip.truck} · ${item.trip.deliveryDate}
-        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:5px;line-height:1.7">Row ${item.other.rowIndex}: 🚛 ${item.other.truck} · ${item.other.deliveryDate}<br>Row ${item.trip.rowIndex}: 🚛 ${item.trip.truck} · ${item.trip.deliveryDate}</div>
         <div style="font-size:11px;color:var(--red);font-weight:600;margin-top:5px">Same number entered twice — check Trips sheet manually.</div>
       </div>`).join('');
-  } else dupWrap.style.display = 'none';
+  } else dupWrap.style.display='none';
 
-  // INVALID
-  const invWrap = document.getElementById('scan-inv-wrap');
-  if (scanInvalids.length) {
-    invWrap.style.display = 'block';
-    document.getElementById('scan-inv-list').innerHTML = scanInvalids.map(item => `
+  /* INVALID */
+  const invWrap=document.getElementById('scan-inv-wrap');
+  if(scanInvalids.length){
+    invWrap.style.display='block';
+    document.getElementById('scan-inv-list').innerHTML=scanInvalids.map(item=>`
       <div class="scan-item inv">
         <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:5px">⛔ Invalid Format</div>
-        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)">${item.trip.shipmentNumber || '(blank)'}</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)">${item.trip.shipmentNumber||'(blank)'}</div>
         <div class="scan-meta">🚛 ${item.trip.truck} · 📅 ${item.trip.deliveryDate} · Row ${item.trip.rowIndex}</div>
         <div style="font-size:11px;color:var(--red);font-weight:600">${item.reason}</div>
       </div>`).join('');
-  } else invWrap.style.display = 'none';
+  } else invWrap.style.display='none';
 
-  // ALL CLEAN
-  document.getElementById('scan-clean-wrap').style.display =
-    (flagged === 0) ? 'block' : 'none';
+  document.getElementById('scan-clean-wrap').style.display=(flagged===0)?'block':'none';
 }
 
-async function fixScanTypo(i) {
-  const item = scanTypos[i]; if (!item) return;
-  const t = item.trip;
-  const newNum = item.similar;
+/* ── FIX SCAN TYPO — with immediate removal from list ── */
+async function fixScanTypo(i){
+  const item=scanTypos[i]; if(!item||item.resolved) return;
+  const t=item.trip, newNum=item.similar;
+
   showConfirm(
     'Fix Shipment Number',
     `Change Trips row <b>${t.rowIndex}</b>:<br><br>
     <span style="font-family:monospace;color:var(--orange)">${t.shipmentNumber}</span><br>→<br>
     <span style="font-family:monospace;color:var(--blue)">${newNum}</span><br><br>
-    🚛 ${t.truck} · ${t.deliveryDate}<br><br>
-    <span style="font-size:11px;color:var(--text3)">Will update: ${SHEET_TRIPS}!F${t.rowIndex}</span>`,
-    async () => {
-      const actsEl = document.getElementById('st-acts-'+i);
-      actsEl.innerHTML = '<span style="font-size:11px;color:var(--text2)">⏳ Updating row '+t.rowIndex+'...</span>';
+    🚛 ${t.truck} · ${t.deliveryDate}`,
+    async()=>{
+      /* Show loading state in button area */
+      const actsEl=document.getElementById('st-acts-'+i);
+      if(actsEl) actsEl.innerHTML='<span style="font-size:11px;color:var(--text2)">⏳ Updating row '+t.rowIndex+'...</span>';
 
-      // Refresh token from storage in case it expired
-      token = localStorage.getItem('pedroex-token') || token;
+      token=localStorage.getItem('pedroex-token')||token;
 
-      try {
-        // Use explicit A1 notation with end cell for reliability
-        const range = SHEET_TRIPS + '!F' + t.rowIndex + ':F' + t.rowIndex;
-
-        // Make raw fetch so we can inspect the full response
-        const resp = await fetch(
-          'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
-          '/values/' + encodeURIComponent(range) + '?valueInputOption=USER_ENTERED',
-          {
-            method: 'PUT',
-            headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ values: [[newNum]] })
-          }
+      try{
+        const range=SHEET_TRIPS+'!F'+t.rowIndex+':F'+t.rowIndex;
+        const resp=await fetch(
+          'https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
+          {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:[[newNum]]})}
         );
+        const body=await resp.json();
 
-        const body = await resp.json();
-
-        if (!resp.ok) {
-          // Show the actual API error message
-          const errMsg = (body.error && body.error.message) || ('HTTP ' + resp.status);
-          console.error('Sheets API error:', body);
-          actsEl.innerHTML = `
+        if(!resp.ok){
+          const errMsg=(body.error&&body.error.message)||('HTTP '+resp.status);
+          console.error('Sheets API error:',body);
+          if(actsEl) actsEl.innerHTML=`
             <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">❌ API Error: ${errMsg}</div>
             <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
-            <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
-          showToast('API Error: ' + errMsg, 'warn');
-          return;
+            <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>`;
+          showToast('API Error: '+errMsg,'warn'); return;
         }
 
-        // Verify: read the cell back to confirm
-        const verifyResp = await fetch(
-          'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
-          '/values/' + encodeURIComponent(range),
-          { headers: { Authorization: 'Bearer ' + token } }
+        /* Verify write */
+        const verifyResp=await fetch(
+          'https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range),
+          {headers:{Authorization:'Bearer '+token}}
         );
-        const verifyBody = await verifyResp.json();
-        const actualVal = verifyBody.values && verifyBody.values[0] && verifyBody.values[0][0];
+        const verifyBody=await verifyResp.json();
+        const actualVal=verifyBody.values&&verifyBody.values[0]&&verifyBody.values[0][0];
 
-        if (actualVal !== newNum) {
-          actsEl.innerHTML = `
-            <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">
-              ⚠️ Verify failed — sheet shows: <b style="font-family:monospace">${actualVal || '(blank)'}</b>
-            </div>
+        if(actualVal!==newNum){
+          if(actsEl) actsEl.innerHTML=`
+            <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">⚠️ Verify failed — sheet shows: <b style="font-family:monospace">${actualVal||'(blank)'}</b></div>
             <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
-            <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
-          showToast('Verify failed — sheet shows: ' + (actualVal || 'blank'), 'warn');
-          return;
+            <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>`;
+          showToast('Verify failed','warn'); return;
         }
 
-        // Success confirmed by verify
-        t.shipmentNumber = newNum;
-        scanSkip('st', i, '✅ Verified — Trips row ' + t.rowIndex + ' = ' + newNum);
-        showToast('✅ Row ' + t.rowIndex + ' confirmed updated!', 'ok');
-        await loadUnbilled();
+        /* ══ SUCCESS — mark resolved and remove from active list ══ */
+        scanTypos[i].resolved = true;
+        fixedNumbers.add(t.shipmentNumber); /* prevent re-flagging on next scan */
 
-      } catch (e) {
-        console.error('Network error:', e);
-        actsEl.innerHTML = `
+        /* Update the unbilled array in memory too so the list refreshes */
+        const ubIdx = unbilled.findIndex(u=>u.rowIndex===t.rowIndex);
+        if(ubIdx>=0) unbilled.splice(ubIdx,1);
+
+        showToast('✅ Row '+t.rowIndex+' confirmed updated!','ok');
+
+        /* Instantly re-render the scan panel without the fixed item */
+        refreshScanResults();
+
+        /* Refresh unbilled list in background */
+        loadUnbilled();
+
+      }catch(e){
+        console.error('Network error:',e);
+        if(actsEl) actsEl.innerHTML=`
           <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">❌ Network error: ${e}</div>
           <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
-          <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
-        showToast('Network error — check connection', 'warn');
+          <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>`;
+        showToast('Network error','warn');
       }
     }
   );
 }
 
-function scanSkip(prefix, i, msg) {
-  const acts = document.getElementById(prefix + '-acts-' + i);
-  const done = document.getElementById(prefix + '-done-' + i);
-  const item = document.getElementById(prefix + '-' + i);
-  if (acts) acts.style.display = 'none';
-  if (done) { done.style.display = 'block'; done.textContent = msg || '⏭ Skipped'; }
-  if (item) item.style.opacity = '.55';
+/* ── SKIP — mark resolved so it hides on refresh ── */
+function scanSkip(i, msg){
+  if(scanTypos[i]) scanTypos[i].resolved=true;
+  refreshScanResults();
 }
 
-function closeScanResults() {
-  document.getElementById('scan-results-wrap').style.display = 'none';
-  document.getElementById('scan-issues-btn').textContent = 'Scan for Issues';
+function closeScanResults(){
+  document.getElementById('scan-results-wrap').style.display='none';
+  document.getElementById('scan-issues-btn').textContent='Scan for Issues';
 }
 
 /* ── SCAN HELPERS ── */
-function scanEditDist(a, b) {
-  if (a === b) return 0;
-  const m = a.length, n = b.length;
-  if (Math.abs(m - n) > 2) return 99;
-  const dp = Array.from({length: m+1}, (_, i) =>
-    Array.from({length: n+1}, (_, j) => i === 0 ? j : j === 0 ? i : 0)
-  );
-  for (let i = 1; i <= m; i++)
-    for (let j = 1; j <= n; j++)
-      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] :
-        1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+function scanEditDist(a,b){
+  if(a===b) return 0;
+  const m=a.length, n=b.length;
+  if(Math.abs(m-n)>2) return 99;
+  const dp=Array.from({length:m+1},(_, i)=>Array.from({length:n+1},(_, j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
   return dp[m][n];
 }
 
-function scanInvalidReason(num) {
-  if (!num || num.trim() === '') return 'Blank — no shipment number entered';
-  if (!/^\d+$/.test(num)) return `Contains non-numeric characters`;
-  if (num.length < 10) return `Too short: ${num.length} digits (need 10–11)`;
-  if (num.length > 11) return `Too long: ${num.length} digits (need 10–11)`;
+function scanInvalidReason(num){
+  if(!num||num.trim()==='') return 'Blank — no shipment number entered';
+  if(!/^\d+$/.test(num)) return 'Contains non-numeric characters';
+  if(num.length<10) return `Too short: ${num.length} digits (need 10–11)`;
+  if(num.length>11) return `Too long: ${num.length} digits (need 10–11)`;
   return 'Invalid format';
 }
 
-function scanBuildDiff(a, b) {
-  const maxLen = Math.max(a.length, b.length);
-  const ap = a.padEnd(maxLen, ' '), bp = b.padEnd(maxLen, ' ');
-  let aH = '', bH = '';
-  for (let i = 0; i < maxLen; i++) {
-    const same = ap[i] === bp[i];
-    aH += `<span style="display:inline-block;padding:1px 3px;border-radius:3px;font-family:var(--mono);font-size:12px;${same ? 'color:var(--text)' : 'background:rgba(217,119,6,.2);color:var(--orange);font-weight:700'}">${ap[i] === ' ' ? '&nbsp;' : ap[i]}</span>`;
-    bH += `<span style="display:inline-block;padding:1px 3px;border-radius:3px;font-family:var(--mono);font-size:12px;${same ? 'color:var(--text)' : 'background:rgba(29,78,216,.18);color:var(--blue);font-weight:700'}">${bp[i] === ' ' ? '&nbsp;' : bp[i]}</span>`;
+function scanBuildDiff(a,b){
+  const maxLen=Math.max(a.length,b.length);
+  const ap=a.padEnd(maxLen,' '), bp=b.padEnd(maxLen,' ');
+  let aH='', bH='';
+  for(let i=0;i<maxLen;i++){
+    const same=ap[i]===bp[i];
+    aH+=`<span style="display:inline-block;padding:1px 3px;border-radius:3px;font-family:var(--mono);font-size:12px;${same?'color:var(--text)':'background:rgba(217,119,6,.2);color:var(--orange);font-weight:700'}">${ap[i]===' '?'&nbsp;':ap[i]}</span>`;
+    bH+=`<span style="display:inline-block;padding:1px 3px;border-radius:3px;font-family:var(--mono);font-size:12px;${same?'color:var(--text)':'background:rgba(29,78,216,.18);color:var(--blue);font-weight:700'}">${bp[i]===' '?'&nbsp;':bp[i]}</span>`;
   }
   return `<div style="font-family:var(--mono);font-size:12px;margin:6px 0;padding:7px 10px;background:var(--bg);border-radius:var(--rxs);box-shadow:var(--in)">
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:3px"><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--orange);width:48px;flex-shrink:0">Trips</span><span>${aH}</span></div>
@@ -1944,7 +1629,9 @@ function scanBuildDiff(a, b) {
   </div>`;
 }
 
-
+/* ══════════════════════════════════════
+   UNBILLED TAB
+══════════════════════════════════════ */
 async function loadUnbilled(){
   if(!token) return;
   showLoad(true,'Loading unbilled trips...');
@@ -1953,9 +1640,8 @@ async function loadUnbilled(){
     const billedSet=new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
     trips=mapTrips(tRes.values||[]);
     unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
-    showLoad(false);
-    buildUFilters(); renderUStats(); renderUnbilled();
-  }catch(e){ showLoad(false); showToast('Failed to load'); }
+    showLoad(false); buildUFilters(); renderUStats(); renderUnbilled();
+  }catch(e){showLoad(false);showToast('Failed to load');}
 }
 
 function buildUFilters(){
@@ -1978,23 +1664,15 @@ function uSub(s){ uSt=s; ['all','month','truck'].forEach(x=>document.getElementB
 
 function renderUnbilled(){
   const srch=document.getElementById('us').value.toLowerCase();
-  const mo=document.getElementById('um').value;
-  const tr=document.getElementById('ut').value;
+  const mo=document.getElementById('um').value, tr=document.getElementById('ut').value;
   let rows=unbilled.filter(r=>{
     if(srch&&!r.shipmentNumber.toLowerCase().includes(srch)) return false;
-    if(tr&&r.truck!==tr) return false;
-    if(mo&&dateMonth(r.deliveryDate)!==mo) return false;
+    if(tr&&r.truck!==tr) return false; if(mo&&dateMonth(r.deliveryDate)!==mo) return false;
     return true;
   });
   const list=document.getElementById('unbilled-list');
-  if(!rows.length){ list.innerHTML=emptyH('No unbilled trips','All trips have been billed! ✅'); return; }
-  const cardFn=r=>`<div class="ship-card">
-    <div class="ship-card-top">
-      <div><div class="ship-num">${r.shipmentNumber||'—'}</div><span class="pill pill-unbilled">⚠️ Unbilled</span></div>
-      <div class="ship-rate ship-rate-orange">₱${Number(r.rate||0).toLocaleString()}</div>
-    </div>
-    <div class="ship-meta"><span>📅 ${r.deliveryDate}</span><span>🚛 ${r.truck}</span><span>${r.route||'—'}</span></div>
-  </div>`;
+  if(!rows.length){list.innerHTML=emptyH('No unbilled trips','All trips have been billed! ✅');return;}
+  const cardFn=r=>`<div class="ship-card"><div class="ship-card-top"><div><div class="ship-num">${r.shipmentNumber||'—'}</div><span class="pill pill-unbilled">⚠️ Unbilled</span></div><div class="ship-rate ship-rate-orange">₱${Number(r.rate||0).toLocaleString()}</div></div><div class="ship-meta"><span>📅 ${r.deliveryDate}</span><span>🚛 ${r.truck}</span><span>${r.route||'—'}</span></div></div>`;
   if(uSt==='all')   list.innerHTML=rows.map(cardFn).join('');
   else if(uSt==='month') list.innerHTML=grpByMonth(rows.map(r=>({...r,date:r.deliveryDate}))).map(({label,items})=>grpHTML(label,items,cardFn,'','orange')).join('');
   else if(uSt==='truck') list.innerHTML=grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','orange')).join('');
@@ -2008,10 +1686,8 @@ async function loadBilledOut(){
   showLoad(true,'Loading billed out data...');
   try{
     const res=await apiGet(SHEET_BILLING+'!A2:M');
-    master=mapMaster(res.values||[]);
-    showLoad(false);
-    buildBOFilters(); renderBOStats(); renderBilledOut();
-  }catch(e){ showLoad(false); showToast('Failed to load'); }
+    master=mapMaster(res.values||[]); showLoad(false); buildBOFilters(); renderBOStats(); renderBilledOut();
+  }catch(e){showLoad(false);showToast('Failed to load');}
 }
 
 function buildBOFilters(){
@@ -2032,8 +1708,7 @@ function renderBOStats(){
 
 function renderBilledOut(){
   const srch=document.getElementById('bos').value.toLowerCase();
-  const mo=document.getElementById('bom').value;
-  const st=document.getElementById('bost').value;
+  const mo=document.getElementById('bom').value, st=document.getElementById('bost').value;
   const soaMap=buildSOAMap(master,'billedout');
   let rows=Object.values(soaMap).filter(s=>{
     if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
@@ -2043,25 +1718,19 @@ function renderBilledOut(){
     return true;
   });
   const list=document.getElementById('bo-list');
-  if(!rows.length){ list.innerHTML=emptyH('No SOA found','Try adjusting your filters.'); return; }
+  if(!rows.length){list.innerHTML=emptyH('No SOA found','Try adjusting your filters.');return;}
   list.innerHTML=rows.map(s=>{
-    const pct=s.count>0?(s.billedOut/s.count*100):0;
-    const done=pct>=100;
-    return `<div class="card" style="margin-bottom:10px">
-      <div style="padding:13px 16px">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
-          <div>
-            <div class="soa-number">${s.soa}</div>
-            <span class="pill ${done?'pill-billedout':'pill-unbilled'}">${done?'✅ Billed Out':'⏳ Pending'}</span>
-          </div>
-          <div class="ship-rate ${done?'':'ship-rate-orange'}" style="${done?'color:var(--blue)':''}">₱${s.total.toLocaleString()}</div>
-        </div>
-        <div class="soa-meta"><span>Billed Out: ${s.billedOut}/${s.count} shipments</span><span>${[...s.months].join(', ')}</span></div>
-        <div class="prog-track"><div class="prog-fill prog-fill-blue" style="width:${pct}%"></div></div>
-        <div class="soa-chips" style="margin-top:7px">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
-        ${!done?`<div style="margin-top:9px"><button class="btn btn-blue" onclick="markBilledOut('${s.soa}')">📤 Mark SOA as Billed Out</button></div>`:''}
+    const pct=s.count>0?(s.billedOut/s.count*100):0, done=pct>=100;
+    return `<div class="card" style="margin-bottom:10px"><div style="padding:13px 16px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+        <div><div class="soa-number">${s.soa}</div><span class="pill ${done?'pill-billedout':'pill-unbilled'}">${done?'✅ Billed Out':'⏳ Pending'}</span></div>
+        <div class="ship-rate ${done?'':'ship-rate-orange'}" style="${done?'color:var(--blue)':''}">₱${s.total.toLocaleString()}</div>
       </div>
-    </div>`;
+      <div class="soa-meta"><span>Billed Out: ${s.billedOut}/${s.count} shipments</span><span>${[...s.months].join(', ')}</span></div>
+      <div class="prog-track"><div class="prog-fill prog-fill-blue" style="width:${pct}%"></div></div>
+      <div class="soa-chips" style="margin-top:7px">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
+      ${!done?`<div style="margin-top:9px"><button class="btn btn-blue" onclick="markBilledOut('${s.soa}')">📤 Mark SOA as Billed Out</button></div>`:''}
+    </div></div>`;
   }).join('');
 }
 
@@ -2071,84 +1740,66 @@ async function markBilledOut(soa){
     try{
       const items=master.filter(r=>r.soa===soa&&r.billedOut==='No');
       const today=todayStr();
-      for(const item of items){
-        await apiPut(SHEET_BILLING+'!K'+item.rowIndex+':L'+item.rowIndex,[['Yes',today]]);
-        item.billedOut='Yes'; item.billedOutDate=today;
-      }
-      showLoad(false); showToast('SOA marked as billed out!','ok');
-      renderBOStats(); renderBilledOut();
-    }catch(e){ showLoad(false); showToast('Failed'); }
+      for(const item of items){ await apiPut(SHEET_BILLING+'!K'+item.rowIndex+':L'+item.rowIndex,[['Yes',today]]); item.billedOut='Yes'; item.billedOutDate=today; }
+      showLoad(false); showToast('SOA marked as billed out!','ok'); renderBOStats(); renderBilledOut();
+    }catch(e){showLoad(false);showToast('Failed');}
   });
 }
 
 /* ══════════════════════════════════════
-   LIQUIDATION (moved to SOA Manager)
+   LIQUIDATION
 ══════════════════════════════════════ */
-
 function buildSOALiquidation(){
   const map={};
   master.forEach(r=>{
     if(!map[r.soa]) map[r.soa]={soa:r.soa,totalBilled:0,totalLiquidated:0,count:0,billedOut:0,items:[],monthSet:new Set(),months:[],trucks:new Set()};
     const s=map[r.soa];
-    s.totalBilled+=Number(r.rate||0);
-    s.totalLiquidated+=Number(r.liquidatedAmount||0);
-    s.count++;
-    if(r.billedOut==='Yes') s.billedOut++;
-    s.items.push(r);
-    const m=dateMonth(r.date); if(m) s.monthSet.add(m);
-    if(r.truck) s.trucks.add(r.truck);
+    s.totalBilled+=Number(r.rate||0); s.totalLiquidated+=Number(r.liquidatedAmount||0); s.count++;
+    if(r.billedOut==='Yes') s.billedOut++; s.items.push(r);
+    const m=dateMonth(r.date); if(m) s.monthSet.add(m); if(r.truck) s.trucks.add(r.truck);
   });
-  Object.values(map).forEach(s=>{ s.months=[...s.monthSet].sort().reverse().map(monthLabel); });
+  Object.values(map).forEach(s=>{s.months=[...s.monthSet].sort().reverse().map(monthLabel);});
   return map;
 }
 
-function renderLStats(){
-  const soaMap=buildSOALiquidation();
-  const soas=Object.values(soaMap);
-  const full=soas.filter(s=>s.totalLiquidated>=s.totalBilled&&s.totalBilled>0).length;
-  const partial=soas.filter(s=>s.totalLiquidated>0&&s.totalLiquidated<s.totalBilled).length;
-  const pending=soas.filter(s=>s.totalLiquidated<=0).length;
-  const totalLiq=soas.reduce((a,s)=>a+s.totalLiquidated,0);
-  const totalBill=soas.reduce((a,s)=>a+s.totalBilled,0);
-  const outstanding=totalBill-totalLiq;
-  document.getElementById('liq-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-val sv-green">${full}</div><div class="stat-lbl">Full</div></div>
-    <div class="stat-card"><div class="stat-val sv-orange">${partial}</div><div class="stat-lbl">Partial</div></div>
-    <div class="stat-card"><div class="stat-val sv-red">${pending}</div><div class="stat-lbl">Pending</div></div>
-    <div class="stat-card"><div class="stat-val sv-green" style="font-size:12px">₱${(totalLiq/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
-    <div class="stat-card"><div class="stat-val sv-red" style="font-size:12px">₱${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>`;
+function openLiqModal(soa){
+  currentLiqSOA=soa;
+  const liqMap=buildSOALiquidation(); const s=liqMap[soa]; if(!s) return;
+  const balance=s.totalBilled-s.totalLiquidated;
+  document.getElementById('liq-modal-title').textContent='Record Payment — '+soa;
+  document.getElementById('liq-modal-summary').innerHTML=`
+    <div style="background:var(--bg2);border-radius:var(--rsm);padding:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Total Billed</div><div style="font-size:15px;font-weight:700">₱${s.totalBilled.toLocaleString()}</div></div>
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Collected</div><div style="font-size:15px;font-weight:700;color:var(--green)">₱${s.totalLiquidated.toLocaleString()}</div></div>
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Balance</div><div style="font-size:15px;font-weight:700;color:var(--red)">₱${balance.toLocaleString()}</div></div>
+      </div>
+    </div>`;
+  document.getElementById('liq-modal-hint').textContent=balance>0?`Outstanding: ₱${balance.toLocaleString()}. Enter full or partial payment.`:'';
+  document.getElementById('liq-modal-amt').value=balance>0?balance:'';
+  openModal('liq-modal');
 }
 
-async function recordLiquidation(soa){
-  const inputId='liq-amt-'+soa.replace(/[^a-z0-9]/gi,'_');
-  const input=document.getElementById(inputId); if(!input) return;
-  const amount=parseFloat(input.value);
-  if(isNaN(amount)||amount<=0){ showToast('Enter a valid amount','warn'); return; }
-
-  showConfirm(
-    'Record Payment',
-    `Record ₱${amount.toLocaleString()} payment for SOA ${soa}?`,
-    async()=>{
-      showLoad(true,'Recording liquidation...');
-      try{
-        const today=todayStr();
-        const soaItems=master.filter(r=>r.soa===soa);
-        const totalBilled=soaItems.reduce((a,r)=>a+Number(r.rate||0),0);
-        const newStatus=amount>=totalBilled?'Yes':'Partial';
-        for(const item of soaItems){
-          const rowAmt=(Number(item.rate||0)/totalBilled)*amount;
-          await apiPut(SHEET_BILLING+'!H'+item.rowIndex+':J'+item.rowIndex,[[newStatus,today,rowAmt.toFixed(2)]]);
-          item.liquidated=newStatus; item.liquidationDate=today; item.liquidatedAmount=rowAmt.toFixed(2);
-        }
-        showLoad(false); showToast('Payment recorded!','ok');
-        renderLStats(); renderLiquidation();
-      }catch(e){ showLoad(false); showToast('Failed to record'); }
+async function saveLiquidation(){
+  if(!currentLiqSOA) return;
+  const amount=parseFloat(document.getElementById('liq-modal-amt').value);
+  if(isNaN(amount)||amount<=0){showToast('Enter a valid amount','warn');return;}
+  showLoad(true,'Recording payment...'); closeLiqModal();
+  try{
+    const soaItems=master.filter(r=>r.soa===currentLiqSOA);
+    const totalBilled=soaItems.reduce((a,r)=>a+Number(r.rate||0),0);
+    const newStatus=amount>=totalBilled?'Yes':'Partial'; const today=todayStr();
+    for(const item of soaItems){
+      const rowAmt=(Number(item.rate||0)/totalBilled)*amount;
+      await apiPut(SHEET_BILLING+'!H'+item.rowIndex+':J'+item.rowIndex,[[newStatus,today,rowAmt.toFixed(2)]]);
+      item.liquidated=newStatus; item.liquidationDate=today; item.liquidatedAmount=rowAmt.toFixed(2);
     }
-  );
+    showLoad(false); showToast('Payment recorded!','ok'); renderSOAMgrStats(); renderSOAManager();
+  }catch(e){showLoad(false);showToast('Failed to record');console.error(e);}
 }
 
 /* ══════════════════════════════════════
-   REPORT TAB — Enhanced
+   REPORT TAB
 ══════════════════════════════════════ */
 async function loadReport(){
   if(!token) return;
@@ -2159,9 +1810,8 @@ async function loadReport(){
     const billedSet=new Set(master.map(r=>r.shipment.trim()));
     trips=mapTrips(tRes.values||[]);
     unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
-    showLoad(false);
-    buildRFilters(); renderRStats(); renderReport();
-  }catch(e){ showLoad(false); showToast('Failed to load'); }
+    showLoad(false); buildRFilters(); renderRStats(); renderReport();
+  }catch(e){showLoad(false);showToast('Failed to load');}
 }
 
 function buildRFilters(){
@@ -2178,46 +1828,34 @@ function renderRStats(){
   const inv=master.filter(r=>r.valid==='No').length;
   const bo=master.filter(r=>r.billedOut==='Yes').length;
   const liqAmt=master.reduce((s,r)=>s+Number(r.liquidatedAmount||0),0);
-  const outstanding=bAmt-liqAmt;
-  const uAmt=unbilled.reduce((s,r)=>s+Number(r.rate||0),0);
+  const outstanding=bAmt-liqAmt, uAmt=unbilled.reduce((s,r)=>s+Number(r.rate||0),0);
   const collectionRate=bAmt>0?((liqAmt/bAmt)*100):0;
-
   document.getElementById('rpt-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-green">${master.length}</div><div class="stat-lbl">Billed Ships</div></div>
     <div class="stat-card"><div class="stat-val sv-blue">${bo}</div><div class="stat-lbl">Billed Out</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${unbilled.length}</div><div class="stat-lbl">Unbilled</div></div>
     ${inv?`<div class="stat-card"><div class="stat-val sv-red">${inv}</div><div class="stat-lbl">Invalid #</div></div>`:''}`;
-
-  // Financial Summary
   document.getElementById('rpt-fin-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-green" style="font-size:13px">₱${(bAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Total Billed</div></div>
     <div class="stat-card"><div class="stat-val sv-purple" style="font-size:13px">₱${(liqAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
     <div class="stat-card"><div class="stat-val sv-red" style="font-size:13px">₱${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>
     <div class="stat-card"><div class="stat-val sv-orange" style="font-size:13px">₱${(uAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Unbilled Est.</div></div>
     <div class="stat-card"><div class="stat-val ${collectionRate>=80?'sv-green':collectionRate>=50?'sv-orange':'sv-red'}" style="font-size:16px">${collectionRate.toFixed(0)}%</div><div class="stat-lbl">Collection Rate</div></div>`;
-
-  // Receivables aging (by SOA)
   const soaLiq=buildSOALiquidation();
   const soaValues=Object.values(soaLiq).filter(s=>s.totalBilled>s.totalLiquidated);
   document.getElementById('rpt-receivables').innerHTML=soaValues.length?`
     <div style="margin-top:10px">
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">OUTSTANDING RECEIVABLES</div>
-      <div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>SOA</th><th>Billed</th><th>Collected</th><th>Balance</th><th>%</th></tr></thead>
-        <tbody>${soaValues.sort((a,b)=>b.totalBilled-b.totalLiquidated-(a.totalBilled-a.totalLiquidated)).map(s=>{
-          const bal=s.totalBilled-s.totalLiquidated;
-          const pct=s.totalBilled>0?((s.totalLiquidated/s.totalBilled)*100):0;
-          return `<tr><td><b>${s.soa}</b></td><td class="nowrap">₱${s.totalBilled.toLocaleString()}</td><td class="nowrap">₱${s.totalLiquidated.toLocaleString()}</td><td class="nowrap" style="color:var(--red)"><b>₱${bal.toLocaleString()}</b></td><td><span class="pill ${pct>=100?'pill-billed':pct>0?'pill-partial':'pill-pending'}">${pct.toFixed(0)}%</span></td></tr>`;
-        }).join('')}</tbody>
-      </table></div>
-    </div>`:'<div style="padding:8px 0;font-size:12px;color:var(--green);font-weight:600">✅ All SOAs fully liquidated!</div>';
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>SOA</th><th>Billed</th><th>Collected</th><th>Balance</th><th>%</th></tr></thead>
+      <tbody>${soaValues.sort((a,b)=>(b.totalBilled-b.totalLiquidated)-(a.totalBilled-a.totalLiquidated)).map(s=>{
+        const bal=s.totalBilled-s.totalLiquidated, pct=s.totalBilled>0?((s.totalLiquidated/s.totalBilled)*100):0;
+        return `<tr><td><b>${s.soa}</b></td><td class="nowrap">₱${s.totalBilled.toLocaleString()}</td><td class="nowrap">₱${s.totalLiquidated.toLocaleString()}</td><td class="nowrap" style="color:var(--red)"><b>₱${bal.toLocaleString()}</b></td><td><span class="pill ${pct>=100?'pill-billed':pct>0?'pill-partial':'pill-pending'}">${pct.toFixed(0)}%</span></td></tr>`;
+      }).join('')}</tbody></table></div></div>`:'<div style="padding:8px 0;font-size:12px;color:var(--green);font-weight:600">✅ All SOAs fully liquidated!</div>';
 
-  // Billed Out vs Liquidation comparison
   const soaMap2={};
   master.forEach(r=>{
     if(!soaMap2[r.soa]) soaMap2[r.soa]={soa:r.soa,total:0,billedOut:0,liquidated:0,liqAmt:0};
-    soaMap2[r.soa].total++;
-    if(r.billedOut==='Yes') soaMap2[r.soa].billedOut++;
+    soaMap2[r.soa].total++; if(r.billedOut==='Yes') soaMap2[r.soa].billedOut++;
     if(r.liquidated==='Yes'||r.liquidated==='Partial') soaMap2[r.soa].liquidated++;
     soaMap2[r.soa].liqAmt+=Number(r.liquidatedAmount||0);
   });
@@ -2232,16 +1870,12 @@ function renderRStats(){
     <div class="stat-card"><div class="stat-val sv-purple">${liqOnly}</div><div class="stat-lbl">Liq Only</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${neither}</div><div class="stat-lbl">Both Pending</div></div>`;
   document.getElementById('rpt-cmp-detail').innerHTML=`
-    <div class="tbl-wrap" style="margin-top:10px"><table class="tbl">
-      <thead><tr><th>SOA</th><th>Ships</th><th>Billed Out</th><th>Collected</th><th>Status</th></tr></thead>
-      <tbody>${sl.map(s=>{
-        const bos=s.billedOut>=s.total?'✅':'⏳';
-        const lqs=s.liquidated>=s.total?'✅':'⏳';
-        return `<tr><td><b>${s.soa}</b></td><td>${s.total}</td><td>${s.billedOut} ${bos}</td><td>${s.liquidated} ${lqs}</td><td>${bos==='✅'&&lqs==='✅'?'<span class="pill pill-billed">Complete</span>':'<span class="pill pill-unbilled">Pending</span>'}</td></tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
+    <div class="tbl-wrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>SOA</th><th>Ships</th><th>Billed Out</th><th>Collected</th><th>Status</th></tr></thead>
+    <tbody>${sl.map(s=>{
+      const bos=s.billedOut>=s.total?'✅':'⏳', lqs=s.liquidated>=s.total?'✅':'⏳';
+      return `<tr><td><b>${s.soa}</b></td><td>${s.total}</td><td>${s.billedOut} ${bos}</td><td>${s.liquidated} ${lqs}</td><td>${bos==='✅'&&lqs==='✅'?'<span class="pill pill-billed">Complete</span>':'<span class="pill pill-unbilled">Pending</span>'}</td></tr>`;
+    }).join('')}</tbody></table></div>`;
 
-  // Accuracy stats
   const totalCC=ccR.exact.length+ccR.fuzzy.length+ccR.noMatch.length+ccR.invalid.length;
   const accRate=totalCC>0?((ccR.exact.length/totalCC)*100):0;
   document.getElementById('rpt-acc-stats').innerHTML=`
@@ -2255,27 +1889,19 @@ function renderRStats(){
   document.getElementById('rpt-acc-detail').innerHTML=corrections.length?`
     <div style="margin-top:10px">
       <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);margin-bottom:8px">CORRECTIONS MADE THIS SESSION</div>
-      <div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>SOA # (Correct)</th><th>Old Trips #</th><th>Truck</th><th>Date</th></tr></thead>
-        <tbody>${corrections.map(c=>`<tr><td><b style="color:var(--green)">${c.soaNum}</b></td><td style="color:var(--red)"><b>${c.oldTripsNum}</b></td><td class="nowrap">${c.truck}</td><td class="nowrap">${c.date}</td></tr>`).join('')}</tbody>
-      </table></div>
-    </div>`:'<div style="padding:8px 0;font-size:12px;color:var(--text3)">No corrections logged this session. Cross-check from Upload tab to see accuracy data.</div>';
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>SOA # (Correct)</th><th>Old Trips #</th><th>Truck</th><th>Date</th></tr></thead>
+      <tbody>${corrections.map(c=>`<tr><td><b style="color:var(--green)">${c.soaNum}</b></td><td style="color:var(--red)"><b>${c.oldTripsNum}</b></td><td class="nowrap">${c.truck}</td><td class="nowrap">${c.date}</td></tr>`).join('')}</tbody></table></div></div>`
+    :'<div style="padding:8px 0;font-size:12px;color:var(--text3)">No corrections logged this session.</div>';
 }
 
 function renderReport(){
   const srch=document.getElementById('rs').value.toLowerCase();
-  const mo=document.getElementById('rm').value;
-  const so=document.getElementById('rso').value;
-  const tr=document.getElementById('rt').value;
+  const mo=document.getElementById('rm').value, so=document.getElementById('rso').value, tr=document.getElementById('rt').value;
   let bRows=master.filter(r=>{
     if(srch&&!r.shipment.toLowerCase().includes(srch)&&!r.soa.toLowerCase().includes(srch)) return false;
-    if(so&&r.soa!==so) return false;
-    if(tr&&r.truck!==tr) return false;
-    if(mo&&dateMonth(r.date)!==mo) return false;
+    if(so&&r.soa!==so) return false; if(tr&&r.truck!==tr) return false; if(mo&&dateMonth(r.date)!==mo) return false;
     return true;
   });
-
-  // Per SOA
   const soaMap={};
   bRows.forEach(r=>{
     if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,count:0,total:0,trucks:new Set(),months:new Set()};
@@ -2285,14 +1911,8 @@ function renderReport(){
   });
   const soaList=Object.values(soaMap);
   document.getElementById('rpt-soa-bdg').textContent=soaList.length+' SOA(s)';
-  document.getElementById('rpt-soa-list').innerHTML=soaList.map(s=>`
-    <div class="soa-row">
-      <div class="soa-row-top"><div class="soa-number">${s.soa}</div><div class="soa-amount">₱${s.total.toLocaleString()}</div></div>
-      <div class="soa-meta"><span>${s.count} shipment(s)</span><span>${[...s.months].join(', ')}</span></div>
-      <div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
-    </div>`).join('')||noData();
+  document.getElementById('rpt-soa-list').innerHTML=soaList.map(s=>`<div class="soa-row"><div class="soa-row-top"><div class="soa-number">${s.soa}</div><div class="soa-amount">₱${s.total.toLocaleString()}</div></div><div class="soa-meta"><span>${s.count} shipment(s)</span><span>${[...s.months].join(', ')}</span></div><div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div></div>`).join('')||noData();
 
-  // Per month billed
   const bByMonth=grpByMonth(bRows);
   document.getElementById('rpt-month-list').innerHTML=bByMonth.map(({label,items})=>
     grpTableHTML(label,items,['Date','Shipment No.','SOA','Truck','Rate','BO','Liq'],r=>{
@@ -2301,11 +1921,9 @@ function renderReport(){
     },'green')
   ).join('')||noData();
 
-  // Per truck
   const bByTruck=grpBy(bRows,'truck');
   document.getElementById('rpt-truck-list').innerHTML=bByTruck.map(({key,items})=>{
-    const truckAmt=items.reduce((s,r)=>s+Number(r.rate||0),0);
-    const liqAmt=items.reduce((s,r)=>s+Number(r.liquidatedAmount||0),0);
+    const truckAmt=items.reduce((s,r)=>s+Number(r.rate||0),0), liqAmt=items.reduce((s,r)=>s+Number(r.liquidatedAmount||0),0);
     const collRate=truckAmt>0?((liqAmt/truckAmt)*100):0;
     return grpTableHTML('🚛 '+key+` <span style="font-size:9px;color:var(--text3);font-weight:400">(${collRate.toFixed(0)}% collected)</span>`,items,['Date','Shipment No.','SOA','Rate','BO','Liq'],r=>{
       const inv=r.valid==='No';
@@ -2313,7 +1931,6 @@ function renderReport(){
     },'green');
   }).join('')||noData();
 
-  // Unbilled
   document.getElementById('rpt-umonth-bdg').textContent=unbilled.length+' total';
   const uByMonth=grpByMonth(unbilled.map(r=>({...r,date:r.deliveryDate})));
   document.getElementById('rpt-umonth-list').innerHTML=uByMonth.map(({label,items})=>
@@ -2329,26 +1946,23 @@ function renderReport(){
     ,'orange')
   ).join('')||'<div style="padding:12px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
-  // Cross-check in report
-  const inv2=(ccR.invalid||[]).length;
   document.getElementById('rpt-cc-bdg').textContent=ccR.fuzzy.length+' corrections';
   document.getElementById('rpt-cc-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-green">${ccR.exact.length}</div><div class="stat-lbl">Exact</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${ccR.fuzzy.length}</div><div class="stat-lbl">Flagged</div></div>
     <div class="stat-card"><div class="stat-val sv-red">${ccR.noMatch.length}</div><div class="stat-lbl">Not Found</div></div>
-    <div class="stat-card"><div class="stat-val sv-red">${inv2}</div><div class="stat-lbl">Invalid</div></div>`;
+    <div class="stat-card"><div class="stat-val sv-red">${(ccR.invalid||[]).length}</div><div class="stat-lbl">Invalid</div></div>`;
 
   const exW=document.getElementById('rpt-cc-ex-wrap');
-  if(ccR.exact.length){ exW.style.display=''; document.getElementById('rpt-cc-ex-list').innerHTML=ccR.exact.map(m=>`<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td class="nowrap">${m.trip.truck}</td><td class="nowrap">${m.trip.deliveryDate}</td><td><span class="pill pill-billed">✅ Matched</span></td></tr>`).join(''); } else exW.style.display='none';
+  if(ccR.exact.length){exW.style.display='';document.getElementById('rpt-cc-ex-list').innerHTML=ccR.exact.map(m=>`<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td class="nowrap">${m.trip.truck}</td><td class="nowrap">${m.trip.deliveryDate}</td><td><span class="pill pill-billed">✅ Matched</span></td></tr>`).join('');}else exW.style.display='none';
   const fzW=document.getElementById('rpt-cc-fz-wrap');
-  if(ccR.fuzzy.length){ fzW.style.display=''; document.getElementById('rpt-cc-fz-list').innerHTML=ccR.fuzzy.map(m=>`<tr><td><b style="color:var(--blue)">${m.billing.shipment}</b></td><td style="color:var(--orange)"><b>${m.trip.shipmentNumber}</b></td><td class="nowrap">${m.trip.truck}</td><td>${m.reason}</td><td>${correctionsLog.find(c=>c.soaNum===m.billing.shipment)?'<span class="pill pill-billed">Fixed</span>':'<span class="pill pill-unbilled">Pending</span>'}</td></tr>`).join(''); } else fzW.style.display='none';
+  if(ccR.fuzzy.length){fzW.style.display='';document.getElementById('rpt-cc-fz-list').innerHTML=ccR.fuzzy.map(m=>`<tr><td><b style="color:var(--blue)">${m.billing.shipment}</b></td><td style="color:var(--orange)"><b>${m.trip.shipmentNumber}</b></td><td class="nowrap">${m.trip.truck}</td><td>${m.reason}</td><td>${correctionsLog.find(c=>c.soaNum===m.billing.shipment)?'<span class="pill pill-billed">Fixed</span>':'<span class="pill pill-unbilled">Pending</span>'}</td></tr>`).join('');}else fzW.style.display='none';
   const nmW=document.getElementById('rpt-cc-nm-wrap');
-  if(ccR.noMatch.length){ nmW.style.display=''; document.getElementById('rpt-cc-nm-list').innerHTML=ccR.noMatch.map(m=>`<tr><td><b>${m.billing.shipment}</b></td><td class="ell" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td class="nowrap">${m.billing.date}</td></tr>`).join(''); } else nmW.style.display='none';
+  if(ccR.noMatch.length){nmW.style.display='';document.getElementById('rpt-cc-nm-list').innerHTML=ccR.noMatch.map(m=>`<tr><td><b>${m.billing.shipment}</b></td><td class="ell" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td class="nowrap">${m.billing.date}</td></tr>`).join('');}else nmW.style.display='none';
   const invList=ccR.invalid||[];
   const invW=document.getElementById('rpt-cc-inv-wrap');
-  if(invList.length){ invW.style.display=''; document.getElementById('rpt-cc-inv-list').innerHTML=invList.map(m=>`<tr><td><b style="color:var(--red)">${m.billing.shipment} ⛔</b></td><td class="ell" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td style="color:var(--red)">${m.billing.invalidReason}</td></tr>`).join(''); } else if(invW) invW.style.display='none';
+  if(invList.length){invW.style.display='';document.getElementById('rpt-cc-inv-list').innerHTML=invList.map(m=>`<tr><td><b style="color:var(--red)">${m.billing.shipment} ⛔</b></td><td class="ell" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td style="color:var(--red)">${m.billing.invalidReason}</td></tr>`).join('');}else if(invW)invW.style.display='none';
 }
-
 
 /* ══ TRUCK COLORS ══ */
 const TRUCK_COLORS=['#c0392b','#1d4ed8','#16a34a','#7c3aed','#d97706','#0891b2'];
@@ -2357,7 +1971,15 @@ let bilCalYear=new Date().getFullYear(), bilCalMonth=new Date().getMonth();
 let currentLiqSOA=null;
 let _confirmCb=null;
 
-/* ══ MODAL HELPERS ══ */
+function buildTruckColorMap(){
+  const trucks=[...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
+  truckColorMap={};
+  trucks.forEach((t,i)=>{truckColorMap[t]=TRUCK_COLORS[i%TRUCK_COLORS.length];});
+  const leg=document.getElementById('truck-legend');
+  if(leg) leg.innerHTML=trucks.map(t=>`<div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:${truckColorMap[t]}"></div>${t}</div>`).join('');
+}
+
+/* ══ MODALS ══ */
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function closeLiqModal(){closeModal('liq-modal');}
@@ -2370,79 +1992,11 @@ function showConfirm(title,msg,cb){
 }
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null;}
 
-
-/* ══ DELETE SOA ══ */
-
-/* ══ SOA MANAGER ══ */
-function renderSOAStats(){
-  const liqMap=buildSOALiquidation();
-  const vals=Object.values(liqMap);
-  const totalBill=vals.reduce((s,v)=>s+v.totalBilled,0);
-  const totalLiq=vals.reduce((s,v)=>s+v.totalLiquidated,0);
-  const outstanding=totalBill-totalLiq;
-  const cRate=totalBill>0?(totalLiq/totalBill*100):0;
-  document.getElementById('soa-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-val sv-blue">${vals.length}</div><div class="stat-lbl">SOAs</div></div>
-    <div class="stat-card"><div class="stat-val sv-green" style="font-size:12px">&#x20B1;${(totalBill/1000).toFixed(1)}K</div><div class="stat-lbl">Billed</div></div>
-    <div class="stat-card"><div class="stat-val sv-purple" style="font-size:12px">&#x20B1;${(totalLiq/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
-    <div class="stat-card"><div class="stat-val sv-red" style="font-size:12px">&#x20B1;${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>
-    <div class="stat-card"><div class="stat-val ${cRate>=80?'sv-green':cRate>=50?'sv-orange':'sv-red'}" style="font-size:14px">${cRate.toFixed(0)}%</div><div class="stat-lbl">Collection</div></div>`;
-}
-
-function openLiqModal(soa){
-  currentLiqSOA=soa;
-  const liqMap=buildSOALiquidation();
-  const s=liqMap[soa]; if(!s) return;
-  const balance=s.totalBilled-s.totalLiquidated;
-  document.getElementById('liq-modal-title').textContent='Record Payment — '+soa;
-  document.getElementById('liq-modal-summary').innerHTML=`
-    <div style="background:var(--bg2);border-radius:var(--radius-sm);padding:12px">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Total Billed</div><div style="font-size:15px;font-weight:700">&#x20B1;${s.totalBilled.toLocaleString()}</div></div>
-        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Collected</div><div style="font-size:15px;font-weight:700;color:var(--green)">&#x20B1;${s.totalLiquidated.toLocaleString()}</div></div>
-        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Balance</div><div style="font-size:15px;font-weight:700;color:var(--red)">&#x20B1;${balance.toLocaleString()}</div></div>
-      </div>
-    </div>`;
-  document.getElementById('liq-modal-hint').textContent=balance>0?`Outstanding: ₱${balance.toLocaleString()}. Enter full or partial payment.`:'';
-  document.getElementById('liq-modal-amt').value=balance>0?balance:'';
-  openModal('liq-modal');
-}
-
-async function saveLiquidation(){
-  if(!currentLiqSOA) return;
-  const amount=parseFloat(document.getElementById('liq-modal-amt').value);
-  if(isNaN(amount)||amount<=0){showToast('Enter a valid amount','warn');return;}
-  showLoad(true,'Recording payment...');
-  closeLiqModal();
-  try{
-    const soaItems=master.filter(r=>r.soa===currentLiqSOA);
-    const totalBilled=soaItems.reduce((a,r)=>a+Number(r.rate||0),0);
-    const newStatus=amount>=totalBilled?'Yes':'Partial';
-    const today=todayStr();
-    for(const item of soaItems){
-      const rowAmt=(Number(item.rate||0)/totalBilled)*amount;
-      await apiPut(SHEET_BILLING+'!H'+item.rowIndex+':J'+item.rowIndex,[[newStatus,today,rowAmt.toFixed(2)]]);
-      item.liquidated=newStatus;item.liquidationDate=today;item.liquidatedAmount=rowAmt.toFixed(2);
-    }
-    showLoad(false);showToast('Payment recorded!','ok');
-    renderSOAStats();renderSOAManager();
-  }catch(e){showLoad(false);showToast('Failed to record');console.error(e);}
-}
-
 /* ══ BILLING CALENDAR ══ */
-function buildTruckColorMap(){
-  const trucks=[...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
-  truckColorMap={};
-  trucks.forEach((t,i)=>{truckColorMap[t]=TRUCK_COLORS[i%TRUCK_COLORS.length];});
-  const leg=document.getElementById('truck-legend');
-  if(leg) leg.innerHTML=trucks.map(t=>`<div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:${truckColorMap[t]}"></div>${t}</div>`).join('');
-}
-
 function toISO(dateStr){
   if(!dateStr) return '';
   if(/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr.substring(0,10);
-  const d=new Date(dateStr);
-  if(isNaN(d)) return '';
+  const d=new Date(dateStr); if(isNaN(d)) return '';
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 function todayISO(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
@@ -2450,19 +2004,11 @@ function todayISO(){const n=new Date();return n.getFullYear()+'-'+String(n.getMo
 function renderBilledCal(){
   const truckF=document.getElementById('bcal-truck')?document.getElementById('bcal-truck').value:'';
   const shipF=document.getElementById('bcal-ship')?document.getElementById('bcal-ship').value:'';
-  let rows=master.filter(r=>{
-    if(truckF&&r.truck!==truckF) return false;
-    if(shipF&&r.shipment!==shipF) return false;
-    return true;
-  });
-  // Auto-navigate to most recent month if current view is empty
+  let rows=master.filter(r=>{if(truckF&&r.truck!==truckF)return false;if(shipF&&r.shipment!==shipF)return false;return true;});
   if(rows.length>0){
     const months=[...new Set(rows.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
     const viewMon=bilCalYear+'-'+String(bilCalMonth+1).padStart(2,'0');
-    if(!months.includes(viewMon)&&months.length>0){
-      const [y,m]=months[0].split('-').map(Number);
-      bilCalYear=y;bilCalMonth=m-1;
-    }
+    if(!months.includes(viewMon)&&months.length>0){const[y,m]=months[0].split('-').map(Number);bilCalYear=y;bilCalMonth=m-1;}
   }
   const label=new Date(bilCalYear,bilCalMonth,1).toLocaleDateString('en-PH',{month:'long',year:'numeric'});
   const el=document.getElementById('bil-cal-month-label');if(el)el.textContent=label;
@@ -2471,8 +2017,7 @@ function renderBilledCal(){
     const iso=toISO(r.date);if(!iso)return;
     const[y,m]=iso.split('-').map(Number);
     if(y!==bilCalYear||m-1!==bilCalMonth)return;
-    if(!dateMap[iso])dateMap[iso]=[];
-    dateMap[iso].push(r);
+    if(!dateMap[iso])dateMap[iso]=[];dateMap[iso].push(r);
   });
   const firstDay=new Date(bilCalYear,bilCalMonth,1).getDay();
   const daysInMonth=new Date(bilCalYear,bilCalMonth+1,0).getDate();
@@ -2482,15 +2027,11 @@ function renderBilledCal(){
   for(let day=1;day<=daysInMonth;day++){
     const iso=bilCalYear+'-'+String(bilCalMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
     const dayShips=dateMap[iso]||[];
-    const isToday=iso===todayI;
-    const hasData=dayShips.length>0;
+    const isToday=iso===todayI, hasData=dayShips.length>0;
     const byTruck={};
     dayShips.forEach(r=>{if(!byTruck[r.truck])byTruck[r.truck]=0;byTruck[r.truck]++;});
     const dots=Object.keys(byTruck).map(t=>`<div class="bil-cal-dot" style="background:${truckColorMap[t]||'#888'}" title="${t}"></div>`).join('');
-    html+=`<div class="bil-cal-day${isToday?' today':''}${hasData?' has-data':''}" onclick="showCalDay('${iso}')">
-      <div class="bil-cal-daynum">${day}</div>
-      ${hasData?`<div class="bil-cal-dots">${dots}</div><div class="bil-cal-count">${dayShips.length}</div>`:''}
-    </div>`;
+    html+=`<div class="bil-cal-day${isToday?' today':''}${hasData?' has-data':''}" onclick="showCalDay('${iso}')"><div class="bil-cal-daynum">${day}</div>${hasData?`<div class="bil-cal-dots">${dots}</div><div class="bil-cal-count">${dayShips.length}</div>`:''}</div>`;
   }
   const calEl=document.getElementById('bil-cal-days');if(calEl)calEl.innerHTML=html;
 }
@@ -2501,12 +2042,7 @@ function bilCalNext(){bilCalMonth++;if(bilCalMonth>11){bilCalMonth=0;bilCalYear+
 function showCalDay(iso){
   const truckF=document.getElementById('bcal-truck')?document.getElementById('bcal-truck').value:'';
   const shipF=document.getElementById('bcal-ship')?document.getElementById('bcal-ship').value:'';
-  let dayShips=master.filter(r=>{
-    if(toISO(r.date)!==iso) return false;
-    if(truckF&&r.truck!==truckF) return false;
-    if(shipF&&r.shipment!==shipF) return false;
-    return true;
-  });
+  let dayShips=master.filter(r=>{if(toISO(r.date)!==iso)return false;if(truckF&&r.truck!==truckF)return false;if(shipF&&r.shipment!==shipF)return false;return true;});
   if(!dayShips.length){showToast('No billed shipments on this date');return;}
   const d=new Date(iso+'T00:00:00');
   const label=d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -2515,109 +2051,68 @@ function showCalDay(iso){
   dayShips.forEach(r=>{if(!byTruck[r.truck])byTruck[r.truck]=[];byTruck[r.truck].push(r);});
   let html='';
   Object.keys(byTruck).sort().forEach(truck=>{
-    const tShips=byTruck[truck];
-    const tAmt=tShips.reduce((s,r)=>s+Number(r.rate||0),0);
+    const tShips=byTruck[truck], tAmt=tShips.reduce((s,r)=>s+Number(r.rate||0),0);
     const color=truckColorMap[truck]||'#888';
-    html+=`<div style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div>
-        <div style="font-size:14px;font-weight:700;color:var(--text)">${truck}</div>
-        <div style="margin-left:auto;font-size:13px;font-weight:700;color:var(--green)">&#x20B1;${tAmt.toLocaleString()}</div>
-      </div>`;
+    html+=`<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div><div style="font-size:14px;font-weight:700;color:var(--text)">${truck}</div><div style="margin-left:auto;font-size:13px;font-weight:700;color:var(--green)">₱${tAmt.toLocaleString()}</div></div>`;
     tShips.forEach(r=>{
       const inv=r.valid==='No';
-      html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;margin-bottom:4px;border-radius:var(--radius-sm);background:var(--bg2)">
-        <div>
-          <div style="font-size:13px;font-weight:700;color:${inv?'var(--red)':'var(--text)'};font-family:var(--mono)">${r.shipment}${inv?' &#x26D4;':''}</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:2px">${r.soa} &middot; ${r.billedOut==='Yes'?'&#x2705; BO':'&#x23F3; BO pending'} &middot; ${r.liquidated==='Yes'?'&#x1F4B0; Paid':r.liquidated==='Partial'?'&#x1F536; Partial':'&#x23F3; Unpaid'}</div>
-        </div>
-        <div style="font-size:13px;font-weight:700;color:var(--green)">&#x20B1;${Number(r.rate||0).toLocaleString()}</div>
-      </div>`;
+      html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;margin-bottom:4px;border-radius:var(--rsm);background:var(--bg2)"><div><div style="font-size:13px;font-weight:700;color:${inv?'var(--red)':'var(--text)'};font-family:var(--mono)">${r.shipment}${inv?' ⛔':''}</div><div style="font-size:10px;color:var(--text2);margin-top:2px">${r.soa} · ${r.billedOut==='Yes'?'✅ BO':'⏳ BO pending'} · ${r.liquidated==='Yes'?'💰 Paid':r.liquidated==='Partial'?'🔶 Partial':'⏳ Unpaid'}</div></div><div style="font-size:13px;font-weight:700;color:var(--green)">₱${Number(r.rate||0).toLocaleString()}</div></div>`;
     });
     html+='</div>';
   });
   const dayTotal=dayShips.reduce((s,r)=>s+Number(r.rate||0),0);
-  html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg);border-radius:var(--radius-sm);box-shadow:var(--out);margin-top:8px"><span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Day Total</span><span style="font-size:18px;font-weight:700;color:var(--green)">&#x20B1;${dayTotal.toLocaleString()}</span></div>`;
+  html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg);border-radius:var(--rsm);box-shadow:var(--out);margin-top:8px"><span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Day Total</span><span style="font-size:18px;font-weight:700;color:var(--green)">₱${dayTotal.toLocaleString()}</span></div>`;
   document.getElementById('cal-day-modal-body').innerHTML=html;
   openModal('cal-day-modal');
 }
-
 
 /* ══════════════════════════════════════
    HELPERS
 ══════════════════════════════════════ */
 function mapMaster(vals){
   return (vals||[]).map((r,i)=>({
-    rowIndex: i+2,
-    id:r[0]||'', date:r[1]||'', shipment:r[2]||'', soa:r[3]||'', truck:r[4]||'', rate:r[5]||'',
-    valid:(r[6]||'Yes').trim(),
-    liquidated:(r[7]||'No').trim(),
-    liquidationDate:r[8]||'',
-    liquidatedAmount:r[9]||'',
-    billedOut:(r[10]||'No').trim(),
-    billedOutDate:r[11]||'',
-    notes:r[12]||''
+    rowIndex:i+2, id:r[0]||'', date:r[1]||'', shipment:r[2]||'', soa:r[3]||'', truck:r[4]||'', rate:r[5]||'',
+    valid:(r[6]||'Yes').trim(), liquidated:(r[7]||'No').trim(), liquidationDate:r[8]||'', liquidatedAmount:r[9]||'',
+    billedOut:(r[10]||'No').trim(), billedOutDate:r[11]||'', notes:r[12]||''
   })).filter(r=>r.shipment||r.date||r.soa);
 }
 function mapTrips(vals){
   return (vals||[]).map((r,i)=>({
-    rowIndex:i+2, deliveryDate:r[1]||'', truck:r[2]||'',
-    shipmentDate:r[3]||'', type:r[4]||'',
-    shipmentNumber:String(r[5]||'').trim(),
-    billed:String(r[6]||'').trim(),
-    route:r[7]||'', rate:r[8]||''
+    rowIndex:i+2, deliveryDate:r[1]||'', truck:r[2]||'', shipmentDate:r[3]||'', type:r[4]||'',
+    shipmentNumber:String(r[5]||'').trim(), billed:String(r[6]||'').trim(), route:r[7]||'', rate:r[8]||''
   })).filter(r=>r.shipmentNumber||r.deliveryDate||r.truck);
 }
 function buildSOAMap(rows,type){
   const map={};
   rows.forEach(r=>{
     if(!map[r.soa]) map[r.soa]={soa:r.soa,count:0,billedOut:0,total:0,items:[],monthSet:new Set(),months:[],trucks:new Set()};
-    const s=map[r.soa];
-    s.count++; s.total+=Number(r.rate||0);
-    if(r.billedOut==='Yes') s.billedOut++;
-    s.items.push(r);
-    const m=dateMonth(r.date); if(m) s.monthSet.add(m);
-    if(r.truck) s.trucks.add(r.truck);
+    const s=map[r.soa]; s.count++; s.total+=Number(r.rate||0);
+    if(r.billedOut==='Yes') s.billedOut++; s.items.push(r);
+    const m=dateMonth(r.date); if(m) s.monthSet.add(m); if(r.truck) s.trucks.add(r.truck);
   });
-  Object.values(map).forEach(s=>{ s.months=[...s.monthSet].sort().reverse().map(monthLabel); });
+  Object.values(map).forEach(s=>{s.months=[...s.monthSet].sort().reverse().map(monthLabel);});
   return map;
 }
-function todayStr(){ return new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}); }
-function grpBy(rows,key){ const map={}; rows.forEach(r=>{ const k=r[key]||'Unknown'; if(!map[k]) map[k]=[]; map[k].push(r); }); return Object.keys(map).sort().map(k=>({key:k,items:map[k]})); }
-function grpByMonth(rows){ const map={}; rows.forEach(r=>{ const k=dateMonth(r.date||r.deliveryDate||'')||'Unknown'; if(!map[k]) map[k]=[]; map[k].push(r); }); return Object.keys(map).sort().reverse().map(k=>({label:monthLabel(k),items:map[k]})); }
-function grpHTML(title,items,cardFn,prefix,color){
-  const amt=items.reduce((s,r)=>s+Number(r.rate||0),0);
-  return `<div style="margin-bottom:18px">
-    <div class="grp-header">${prefix}${title}</div>
-    <div class="grp-tally"><div class="tally tally-${color}">${items.length} shipments</div><div class="tally tally-dim">₱${amt.toLocaleString()}</div></div>
-    ${items.map(cardFn).join('')}
-  </div>`;
-}
-function grpTableHTML(title,items,headers,rowFn,color){
-  const amt=items.reduce((s,r)=>s+Number(r.rate||0),0);
-  return `<div class="grp" style="margin-top:14px">
-    <div class="grp-header">${title}</div>
-    <div class="grp-tally"><div class="tally tally-${color}">${items.length} shipments</div><div class="tally tally-dim">₱${amt.toLocaleString()}</div></div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${items.map(rowFn).join('')}</tbody></table></div>
-  </div>`;
-}
-function noData(){ return '<div style="padding:12px 0;font-size:12px;color:var(--text3)">No data</div>'; }
-function emptyH(t,s){ return `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="empty-title">${t}</div><div class="empty-sub">${s}</div></div>`; }
+function todayStr(){return new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});}
+function grpBy(rows,key){const map={};rows.forEach(r=>{const k=r[key]||'Unknown';if(!map[k])map[k]=[];map[k].push(r);});return Object.keys(map).sort().map(k=>({key:k,items:map[k]}));}
+function grpByMonth(rows){const map={};rows.forEach(r=>{const k=dateMonth(r.date||r.deliveryDate||'')||'Unknown';if(!map[k])map[k]=[];map[k].push(r);});return Object.keys(map).sort().reverse().map(k=>({label:monthLabel(k),items:map[k]}));}
+function grpHTML(title,items,cardFn,prefix,color){const amt=items.reduce((s,r)=>s+Number(r.rate||0),0);return `<div style="margin-bottom:18px"><div class="grp-header">${prefix}${title}</div><div class="grp-tally"><div class="tally tally-${color}">${items.length} shipments</div><div class="tally tally-dim">₱${amt.toLocaleString()}</div></div>${items.map(cardFn).join('')}</div>`;}
+function grpTableHTML(title,items,headers,rowFn,color){const amt=items.reduce((s,r)=>s+Number(r.rate||0),0);return `<div class="grp" style="margin-top:14px"><div class="grp-header">${title}</div><div class="grp-tally"><div class="tally tally-${color}">${items.length} shipments</div><div class="tally tally-dim">₱${amt.toLocaleString()}</div></div><div class="tbl-wrap"><table class="tbl"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${items.map(rowFn).join('')}</tbody></table></div></div>`;}
+function noData(){return '<div style="padding:12px 0;font-size:12px;color:var(--text3)">No data</div>';}
+function emptyH(t,s){return `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="empty-title">${t}</div><div class="empty-sub">${s}</div></div>`;}
 
 /* ── SHEETS API ── */
-function apiGet(range){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,{headers:{Authorization:'Bearer '+token}}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
-function apiAppend(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
-function apiPut(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
-
-/* ── CONFIRM MODAL ── */
+function apiGet(range){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,{headers:{Authorization:'Bearer '+token}}).then(r=>{if(!r.ok)throw r.status;return r.json();});}
+function apiAppend(range,values){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();});}
+function apiPut(range,values){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();});}
 
 /* ── UI HELPERS ── */
-function showUprog(s){ document.getElementById('uprog').classList.toggle('show',s); }
-function hideUprog(){ document.getElementById('uprog').classList.remove('show'); }
-function setP(p,m){ document.getElementById('upb').style.width=p+'%'; document.getElementById('upm').textContent=m; }
-function showLoad(s,m=''){ document.getElementById('lov').classList.toggle('show',s); if(m) document.getElementById('lmsg').textContent=m; }
+function showUprog(s){document.getElementById('uprog').classList.toggle('show',s);}
+function hideUprog(){document.getElementById('uprog').classList.remove('show');}
+function setP(p,m){document.getElementById('upb').style.width=p+'%';document.getElementById('upm').textContent=m;}
+function showLoad(s,m=''){document.getElementById('lov').classList.toggle('show',s);if(m)document.getElementById('lmsg').textContent=m;}
 let _tt;
-function showToast(m,type=''){ const el=document.getElementById('toast'); el.textContent=m; el.className='toast show'+(type==='ok'?' ok':type==='warn'?' warn':''); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3500); }
+function showToast(m,type=''){const el=document.getElementById('toast');el.textContent=m;el.className='toast show'+(type==='ok'?' ok':type==='warn'?' warn':'');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3500);}
 </script>
 </body>
 </html>
