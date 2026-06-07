@@ -1119,7 +1119,7 @@ async function loadSOAManager(){
     master = mapMaster(res.values||[]); soaMasterData = master;
     buildSOAMgrFilters(); renderSOAMgrStats(); renderSOAManager();
     document.getElementById('soa-loading').style.display='none';
-  }catch(e){ document.getElementById('soa-loading').style.display='none'; showToast('Failed to load'); }
+  }catch(e){ document.getElementById('soa-loading').style.display='none'; console.error('SOA load error:',e); showToast('Failed to load: '+e.message,'warn'); }
 }
 
 function buildSOAMgrFilters(){
@@ -1229,7 +1229,7 @@ async function loadBilled(){
     master=mapMaster(res.values||[]); buildTruckColorMap(); buildBFilters(); renderBStats();
     if(bSt==='cal') renderBilledCal(); else renderBilledList();
     showLoad(false);
-  }catch(e){showLoad(false);showToast('Failed to load');}
+  }catch(e){showLoad(false);console.error('Load error:',e);showToast('Failed to load: '+e.message,'warn');}
 }
 
 function buildBFilters(){
@@ -1592,7 +1592,7 @@ async function loadUnbilled(){
     trips=mapTrips(tRes.values||[]);
     unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
     showLoad(false); buildUFilters(); renderUStats(); renderUnbilled();
-  }catch(e){showLoad(false);showToast('Failed to load');}
+  }catch(e){showLoad(false);console.error('Load error:',e);showToast('Failed to load: '+e.message,'warn');}
 }
 
 function buildUFilters(){
@@ -1638,7 +1638,7 @@ async function loadBilledOut(){
   try{
     const res=await apiGet(SHEET_BILLING+'!A2:M');
     master=mapMaster(res.values||[]); showLoad(false); buildBOFilters(); renderBOStats(); renderBilledOut();
-  }catch(e){showLoad(false);showToast('Failed to load');}
+  }catch(e){showLoad(false);console.error('Load error:',e);showToast('Failed to load: '+e.message,'warn');}
 }
 
 function buildBOFilters(){
@@ -1762,7 +1762,7 @@ async function loadReport(){
     trips=mapTrips(tRes.values||[]);
     unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
     showLoad(false); buildRFilters(); renderRStats(); renderReport();
-  }catch(e){showLoad(false);showToast('Failed to load');}
+  }catch(e){showLoad(false);console.error('Load error:',e);showToast('Failed to load: '+e.message,'warn');}
 }
 
 function buildRFilters(){
@@ -2053,7 +2053,20 @@ function noData(){return '<div style="padding:12px 0;font-size:12px;color:var(--
 function emptyH(t,s){return `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="empty-title">${t}</div><div class="empty-sub">${s}</div></div>`;}
 
 /* ── SHEETS API ── */
-function apiGet(range){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,{headers:{Authorization:'Bearer '+token}}).then(r=>{if(!r.ok)throw r.status;return r.json();});}
+function apiGet(range){
+  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,{headers:{Authorization:'Bearer '+token}})
+    .then(async r=>{
+      if(!r.ok){
+        const body=await r.json().catch(()=>({}));
+        const msg=(body.error&&body.error.message)||('HTTP '+r.status);
+        if(r.status===401){
+          showToast('Session expired — please refresh the page','warn');
+        }
+        throw new Error(msg);
+      }
+      return r.json();
+    });
+}
 function apiAppend(range,values){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();});}
 function apiPut(range,values){return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();});}
 
