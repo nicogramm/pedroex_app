@@ -356,6 +356,12 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
 .saving-box{background:var(--bg);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
 .saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px}
 .saving-text{font-size:14px;color:var(--text2);font-weight:500}
+
+/* SUMMARY CHIPS */
+.summary-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);border-radius:10px;box-shadow:var(--neu-xs);padding:6px 12px;font-size:12px;font-weight:600;color:var(--text2)}
+.summary-chip .chip-icon{font-size:14px}
+.summary-chip .chip-val{color:var(--text);font-weight:700;margin-left:4px}
+
 </style>
 </head>
 <body>
@@ -377,6 +383,8 @@ body.dark .detail-footer{border-top-color:rgba(255,255,255,0.04)}
     </div>
     <div class="summary-amount" id="summary-amount">₱ 0.00</div>
     <div class="summary-meta" id="summary-meta">0 expenses recorded</div>
+    <div id="summary-category-chips" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"></div>
+  </div>
   </div>
 
   <!-- VIEW TOGGLE -->
@@ -1825,8 +1833,32 @@ function updateSummary() {
     (documentationTotal > 0 ? Math.ceil(documentationTotal / DOCUMENTATION_DAILY_RATE) : 0);
   
   document.getElementById('summary-meta').textContent = `${totalItems} expense${totalItems !== 1 ? 's' : ''} this month`;
+
   document.getElementById('summary-period').textContent = 'THIS MONTH';
+
+  // Category chips: Diesel, Maintenance, Manpower
+  const chipDefs = [
+    { key: 'Diesel',      icon: '⛽' },
+    { key: 'Maintenance', icon: '🔧' },
+    { key: 'Manpower',    icon: '👷' },
+  ];
+  const chipTotals = {};
+  filtered.forEach(e => {
+    if (chipDefs.find(c => c.key === e.category)) {
+      chipTotals[e.category] = (chipTotals[e.category] || 0) + e.amount;
+    }
+  });
+  if (manpowerTotal > 0) chipTotals['Manpower'] = (chipTotals['Manpower'] || 0) + manpowerTotal;
+  const chipsEl = document.getElementById('summary-category-chips');
+  chipsEl.innerHTML = chipDefs
+    .filter(c => chipTotals[c.key] > 0)
+    .map(c => {
+      const amt = chipTotals[c.key];
+      const fmt = amt >= 1000 ? '₱' + (amt/1000).toFixed(1) + 'k' : '₱' + amt.toFixed(0);
+      return '<div class="summary-chip"><span class="chip-icon">' + c.icon + '</span>' + c.key + '<span class="chip-val">' + fmt + '</span></div>';
+    }).join('');
 }
+
 
 // ═══ DETAIL SHEET ═════════════════════════════════════
 function openDetail(rowIndex) {
