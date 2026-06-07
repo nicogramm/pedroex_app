@@ -1514,63 +1514,23 @@ function renderScanResults(cleanCount, totalUnb){
 async function fixScanTypo(i){
   const item=scanTypos[i]; if(!item||item.resolved) return;
   const t=item.trip, newNum=item.similar;
-
   showConfirm(
     'Fix Shipment Number',
-    `Change Trips row <b>${t.rowIndex}</b>:<br><br>
-    <span style="font-family:monospace;color:var(--orange)">${t.shipmentNumber}</span><br>→<br>
-    <span style="font-family:monospace;color:var(--blue)">${newNum}</span><br><br>
-    🚛 ${t.truck} · ${t.deliveryDate}`,
+    `Change Trips row <b>${t.rowIndex}</b>:<br><br><span style="font-family:monospace;color:var(--orange)">${t.shipmentNumber}</span><br>→<br><span style="font-family:monospace;color:var(--blue)">${newNum}</span><br><br>🚛 ${t.truck} · ${t.deliveryDate}`,
     async()=>{
-      /* Show loading state in button area */
-      const actsEl=document.getElementById('st-acts-'+i);
-      if(actsEl) actsEl.innerHTML='<span style="font-size:11px;color:var(--text2)">⏳ Updating row '+t.rowIndex+'...</span>';
-
-      token=localStorage.getItem('pedroex-token')||token;
-
+      showLoad(true,'Updating Trips row '+t.rowIndex+'...');
       try{
-        const range=SHEET_TRIPS+'!F'+t.rowIndex+':F'+t.rowIndex;
-        const resp=await fetch(
-          'https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
-          {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:[[newNum]]})}
-        );
-        const body=await resp.json();
-
-        if(!resp.ok){
-          const errMsg=(body.error&&body.error.message)||('HTTP '+resp.status);
-          console.error('Sheets API error:',body);
-          if(actsEl) actsEl.innerHTML=`
-            <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">❌ API Error: ${errMsg}</div>
-            <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
-            <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>`;
-          showToast('API Error: '+errMsg,'warn'); return;
-        }
-
-        /* ══ SUCCESS ══
-           Track by rowIndex so re-scan skips this row even if
-           Google Sheets hasn't propagated the write yet on re-fetch. */
-        scanTypos[i].resolved = true;
+        await apiPut(SHEET_TRIPS+'!F'+t.rowIndex, [[newNum]]);
+        showLoad(false);
+        scanTypos[i].resolved=true;
         fixedRowIndexes.add(t.rowIndex);
-
-        /* Update local unbilled array so the list count is correct */
-        const ubIdx = unbilled.findIndex(u=>u.rowIndex===t.rowIndex);
-        if(ubIdx>=0) unbilled.splice(ubIdx,1);
-
-        showToast('✅ Row '+t.rowIndex+' fixed — '+t.shipmentNumber+' → '+newNum,'ok');
-
-        /* Instantly remove from scan panel */
+        showToast('✅ Fixed: '+t.shipmentNumber+' → '+newNum,'ok');
         refreshScanResults();
-
-        /* Refresh unbilled list in background (no blocking) */
         loadUnbilled();
-
       }catch(e){
-        console.error('Network error:',e);
-        if(actsEl) actsEl.innerHTML=`
-          <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">❌ Network error: ${e}</div>
-          <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
-          <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>`;
-        showToast('Network error','warn');
+        showLoad(false);
+        console.error('fixScanTypo error:',e);
+        showToast('Update failed ('+e+')','warn');
       }
     }
   );
