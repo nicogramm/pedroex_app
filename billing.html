@@ -789,8 +789,11 @@ let scanTypos     = [];
 let scanDups      = [];
 let scanInvalids  = [];
 let scanNearDupes = [];
-/* Track numbers fixed this session so re-scan excludes them */
-let fixedNumbers  = new Set();
+/* Track Trips rowIndexes fixed this session.
+   We use rowIndex (not the number) because after a successful write
+   the sheet may not return the new value immediately on re-fetch,
+   but the rowIndex is stable and uniquely identifies the fixed row. */
+let fixedRowIndexes = new Set();
 
 /* ── INIT ── */
 (function(){
@@ -1289,7 +1292,7 @@ function renderBilledList(){
    UNBILLED SCAN — FIXED
    Key fix: after a successful Fix, splice the item from scanTypos
    and re-render the scan results so it disappears immediately.
-   On re-scan, fixedNumbers set ensures already-fixed numbers are
+   On re-scan, fixedRowIndexes set ensures already-fixed rows are
    not flagged as typos again even if the sheet hasn't refreshed yet.
 ══════════════════════════════════════ */
 async function runUnbilledScan(){
@@ -1314,11 +1317,13 @@ async function runUnbilledScan(){
     const allBilled = new Set([...billedFromSheet,...billedFromTrips]);
     const allBilledArr = [...allBilled];
 
-    /* Also add any numbers we fixed this session to allBilled so they
-       don't re-appear as typo targets after a re-scan before the sheet syncs */
-    fixedNumbers.forEach(n=>allBilled.add(n));
-
-    const unb = allTrips.filter(t=>t.billed!=='Yes'&&!billedFromSheet.has(t.shipmentNumber));
+    /* Also treat any billed numbers from fixedRows as billed
+       in case the sheet hasn't propagated the write yet */
+    const unb = allTrips.filter(t=>
+      t.billed!=='Yes' &&
+      !billedFromSheet.has(t.shipmentNumber) &&
+      !fixedRowIndexes.has(t.rowIndex)   /* skip rows we already fixed this session */
+    );
 
     scanTypos=[]; scanDups=[]; scanInvalids=[]; scanNearDupes=[];
     const seen={}, cleanList=[];
@@ -1326,8 +1331,8 @@ async function runUnbilledScan(){
     unb.forEach(t=>{
       const num = t.shipmentNumber;
 
-      /* Skip numbers we already fixed this session */
-      if(fixedNumbers.has(num)) return;
+      /* Skip rows we already fixed this session (handles sheet propagation delay) */
+      if(fixedRowIndexes.has(t.rowIndex)) return;
 
       if(!SHIP_VALID.test(num)){ scanInvalids.push({trip:t,reason:scanInvalidReason(num)}); return; }
 
@@ -1346,7 +1351,7 @@ async function runUnbilledScan(){
     });
 
     /* Near-dupes within unbilled */
-    const validUnb=unb.filter(t=>SHIP_VALID.test(t.shipmentNumber)&&!fixedNumbers.has(t.shipmentNumber));
+    const validUnb=unb.filter(t=>SHIP_VALID.test(t.shipmentNumber)&&!fixedRowIndexes.has(t.rowIndex));
     const typoNums=new Set(scanTypos.map(x=>x.trip.shipmentNumber));
     for(let i=0;i<validUnb.length;i++){
       for(let j=i+1;j<validUnb.length;j++){
@@ -1380,7 +1385,7 @@ function refreshScanResults(){
     <div class="stat-card"><div class="stat-val sv-blue">${scanTypos.length + scanDups.length + scanInvalids.length}</div><div class="stat-lbl">Scanned</div></div>
     <div class="stat-card"><div class="stat-val ${flagged>0?'sv-red':'sv-green'}">${flagged}</div><div class="stat-lbl">Flagged</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${activeTypos.length}</div><div class="stat-lbl">Typos</div></div>
-    <div class="stat-card"><div class="stat-val sv-green">${fixedNumbers.size}</div><div class="stat-lbl">Fixed</div></div>`;
+    <div class="stat-card"><div class="stat-val sv-green">${fixedRowIndexes.size}</div><div class="stat-lbl">Fixed</div></div>`;
 
   /* Re-render typo list — only show non-resolved items */
   const typoWrap=document.getElementById('scan-typo-wrap');
@@ -1541,36 +1546,22 @@ async function fixScanTypo(i){
           showToast('API Error: '+errMsg,'warn'); return;
         }
 
-        /* Verify write */
-        const verifyResp=await fetch(
-          'https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range),
-          {headers:{Authorization:'Bearer '+token}}
-        );
-        const verifyBody=await verifyResp.json();
-        const actualVal=verifyBody.values&&verifyBody.values[0]&&verifyBody.values[0][0];
-
-        if(actualVal!==newNum){
-          if(actsEl) actsEl.innerHTML=`
-            <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">⚠️ Verify failed — sheet shows: <b style="font-family:monospace">${actualVal||'(blank)'}</b></div>
-            <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
-            <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>`;
-          showToast('Verify failed','warn'); return;
-        }
-
-        /* ══ SUCCESS — mark resolved and remove from active list ══ */
+        /* ══ SUCCESS ══
+           Track by rowIndex so re-scan skips this row even if
+           Google Sheets hasn't propagated the write yet on re-fetch. */
         scanTypos[i].resolved = true;
-        fixedNumbers.add(t.shipmentNumber); /* prevent re-flagging on next scan */
+        fixedRowIndexes.add(t.rowIndex);
 
-        /* Update the unbilled array in memory too so the list refreshes */
+        /* Update local unbilled array so the list count is correct */
         const ubIdx = unbilled.findIndex(u=>u.rowIndex===t.rowIndex);
         if(ubIdx>=0) unbilled.splice(ubIdx,1);
 
-        showToast('✅ Row '+t.rowIndex+' confirmed updated!','ok');
+        showToast('✅ Row '+t.rowIndex+' fixed — '+t.shipmentNumber+' → '+newNum,'ok');
 
-        /* Instantly re-render the scan panel without the fixed item */
+        /* Instantly remove from scan panel */
         refreshScanResults();
 
-        /* Refresh unbilled list in background */
+        /* Refresh unbilled list in background (no blocking) */
         loadUnbilled();
 
       }catch(e){
