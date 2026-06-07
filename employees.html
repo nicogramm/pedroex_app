@@ -223,26 +223,6 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 
     <!-- TAB 1: ADVANCES -->
     <div id="admin-tab-advances">
-      <div class="section-divider"></div>
-      <div class="section-header">
-        <h3 class="section-title">Payroll History</h3>
-        <p class="section-subtitle">Saved payroll records</p>
-      </div>
-      <div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px">
-        <div style="display:flex;gap:10px;margin-bottom:14px">
-          <select class="filter-select" id="hist-filter-emp" onchange="loadHistory()" style="flex:1">
-            <option value="">All Employees</option>
-          </select>
-          <input type="month" class="filter-input" id="hist-filter-month" onchange="loadHistory()" style="flex:1">
-        </div>
-        <div id="history-loading" class="loading" style="display:none"><div class="spinner"></div></div>
-        <div id="history-list"></div>
-        <div id="history-empty" class="empty-state" style="display:none">
-          <div class="empty-icon">📄</div>
-          <div class="empty-text">No payroll history found.</div>
-        </div>
-      </div>
-
       <div class="filter-bar">
         <div class="filter-row">
           <select class="filter-select" id="filter-employee" onchange="filterAdvances()">
@@ -303,6 +283,27 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:20px" onclick="calculatePayroll()">🧮 Calculate Payroll</button>
       </div>
+      <!-- PAYROLL HISTORY -->
+      <div class="section-divider"></div>
+      <div class="section-header">
+        <h3 class="section-title">Payroll History</h3>
+        <p class="section-subtitle">Saved payroll records</p>
+      </div>
+      <div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px">
+        <div style="display:flex;gap:10px;margin-bottom:14px">
+          <select class="filter-select" id="hist-filter-emp" onchange="loadHistory()" style="flex:1">
+            <option value="">All Employees</option>
+          </select>
+          <input type="month" class="filter-input" id="hist-filter-month" onchange="loadHistory()" style="flex:1">
+        </div>
+        <div id="history-loading" class="loading" style="display:none"><div class="spinner"></div></div>
+        <div id="history-list"></div>
+        <div id="history-empty" class="empty-state" style="display:none">
+          <div class="empty-icon">📄</div>
+          <div class="empty-text">No payroll history found.</div>
+        </div>
+      </div>
+
     </div><!-- /admin-tab-payroll -->
 
     <!-- TAB 3: ATTENDANCE VALIDATION -->
@@ -819,6 +820,7 @@ function switchAdminTab(tab) {
   });
   document.getElementById('add-btn').style.display = tab === 'advances' ? 'flex' : 'none';
   if (tab === 'savings') loadSavings();
+  if (tab === 'payroll') { loadHistory(); if (!savingsData.length) loadSavingsQuiet(); }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1217,7 +1219,58 @@ async function loadHistory() {
 }
 
 function buildYTDCard(name, ytd) {
-  return `<div style="background:linear-gradient(135deg,var(--red),#8f1e29);border-radius:14px;padding:16px;margin-bottom:16px;color:white"><div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.9;margin-bottom:12px">${name} — YTD ${new Date().getFullYear()}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><div style="font-size:10px;opacity:0.8">Gross Salary</div><div style="font-size:16px;font-weight:700">₱${ytd.gross.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div><div><div style="font-size:10px;opacity:0.8">Savings Plan</div><div style="font-size:16px;font-weight:700">₱${ytd.savings.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div></div><div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.2);padding-top:12px"><div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">EMPLOYEE CONTRIBUTIONS</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱${ytd.empSSS.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div><div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱${ytd.empPagibig.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div><div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱${ytd.empPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div></div></div><div style="margin-top:12px;border-top:1px solid rgba(255,255,255,0.2);padding-top:12px"><div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">PEDROEX CONTRIBUTIONS</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱${ytd.pedroexSSS.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div><div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱${ytd.pedroexPagibig.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div><div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱${ytd.pedroexPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div></div></div></div>`;
+  // Check savings data for this employee (may not be loaded if Savings tab not visited)
+  const empSavings    = savingsData.find(e => e.name === name);
+  const hasWithdrawal = empSavings && empSavings.totalWithdrawn > 0;
+  const currentBalance = empSavings ? empSavings.balance : ytd.savings;
+
+  const maturityLabel = empSavings
+    ? (!empSavings.isMature
+        ? `🔒 Not yet mature (${empSavings.monthsElapsed}/6 months)`
+        : empSavings.hasInterest
+          ? '✅ Mature + 5% Interest'
+          : '✅ Mature — 6+ months')
+    : '—';
+
+  // Savings block — expanded if there are withdrawals, simple if not
+  const savingsBlock = hasWithdrawal
+    ? `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><div style="font-size:9px;opacity:0.8">Total Saved</div><div style="font-size:13px;font-weight:700">₱${ytd.savings.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+        <div><div style="font-size:9px;opacity:0.8">Withdrawn</div><div style="font-size:13px;font-weight:700">₱${empSavings.totalWithdrawn.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+        <div><div style="font-size:9px;opacity:0.8">Current Balance</div><div style="font-size:15px;font-weight:700;color:#7dffb3">₱${currentBalance.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+      </div>
+      <div style="font-size:10px;opacity:0.7;margin-top:6px">${maturityLabel}</div>`
+    : `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><div style="font-size:10px;opacity:0.8">Savings Plan YTD</div><div style="font-size:16px;font-weight:700">₱${ytd.savings.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+        <div><div style="font-size:10px;opacity:0.8">Status</div><div style="font-size:12px;font-weight:600;margin-top:3px">${maturityLabel}</div></div>
+      </div>`;
+
+  return `<div style="background:linear-gradient(135deg,var(--red),#8f1e29);border-radius:14px;padding:16px;margin-bottom:16px;color:white">
+    <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.9;margin-bottom:12px">${name} — YTD ${new Date().getFullYear()}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div><div style="font-size:10px;opacity:0.8">Gross Salary</div><div style="font-size:16px;font-weight:700">₱${ytd.gross.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:12px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">💰 SAVINGS PLAN</div>
+      ${savingsBlock}
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:12px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">EMPLOYEE CONTRIBUTIONS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱${ytd.empSSS.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+        <div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱${ytd.empPagibig.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+        <div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱${ytd.empPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:12px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">PEDROEX CONTRIBUTIONS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><div style="font-size:9px;opacity:0.8">SSS</div><div style="font-size:13px;font-weight:700">₱${ytd.pedroexSSS.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+        <div><div style="font-size:9px;opacity:0.8">Pag-IBIG</div><div style="font-size:13px;font-weight:700">₱${ytd.pedroexPagibig.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+        <div><div style="font-size:9px;opacity:0.8">PhilHealth</div><div style="font-size:13px;font-weight:700">₱${ytd.pedroexPhilHealth.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function showHistoryDetail(r) {
@@ -1820,6 +1873,37 @@ function valRenderGrid() {
   });
   html+=`</tbody></table></div><div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:4px;padding:0 4px"><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-weight:500"><span style="font-size:13px;font-weight:700;color:var(--text)">1</span> Attended</div><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-weight:500"><span style="font-size:13px;font-weight:700;color:var(--red)">1</span> 2-Man Team</div><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);font-weight:500"><span style="font-size:13px;font-weight:700;color:var(--orange)">1</span> Flag mismatch</div></div>`;
   container.innerHTML=html;
+}
+
+// Silent savings loader — populates savingsData without rendering UI
+// Used so buildYTDCard can access withdrawal info from Payroll tab
+async function loadSavingsQuiet() {
+  if (savingsData.length) return; // already loaded
+  try {
+    const res  = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AF`, {headers:{'Authorization':'Bearer '+token}});
+    const data = await res.json();
+    const rows = data.values||[];
+    const empMap = {};
+    rows.forEach(r => { const name=r[1]||''; if(!name)return; if(!empMap[name])empMap[name]=[]; empMap[name].push(r); });
+    savingsData = [];
+    Object.keys(empMap).sort().forEach(name => {
+      const empRows = empMap[name].sort((a,b)=>(a[0]||'').localeCompare(b[0]||''));
+      const totalSaved = empRows.reduce((s,r)=>s+(parseFloat(r[21])||0),0);
+      let totalWithdrawn=0; const allWDates=[]; const allWAmounts=[];
+      empRows.forEach(r => {
+        const wAmts=(r[23]||'').split(',').map(v=>parseFloat(v.trim())).filter(v=>!isNaN(v)&&v>0);
+        const wDates=(r[22]||'').split(',').map(v=>v.trim()).filter(Boolean);
+        totalWithdrawn+=wAmts.reduce((s,v)=>s+v,0); allWDates.push(...wDates); allWAmounts.push(...wAmts);
+      });
+      const balance = Math.max(0,totalSaved-totalWithdrawn);
+      const firstPeriod=empRows[0][2]||''; const firstDateStr=firstPeriod.split(' to ')[0]||'';
+      const firstDate=firstDateStr?new Date(firstDateStr+'T00:00:00'):null;
+      const now=new Date(); let monthsElapsed=0,isMature=false,hasInterest=false,interestAmount=0;
+      if(firstDate&&!isNaN(firstDate)){monthsElapsed=(now.getFullYear()-firstDate.getFullYear())*12+(now.getMonth()-firstDate.getMonth());isMature=monthsElapsed>=6;hasInterest=monthsElapsed>=12;if(hasInterest)interestAmount=balance*0.05;}
+      const totalWithInterest=balance+interestAmount; const maxWithdrawable=totalWithInterest*0.5;
+      savingsData.push({name,rows:empRows,totalSaved,totalWithdrawn,balance,firstDate,monthsElapsed,isMature,hasInterest,interestAmount,totalWithInterest,maxWithdrawable,withdrawalDates:allWDates,withdrawalAmounts:allWAmounts});
+    });
+  } catch(e) { console.warn('loadSavingsQuiet error:', e); }
 }
 
 init();
