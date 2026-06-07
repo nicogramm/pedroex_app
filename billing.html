@@ -1657,11 +1657,8 @@ async function markBilledOut(soa){
 }
 
 /* ══════════════════════════════════════
-   LIQUIDATION TAB
+   LIQUIDATION (moved to SOA Manager)
 ══════════════════════════════════════ */
-async /* removed */
-
-/* removed */
 
 function buildSOALiquidation(){
   const map={};
@@ -1696,8 +1693,6 @@ function renderLStats(){
     <div class="stat-card"><div class="stat-val sv-green" style="font-size:12px">₱${(totalLiq/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
     <div class="stat-card"><div class="stat-val sv-red" style="font-size:12px">₱${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>`;
 }
-
-/* removed */
 
 async function recordLiquidation(soa){
   const inputId='liq-amt-'+soa.replace(/[^a-z0-9]/gi,'_');
@@ -1984,8 +1979,6 @@ async function executeDeleteSOA(soa){
     loadSOAManager();
   }catch(err){showLoad(false);showToast('Delete failed: '+err.message);console.error(err);}
 }
-
-/* duplicate removed */
 
 /* ══ SOA MANAGER ══ */
 async function loadSOAManager(){
@@ -2300,7 +2293,6 @@ function apiAppend(range,values){ return fetch(`https://sheets.googleapis.com/v4
 function apiPut(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
 
 /* ── CONFIRM MODAL ── */
-let _confirmCb=null;
 function showConfirm(title,msg,cb){
   document.getElementById('confirm-title').textContent=title;
   document.getElementById('confirm-msg').innerHTML=msg.replace(/\n/g,'<br>');
