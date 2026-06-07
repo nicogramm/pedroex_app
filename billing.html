@@ -278,6 +278,72 @@ body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
 .info-box.blue{background:var(--blue-soft);border-left:3px solid var(--blue);color:var(--text2)}
 .info-box.orange{background:var(--orange-soft);border-left:3px solid var(--orange);color:var(--text2)}
 .info-box.green{background:var(--green-soft);border-left:3px solid var(--green);color:var(--text2)}
+
+/* ── BILLING CALENDAR ── */
+.bil-cal-day{border-radius:10px;background:var(--bg);box-shadow:var(--xs);padding:5px 3px;min-height:54px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:box-shadow .15s}
+.bil-cal-day:active{box-shadow:var(--in);transform:scale(.97)}
+.bil-cal-day.empty{background:transparent;box-shadow:none;cursor:default;pointer-events:none;min-height:54px}
+.bil-cal-day.today{border:2px solid var(--red)}
+.bil-cal-day.has-data{box-shadow:var(--sm)}
+.bil-cal-daynum{font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px}
+.bil-cal-dots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;padding:0 1px}
+.bil-cal-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.bil-cal-count{font-size:8px;font-weight:700;color:var(--text3);margin-top:1px}
+
+/* ── SOA TIMELINE ── */
+.soa-tl-item{background:var(--bg);border-radius:var(--radius);box-shadow:var(--out);margin-bottom:12px;overflow:hidden}
+.soa-tl-head{padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.soa-tl-num{font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono);margin-bottom:4px}
+.soa-tl-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.soa-tl-body{padding:0 14px 12px}
+.soa-tl-progress{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.soa-tl-prog-label{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.soa-tl-actions{padding:10px 14px;border-top:1px solid rgba(0,0,0,.05);display:flex;gap:7px;flex-wrap:wrap}
+body.dark .soa-tl-actions{border-top-color:rgba(255,255,255,.04)}
+
+/* ── LIQ MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--bg);border-radius:24px 24px 0 0;width:100%;max-height:90dvh;overflow-y:auto;padding:8px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+.modal-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;opacity:.3}
+.modal-head{padding:0 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.06)}
+body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
+.modal-title{font-size:16px;font-weight:700;color:var(--text)}
+.modal-close{width:30px;height:30px;border-radius:var(--radius-sm);background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal-close:active{box-shadow:var(--in)}
+.modal-body{padding:14px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.liq-input{width:100%;padding:11px 13px;border:none;border-radius:var(--radius-sm);background:var(--bg);box-shadow:var(--in);font-size:14px;font-weight:600;color:var(--text);font-family:var(--font)}
+.liq-input:focus{outline:none}
+
+/* ── CONFIRM ── */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg);border-radius:20px;padding:24px;max-width:360px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.confirm-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px}
+.confirm-msg{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:18px}
+.confirm-btns{display:flex;gap:10px}
+.cb{flex:1;padding:12px;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;border:none}
+.cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--sm)}
+.cb-cancel:active{box-shadow:var(--in)}
+.cb-confirm{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(192,57,43,.3)}
+
+/* ── INFO BOX ── */
+.info-box{border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:12px;font-size:12px;line-height:1.7}
+.info-box.blue{background:var(--blue-soft);border-left:3px solid var(--blue);color:var(--text2)}
+.info-box.orange{background:var(--orange-soft);border-left:3px solid var(--orange);color:var(--text2)}
+.info-box.red{background:var(--red-soft);border-left:3px solid var(--red);color:var(--text2)}
+
+/* ── MATCH CANDIDATE ── */
+.match-candidate{background:var(--bg);border-radius:var(--radius-sm);box-shadow:var(--sm);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:box-shadow .15s;border:1px solid transparent}
+.match-candidate:active{box-shadow:var(--in)}
+.match-candidate.selected{box-shadow:var(--in);border-color:var(--green)}
+.mc-num{font-size:12px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.mc-meta{font-size:10px;color:var(--text2);margin-top:2px}
+.mc-score{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0}
+.mc-score.high{background:var(--green-soft);color:var(--green)}
+.mc-score.med{background:var(--orange-soft);color:var(--orange)}
+.mc-score.low{background:var(--red-soft);color:var(--red)}
+
 </style>
 </head>
 <body>
@@ -298,6 +364,7 @@ body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
 
   <div class="tab-bar" id="tab-bar" style="display:none">
     <button class="tab-btn active" id="tab-upload"      onclick="switchTab('upload')">📤 Upload</button>
+    <button class="tab-btn"        id="tab-soa"         onclick="switchTab('soa')">📋 SOA Manager</button>
     <button class="tab-btn"        id="tab-soa"         onclick="switchTab('soa')">📋 SOA Manager</button>
     <button class="tab-btn"        id="tab-billed"      onclick="switchTab('billed')">✅ Billed</button>
     <button class="tab-btn"        id="tab-unbilled"    onclick="switchTab('unbilled')">⚠️ Unbilled</button>
@@ -441,26 +508,76 @@ body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
       </div>
     </div>
 
-    <!-- ════ BILLED TAB ════ -->
-    <div id="pane-billed" style="display:none">
-      <div class="page-eyebrow">Master List</div>
-      <div class="page-title">Billed Shipments</div>
-      <div class="stat-strip" id="billed-stats"></div>
+
+    <!-- ════ SOA MANAGER TAB ════ -->
+    <div id="pane-soa" style="display:none">
+      <div class="page-eyebrow">Manage &amp; Track</div>
+      <div class="page-title">SOA Manager</div>
+      <div class="info-box orange"><b>⚠️ Delete SOA:</b> Removes all shipment records from Billing sheet and resets matching Trips back to "Not Billed".</div>
+      <div class="stat-strip" id="soa-stats"></div>
       <div class="filters">
-        <input class="f-search" id="bs" type="text" placeholder="🔍 Search..." oninput="renderBilled()">
-        <select class="f-sel" id="bm" onchange="renderBilled()"><option value="">All Months</option></select>
-        <select class="f-sel" id="bso" onchange="renderBilled()"><option value="">All SOA</option></select>
-        <select class="f-sel" id="bt" onchange="renderBilled()"><option value="">All Trucks</option></select>
+        <input class="f-search" id="soa-search" type="text" placeholder="🔍 Search SOA..." oninput="renderSOAManager()">
+        <select class="f-sel" id="soa-filter-month" onchange="renderSOAManager()"><option value="">All Months</option></select>
+        <select class="f-sel" id="soa-filter-status" onchange="renderSOAManager()">
+          <option value="">All Status</option>
+          <option value="pending_bo">Pending Billed Out</option>
+          <option value="pending_liq">Not Yet Paid</option>
+          <option value="partial">Partial Payment</option>
+          <option value="full">Fully Paid</option>
+        </select>
       </div>
-      <div class="stabs">
-        <button class="stab active" id="bsub-all"   onclick="bSub('all')">All</button>
-        <button class="stab"        id="bsub-soa"   onclick="bSub('soa')">Per SOA</button>
-        <button class="stab"        id="bsub-month" onclick="bSub('month')">Per Month</button>
-        <button class="stab"        id="bsub-truck" onclick="bSub('truck')">Per Truck</button>
+      <div id="soa-loading" style="display:none;text-align:center;padding:30px"><div class="spinner" style="margin:0 auto"></div></div>
+      <div id="soa-manager-list"></div>
+      <div id="soa-mgr-empty" style="display:none">
+        <div class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div class="empty-title">No SOAs found</div>
+          <div class="empty-sub">Upload an Excel SOA file to get started.</div>
+        </div>
       </div>
-      <div id="billed-list"></div>
     </div>
 
+    <!-- ════ BILLED TAB ════ -->
+    <div id="pane-billed" style="display:none">
+      <div class="page-eyebrow">Billed Shipments</div>
+      <div class="page-title">Billed</div>
+      <div class="stat-strip" id="billed-stats"></div>
+      <div class="stabs">
+        <button class="stab active" id="bsub-cal"   onclick="bSub('cal')">📅 Calendar</button>
+        <button class="stab"        id="bsub-list"  onclick="bSub('list')">📋 List</button>
+        <button class="stab"        id="bsub-soa"   onclick="bSub('soa')">Per SOA</button>
+        <button class="stab"        id="bsub-truck" onclick="bSub('truck')">Per Truck</button>
+      </div>
+      <div id="billed-cal-filters" style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
+        <select class="f-sel" id="bcal-truck" onchange="renderBilledCal()" style="min-width:90px"><option value="">All Trucks</option></select>
+        <select class="f-sel" id="bcal-ship" onchange="renderBilledCal()" style="min-width:130px"><option value="">All Shipments</option></select>
+      </div>
+      <div id="billed-list-filters" style="display:none">
+        <div class="filters">
+          <input class="f-search" id="bs" type="text" placeholder="🔍 Search..." oninput="renderBilledList()">
+          <select class="f-sel" id="bm" onchange="renderBilledList()"><option value="">All Months</option></select>
+          <select class="f-sel" id="bso" onchange="renderBilledList()"><option value="">All SOA</option></select>
+          <select class="f-sel" id="bt" onchange="renderBilledList()"><option value="">All Trucks</option></select>
+        </div>
+      </div>
+      <div id="billed-cal-view">
+        <div style="background:var(--bg);border-radius:var(--r);box-shadow:var(--out);padding:16px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="display:flex;gap:8px;align-items:center">
+              <button style="width:34px;height:34px;border-radius:10px;background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center" onclick="bilCalPrev()">&#x2039;</button>
+              <div style="font-size:15px;font-weight:700;color:var(--text);min-width:130px;text-align:center" id="bil-cal-month-label">—</div>
+              <button style="width:34px;height:34px;border-radius:10px;background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center" onclick="bilCalNext()">&#x203a;</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px" id="truck-legend"></div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px">
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sun</div><div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Mon</div><div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Tue</div><div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Wed</div><div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Thu</div><div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Fri</div><div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sat</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px" id="bil-cal-days"></div>
+        </div>
+      </div>
+      <div id="billed-list-view" style="display:none"><div id="billed-list"></div></div>
+    </div>
     <!-- ════ UNBILLED TAB ════ -->
     <div id="pane-unbilled" style="display:none">
       <div class="page-eyebrow">Trips — Not Yet Billed</div>
@@ -496,24 +613,7 @@ body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
       <div id="bo-list"></div>
     </div>
 
-    <!-- ════ LIQUIDATION TAB ════ -->
-    <div id="pane-liquidation" style="display:none">
-      <div class="page-eyebrow">Payment Tracking</div>
-      <div class="page-title">Liquidation per SOA</div>
-      <div class="stat-strip" id="liq-stats"></div>
-      <div class="filters">
-        <input class="f-search" id="ls" type="text" placeholder="🔍 Search SOA..." oninput="renderLiquidation()">
-        <select class="f-sel" id="lm" onchange="renderLiquidation()"><option value="">All Months</option></select>
-        <select class="f-sel" id="lf" onchange="renderLiquidation()">
-          <option value="">All Status</option>
-          <option value="full">Fully Liquidated</option>
-          <option value="partial">Partially Liquidated</option>
-          <option value="pending">Pending</option>
-        </select>
-      </div>
-      <div id="liq-list"></div>
-    </div>
-
+    
     <!-- ════ REPORT TAB ════ -->
     <div id="pane-report" style="display:none">
       <div class="page-eyebrow">Billing Analytics</div>
@@ -642,17 +742,49 @@ body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
   </div>
 </div>
 
-<!-- CONFIRM MODAL -->
+
+<!-- LIQUIDATION MODAL -->
+<div class="modal-overlay" id="liq-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title" id="liq-modal-title">Record Payment</div>
+      <button class="modal-close" onclick="closeLiqModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="liq-modal-summary" style="margin-bottom:14px"></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Payment Amount (₱)</div>
+      <input class="liq-input" id="liq-modal-amt" type="number" placeholder="Enter amount received...">
+      <div style="font-size:11px;color:var(--text2);margin-top:6px" id="liq-modal-hint"></div>
+      <button class="btn-full btn-full-green" style="margin-top:16px" onclick="saveLiquidation()">💰 Record Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- CALENDAR DAY MODAL -->
+<div class="modal-overlay" id="cal-day-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title" id="cal-day-modal-title">—</div>
+      <button class="modal-close" onclick="closeModal('cal-day-modal')">×</button>
+    </div>
+    <div class="modal-body" id="cal-day-modal-body"></div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
-    <div class="confirm-title" id="confirm-title">Confirm Action</div>
-    <div class="confirm-msg" id="confirm-msg">Are you sure?</div>
+    <div class="confirm-title" id="confirm-title">Confirm</div>
+    <div class="confirm-msg" id="confirm-msg"></div>
     <div class="confirm-btns">
       <button class="cb cb-cancel" onclick="closeConfirm()">Cancel</button>
       <button class="cb cb-confirm" id="confirm-ok-btn">Confirm</button>
     </div>
   </div>
 </div>
+
 
 <div class="toast" id="toast"></div>
 <div class="loader-overlay" id="lov">
@@ -680,7 +812,7 @@ let master  = [];
 let trips   = [];
 let unbilled= [];
 let ccR     = { exact:[], fuzzy:[], noMatch:[], invalid:[] };
-let bSt = 'all', uSt = 'all';
+let bSt = 'cal', uSt = 'all';
 let soaMasterData = []; // all SOAs for SOA Manager
 
 // Track corrections made this session
@@ -709,10 +841,10 @@ function switchTab(t){
     if(tab) tab.classList.toggle('active', x===t);
   });
   if(t==='soa')         loadSOAManager();
+  if(t==='soa')         loadSOAManager();
   if(t==='billed')      loadBilled();
   if(t==='unbilled')    loadUnbilled();
   if(t==='billedout')   loadBilledOut();
-  if(t==='liquidation') loadLiquidation();
   if(t==='report')      loadReport();
 }
 
@@ -1339,9 +1471,12 @@ async function loadBilled(){
   try{
     const res=await apiGet(SHEET_BILLING+'!A2:M');
     master=mapMaster(res.values||[]);
+    buildTruckColorMap();
+    buildBFilters();renderBStats();
+    if(bSt==='cal') renderBilledCal();
+    else renderBilledList();
     showLoad(false);
-    buildBFilters(); renderBStats(); renderBilled();
-  }catch(e){ showLoad(false); showToast('Failed to load'); }
+  }catch(e){showLoad(false);showToast('Failed to load');}
 }
 
 function buildBFilters(){
@@ -1351,6 +1486,10 @@ function buildBFilters(){
   document.getElementById('bso').innerHTML='<option value="">All SOA</option>'+soas.map(s=>`<option value="${s}">${s}</option>`).join('');
   const trucks=[...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
   document.getElementById('bt').innerHTML='<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const calTruck=document.getElementById('bcal-truck');
+  if(calTruck) calTruck.innerHTML='<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const calShip=document.getElementById('bcal-ship');
+  if(calShip){const ships=[...new Set(master.map(r=>r.shipment).filter(Boolean))].sort();calShip.innerHTML='<option value="">All Shipments</option>'+ships.map(s=>`<option value="${s}">${s}</option>`).join('');}
 }
 
 function renderBStats(){
@@ -1363,9 +1502,21 @@ function renderBStats(){
     ${inv?`<div class="stat-card"><div class="stat-val sv-red">${inv}</div><div class="stat-lbl">Invalid #</div></div>`:''}`;
 }
 
-function bSub(s){ bSt=s; ['all','soa','month','truck'].forEach(x=>document.getElementById('bsub-'+x).classList.toggle('active',x===s)); renderBilled(); }
+function bSub(s){
+  bSt=s;
+  ['cal','list','soa','truck'].forEach(x=>{const el=document.getElementById('bsub-'+x);if(el)el.classList.toggle('active',x===s);});
+  const calV=document.getElementById('billed-cal-view');
+  const listV=document.getElementById('billed-list-view');
+  const calF=document.getElementById('billed-cal-filters');
+  const listF=document.getElementById('billed-list-filters');
+  if(calV)calV.style.display=s==='cal'?'block':'none';
+  if(listV)listV.style.display=s==='cal'?'none':'block';
+  if(calF)calF.style.display=s==='cal'?'flex':'none';
+  if(listF)listF.style.display=s==='cal'?'none':'block';
+  if(s==='cal')renderBilledCal();else renderBilledList();
+}
 
-function renderBilled(){
+function renderBilledList(){
   const srch=document.getElementById('bs').value.toLowerCase();
   const mo=document.getElementById('bm').value;
   const so=document.getElementById('bso').value;
@@ -1540,21 +1691,9 @@ async function markBilledOut(soa){
 /* ══════════════════════════════════════
    LIQUIDATION TAB
 ══════════════════════════════════════ */
-async function loadLiquidation(){
-  if(!token) return;
-  showLoad(true,'Loading liquidation data...');
-  try{
-    const res=await apiGet(SHEET_BILLING+'!A2:M');
-    master=mapMaster(res.values||[]);
-    showLoad(false);
-    buildLFilters(); renderLStats(); renderLiquidation();
-  }catch(e){ showLoad(false); showToast('Failed to load'); }
-}
+async /* removed */
 
-function buildLFilters(){
-  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
-  document.getElementById('lm').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
-}
+/* removed */
 
 function buildSOALiquidation(){
   const map={};
@@ -1588,61 +1727,7 @@ function renderLStats(){
     <div class="stat-card"><div class="stat-val sv-red" style="font-size:12px">₱${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>`;
 }
 
-function renderLiquidation(){
-  const srch=document.getElementById('ls').value.toLowerCase();
-  const mo=document.getElementById('lm').value;
-  const st=document.getElementById('lf').value;
-  const soaMap=buildSOALiquidation();
-  let rows=Object.values(soaMap).filter(s=>{
-    if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
-    if(mo&&!s.monthSet.has(mo)) return false;
-    const pct=s.totalBilled>0?(s.totalLiquidated/s.totalBilled*100):0;
-    if(st==='full'&&pct<100) return false;
-    if(st==='partial'&&(pct<=0||pct>=100)) return false;
-    if(st==='pending'&&pct>0) return false;
-    return true;
-  });
-  const list=document.getElementById('liq-list');
-  if(!rows.length){ list.innerHTML=emptyH('No SOA found','Try adjusting your filters.'); return; }
-  list.innerHTML=rows.map(s=>{
-    const pct=s.totalBilled>0?Math.min(100,s.totalLiquidated/s.totalBilled*100):0;
-    const balance=s.totalBilled-s.totalLiquidated;
-    const status=pct>=100?'full':(pct>0?'partial':'pending');
-    const statusLabel={full:'Fully Liquidated',partial:'Partially Liquidated',pending:'Not Yet Liquidated'}[status];
-    const fillCls={full:'prog-fill-green',partial:'prog-fill-orange',pending:'prog-fill-red'}[status];
-    return `<div class="card" style="margin-bottom:10px">
-      <div style="padding:13px 16px">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
-          <div><div class="soa-number">${s.soa}</div><span class="pill pill-${status}">${statusLabel}</span></div>
-          <div style="text-align:right">
-            <div style="font-size:14px;font-weight:700;color:var(--green)">₱${s.totalBilled.toLocaleString()}</div>
-            <div style="font-size:10px;color:var(--text3)">total billed</div>
-          </div>
-        </div>
-        <div class="soa-meta">
-          <span>${s.items.length} shipment(s)</span>
-          <span>Collected: <b style="color:var(--green)">₱${s.totalLiquidated.toLocaleString()}</b></span>
-          <span>Balance: <b style="color:${balance>0?'var(--red)':'var(--green)'}">₱${balance.toLocaleString()}</b></span>
-        </div>
-        <div class="prog-track" style="margin-top:6px"><div class="prog-fill ${fillCls}" style="width:${pct.toFixed(1)}%"></div></div>
-        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text3)">
-          <span>${pct.toFixed(0)}% liquidated</span><span>${s.months.join(', ')}</span>
-        </div>
-        <div class="soa-chips" style="margin-top:6px">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
-        ${status!=='full'?`
-        <div class="liq-input-wrap" style="padding:10px 0 0;border-top:none">
-          <div class="liq-input-label">Record Payment for ${s.soa}</div>
-          <div class="liq-input-row">
-            <input class="liq-input" id="liq-amt-${s.soa.replace(/[^a-z0-9]/gi,'_')}"
-              type="number" placeholder="Enter amount collected..."
-              value="${balance>0?balance:''}">
-            <button class="btn btn-green" onclick="recordLiquidation('${s.soa}')">💰 Save</button>
-          </div>
-        </div>`:''}
-      </div>
-    </div>`;
-  }).join('');
-}
+/* removed */
 
 async function recordLiquidation(soa){
   const inputId='liq-amt-'+soa.replace(/[^a-z0-9]/gi,'_');
@@ -1874,6 +1959,310 @@ function renderReport(){
   if(invList.length){ invW.style.display=''; document.getElementById('rpt-cc-inv-list').innerHTML=invList.map(m=>`<tr><td><b style="color:var(--red)">${m.billing.shipment} ⛔</b></td><td class="ell" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td style="color:var(--red)">${m.billing.invalidReason}</td></tr>`).join(''); } else if(invW) invW.style.display='none';
 }
 
+
+/* ══ TRUCK COLORS ══ */
+const TRUCK_COLORS=['#c0392b','#1d4ed8','#16a34a','#7c3aed','#d97706','#0891b2'];
+let truckColorMap={};
+let bilCalYear=new Date().getFullYear(), bilCalMonth=new Date().getMonth();
+let currentLiqSOA=null;
+let _confirmCb=null;
+
+/* ══ MODAL HELPERS ══ */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeLiqModal(){closeModal('liq-modal');}
+function showConfirm(title,msg,cb){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').innerHTML=msg;
+  _confirmCb=cb;
+  document.getElementById('confirm-ok-btn').onclick=()=>{closeConfirm();if(_confirmCb)_confirmCb();};
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');_confirmCb=null;}
+
+
+/* ══ DELETE SOA ══ */
+function promptDeleteSOA(soa,count){
+  showConfirm('⚠️ Delete SOA?',
+    `Delete SOA <b>${soa}</b>?<br><br>This will:<br>• Remove all ${count} shipment records from Billing sheet<br>• Reset Billed = "No" on matching Trips<br><br>This cannot be undone.`,
+    ()=>executeDeleteSOA(soa)
+  );
+}
+
+async function executeDeleteSOA(soa){
+  showLoad(true,'Deleting SOA '+soa+'...');
+  try{
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
+    const allRows=res.values||[];
+    const toDelete=[],shipToUnbill=[];
+    allRows.forEach((r,i)=>{
+      if((r[3]||'')===soa){toDelete.push(i+2);const ship=String(r[2]||'').trim();if(ship)shipToUnbill.push(ship);}
+    });
+    if(!toDelete.length){showLoad(false);showToast('No rows found for this SOA');return;}
+    const blank=['','','','','','','','','','','','',''];
+    for(const rowNum of toDelete.sort((a,b)=>b-a)){
+      await apiPut(SHEET_BILLING+'!A'+rowNum+':M'+rowNum,[blank]);
+    }
+    const tRes=await apiGet(SHEET_TRIPS+'!A2:I');
+    const tRows=tRes.values||[];
+    let tripsFixed=0;
+    for(let i=0;i<tRows.length;i++){
+      const tNum=String(tRows[i][5]||'').trim();
+      if(shipToUnbill.includes(tNum)){await apiPut(SHEET_TRIPS+'!G'+(i+2),[['No']]);tripsFixed++;}
+    }
+    showLoad(false);showToast(`✅ SOA deleted. ${toDelete.length} rows cleared, ${tripsFixed} trips reset.`,'ok');
+    loadSOAManager();
+  }catch(err){showLoad(false);showToast('Delete failed: '+err.message);console.error(err);}
+}
+
+/* duplicate removed */
+
+/* ══ SOA MANAGER ══ */
+async function loadSOAManager(){
+  document.getElementById('soa-loading').style.display='block';
+  document.getElementById('soa-manager-list').innerHTML='';
+  document.getElementById('soa-mgr-empty').style.display='none';
+  try{
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
+    master=mapMaster(res.values||[]);
+    buildSOAMgrFilters();renderSOAStats();renderSOAManager();
+    document.getElementById('soa-loading').style.display='none';
+  }catch(e){document.getElementById('soa-loading').style.display='none';showToast('Failed to load');}
+}
+function buildSOAMgrFilters(){
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('soa-filter-month').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+}
+function renderSOAStats(){
+  const liqMap=buildSOALiquidation();
+  const vals=Object.values(liqMap);
+  const totalBill=vals.reduce((s,v)=>s+v.totalBilled,0);
+  const totalLiq=vals.reduce((s,v)=>s+v.totalLiquidated,0);
+  const outstanding=totalBill-totalLiq;
+  const cRate=totalBill>0?(totalLiq/totalBill*100):0;
+  document.getElementById('soa-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-blue">${vals.length}</div><div class="stat-lbl">SOAs</div></div>
+    <div class="stat-card"><div class="stat-val sv-green" style="font-size:12px">&#x20B1;${(totalBill/1000).toFixed(1)}K</div><div class="stat-lbl">Billed</div></div>
+    <div class="stat-card"><div class="stat-val sv-purple" style="font-size:12px">&#x20B1;${(totalLiq/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
+    <div class="stat-card"><div class="stat-val sv-red" style="font-size:12px">&#x20B1;${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>
+    <div class="stat-card"><div class="stat-val ${cRate>=80?'sv-green':cRate>=50?'sv-orange':'sv-red'}" style="font-size:14px">${cRate.toFixed(0)}%</div><div class="stat-lbl">Collection</div></div>`;
+}
+function renderSOAManager(){
+  const srch=(document.getElementById('soa-search').value||'').toLowerCase();
+  const monF=document.getElementById('soa-filter-month').value;
+  const stF=document.getElementById('soa-filter-status').value;
+  const liqMap=buildSOALiquidation();
+  let soas=Object.values(liqMap).filter(s=>{
+    if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
+    if(monF&&![...s.monthSet].includes(monF)) return false;
+    const pct=s.totalBilled>0?(s.totalLiquidated/s.totalBilled*100):0;
+    const boPct=s.count>0?(s.billedOut/s.count*100):0;
+    if(stF==='pending_bo'&&boPct>=100) return false;
+    if(stF==='pending_liq'&&s.totalLiquidated>0) return false;
+    if(stF==='partial'&&(pct<=0||pct>=100)) return false;
+    if(stF==='full'&&pct<100) return false;
+    return true;
+  }).sort((a,b)=>b.soa.localeCompare(a.soa));
+
+  const list=document.getElementById('soa-manager-list');
+  if(!soas.length){list.innerHTML='';document.getElementById('soa-mgr-empty').style.display='block';return;}
+  document.getElementById('soa-mgr-empty').style.display='none';
+
+  list.innerHTML=soas.map(s=>{
+    const liqPct=s.totalBilled>0?Math.min(100,s.totalLiquidated/s.totalBilled*100):0;
+    const boPct=s.count>0?(s.billedOut/s.count*100):0;
+    const balance=s.totalBilled-s.totalLiquidated;
+    const liqStatus=liqPct>=100?'full':liqPct>0?'partial':'pending';
+    const boStatus=boPct>=100?'billedout':'unbilled';
+    const months=[...s.monthSet].sort().reverse().map(monthLabel).join(', ');
+    const trucksHTML=[...s.trucks].map(t=>`<span class="soa-chip">&#x1F69B; ${t}</span>`).join('');
+    return `<div class="soa-tl-item">
+      <div class="soa-tl-head">
+        <div style="flex:1;min-width:0">
+          <div class="soa-tl-num">${s.soa}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">${s.count} shipments &#x00B7; <b style="color:var(--green)">&#x20B1;${s.totalBilled.toLocaleString()}</b></div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${months}</div>
+          <div class="soa-tl-badges">
+            <span class="pill pill-${boStatus}">${boStatus==='billedout'?'&#x2705; Billed Out':'&#x23F3; Pending BO'}</span>
+            <span class="pill pill-${liqStatus}">${liqStatus==='full'?'&#x1F4B0; Fully Paid':liqStatus==='partial'?'&#x1F536; Partial':'&#x23F3; Not Paid'}</span>
+          </div>
+          <div class="soa-chips" style="margin-top:6px">${trucksHTML}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:18px;font-weight:700;color:${balance>0?'var(--orange)':'var(--green)'}">&#x20B1;${s.totalLiquidated.toLocaleString()}</div>
+          <div style="font-size:9px;color:var(--text3)">collected</div>
+          ${balance>0?`<div style="font-size:11px;color:var(--red);font-weight:600;margin-top:2px">&#x20B1;${balance.toLocaleString()} due</div>`:''}
+        </div>
+      </div>
+      <div class="soa-tl-body">
+        <div class="soa-tl-progress">
+          <div><div class="soa-tl-prog-label">Billed Out</div><div class="prog-track"><div class="prog-fill prog-fill-blue" style="width:${boPct.toFixed(0)}%"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">${s.billedOut}/${s.count} (${boPct.toFixed(0)}%)</div></div>
+          <div><div class="soa-tl-prog-label">Liquidation</div><div class="prog-track"><div class="prog-fill ${liqPct>=100?'prog-fill-green':liqPct>0?'prog-fill-orange':'prog-fill-red'}" style="width:${liqPct.toFixed(0)}%"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">&#x20B1;${s.totalLiquidated.toLocaleString()} / &#x20B1;${s.totalBilled.toLocaleString()} (${liqPct.toFixed(0)}%)</div></div>
+        </div>
+      </div>
+      <div class="soa-tl-actions">
+        ${boPct<100?`<button class="btn btn-blue" onclick="markBilledOut('${s.soa}')">&#x1F4E4; Mark Billed Out</button>`:''}
+        ${liqStatus!=='full'?`<button class="btn btn-green" onclick="openLiqModal('${s.soa}')">&#x1F4B0; Record Payment</button>`:''}
+        <button class="btn btn-ghost" style="margin-left:auto" onclick="promptDeleteSOA('${s.soa}',${s.count})">&#x1F5D1;&#xFE0F; Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openLiqModal(soa){
+  currentLiqSOA=soa;
+  const liqMap=buildSOALiquidation();
+  const s=liqMap[soa]; if(!s) return;
+  const balance=s.totalBilled-s.totalLiquidated;
+  document.getElementById('liq-modal-title').textContent='Record Payment — '+soa;
+  document.getElementById('liq-modal-summary').innerHTML=`
+    <div style="background:var(--bg2);border-radius:var(--radius-sm);padding:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Total Billed</div><div style="font-size:15px;font-weight:700">&#x20B1;${s.totalBilled.toLocaleString()}</div></div>
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Collected</div><div style="font-size:15px;font-weight:700;color:var(--green)">&#x20B1;${s.totalLiquidated.toLocaleString()}</div></div>
+        <div><div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px">Balance</div><div style="font-size:15px;font-weight:700;color:var(--red)">&#x20B1;${balance.toLocaleString()}</div></div>
+      </div>
+    </div>`;
+  document.getElementById('liq-modal-hint').textContent=balance>0?`Outstanding: ₱${balance.toLocaleString()}. Enter full or partial payment.`:'';
+  document.getElementById('liq-modal-amt').value=balance>0?balance:'';
+  openModal('liq-modal');
+}
+
+async function saveLiquidation(){
+  if(!currentLiqSOA) return;
+  const amount=parseFloat(document.getElementById('liq-modal-amt').value);
+  if(isNaN(amount)||amount<=0){showToast('Enter a valid amount','warn');return;}
+  showLoad(true,'Recording payment...');
+  closeLiqModal();
+  try{
+    const soaItems=master.filter(r=>r.soa===currentLiqSOA);
+    const totalBilled=soaItems.reduce((a,r)=>a+Number(r.rate||0),0);
+    const newStatus=amount>=totalBilled?'Yes':'Partial';
+    const today=todayStr();
+    for(const item of soaItems){
+      const rowAmt=(Number(item.rate||0)/totalBilled)*amount;
+      await apiPut(SHEET_BILLING+'!H'+item.rowIndex+':J'+item.rowIndex,[[newStatus,today,rowAmt.toFixed(2)]]);
+      item.liquidated=newStatus;item.liquidationDate=today;item.liquidatedAmount=rowAmt.toFixed(2);
+    }
+    showLoad(false);showToast('Payment recorded!','ok');
+    renderSOAStats();renderSOAManager();
+  }catch(e){showLoad(false);showToast('Failed to record');console.error(e);}
+}
+
+/* ══ BILLING CALENDAR ══ */
+function buildTruckColorMap(){
+  const trucks=[...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
+  truckColorMap={};
+  trucks.forEach((t,i)=>{truckColorMap[t]=TRUCK_COLORS[i%TRUCK_COLORS.length];});
+  const leg=document.getElementById('truck-legend');
+  if(leg) leg.innerHTML=trucks.map(t=>`<div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text2)"><div style="width:10px;height:10px;border-radius:50%;background:${truckColorMap[t]}"></div>${t}</div>`).join('');
+}
+
+function toISO(dateStr){
+  if(!dateStr) return '';
+  if(/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr.substring(0,10);
+  const d=new Date(dateStr);
+  if(isNaN(d)) return '';
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function todayISO(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+
+function renderBilledCal(){
+  const truckF=document.getElementById('bcal-truck')?document.getElementById('bcal-truck').value:'';
+  const shipF=document.getElementById('bcal-ship')?document.getElementById('bcal-ship').value:'';
+  let rows=master.filter(r=>{
+    if(truckF&&r.truck!==truckF) return false;
+    if(shipF&&r.shipment!==shipF) return false;
+    return true;
+  });
+  // Auto-navigate to most recent month if current view is empty
+  if(rows.length>0){
+    const months=[...new Set(rows.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+    const viewMon=bilCalYear+'-'+String(bilCalMonth+1).padStart(2,'0');
+    if(!months.includes(viewMon)&&months.length>0){
+      const [y,m]=months[0].split('-').map(Number);
+      bilCalYear=y;bilCalMonth=m-1;
+    }
+  }
+  const label=new Date(bilCalYear,bilCalMonth,1).toLocaleDateString('en-PH',{month:'long',year:'numeric'});
+  const el=document.getElementById('bil-cal-month-label');if(el)el.textContent=label;
+  const dateMap={};
+  rows.forEach(r=>{
+    const iso=toISO(r.date);if(!iso)return;
+    const[y,m]=iso.split('-').map(Number);
+    if(y!==bilCalYear||m-1!==bilCalMonth)return;
+    if(!dateMap[iso])dateMap[iso]=[];
+    dateMap[iso].push(r);
+  });
+  const firstDay=new Date(bilCalYear,bilCalMonth,1).getDay();
+  const daysInMonth=new Date(bilCalYear,bilCalMonth+1,0).getDate();
+  const todayI=todayISO();
+  let html='';
+  for(let i=0;i<firstDay;i++) html+='<div class="bil-cal-day empty"></div>';
+  for(let day=1;day<=daysInMonth;day++){
+    const iso=bilCalYear+'-'+String(bilCalMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const dayShips=dateMap[iso]||[];
+    const isToday=iso===todayI;
+    const hasData=dayShips.length>0;
+    const byTruck={};
+    dayShips.forEach(r=>{if(!byTruck[r.truck])byTruck[r.truck]=0;byTruck[r.truck]++;});
+    const dots=Object.keys(byTruck).map(t=>`<div class="bil-cal-dot" style="background:${truckColorMap[t]||'#888'}" title="${t}"></div>`).join('');
+    html+=`<div class="bil-cal-day${isToday?' today':''}${hasData?' has-data':''}" onclick="showCalDay('${iso}')">
+      <div class="bil-cal-daynum">${day}</div>
+      ${hasData?`<div class="bil-cal-dots">${dots}</div><div class="bil-cal-count">${dayShips.length}</div>`:''}
+    </div>`;
+  }
+  const calEl=document.getElementById('bil-cal-days');if(calEl)calEl.innerHTML=html;
+}
+
+function bilCalPrev(){bilCalMonth--;if(bilCalMonth<0){bilCalMonth=11;bilCalYear--;}renderBilledCal();}
+function bilCalNext(){bilCalMonth++;if(bilCalMonth>11){bilCalMonth=0;bilCalYear++;}renderBilledCal();}
+
+function showCalDay(iso){
+  const truckF=document.getElementById('bcal-truck')?document.getElementById('bcal-truck').value:'';
+  const shipF=document.getElementById('bcal-ship')?document.getElementById('bcal-ship').value:'';
+  let dayShips=master.filter(r=>{
+    if(toISO(r.date)!==iso) return false;
+    if(truckF&&r.truck!==truckF) return false;
+    if(shipF&&r.shipment!==shipF) return false;
+    return true;
+  });
+  if(!dayShips.length){showToast('No billed shipments on this date');return;}
+  const d=new Date(iso+'T00:00:00');
+  const label=d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('cal-day-modal-title').textContent=label;
+  const byTruck={};
+  dayShips.forEach(r=>{if(!byTruck[r.truck])byTruck[r.truck]=[];byTruck[r.truck].push(r);});
+  let html='';
+  Object.keys(byTruck).sort().forEach(truck=>{
+    const tShips=byTruck[truck];
+    const tAmt=tShips.reduce((s,r)=>s+Number(r.rate||0),0);
+    const color=truckColorMap[truck]||'#888';
+    html+=`<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0"></div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${truck}</div>
+        <div style="margin-left:auto;font-size:13px;font-weight:700;color:var(--green)">&#x20B1;${tAmt.toLocaleString()}</div>
+      </div>`;
+    tShips.forEach(r=>{
+      const inv=r.valid==='No';
+      html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 11px;margin-bottom:4px;border-radius:var(--radius-sm);background:var(--bg2)">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:${inv?'var(--red)':'var(--text)'};font-family:var(--mono)">${r.shipment}${inv?' &#x26D4;':''}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:2px">${r.soa} &middot; ${r.billedOut==='Yes'?'&#x2705; BO':'&#x23F3; BO pending'} &middot; ${r.liquidated==='Yes'?'&#x1F4B0; Paid':r.liquidated==='Partial'?'&#x1F536; Partial':'&#x23F3; Unpaid'}</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--green)">&#x20B1;${Number(r.rate||0).toLocaleString()}</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  const dayTotal=dayShips.reduce((s,r)=>s+Number(r.rate||0),0);
+  html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg);border-radius:var(--radius-sm);box-shadow:var(--out);margin-top:8px"><span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Day Total</span><span style="font-size:18px;font-weight:700;color:var(--green)">&#x20B1;${dayTotal.toLocaleString()}</span></div>`;
+  document.getElementById('cal-day-modal-body').innerHTML=html;
+  openModal('cal-day-modal');
+}
+
+
 /* ══════════════════════════════════════
    HELPERS
 ══════════════════════════════════════ */
@@ -1941,7 +2330,6 @@ function apiAppend(range,values){ return fetch(`https://sheets.googleapis.com/v4
 function apiPut(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
 
 /* ── CONFIRM MODAL ── */
-let _confirmCb=null;
 function showConfirm(title,msg,cb){
   document.getElementById('confirm-title').textContent=title;
   document.getElementById('confirm-msg').innerHTML=msg.replace(/\n/g,'<br>');
