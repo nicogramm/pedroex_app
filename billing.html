@@ -1816,24 +1816,77 @@ async function fixScanTypo(i) {
     `Change Trips row <b>${t.rowIndex}</b>:<br><br>
     <span style="font-family:monospace;color:var(--orange)">${t.shipmentNumber}</span><br>→<br>
     <span style="font-family:monospace;color:var(--blue)">${newNum}</span><br><br>
-    🚛 ${t.truck} · ${t.deliveryDate}`,
+    🚛 ${t.truck} · ${t.deliveryDate}<br><br>
+    <span style="font-size:11px;color:var(--text3)">Will update: ${SHEET_TRIPS}!F${t.rowIndex}</span>`,
     async () => {
-      document.getElementById('st-acts-'+i).innerHTML = '<span style="font-size:11px;color:var(--text2)">Updating...</span>';
+      const actsEl = document.getElementById('st-acts-'+i);
+      actsEl.innerHTML = '<span style="font-size:11px;color:var(--text2)">⏳ Updating row '+t.rowIndex+'...</span>';
+
+      // Refresh token from storage in case it expired
+      token = localStorage.getItem('pedroex-token') || token;
+
       try {
-        console.log('Updating Trips row', t.rowIndex, 'column F with:', newNum);
-        const result = await apiPut(SHEET_TRIPS + '!F' + t.rowIndex, [[newNum]]);
-        console.log('apiPut result:', result);
+        // Use explicit A1 notation with end cell for reliability
+        const range = SHEET_TRIPS + '!F' + t.rowIndex + ':F' + t.rowIndex;
+
+        // Make raw fetch so we can inspect the full response
+        const resp = await fetch(
+          'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+          '/values/' + encodeURIComponent(range) + '?valueInputOption=USER_ENTERED',
+          {
+            method: 'PUT',
+            headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ values: [[newNum]] })
+          }
+        );
+
+        const body = await resp.json();
+
+        if (!resp.ok) {
+          // Show the actual API error message
+          const errMsg = (body.error && body.error.message) || ('HTTP ' + resp.status);
+          console.error('Sheets API error:', body);
+          actsEl.innerHTML = `
+            <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">❌ API Error: ${errMsg}</div>
+            <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
+            <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
+          showToast('API Error: ' + errMsg, 'warn');
+          return;
+        }
+
+        // Verify: read the cell back to confirm
+        const verifyResp = await fetch(
+          'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+          '/values/' + encodeURIComponent(range),
+          { headers: { Authorization: 'Bearer ' + token } }
+        );
+        const verifyBody = await verifyResp.json();
+        const actualVal = verifyBody.values && verifyBody.values[0] && verifyBody.values[0][0];
+
+        if (actualVal !== newNum) {
+          actsEl.innerHTML = `
+            <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">
+              ⚠️ Verify failed — sheet shows: <b style="font-family:monospace">${actualVal || '(blank)'}</b>
+            </div>
+            <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
+            <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
+          showToast('Verify failed — sheet shows: ' + (actualVal || 'blank'), 'warn');
+          return;
+        }
+
+        // Success confirmed by verify
         t.shipmentNumber = newNum;
-        scanSkip('st', i, '✅ Fixed — Trips row ' + t.rowIndex + ' updated');
-        showToast('✅ Row ' + t.rowIndex + ' corrected!', 'ok');
-        // Refresh unbilled list with fresh data
+        scanSkip('st', i, '✅ Verified — Trips row ' + t.rowIndex + ' = ' + newNum);
+        showToast('✅ Row ' + t.rowIndex + ' confirmed updated!', 'ok');
         await loadUnbilled();
+
       } catch (e) {
-        console.error('apiPut failed:', e);
-        showToast('Update failed (row ' + t.rowIndex + '): ' + e, 'warn');
-        document.getElementById('st-acts-'+i).innerHTML = `
-          <button class="btn btn-blue" onclick="fixScanTypo(${i})">✏️ Retry Fix</button>
+        console.error('Network error:', e);
+        actsEl.innerHTML = `
+          <div style="font-size:11px;color:var(--red);font-weight:600;margin-bottom:6px">❌ Network error: ${e}</div>
+          <button class="btn btn-blue" onclick="fixScanTypo(${i})">Retry</button>
           <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
+        showToast('Network error — check connection', 'warn');
       }
     }
   );
