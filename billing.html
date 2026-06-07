@@ -2372,55 +2372,8 @@ function closeConfirm(){document.getElementById('confirm-overlay').classList.rem
 
 
 /* ══ DELETE SOA ══ */
-function promptDeleteSOA(soa,count){
-  showConfirm('⚠️ Delete SOA?',
-    `Delete SOA <b>${soa}</b>?<br><br>This will:<br>• Remove all ${count} shipment records from Billing sheet<br>• Reset Billed = "No" on matching Trips<br><br>This cannot be undone.`,
-    ()=>executeDeleteSOA(soa)
-  );
-}
-
-async function executeDeleteSOA(soa){
-  showLoad(true,'Deleting SOA '+soa+'...');
-  try{
-    const res=await apiGet(SHEET_BILLING+'!A2:M');
-    const allRows=res.values||[];
-    const toDelete=[],shipToUnbill=[];
-    allRows.forEach((r,i)=>{
-      if((r[3]||'')===soa){toDelete.push(i+2);const ship=String(r[2]||'').trim();if(ship)shipToUnbill.push(ship);}
-    });
-    if(!toDelete.length){showLoad(false);showToast('No rows found for this SOA');return;}
-    const blank=['','','','','','','','','','','','',''];
-    for(const rowNum of toDelete.sort((a,b)=>b-a)){
-      await apiPut(SHEET_BILLING+'!A'+rowNum+':M'+rowNum,[blank]);
-    }
-    const tRes=await apiGet(SHEET_TRIPS+'!A2:I');
-    const tRows=tRes.values||[];
-    let tripsFixed=0;
-    for(let i=0;i<tRows.length;i++){
-      const tNum=String(tRows[i][5]||'').trim();
-      if(shipToUnbill.includes(tNum)){await apiPut(SHEET_TRIPS+'!G'+(i+2),[['No']]);tripsFixed++;}
-    }
-    showLoad(false);showToast(`✅ SOA deleted. ${toDelete.length} rows cleared, ${tripsFixed} trips reset.`,'ok');
-    loadSOAManager();
-  }catch(err){showLoad(false);showToast('Delete failed: '+err.message);console.error(err);}
-}
 
 /* ══ SOA MANAGER ══ */
-async function loadSOAManager(){
-  document.getElementById('soa-loading').style.display='block';
-  document.getElementById('soa-manager-list').innerHTML='';
-  document.getElementById('soa-mgr-empty').style.display='none';
-  try{
-    const res=await apiGet(SHEET_BILLING+'!A2:M');
-    master=mapMaster(res.values||[]);
-    buildSOAMgrFilters();renderSOAStats();renderSOAManager();
-    document.getElementById('soa-loading').style.display='none';
-  }catch(e){document.getElementById('soa-loading').style.display='none';showToast('Failed to load');}
-}
-function buildSOAMgrFilters(){
-  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
-  document.getElementById('soa-filter-month').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
-}
 function renderSOAStats(){
   const liqMap=buildSOALiquidation();
   const vals=Object.values(liqMap);
@@ -2434,67 +2387,6 @@ function renderSOAStats(){
     <div class="stat-card"><div class="stat-val sv-purple" style="font-size:12px">&#x20B1;${(totalLiq/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
     <div class="stat-card"><div class="stat-val sv-red" style="font-size:12px">&#x20B1;${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>
     <div class="stat-card"><div class="stat-val ${cRate>=80?'sv-green':cRate>=50?'sv-orange':'sv-red'}" style="font-size:14px">${cRate.toFixed(0)}%</div><div class="stat-lbl">Collection</div></div>`;
-}
-function renderSOAManager(){
-  const srch=(document.getElementById('soa-search').value||'').toLowerCase();
-  const monF=document.getElementById('soa-filter-month').value;
-  const stF=document.getElementById('soa-filter-status').value;
-  const liqMap=buildSOALiquidation();
-  let soas=Object.values(liqMap).filter(s=>{
-    if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
-    if(monF&&![...s.monthSet].includes(monF)) return false;
-    const pct=s.totalBilled>0?(s.totalLiquidated/s.totalBilled*100):0;
-    const boPct=s.count>0?(s.billedOut/s.count*100):0;
-    if(stF==='pending_bo'&&boPct>=100) return false;
-    if(stF==='pending_liq'&&s.totalLiquidated>0) return false;
-    if(stF==='partial'&&(pct<=0||pct>=100)) return false;
-    if(stF==='full'&&pct<100) return false;
-    return true;
-  }).sort((a,b)=>b.soa.localeCompare(a.soa));
-
-  const list=document.getElementById('soa-manager-list');
-  if(!soas.length){list.innerHTML='';document.getElementById('soa-mgr-empty').style.display='block';return;}
-  document.getElementById('soa-mgr-empty').style.display='none';
-
-  list.innerHTML=soas.map(s=>{
-    const liqPct=s.totalBilled>0?Math.min(100,s.totalLiquidated/s.totalBilled*100):0;
-    const boPct=s.count>0?(s.billedOut/s.count*100):0;
-    const balance=s.totalBilled-s.totalLiquidated;
-    const liqStatus=liqPct>=100?'full':liqPct>0?'partial':'pending';
-    const boStatus=boPct>=100?'billedout':'unbilled';
-    const months=[...s.monthSet].sort().reverse().map(monthLabel).join(', ');
-    const trucksHTML=[...s.trucks].map(t=>`<span class="soa-chip">&#x1F69B; ${t}</span>`).join('');
-    return `<div class="soa-tl-item">
-      <div class="soa-tl-head">
-        <div style="flex:1;min-width:0">
-          <div class="soa-tl-num">${s.soa}</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px">${s.count} shipments &#x00B7; <b style="color:var(--green)">&#x20B1;${s.totalBilled.toLocaleString()}</b></div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px">${months}</div>
-          <div class="soa-tl-badges">
-            <span class="pill pill-${boStatus}">${boStatus==='billedout'?'&#x2705; Billed Out':'&#x23F3; Pending BO'}</span>
-            <span class="pill pill-${liqStatus}">${liqStatus==='full'?'&#x1F4B0; Fully Paid':liqStatus==='partial'?'&#x1F536; Partial':'&#x23F3; Not Paid'}</span>
-          </div>
-          <div class="soa-chips" style="margin-top:6px">${trucksHTML}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:18px;font-weight:700;color:${balance>0?'var(--orange)':'var(--green)'}">&#x20B1;${s.totalLiquidated.toLocaleString()}</div>
-          <div style="font-size:9px;color:var(--text3)">collected</div>
-          ${balance>0?`<div style="font-size:11px;color:var(--red);font-weight:600;margin-top:2px">&#x20B1;${balance.toLocaleString()} due</div>`:''}
-        </div>
-      </div>
-      <div class="soa-tl-body">
-        <div class="soa-tl-progress">
-          <div><div class="soa-tl-prog-label">Billed Out</div><div class="prog-track"><div class="prog-fill prog-fill-blue" style="width:${boPct.toFixed(0)}%"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">${s.billedOut}/${s.count} (${boPct.toFixed(0)}%)</div></div>
-          <div><div class="soa-tl-prog-label">Liquidation</div><div class="prog-track"><div class="prog-fill ${liqPct>=100?'prog-fill-green':liqPct>0?'prog-fill-orange':'prog-fill-red'}" style="width:${liqPct.toFixed(0)}%"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">&#x20B1;${s.totalLiquidated.toLocaleString()} / &#x20B1;${s.totalBilled.toLocaleString()} (${liqPct.toFixed(0)}%)</div></div>
-        </div>
-      </div>
-      <div class="soa-tl-actions">
-        ${boPct<100?`<button class="btn btn-blue" onclick="markBilledOut('${s.soa}')">&#x1F4E4; Mark Billed Out</button>`:''}
-        ${liqStatus!=='full'?`<button class="btn btn-green" onclick="openLiqModal('${s.soa}')">&#x1F4B0; Record Payment</button>`:''}
-        <button class="btn btn-ghost" style="margin-left:auto" onclick="promptDeleteSOA('${s.soa}',${s.count})">&#x1F5D1;&#xFE0F; Delete</button>
-      </div>
-    </div>`;
-  }).join('');
 }
 
 function openLiqModal(soa){
@@ -2718,14 +2610,6 @@ function apiAppend(range,values){ return fetch(`https://sheets.googleapis.com/v4
 function apiPut(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
 
 /* ── CONFIRM MODAL ── */
-function showConfirm(title,msg,cb){
-  document.getElementById('confirm-title').textContent=title;
-  document.getElementById('confirm-msg').innerHTML=msg.replace(/\n/g,'<br>');
-  _confirmCb=cb;
-  document.getElementById('confirm-ok-btn').onclick=()=>{ closeConfirm(); if(_confirmCb) _confirmCb(); };
-  document.getElementById('confirm-overlay').classList.add('open');
-}
-function closeConfirm(){ document.getElementById('confirm-overlay').classList.remove('open'); _confirmCb=null; }
 
 /* ── UI HELPERS ── */
 function showUprog(s){ document.getElementById('uprog').classList.toggle('show',s); }
