@@ -344,6 +344,17 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
 .mc-score.med{background:var(--orange-soft);color:var(--orange)}
 .mc-score.low{background:var(--red-soft);color:var(--red)}
 
+
+/* ── SCAN ISSUE ITEMS ── */
+.scan-item{border-radius:var(--rsm);padding:11px 13px;margin-bottom:8px}
+.scan-item.typo{background:var(--orange-soft);border-left:3px solid var(--orange)}
+.scan-item.dup{background:var(--red-soft);border-left:3px solid var(--red)}
+.scan-item.inv{background:var(--red-soft);border-left:3px solid var(--red)}
+.scan-item.nd{background:var(--orange-soft);border-left:3px solid var(--orange)}
+.scan-num{font-size:13px;font-weight:700;font-family:var(--mono);margin-bottom:3px}
+.scan-meta{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:5px}
+.scan-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
 </style>
 </head>
 <body>
@@ -549,8 +560,78 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
     <!-- ════ UNBILLED TAB ════ -->
     <div id="pane-unbilled" style="display:none">
       <div class="page-eyebrow">Trips — Not Yet Billed</div>
-      <div class="page-title">Unbilled Shipments</div>
+      <div class="page-title">Unbilled</div>
       <div class="stat-strip" id="unbilled-stats"></div>
+
+      <!-- SCAN BUTTON -->
+      <div style="background:var(--bg);border-radius:var(--r);box-shadow:var(--out);padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text)">🔍 Number Quality Scan</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">Check if unbilled numbers are typos of already-billed shipments</div>
+          </div>
+          <button class="btn btn-primary" id="scan-issues-btn" onclick="runUnbilledScan()">Scan for Issues</button>
+        </div>
+      </div>
+
+      <!-- SCAN RESULTS (hidden until scan runs) -->
+      <div id="scan-results-wrap" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">Scan Results</div>
+          <button onclick="closeScanResults()" style="font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;font-family:var(--font)">✕ Close</button>
+        </div>
+        <div class="stat-strip" id="scan-summary-stats" style="margin-bottom:10px"></div>
+
+        <!-- TYPOS -->
+        <div id="scan-typo-wrap" style="display:none">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin:10px 0 6px;display:flex;align-items:center;gap:6px">
+            <span style="width:3px;height:10px;background:var(--orange);border-radius:2px;display:inline-block"></span>
+            ⚠️ POSSIBLE TYPOS — CLOSE MATCH TO A BILLED NUMBER
+          </div>
+          <div style="background:var(--orange-soft);border-left:3px solid var(--orange);border-radius:var(--rsm);padding:9px 12px;font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.6">
+            These unbilled numbers are 1–2 digits away from a billed number. The correct number (from the SOA) is shown in <b style="color:var(--blue)">blue</b>. If it's the same trip, tap <b>Fix</b> to correct the Trips sheet.
+          </div>
+          <div id="scan-typo-list"></div>
+        </div>
+
+        <!-- NEAR DUPES WITHIN UNBILLED -->
+        <div id="scan-nd-wrap" style="display:none">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin:10px 0 6px;display:flex;align-items:center;gap:6px">
+            <span style="width:3px;height:10px;background:var(--orange);border-radius:2px;display:inline-block"></span>
+            🔄 NEAR-DUPLICATES WITHIN UNBILLED LIST
+          </div>
+          <div id="scan-nd-list"></div>
+        </div>
+
+        <!-- EXACT DUPES -->
+        <div id="scan-dup-wrap" style="display:none">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin:10px 0 6px;display:flex;align-items:center;gap:6px">
+            <span style="width:3px;height:10px;background:var(--red);border-radius:2px;display:inline-block"></span>
+            🚨 EXACT DUPLICATES
+          </div>
+          <div id="scan-dup-list"></div>
+        </div>
+
+        <!-- INVALID -->
+        <div id="scan-inv-wrap" style="display:none">
+          <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin:10px 0 6px;display:flex;align-items:center;gap:6px">
+            <span style="width:3px;height:10px;background:var(--red);border-radius:2px;display:inline-block"></span>
+            ⛔ INVALID FORMAT
+          </div>
+          <div id="scan-inv-list"></div>
+        </div>
+
+        <!-- ALL CLEAN -->
+        <div id="scan-clean-wrap" style="display:none">
+          <div style="background:var(--green-soft);border-left:3px solid var(--green);border-radius:var(--rsm);padding:11px 13px;font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px">
+            ✅ All unbilled numbers look clean — no typos or format issues detected. These are genuinely waiting for an SOA upload.
+          </div>
+        </div>
+
+        <div style="height:1px;background:rgba(0,0,0,.06);margin:14px 0"></div>
+      </div>
+
+      <!-- REGULAR UNBILLED LIST -->
       <div class="filters">
         <input class="f-search" id="us" type="text" placeholder="🔍 Search..." oninput="renderUnbilled()">
         <select class="f-sel" id="um" onchange="renderUnbilled()"><option value="">All Months</option></select>
@@ -1520,6 +1601,295 @@ function renderBilledList(){
 /* ══════════════════════════════════════
    UNBILLED TAB
 ══════════════════════════════════════ */
+
+/* ══ UNBILLED SCAN ══ */
+let scanTypos = [], scanDups = [], scanInvalids = [], scanNearDupes = [];
+
+async function runUnbilledScan() {
+  const btn = document.getElementById('scan-issues-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Scanning...';
+
+  try {
+    // Need fresh data from both sheets
+    showLoad(true, 'Loading data for scan...');
+    const [tRes, bRes] = await Promise.all([
+      apiGet(SHEET_TRIPS + '!A2:I'),
+      apiGet(SHEET_BILLING + '!A2:M')
+    ]);
+    showLoad(false);
+
+    const allTrips = (tRes.values || []).filter(r => r[0]).map((r, i) => ({
+      rowIndex: i + 2,
+      deliveryDate: r[1] || '', truck: r[2] || '',
+      shipmentDate: r[3] || '', type: r[4] || '',
+      shipmentNumber: String(r[5] || '').trim(),
+      billed: String(r[6] || '').trim(),
+      route: r[7] || '', rate: r[8] || ''
+    }));
+
+    // All billed numbers — from Billing sheet AND Trips where Billed=Yes
+    const billedFromSheet = new Set(
+      (bRes.values || []).filter(r => r[2]).map(r => String(r[2]).trim()).filter(s => SHIP_VALID.test(s))
+    );
+    const billedFromTrips = new Set(
+      allTrips.filter(t => t.billed === 'Yes' && SHIP_VALID.test(t.shipmentNumber)).map(t => t.shipmentNumber)
+    );
+    const allBilled = new Set([...billedFromSheet, ...billedFromTrips]);
+    const allBilledArr = [...allBilled];
+
+    // Unbilled trips
+    const unb = allTrips.filter(t => t.billed !== 'Yes' && !billedFromSheet.has(t.shipmentNumber));
+
+    // Classify each
+    scanTypos = []; scanDups = []; scanInvalids = []; scanNearDupes = [];
+    const seen = {}, cleanList = [];
+
+    unb.forEach(t => {
+      const num = t.shipmentNumber;
+
+      // Invalid format
+      if (!SHIP_VALID.test(num)) {
+        scanInvalids.push({ trip: t, reason: scanInvalidReason(num) });
+        return;
+      }
+
+      // Exact duplicate within unbilled
+      if (seen[num]) {
+        scanDups.push({ trip: t, other: seen[num] });
+      } else {
+        seen[num] = t;
+      }
+
+      // Typo check: 1-2 edit distance from any billed number
+      let bestMatch = null, bestDist = 99;
+      for (const bn of allBilledArr) {
+        if (Math.abs(num.length - bn.length) > 2) continue; // skip obvious mismatches
+        const d = scanEditDist(num, bn);
+        if (d > 0 && d < bestDist) { bestMatch = bn; bestDist = d; }
+        if (bestDist === 1) break; // can't do better
+      }
+      if (bestMatch && bestDist <= 2) {
+        scanTypos.push({ trip: t, similar: bestMatch, dist: bestDist });
+        return;
+      }
+
+      cleanList.push(t);
+    });
+
+    // Near-dupes within unbilled (pairs with dist=1, not already in typos)
+    const validUnb = unb.filter(t => SHIP_VALID.test(t.shipmentNumber));
+    const typoNums = new Set(scanTypos.map(x => x.trip.shipmentNumber));
+    for (let i = 0; i < validUnb.length; i++) {
+      for (let j = i + 1; j < validUnb.length; j++) {
+        if (typoNums.has(validUnb[i].shipmentNumber) || typoNums.has(validUnb[j].shipmentNumber)) continue;
+        if (scanEditDist(validUnb[i].shipmentNumber, validUnb[j].shipmentNumber) === 1) {
+          scanNearDupes.push({ a: validUnb[i], b: validUnb[j] });
+        }
+      }
+    }
+
+    renderScanResults(cleanList.length, unb.length);
+    btn.textContent = '🔄 Re-Scan';
+    btn.disabled = false;
+
+  } catch (e) {
+    showLoad(false);
+    console.error(e);
+    showToast('Scan failed — check connection', 'warn');
+    btn.textContent = 'Scan for Issues';
+    btn.disabled = false;
+  }
+}
+
+function renderScanResults(cleanCount, totalUnb) {
+  const wrap = document.getElementById('scan-results-wrap');
+  wrap.style.display = 'block';
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const flagged = scanTypos.length + scanDups.length + scanInvalids.length + scanNearDupes.length;
+
+  // Summary stats
+  document.getElementById('scan-summary-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val sv-blue">${totalUnb}</div><div class="stat-lbl">Scanned</div></div>
+    <div class="stat-card"><div class="stat-val ${flagged > 0 ? 'sv-red' : 'sv-green'}">${flagged}</div><div class="stat-lbl">Flagged</div></div>
+    <div class="stat-card"><div class="stat-val sv-orange">${scanTypos.length}</div><div class="stat-lbl">Typos</div></div>
+    <div class="stat-card"><div class="stat-val sv-green">${cleanCount}</div><div class="stat-lbl">Clean</div></div>`;
+
+  // TYPOS
+  const typoWrap = document.getElementById('scan-typo-wrap');
+  if (scanTypos.length) {
+    typoWrap.style.display = 'block';
+    document.getElementById('scan-typo-list').innerHTML = scanTypos.map((item, i) => {
+      const t = item.trip;
+      return `<div class="scan-item typo" id="st-${i}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
+          <div>
+            <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">
+              ⚠️ Typo — ${item.dist} digit${item.dist > 1 ? 's' : ''} off from a billed number
+            </div>
+            <div class="scan-num" style="color:var(--orange)">${t.shipmentNumber}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ${t.rowIndex}</div>
+            <div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">₱${Number(t.rate || 0).toLocaleString()}</div>
+          </div>
+        </div>
+        <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route || '—'}</div>
+        ${scanBuildDiff(t.shipmentNumber, item.similar)}
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">
+          Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
+        </div>
+        <div class="scan-acts" id="st-acts-${i}">
+          <button class="btn btn-blue" onclick="fixScanTypo(${i})">✏️ Fix → Use <span style="font-family:var(--mono)">${item.similar}</span></button>
+          <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>
+        </div>
+        <div id="st-done-${i}" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>
+      </div>`;
+    }).join('');
+  } else typoWrap.style.display = 'none';
+
+  // NEAR DUPES
+  const ndWrap = document.getElementById('scan-nd-wrap');
+  if (scanNearDupes.length) {
+    ndWrap.style.display = 'block';
+    document.getElementById('scan-nd-list').innerHTML = scanNearDupes.map((item, i) => `
+      <div class="scan-item nd">
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:6px">🔄 Near-Duplicate Pair (1 digit apart)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px">
+          <div>
+            <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Row ${item.a.rowIndex}</div>
+            <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange)">${item.a.shipmentNumber}</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:1px">🚛 ${item.a.truck} · ${item.a.deliveryDate}</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Row ${item.b.rowIndex}</div>
+            <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--orange)">${item.b.shipmentNumber}</div>
+            <div style="font-size:10px;color:var(--text2);margin-top:1px">🚛 ${item.b.truck} · ${item.b.deliveryDate}</div>
+          </div>
+        </div>
+        ${scanBuildDiff(item.a.shipmentNumber, item.b.shipmentNumber)}
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">Check if one of these is a typo of the other, or if they're two separate valid shipments.</div>
+      </div>`).join('');
+  } else ndWrap.style.display = 'none';
+
+  // EXACT DUPES
+  const dupWrap = document.getElementById('scan-dup-wrap');
+  if (scanDups.length) {
+    dupWrap.style.display = 'block';
+    document.getElementById('scan-dup-list').innerHTML = scanDups.map(item => `
+      <div class="scan-item dup">
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:5px">🚨 Exact Duplicate Number</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)">${item.trip.shipmentNumber}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:5px;line-height:1.7">
+          Row ${item.other.rowIndex}: 🚛 ${item.other.truck} · ${item.other.deliveryDate}<br>
+          Row ${item.trip.rowIndex}: 🚛 ${item.trip.truck} · ${item.trip.deliveryDate}
+        </div>
+        <div style="font-size:11px;color:var(--red);font-weight:600;margin-top:5px">Same number entered twice — check Trips sheet manually.</div>
+      </div>`).join('');
+  } else dupWrap.style.display = 'none';
+
+  // INVALID
+  const invWrap = document.getElementById('scan-inv-wrap');
+  if (scanInvalids.length) {
+    invWrap.style.display = 'block';
+    document.getElementById('scan-inv-list').innerHTML = scanInvalids.map(item => `
+      <div class="scan-item inv">
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:5px">⛔ Invalid Format</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)">${item.trip.shipmentNumber || '(blank)'}</div>
+        <div class="scan-meta">🚛 ${item.trip.truck} · 📅 ${item.trip.deliveryDate} · Row ${item.trip.rowIndex}</div>
+        <div style="font-size:11px;color:var(--red);font-weight:600">${item.reason}</div>
+      </div>`).join('');
+  } else invWrap.style.display = 'none';
+
+  // ALL CLEAN
+  document.getElementById('scan-clean-wrap').style.display =
+    (flagged === 0) ? 'block' : 'none';
+}
+
+async function fixScanTypo(i) {
+  const item = scanTypos[i]; if (!item) return;
+  const t = item.trip;
+  const newNum = item.similar;
+  showConfirm(
+    'Fix Shipment Number',
+    `Change Trips row <b>${t.rowIndex}</b>:<br><br>
+    <span style="font-family:monospace;color:var(--orange)">${t.shipmentNumber}</span><br>→<br>
+    <span style="font-family:monospace;color:var(--blue)">${newNum}</span><br><br>
+    🚛 ${t.truck} · ${t.deliveryDate}`,
+    async () => {
+      document.getElementById('st-acts-'+i).innerHTML = '<span style="font-size:11px;color:var(--text2)">Updating...</span>';
+      try {
+        await apiPut(SHEET_TRIPS + '!F' + t.rowIndex, [[newNum]]);
+        t.shipmentNumber = newNum;
+        scanSkip('st', i, '✅ Fixed — number updated in Trips sheet');
+        showToast('Shipment number corrected!', 'ok');
+        // Refresh unbilled list
+        loadUnbilled();
+      } catch (e) {
+        console.error(e);
+        showToast('Update failed', 'warn');
+        document.getElementById('st-acts-'+i).innerHTML = `
+          <button class="btn btn-blue" onclick="fixScanTypo(${i})">✏️ Retry Fix</button>
+          <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
+      }
+    }
+  );
+}
+
+function scanSkip(prefix, i, msg) {
+  const acts = document.getElementById(prefix + '-acts-' + i);
+  const done = document.getElementById(prefix + '-done-' + i);
+  const item = document.getElementById(prefix + '-' + i);
+  if (acts) acts.style.display = 'none';
+  if (done) { done.style.display = 'block'; done.textContent = msg || '⏭ Skipped'; }
+  if (item) item.style.opacity = '.55';
+}
+
+function closeScanResults() {
+  document.getElementById('scan-results-wrap').style.display = 'none';
+  document.getElementById('scan-issues-btn').textContent = 'Scan for Issues';
+}
+
+/* ── SCAN HELPERS ── */
+function scanEditDist(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (Math.abs(m - n) > 2) return 99;
+  const dp = Array.from({length: m+1}, (_, i) =>
+    Array.from({length: n+1}, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+  );
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] :
+        1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function scanInvalidReason(num) {
+  if (!num || num.trim() === '') return 'Blank — no shipment number entered';
+  if (!/^\d+$/.test(num)) return `Contains non-numeric characters`;
+  if (num.length < 10) return `Too short: ${num.length} digits (need 10–11)`;
+  if (num.length > 11) return `Too long: ${num.length} digits (need 10–11)`;
+  return 'Invalid format';
+}
+
+function scanBuildDiff(a, b) {
+  const maxLen = Math.max(a.length, b.length);
+  const ap = a.padEnd(maxLen, ' '), bp = b.padEnd(maxLen, ' ');
+  let aH = '', bH = '';
+  for (let i = 0; i < maxLen; i++) {
+    const same = ap[i] === bp[i];
+    aH += `<span style="display:inline-block;padding:1px 3px;border-radius:3px;font-family:var(--mono);font-size:12px;${same ? 'color:var(--text)' : 'background:rgba(217,119,6,.2);color:var(--orange);font-weight:700'}">${ap[i] === ' ' ? '&nbsp;' : ap[i]}</span>`;
+    bH += `<span style="display:inline-block;padding:1px 3px;border-radius:3px;font-family:var(--mono);font-size:12px;${same ? 'color:var(--text)' : 'background:rgba(29,78,216,.18);color:var(--blue);font-weight:700'}">${bp[i] === ' ' ? '&nbsp;' : bp[i]}</span>`;
+  }
+  return `<div style="font-family:var(--mono);font-size:12px;margin:6px 0;padding:7px 10px;background:var(--bg);border-radius:var(--rxs);box-shadow:var(--in)">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:3px"><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--orange);width:48px;flex-shrink:0">Trips</span><span>${aH}</span></div>
+    <div style="display:flex;gap:8px;align-items:center"><span style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue);width:48px;flex-shrink:0">Billed</span><span>${bH}</span></div>
+  </div>`;
+}
+
+
 async function loadUnbilled(){
   if(!token) return;
   showLoad(true,'Loading unbilled trips...');
