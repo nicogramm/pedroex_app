@@ -365,11 +365,9 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
   <div class="tab-bar" id="tab-bar" style="display:none">
     <button class="tab-btn active" id="tab-upload"      onclick="switchTab('upload')">📤 Upload</button>
     <button class="tab-btn"        id="tab-soa"         onclick="switchTab('soa')">📋 SOA Manager</button>
-    <button class="tab-btn"        id="tab-soa"         onclick="switchTab('soa')">📋 SOA Manager</button>
     <button class="tab-btn"        id="tab-billed"      onclick="switchTab('billed')">✅ Billed</button>
     <button class="tab-btn"        id="tab-unbilled"    onclick="switchTab('unbilled')">⚠️ Unbilled</button>
     <button class="tab-btn"        id="tab-billedout"   onclick="switchTab('billedout')">📤 Billed Out</button>
-    <button class="tab-btn"        id="tab-liquidation" onclick="switchTab('liquidation')">💰 Liquidation</button>
     <button class="tab-btn"        id="tab-report"      onclick="switchTab('report')">📊 Report</button>
   </div>
 
@@ -478,36 +476,6 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         <div id="soa-list"></div>
       </div>
     </div>
-
-    <!-- ════ SOA MANAGER TAB ════ -->
-    <div id="pane-soa" style="display:none">
-      <div class="page-eyebrow">Manage Uploads</div>
-      <div class="page-title">SOA Manager</div>
-
-      <div class="info-box orange">
-        <b>⚠️ Delete SOA:</b> Deleting an SOA will remove ALL shipment records uploaded under that SOA from the Billing sheet, and will revert the Billed status in Trips back to "No".
-      </div>
-
-      <div class="filters">
-        <input class="f-search" id="soa-search" type="text" placeholder="🔍 Search SOA..." oninput="renderSOAManager()">
-        <select class="f-sel" id="soa-filter-month" onchange="renderSOAManager()"><option value="">All Months</option></select>
-      </div>
-
-      <div class="stat-strip" id="soa-mgr-stats"></div>
-
-      <div id="soa-loading" style="display:none;padding:30px;text-align:center">
-        <div class="spinner" style="margin:0 auto"></div>
-      </div>
-      <div id="soa-manager-list"></div>
-      <div id="soa-mgr-empty" style="display:none">
-        <div class="empty-state">
-          <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-          <div class="empty-title">No SOAs uploaded yet</div>
-          <div class="empty-sub">Upload an Excel billing statement to get started.</div>
-        </div>
-      </div>
-    </div>
-
 
     <!-- ════ SOA MANAGER TAB ════ -->
     <div id="pane-soa" style="display:none">
@@ -835,7 +803,7 @@ let correctionsLog = [];
 
 /* ── TAB SWITCH ── */
 function switchTab(t){
-  ['upload','soa','billed','unbilled','billedout','liquidation','report'].forEach(x=>{
+  ['upload','soa','billed','unbilled','billedout','report'].forEach(x=>{
     document.getElementById('pane-'+x).style.display = x===t ? '' : 'none';
     const tab = document.getElementById('tab-'+x);
     if(tab) tab.classList.toggle('active', x===t);
@@ -1698,10 +1666,12 @@ async /* removed */
 function buildSOALiquidation(){
   const map={};
   master.forEach(r=>{
-    if(!map[r.soa]) map[r.soa]={soa:r.soa,totalBilled:0,totalLiquidated:0,items:[],monthSet:new Set(),months:[],trucks:new Set()};
+    if(!map[r.soa]) map[r.soa]={soa:r.soa,totalBilled:0,totalLiquidated:0,count:0,billedOut:0,items:[],monthSet:new Set(),months:[],trucks:new Set()};
     const s=map[r.soa];
     s.totalBilled+=Number(r.rate||0);
     s.totalLiquidated+=Number(r.liquidatedAmount||0);
+    s.count++;
+    if(r.billedOut==='Yes') s.billedOut++;
     s.items.push(r);
     const m=dateMonth(r.date); if(m) s.monthSet.add(m);
     if(r.truck) s.trucks.add(r.truck);
@@ -2267,8 +2237,8 @@ function showCalDay(iso){
    HELPERS
 ══════════════════════════════════════ */
 function mapMaster(vals){
-  return (vals||[]).filter(r=>r[0]&&(r[2]||r[1])).map(r=>({
-    rowIndex: Number(r[0])+1,
+  return (vals||[]).filter(r=>r[0]&&(r[2]||r[1])).map((r,i)=>({
+    rowIndex: i+2,
     id:r[0]||'', date:r[1]||'', shipment:r[2]||'', soa:r[3]||'', truck:r[4]||'', rate:r[5]||'',
     valid:(r[6]||'Yes').trim(),
     liquidated:(r[7]||'No').trim(),
@@ -2330,6 +2300,7 @@ function apiAppend(range,values){ return fetch(`https://sheets.googleapis.com/v4
 function apiPut(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
 
 /* ── CONFIRM MODAL ── */
+let _confirmCb=null;
 function showConfirm(title,msg,cb){
   document.getElementById('confirm-title').textContent=title;
   document.getElementById('confirm-msg').innerHTML=msg.replace(/\n/g,'<br>');
