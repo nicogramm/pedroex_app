@@ -5,334 +5,279 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#f0eff4">
 <title>PedroEX — Billing</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
-  --bg: #f0eff4;
-  --bg2: #e8e7ed;
-  --card: #f5f4f9;
-  --sd: #c8c7cc;
-  --sl: #ffffff;
-  --text: #1c1b20;
-  --text2: #6b6970;
-  --text3: #a8a7ac;
-  --red: #c0392b;
-  --red-soft: rgba(192,57,43,0.1);
-  --green: #16a34a;
-  --green-soft: rgba(22,163,74,0.1);
-  --orange: #d97706;
-  --orange-soft: rgba(217,119,6,0.1);
-  --blue: #1d4ed8;
-  --blue-soft: rgba(29,78,216,0.1);
-  --purple: #7c3aed;
-  --purple-soft: rgba(124,58,237,0.1);
-  --out: 5px 5px 12px var(--sd), -3px -3px 9px var(--sl);
-  --in: inset 3px 3px 7px var(--sd), inset -2px -2px 6px var(--sl);
-  --sm: 3px 3px 7px var(--sd), -2px -2px 5px var(--sl);
-  --xs: 2px 2px 5px var(--sd), -1px -1px 4px var(--sl);
-  --radius: 16px;
-  --radius-sm: 10px;
-  --radius-xs: 7px;
-  --font: 'DM Sans', sans-serif;
-  --mono: 'DM Mono', monospace;
+  --bg:#f0eff4; --bg2:#e8e7ed; --card:#f5f4f9;
+  --sd:#c8c7cc; --sl:#ffffff;
+  --text:#1c1b20; --text2:#6b6970; --text3:#a8a7ac;
+  --red:#c0392b; --red-soft:rgba(192,57,43,.1);
+  --green:#16a34a; --green-soft:rgba(22,163,74,.1);
+  --orange:#d97706; --orange-soft:rgba(217,119,6,.1);
+  --blue:#1d4ed8; --blue-soft:rgba(29,78,216,.1);
+  --purple:#7c3aed; --purple-soft:rgba(124,58,237,.1);
+  --out:5px 5px 12px var(--sd),-3px -3px 9px var(--sl);
+  --in:inset 3px 3px 7px var(--sd),inset -2px -2px 6px var(--sl);
+  --sm:3px 3px 7px var(--sd),-2px -2px 5px var(--sl);
+  --xs:2px 2px 5px var(--sd),-1px -1px 4px var(--sl);
+  --r:16px; --rsm:10px; --rxs:7px;
+  --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
 }
 body.dark {
-  --bg: #1e1d23;
-  --bg2: #252429;
-  --card: #232228;
-  --sd: #111013;
-  --sl: #333138;
-  --text: #eeedf3;
-  --text2: #8a8990;
-  --text3: #555360;
-  --out: 4px 4px 10px var(--sd), -2px -2px 8px var(--sl);
-  --in: inset 3px 3px 7px var(--sd), inset -2px -2px 6px var(--sl);
-  --sm: 3px 3px 7px var(--sd), -2px -2px 5px var(--sl);
-  --xs: 2px 2px 5px var(--sd), -1px -1px 4px var(--sl);
+  --bg:#1e1d23; --bg2:#252429; --card:#232228;
+  --sd:#111013; --sl:#333138;
+  --text:#eeedf3; --text2:#8a8990; --text3:#555360;
+  --out:4px 4px 10px var(--sd),-2px -2px 8px var(--sl);
+  --in:inset 3px 3px 7px var(--sd),inset -2px -2px 6px var(--sl);
+  --sm:3px 3px 7px var(--sd),-2px -2px 5px var(--sl);
+  --xs:2px 2px 5px var(--sd),-1px -1px 4px var(--sl);
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; transition: background .3s, color .3s; }
-.shell { display: flex; flex-direction: column; height: 100dvh; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+.shell{display:flex;flex-direction:column;height:100dvh}
 
-/* ── TOPBAR ── */
-.topbar {
-  background: var(--bg);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px;
-  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
-  flex-shrink: 0;
-  box-shadow: 0 2px 12px rgba(0,0,0,.06);
-  z-index: 10;
-}
-body.dark .topbar { box-shadow: 0 2px 12px rgba(0,0,0,.3); }
-.tb-left { display: flex; align-items: center; gap: 10px; }
-.tb-back {
-  width: 34px; height: 34px; border-radius: var(--radius-sm);
-  background: var(--bg); border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: var(--sm); color: var(--text);
-}
-.tb-back:active { box-shadow: var(--in); }
-.tb-titles { display: flex; flex-direction: column; }
-.tb-eyebrow { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); }
-.tb-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -.3px; }
-.tb-avatar { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--red); object-fit: cover; box-shadow: var(--xs); }
+/* TOPBAR */
+.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 16px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.06);z-index:10}
+body.dark .topbar{box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-back{width:34px;height:34px;border-radius:var(--rsm);background:var(--bg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--sm);color:var(--text)}
+.tb-back:active{box-shadow:var(--in)}
+.tb-titles{display:flex;flex-direction:column}
+.tb-eyebrow{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
+.tb-title{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.tb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--xs)}
 
-/* ── TAB BAR ── */
-.tab-bar {
-  display: flex; gap: 5px; padding: 10px 14px 0;
-  flex-shrink: 0; overflow-x: auto;
-}
-.tab-bar::-webkit-scrollbar { display: none; }
-.tab-btn {
-  flex-shrink: 0; padding: 8px 14px;
-  border: none; background: var(--bg); border-radius: var(--radius-sm);
-  font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
-  color: var(--text3); cursor: pointer; box-shadow: var(--sm);
-  white-space: nowrap; transition: all .2s; font-family: var(--font);
-}
-.tab-btn.active { color: var(--red); box-shadow: var(--in); }
+/* TAB BAR */
+.tab-bar{display:flex;gap:5px;padding:10px 14px 0;flex-shrink:0;overflow-x:auto}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;padding:8px 14px;border:none;background:var(--bg);border-radius:var(--rsm);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;box-shadow:var(--sm);white-space:nowrap;transition:all .2s;font-family:var(--font)}
+.tab-btn.active{color:var(--red);box-shadow:var(--in)}
 
-/* ── PAGE WRAP ── */
-.page-wrap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 14px; padding-bottom: 90px; }
+/* PAGE */
+.page-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;padding-bottom:90px}
+.page-eyebrow{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.page-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px;margin-bottom:16px}
 
-/* ── SECTION HEADER ── */
-.page-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 3px; }
-.page-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -.5px; margin-bottom: 16px; }
+/* STATS */
+.stat-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:8px;margin-bottom:14px}
+.stat-card{background:var(--bg);border-radius:var(--r);box-shadow:var(--out);padding:12px 8px;text-align:center}
+.stat-val{font-size:22px;font-weight:700;line-height:1;letter-spacing:-1px}
+.stat-lbl{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-top:3px}
+.sv-red{color:var(--red)} .sv-green{color:var(--green)} .sv-orange{color:var(--orange)}
+.sv-blue{color:var(--blue)} .sv-purple{color:var(--purple)} .sv-dim{color:var(--text2)}
 
-/* ── STAT STRIP ── */
-.stat-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; margin-bottom: 14px; }
-.stat-card { background: var(--bg); border-radius: var(--radius); box-shadow: var(--out); padding: 12px 8px; text-align: center; }
-.stat-val { font-size: 22px; font-weight: 700; line-height: 1; letter-spacing: -1px; }
-.stat-lbl { font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-top: 3px; }
-.sv-red { color: var(--red); } .sv-green { color: var(--green); } .sv-orange { color: var(--orange); }
-.sv-blue { color: var(--blue); } .sv-purple { color: var(--purple); } .sv-dim { color: var(--text2); }
+/* FILTERS */
+.filters{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
+.filters::-webkit-scrollbar{display:none}
+.f-search{flex:1;min-width:110px;padding:9px 12px;border:none;border-radius:var(--rsm);background:var(--bg);box-shadow:var(--in);font-size:12px;color:var(--text);font-family:var(--font)}
+.f-search:focus{outline:none}
+.f-search::placeholder{color:var(--text3)}
+.f-sel{flex-shrink:0;padding:9px 12px;border:none;border-radius:var(--rsm);background:var(--bg);box-shadow:var(--sm);font-size:11px;font-weight:600;color:var(--text);font-family:var(--font);cursor:pointer;appearance:none;min-width:110px}
+.f-sel:focus{outline:none;box-shadow:var(--in)}
 
-/* ── FILTER ROW ── */
-.filters { display: flex; gap: 7px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
-.filters::-webkit-scrollbar { display: none; }
-.f-search {
-  flex: 1; min-width: 110px; padding: 9px 12px;
-  border: none; border-radius: var(--radius-sm);
-  background: var(--bg); box-shadow: var(--in);
-  font-size: 12px; color: var(--text); font-family: var(--font);
-}
-.f-search:focus { outline: none; }
-.f-search::placeholder { color: var(--text3); }
-.f-sel {
-  flex-shrink: 0; padding: 9px 12px; border: none; border-radius: var(--radius-sm);
-  background: var(--bg); box-shadow: var(--sm);
-  font-size: 11px; font-weight: 600; color: var(--text);
-  font-family: var(--font); cursor: pointer; appearance: none; min-width: 110px;
-}
-.f-sel:focus { outline: none; box-shadow: var(--in); }
+/* SUBTABS */
+.stabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto}
+.stabs::-webkit-scrollbar{display:none}
+.stab{flex-shrink:0;padding:6px 12px;border:none;background:var(--bg);border-radius:var(--rxs);font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text3);cursor:pointer;box-shadow:var(--xs);white-space:nowrap;font-family:var(--font)}
+.stab.active{color:var(--red);box-shadow:var(--in)}
 
-/* ── SUB-TABS ── */
-.stabs { display: flex; gap: 5px; margin-bottom: 12px; overflow-x: auto; }
-.stabs::-webkit-scrollbar { display: none; }
-.stab {
-  flex-shrink: 0; padding: 6px 12px; border: none; background: var(--bg);
-  border-radius: var(--radius-xs); font-size: 9px; font-weight: 700;
-  text-transform: uppercase; color: var(--text3); cursor: pointer;
-  box-shadow: var(--xs); white-space: nowrap; font-family: var(--font);
-}
-.stab.active { color: var(--red); box-shadow: var(--in); }
+/* CARD */
+.card{background:var(--bg);border-radius:var(--r);box-shadow:var(--out);margin-bottom:12px;overflow:hidden}
+.card.hidden{display:none}
+.card-head{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(0,0,0,.05);flex-wrap:wrap;gap:6px}
+body.dark .card-head{border-bottom-color:rgba(255,255,255,.05)}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
 
-/* ── CARD ── */
-.card { background: var(--bg); border-radius: var(--radius); box-shadow: var(--out); margin-bottom: 12px; overflow: hidden; }
-.card.hidden { display: none; }
-.card-head { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,.05); flex-wrap: wrap; gap: 6px; }
-body.dark .card-head { border-bottom-color: rgba(255,255,255,.05); }
-.card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+/* BADGE & PILL */
+.badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--bg);box-shadow:var(--xs);white-space:nowrap}
+.badge-red{color:var(--red)} .badge-green{color:var(--green)} .badge-orange{color:var(--orange)}
+.badge-blue{color:var(--blue)} .badge-purple{color:var(--purple)}
+.pill{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.4px}
+.pill-billed{background:var(--green-soft);color:var(--green)}
+.pill-unbilled{background:var(--orange-soft);color:var(--orange)}
+.pill-billedout{background:var(--blue-soft);color:var(--blue)}
+.pill-invalid{background:var(--red-soft);color:var(--red)}
+.pill-full{background:var(--green-soft);color:var(--green)}
+.pill-partial{background:var(--orange-soft);color:var(--orange)}
+.pill-pending{background:var(--red-soft);color:var(--red)}
 
-/* ── BADGE ── */
-.badge { font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: var(--bg); box-shadow: var(--xs); white-space: nowrap; }
-.badge-red { color: var(--red); }
-.badge-green { color: var(--green); }
-.badge-orange { color: var(--orange); }
-.badge-blue { color: var(--blue); }
-.badge-purple { color: var(--purple); }
+/* SOA ROW */
+.soa-row{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.04);cursor:default}
+body.dark .soa-row{border-bottom-color:rgba(255,255,255,.03)}
+.soa-row:last-child{border-bottom:none}
+.soa-row-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
+.soa-number{font-size:14px;font-weight:700;color:var(--text);font-family:var(--mono);letter-spacing:-.3px}
+.soa-amount{font-size:14px;font-weight:700;color:var(--green)}
+.soa-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.soa-meta span{font-size:11px;color:var(--text2)}
+.soa-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.soa-chip{font-size:9px;font-weight:600;padding:2px 8px;border-radius:5px;background:var(--bg);box-shadow:var(--xs);color:var(--text2)}
+.prog-track{height:5px;border-radius:3px;background:var(--bg);box-shadow:var(--in);overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s}
+.prog-fill-green{background:var(--green)} .prog-fill-orange{background:var(--orange)}
+.prog-fill-red{background:var(--red)} .prog-fill-blue{background:var(--blue)}
 
-/* ── STATUS PILL ── */
-.pill { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 5px; text-transform: uppercase; letter-spacing: .4px; }
-.pill-billed { background: var(--green-soft); color: var(--green); }
-.pill-unbilled { background: var(--orange-soft); color: var(--orange); }
-.pill-billedout { background: var(--blue-soft); color: var(--blue); }
-.pill-invalid { background: var(--red-soft); color: var(--red); }
-.pill-full { background: var(--green-soft); color: var(--green); }
-.pill-partial { background: var(--orange-soft); color: var(--orange); }
-.pill-pending { background: var(--red-soft); color: var(--red); }
+/* SHIPMENT CARD */
+.ship-card{background:var(--bg);border-radius:var(--r);box-shadow:var(--out);padding:12px 14px;margin-bottom:8px}
+.ship-card.invalid-card{border-left:3px solid var(--red)}
+.ship-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.ship-num{font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.ship-rate{font-size:12px;font-weight:700;padding:3px 9px;border-radius:var(--rxs);background:var(--bg);box-shadow:var(--xs)}
+.ship-rate-green{color:var(--green)} .ship-rate-orange{color:var(--orange)}
+.ship-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:3px}
+.ship-meta span{font-size:11px;color:var(--text3)}
 
-/* ── SOA ROW (primary list item) ── */
-.soa-row {
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(0,0,0,.04);
-  cursor: default;
-}
-body.dark .soa-row { border-bottom-color: rgba(255,255,255,.03); }
-.soa-row:last-child { border-bottom: none; }
-.soa-row-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
-.soa-number { font-size: 14px; font-weight: 700; color: var(--text); font-family: var(--mono); letter-spacing: -.3px; }
-.soa-amount { font-size: 14px; font-weight: 700; color: var(--green); }
-.soa-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
-.soa-meta span { font-size: 11px; color: var(--text2); }
-.soa-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
-.soa-chip { font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 5px; background: var(--bg); box-shadow: var(--xs); color: var(--text2); }
-/* progress track */
-.prog-track { height: 5px; border-radius: 3px; background: var(--bg); box-shadow: var(--in); overflow: hidden; margin-top: 5px; }
-.prog-fill { height: 100%; border-radius: 3px; transition: width .4s; }
-.prog-fill-green { background: var(--green); }
-.prog-fill-orange { background: var(--orange); }
-.prog-fill-red { background: var(--red); }
-.prog-fill-blue { background: var(--blue); }
-.soa-actions { display: flex; gap: 7px; margin-top: 8px; flex-wrap: wrap; }
+/* BUTTONS */
+.btn{padding:7px 16px;border:none;border-radius:var(--rsm);font-size:11px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(192,57,43,.3)}
+.btn-full{display:block;width:100%;padding:13px;border-radius:var(--r);font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;border:none;transition:all .15s}
+.btn-full:active{transform:scale(.99)}
+.btn-full:disabled{opacity:.5;cursor:not-allowed}
+.btn-full-red{background:var(--red);color:#fff;box-shadow:0 4px 12px rgba(192,57,43,.3)}
+.btn-full-green{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(22,163,74,.3)}
+.btn-green{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.3)}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(29,78,216,.3)}
+.btn-orange{background:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(217,119,6,.3)}
+.btn-ghost{background:var(--bg);color:var(--text2);box-shadow:var(--xs)}
+.btn-danger{background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(192,57,43,.3)}
 
-/* ── SHIPMENT CARD (list item) ── */
-.ship-card {
-  background: var(--bg); border-radius: var(--radius); box-shadow: var(--out);
-  padding: 12px 14px; margin-bottom: 8px;
-}
-.ship-card.invalid-card { border-left: 3px solid var(--red); }
-.ship-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
-.ship-num { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--mono); }
-.ship-rate { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: var(--radius-xs); background: var(--bg); box-shadow: var(--xs); }
-.ship-rate-green { color: var(--green); }
-.ship-rate-orange { color: var(--orange); }
-.ship-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 3px; }
-.ship-meta span { font-size: 11px; color: var(--text3); }
+/* DROP ZONE */
+.dz{border-radius:var(--r);background:var(--bg);box-shadow:var(--in);padding:36px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;position:relative;border:2px dashed transparent;transition:border-color .2s;margin-bottom:16px;min-height:190px}
+.dz.over{border-color:var(--red)}
+.dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-icon{width:52px;height:52px;border-radius:var(--r);background:var(--bg);box-shadow:var(--out);display:flex;align-items:center;justify-content:center}
+.dz-icon svg{width:24px;height:24px;color:var(--red)}
+.dz-title{font-size:14px;font-weight:700;color:var(--text);text-align:center}
+.dz-sub{font-size:11px;color:var(--text3);text-align:center;line-height:1.6}
 
-/* ── ACTION BUTTONS ── */
-.btn {
-  padding: 7px 16px; border: none; border-radius: var(--radius-sm);
-  font-size: 11px; font-weight: 700; font-family: var(--font);
-  cursor: pointer; transition: all .15s;
-}
-.btn:active { transform: scale(.97); }
-.btn:disabled { opacity: .5; cursor: not-allowed; }
-.btn-primary { background: var(--red); color: #fff; box-shadow: 0 3px 10px rgba(192,57,43,.3); }
-.btn-full { display: block; width: 100%; padding: 13px; border-radius: var(--radius); font-size: 13px; font-weight: 700; font-family: var(--font); cursor: pointer; border: none; transition: all .15s; }
-.btn-full:active { transform: scale(.99); }
-.btn-full:disabled { opacity: .5; cursor: not-allowed; }
-.btn-full-red { background: var(--red); color: #fff; box-shadow: 0 4px 12px rgba(192,57,43,.3); }
-.btn-full-green { background: var(--green); color: #fff; box-shadow: 0 4px 12px rgba(22,163,74,.3); }
-.btn-green { background: var(--green); color: #fff; box-shadow: 0 2px 8px rgba(22,163,74,.3); }
-.btn-blue { background: var(--blue); color: #fff; box-shadow: 0 2px 8px rgba(29,78,216,.3); }
-.btn-ghost { background: var(--bg); color: var(--text2); box-shadow: var(--xs); }
+/* UPLOAD PROGRESS */
+.uprog{border-radius:var(--r);background:var(--bg);box-shadow:var(--out);padding:14px 16px;margin-bottom:12px;display:none}
+.uprog.show{display:block}
+.uprog-lbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.uprog-bar-wrap{height:4px;border-radius:2px;background:var(--bg);box-shadow:var(--in);overflow:hidden;margin-bottom:6px}
+.uprog-bar{height:100%;border-radius:2px;background:var(--red);width:0%;transition:width .3s}
+.uprog-msg{font-size:11px;color:var(--text2)}
+.uprog-ct{font-size:21px;font-weight:700;color:var(--red);margin-top:3px}
 
-/* ── DROP ZONE ── */
-.dz {
-  border-radius: var(--radius); background: var(--bg); box-shadow: var(--in);
-  padding: 36px 20px; display: flex; flex-direction: column;
-  align-items: center; gap: 12px; cursor: pointer;
-  position: relative; border: 2px dashed transparent; transition: border-color .2s;
-  margin-bottom: 16px; min-height: 190px;
-}
-.dz.over { border-color: var(--red); }
-.dz input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.dz-icon { width: 52px; height: 52px; border-radius: var(--radius); background: var(--bg); box-shadow: var(--out); display: flex; align-items: center; justify-content: center; }
-.dz-icon svg { width: 24px; height: 24px; color: var(--red); }
-.dz-title { font-size: 14px; font-weight: 700; color: var(--text); text-align: center; }
-.dz-sub { font-size: 11px; color: var(--text3); text-align: center; line-height: 1.6; }
+/* TABLE */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;font-size:11px;min-width:540px}
+.tbl th{padding:8px 12px;text-align:left;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);border-bottom:1px solid rgba(0,0,0,.06);white-space:nowrap}
+.tbl td{padding:8px 12px;color:var(--text2);border-bottom:1px solid rgba(0,0,0,.03)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td b{color:var(--text);font-family:var(--mono)}
+.tbl td.nowrap{white-space:nowrap}
+.tbl td.ell{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px}
+body.dark .tbl th{border-bottom-color:rgba(255,255,255,.05)}
+body.dark .tbl td{border-bottom-color:rgba(255,255,255,.03)}
 
-/* ── UPLOAD PROGRESS ── */
-.uprog { border-radius: var(--radius); background: var(--bg); box-shadow: var(--out); padding: 14px 16px; margin-bottom: 12px; display: none; }
-.uprog.show { display: block; }
-.uprog-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
-.uprog-bar-wrap { height: 4px; border-radius: 2px; background: var(--bg); box-shadow: var(--in); overflow: hidden; margin-bottom: 6px; }
-.uprog-bar { height: 100%; border-radius: 2px; background: var(--red); width: 0%; transition: width .3s; }
-.uprog-msg { font-size: 11px; color: var(--text2); }
-.uprog-ct { font-size: 21px; font-weight: 700; color: var(--red); margin-top: 3px; }
+/* CROSS-CHECK */
+.cc-section-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:12px 0 7px}
+.cc-section-label.g{color:var(--green)} .cc-section-label.o{color:var(--orange)} .cc-section-label.r{color:var(--red)}
+.cc-item{border-radius:var(--rsm);padding:10px 13px;margin-bottom:7px}
+.cc-item.ex{background:var(--green-soft);border-left:3px solid var(--green)}
+.cc-item.fz{background:var(--orange-soft);border-left:3px solid var(--orange)}
+.cc-item.nm{background:var(--red-soft);border-left:3px solid var(--red)}
+.cc-ship{font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.cc-det{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.5}
+.cc-reason{font-size:11px;margin-top:3px}
+.cc-acts{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
 
-/* ── TABLE ── */
-.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.tbl { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 540px; }
-.tbl th { padding: 8px 12px; text-align: left; font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); border-bottom: 1px solid rgba(0,0,0,.06); white-space: nowrap; }
-.tbl td { padding: 8px 12px; color: var(--text2); border-bottom: 1px solid rgba(0,0,0,.03); }
-.tbl tr:last-child td { border-bottom: none; }
-.tbl td b { color: var(--text); font-family: var(--mono); }
-.tbl td.nowrap { white-space: nowrap; }
-.tbl td.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
-body.dark .tbl th { border-bottom-color: rgba(255,255,255,.05); }
-body.dark .tbl td { border-bottom-color: rgba(255,255,255,.03); }
+/* DIFF DISPLAY */
+.diff-wrap{font-family:var(--mono);font-size:12px;margin:6px 0;padding:8px 10px;background:var(--bg);border-radius:var(--rsm);box-shadow:var(--in)}
+.diff-row{display:flex;gap:8px;align-items:center;margin-bottom:4px}
+.diff-row:last-child{margin-bottom:0}
+.diff-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;width:56px;flex-shrink:0}
+.diff-label.soa-lbl{color:var(--blue)} .diff-label.trips-lbl{color:var(--orange)}
+.diff-char{display:inline-block;padding:1px 3px;border-radius:3px}
+.diff-char.same{color:var(--text)}
+.diff-char.diff-soa{background:rgba(29,78,216,.2);color:var(--blue);font-weight:700}
+.diff-char.diff-trips{background:rgba(217,119,6,.2);color:var(--orange);font-weight:700}
 
-/* ── CROSS-CHECK ── */
-.cc-section-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 12px 0 7px; }
-.cc-section-label.g { color: var(--green); }
-.cc-section-label.o { color: var(--orange); }
-.cc-section-label.r { color: var(--red); }
-.cc-item { border-radius: var(--radius-sm); padding: 10px 13px; margin-bottom: 7px; }
-.cc-item.ex { background: var(--green-soft); border-left: 3px solid var(--green); }
-.cc-item.fz { background: var(--orange-soft); border-left: 3px solid var(--orange); }
-.cc-item.nm { background: var(--red-soft); border-left: 3px solid var(--red); }
-.cc-ship { font-size: 13px; font-weight: 700; color: var(--text); font-family: var(--mono); }
-.cc-det { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
-.cc-reason { font-size: 11px; margin-top: 3px; }
-.cc-acts { display: flex; gap: 7px; margin-top: 8px; flex-wrap: wrap; }
+/* GROUP HEADERS */
+.grp-header{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:7px;margin-top:4px;padding-left:2px}
+.grp-tally{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.tally{padding:3px 10px;border-radius:7px;font-size:10px;font-weight:700;background:var(--bg);box-shadow:var(--xs)}
+.tally-green{color:var(--green)} .tally-orange{color:var(--orange)} .tally-dim{color:var(--text2)} .tally-blue{color:var(--blue)}
 
-/* ── GROUP HEADER ── */
-.grp-header { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 7px; margin-top: 4px; padding-left: 2px; }
-.grp-tally { display: flex; gap: 6px; margin-bottom: 9px; flex-wrap: wrap; }
-.tally { padding: 3px 10px; border-radius: 7px; font-size: 10px; font-weight: 700; background: var(--bg); box-shadow: var(--xs); }
-.tally-green { color: var(--green); } .tally-orange { color: var(--orange); }
-.tally-dim { color: var(--text2); } .tally-blue { color: var(--blue); }
+/* REPORT */
+.report-section{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.report-section::before{content:'';display:block;width:3px;height:14px;border-radius:2px;background:var(--red)}
+.divider{height:1px;background:rgba(0,0,0,.06);margin:18px 0}
+body.dark .divider{background:rgba(255,255,255,.05)}
 
-/* ── REPORT SECTION ── */
-.report-section { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
-.report-section::before { content: ''; display: block; width: 3px; height: 14px; border-radius: 2px; background: var(--red); }
-.divider { height: 1px; background: rgba(0,0,0,.06); margin: 18px 0; }
-body.dark .divider { background: rgba(255,255,255,.05); }
+/* EMPTY */
+.empty-state{text-align:center;padding:36px 20px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty-icon{width:50px;height:50px;border-radius:var(--r);background:var(--bg);box-shadow:var(--out);display:flex;align-items:center;justify-content:center}
+.empty-icon svg{width:22px;height:22px;color:var(--text3)}
+.empty-title{font-size:14px;font-weight:600;color:var(--text)}
+.empty-sub{font-size:12px;color:var(--text3);line-height:1.6}
 
-/* ── EMPTY STATE ── */
-.empty-state { text-align: center; padding: 36px 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.empty-icon { width: 50px; height: 50px; border-radius: var(--radius); background: var(--bg); box-shadow: var(--out); display: flex; align-items: center; justify-content: center; }
-.empty-icon svg { width: 22px; height: 22px; color: var(--text3); }
-.empty-title { font-size: 14px; font-weight: 600; color: var(--text); }
-.empty-sub { font-size: 12px; color: var(--text3); line-height: 1.6; }
+/* DENIED */
+.denied{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;gap:14px}
+.denied-icon{width:60px;height:60px;border-radius:var(--r);background:var(--bg);box-shadow:var(--out);display:flex;align-items:center;justify-content:center}
+.denied-title{font-size:18px;font-weight:700}
+.denied-sub{font-size:13px;color:var(--text3);line-height:1.6}
 
-/* ── ACCESS DENIED ── */
-.denied { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 24px; text-align: center; gap: 14px; }
-.denied-icon { width: 60px; height: 60px; border-radius: var(--radius); background: var(--bg); box-shadow: var(--out); display: flex; align-items: center; justify-content: center; }
-.denied-title { font-size: 18px; font-weight: 700; }
-.denied-sub { font-size: 13px; color: var(--text3); line-height: 1.6; }
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg);padding:9px 18px calc(9px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;box-shadow:0 -2px 12px rgba(0,0,0,.07);z-index:40}
+body.dark .bottom-nav{box-shadow:0 -2px 12px rgba(0,0,0,.4)}
+.bnav{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);cursor:pointer;border:none;background:none;font-family:var(--font)}
+.bnav.active{color:var(--red)}
+.bnav-icon{width:40px;height:40px;border-radius:var(--rsm);background:var(--bg);display:flex;align-items:center;justify-content:center}
+.bnav:not(.active) .bnav-icon{box-shadow:var(--sm)}
+.bnav.active .bnav-icon{box-shadow:var(--in)}
 
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--bg);
-  padding: 9px 18px calc(9px + env(safe-area-inset-bottom,0px));
-  display: flex; align-items: center; justify-content: space-around;
-  box-shadow: 0 -2px 12px rgba(0,0,0,.07); z-index: 40;
-}
-body.dark .bottom-nav { box-shadow: 0 -2px 12px rgba(0,0,0,.4); }
-.bnav { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 8px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--text3); cursor: pointer; border: none; background: none; font-family: var(--font); }
-.bnav.active { color: var(--red); }
-.bnav-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--bg); display: flex; align-items: center; justify-content: center; }
-.bnav:not(.active) .bnav-icon { box-shadow: var(--sm); }
-.bnav.active .bnav-icon { box-shadow: var(--in); }
+/* TOAST & LOADER */
+.toast{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:var(--rsm);box-shadow:var(--out);border-left:3px solid var(--red);padding:11px 20px;font-size:13px;font-weight:500;color:var(--text);z-index:300;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.show{opacity:1} .toast.ok{border-left-color:var(--green)} .toast.warn{border-left-color:var(--orange)}
+.loader-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.loader-overlay.show{opacity:1;pointer-events:all}
+.loader-box{background:var(--bg);border-radius:var(--r);box-shadow:var(--out);padding:26px 32px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.spinner{width:28px;height:28px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-msg{font-size:13px;color:var(--text2);font-weight:500}
 
-/* ── TOAST & LOADER ── */
-.toast { position: fixed; bottom: calc(78px + env(safe-area-inset-bottom,0px)); left: 50%; transform: translateX(-50%); background: var(--bg); border-radius: var(--radius-sm); box-shadow: var(--out); border-left: 3px solid var(--red); padding: 11px 20px; font-size: 13px; font-weight: 500; color: var(--text); z-index: 300; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .25s; }
-.toast.show { opacity: 1; }
-.toast.ok { border-left-color: var(--green); }
-.toast.warn { border-left-color: var(--orange); }
-.loader-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.3); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s; }
-.loader-overlay.show { opacity: 1; pointer-events: all; }
-.loader-box { background: var(--bg); border-radius: var(--radius); box-shadow: var(--out); padding: 26px 32px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.spinner { width: 28px; height: 28px; border: 3px solid var(--text3); border-top-color: var(--red); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loader-msg { font-size: 13px; color: var(--text2); font-weight: 500; }
+/* CONFIRM MODAL */
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:400;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg);border-radius:20px;padding:24px;max-width:360px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.confirm-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px}
+.confirm-msg{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:18px}
+.confirm-btns{display:flex;gap:10px}
+.cb{flex:1;padding:12px;border-radius:12px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;border:none}
+.cb-cancel{background:var(--bg);color:var(--text2);box-shadow:var(--sm)}
+.cb-cancel:active{box-shadow:var(--in)}
+.cb-confirm{background:var(--red);color:#fff;box-shadow:0 3px 10px rgba(192,57,43,.3)}
 
-/* ── LIQUIDATION INPUT ── */
-.liq-input-wrap { padding: 12px 16px; border-top: 1px solid rgba(0,0,0,.05); }
-body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
-.liq-input-label { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); margin-bottom: 7px; }
-.liq-input-row { display: flex; gap: 8px; align-items: center; }
-.liq-input { flex: 1; padding: 9px 12px; border: none; border-radius: var(--radius-sm); background: var(--bg); box-shadow: var(--in); font-size: 13px; font-weight: 600; color: var(--text); font-family: var(--font); }
-.liq-input:focus { outline: none; }
+/* LIQUIDATION INPUT */
+.liq-input-wrap{padding:12px 16px;border-top:1px solid rgba(0,0,0,.05)}
+body.dark .liq-input-wrap{border-top-color:rgba(255,255,255,.05)}
+.liq-input-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+.liq-input-row{display:flex;gap:8px;align-items:center}
+.liq-input{flex:1;padding:9px 12px;border:none;border-radius:var(--rsm);background:var(--bg);box-shadow:var(--in);font-size:13px;font-weight:600;color:var(--text);font-family:var(--font)}
+.liq-input:focus{outline:none}
+
+/* SOA MANAGER */
+.soa-manager-card{background:var(--bg);border-radius:var(--r);box-shadow:var(--out);margin-bottom:12px;overflow:hidden}
+.soa-mgr-row{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+body.dark .soa-mgr-row{border-bottom-color:rgba(255,255,255,.03)}
+.soa-mgr-row:last-child{border-bottom:none}
+.soa-mgr-left{flex:1;min-width:0}
+.soa-mgr-num{font-size:14px;font-weight:700;color:var(--text);font-family:var(--mono);margin-bottom:4px}
+.soa-mgr-meta{font-size:11px;color:var(--text2);line-height:1.6}
+.soa-mgr-actions{display:flex;gap:6px;flex-shrink:0;align-items:flex-start;margin-top:2px}
+
+/* INFO BOX */
+.info-box{border-radius:var(--rsm);padding:12px 14px;margin-bottom:14px;font-size:12px;line-height:1.6}
+.info-box.blue{background:var(--blue-soft);border-left:3px solid var(--blue);color:var(--text2)}
+.info-box.orange{background:var(--orange-soft);border-left:3px solid var(--orange);color:var(--text2)}
+.info-box.green{background:var(--green-soft);border-left:3px solid var(--green);color:var(--text2)}
 </style>
 </head>
 <body>
@@ -352,12 +297,13 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
   </div>
 
   <div class="tab-bar" id="tab-bar" style="display:none">
-    <button class="tab-btn active" id="tab-upload"      onclick="switchTab('upload')">Upload</button>
-    <button class="tab-btn"         id="tab-billed"      onclick="switchTab('billed')">Billed</button>
-    <button class="tab-btn"         id="tab-unbilled"    onclick="switchTab('unbilled')">Unbilled</button>
-    <button class="tab-btn"         id="tab-billedout"   onclick="switchTab('billedout')">Billed Out</button>
-    <button class="tab-btn"         id="tab-liquidation" onclick="switchTab('liquidation')">Liquidation</button>
-    <button class="tab-btn"         id="tab-report"      onclick="switchTab('report')">Report</button>
+    <button class="tab-btn active" id="tab-upload"      onclick="switchTab('upload')">📤 Upload</button>
+    <button class="tab-btn"        id="tab-soa"         onclick="switchTab('soa')">📋 SOA Manager</button>
+    <button class="tab-btn"        id="tab-billed"      onclick="switchTab('billed')">✅ Billed</button>
+    <button class="tab-btn"        id="tab-unbilled"    onclick="switchTab('unbilled')">⚠️ Unbilled</button>
+    <button class="tab-btn"        id="tab-billedout"   onclick="switchTab('billedout')">📤 Billed Out</button>
+    <button class="tab-btn"        id="tab-liquidation" onclick="switchTab('liquidation')">💰 Liquidation</button>
+    <button class="tab-btn"        id="tab-report"      onclick="switchTab('report')">📊 Report</button>
   </div>
 
   <div class="page-wrap" id="page-wrap">
@@ -365,9 +311,7 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
     <!-- ACCESS DENIED -->
     <div id="pane-denied" style="display:none">
       <div class="denied">
-        <div class="denied-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
+        <div class="denied-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
         <div class="denied-title">Admin Access Only</div>
         <div class="denied-sub">The Billing module is restricted to administrators.</div>
       </div>
@@ -376,16 +320,20 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
     <!-- ════ UPLOAD TAB ════ -->
     <div id="pane-upload" style="display:none">
       <div class="page-eyebrow">Billing Statement</div>
-      <div class="page-title">Upload Excel File</div>
+      <div class="page-title">Upload SOA Excel</div>
+
+      <div class="info-box blue">
+        <b>📌 How it works:</b> Upload the Excel SOA file from San Miguel. The system will parse all shipment numbers, cross-check against your Trips sheet, and flag any discrepancies — including typos entered by helpers.
+      </div>
 
       <div class="dz" id="dz">
         <input type="file" id="fi" accept=".xlsx,.xls" multiple>
         <div class="dz-icon">
           <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="dz-title">Drop Excel billing statements here</div>
-        <div class="dz-sub">or tap to browse · .xlsx and .xls only</div>
-        <span class="badge badge-red">Excel Only</span>
+        <div class="dz-title">Drop SOA Excel file here</div>
+        <div class="dz-sub">SOA No. format: 501466_XXXX · Shipment numbers: 10–11 digits</div>
+        <span class="badge badge-red">Excel Only (.xlsx / .xls)</span>
       </div>
 
       <div class="uprog" id="uprog">
@@ -402,7 +350,7 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
         </div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Truck</th><th>Rate</th></tr></thead>
+            <thead><tr><th>Date</th><th>Shipment No.</th><th>SOA</th><th>Plate</th><th>Rate</th><th>Status</th></tr></thead>
             <tbody id="preview-body"></tbody>
           </table>
         </div>
@@ -410,38 +358,86 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
 
       <button class="btn-full btn-full-red" id="save-btn" style="display:none;margin-bottom:12px" onclick="saveToSheet()">💾 Save &amp; Cross-Check Trips</button>
 
+      <!-- CROSS-CHECK RESULTS -->
       <div class="card hidden" id="cc-card">
         <div class="card-head">
           <span class="card-title">🔍 Cross-Check Results</span>
           <span class="badge badge-red" id="cc-bdg"></span>
         </div>
         <div style="padding:0 16px 14px">
+
+          <!-- DUPLICATE SOA WARNING -->
+          <div id="cc-dup-wrap" style="display:none">
+            <div class="info-box orange" id="cc-dup-msg"></div>
+          </div>
+
+          <!-- INVALID -->
           <div id="cc-inv-wrap" style="display:none">
             <div class="cc-section-label r">⛔ Invalid Shipment Numbers</div>
             <div id="cc-inv-list"></div>
           </div>
+
+          <!-- EXACT MATCHES -->
           <div id="cc-ex-wrap" style="display:none">
             <div class="cc-section-label g">✅ Exact Matches — Found in Trips</div>
             <div id="cc-ex-list"></div>
             <button class="btn-full btn-full-green" id="apply-btn" onclick="applyExact()" style="margin-top:8px">✅ Mark All Exact Matches as Billed</button>
           </div>
+
+          <!-- FUZZY MATCHES (with diff) -->
           <div id="cc-fz-wrap" style="display:none">
-            <div class="cc-section-label o">⚠️ Possible Matches — Needs Verification</div>
+            <div class="cc-section-label o">⚠️ Possible Matches — Helper Entry Errors</div>
+            <div class="info-box orange" style="margin-bottom:10px">
+              These shipments appear in Trips but with different numbers. Review the diff below — the SOA number is the correct one from San Miguel.
+            </div>
             <div id="cc-fz-list"></div>
           </div>
+
+          <!-- NOT FOUND -->
           <div id="cc-nm-wrap" style="display:none">
             <div class="cc-section-label r">❌ Not Found in Trips</div>
             <div id="cc-nm-list"></div>
           </div>
+
         </div>
       </div>
 
+      <!-- SOA SUMMARY -->
       <div class="card hidden" id="soa-card">
         <div class="card-head">
           <span class="card-title">📋 SOA Summary — This Upload</span>
           <span class="badge badge-green" id="soa-bdg"></span>
         </div>
         <div id="soa-list"></div>
+      </div>
+    </div>
+
+    <!-- ════ SOA MANAGER TAB ════ -->
+    <div id="pane-soa" style="display:none">
+      <div class="page-eyebrow">Manage Uploads</div>
+      <div class="page-title">SOA Manager</div>
+
+      <div class="info-box orange">
+        <b>⚠️ Delete SOA:</b> Deleting an SOA will remove ALL shipment records uploaded under that SOA from the Billing sheet, and will revert the Billed status in Trips back to "No".
+      </div>
+
+      <div class="filters">
+        <input class="f-search" id="soa-search" type="text" placeholder="🔍 Search SOA..." oninput="renderSOAManager()">
+        <select class="f-sel" id="soa-filter-month" onchange="renderSOAManager()"><option value="">All Months</option></select>
+      </div>
+
+      <div class="stat-strip" id="soa-mgr-stats"></div>
+
+      <div id="soa-loading" style="display:none;padding:30px;text-align:center">
+        <div class="spinner" style="margin:0 auto"></div>
+      </div>
+      <div id="soa-manager-list"></div>
+      <div id="soa-mgr-empty" style="display:none">
+        <div class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div class="empty-title">No SOAs uploaded yet</div>
+          <div class="empty-sub">Upload an Excel billing statement to get started.</div>
+        </div>
       </div>
     </div>
 
@@ -458,9 +454,9 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
       </div>
       <div class="stabs">
         <button class="stab active" id="bsub-all"   onclick="bSub('all')">All</button>
-        <button class="stab"         id="bsub-soa"   onclick="bSub('soa')">Per SOA</button>
-        <button class="stab"         id="bsub-month" onclick="bSub('month')">Per Month</button>
-        <button class="stab"         id="bsub-truck" onclick="bSub('truck')">Per Truck</button>
+        <button class="stab"        id="bsub-soa"   onclick="bSub('soa')">Per SOA</button>
+        <button class="stab"        id="bsub-month" onclick="bSub('month')">Per Month</button>
+        <button class="stab"        id="bsub-truck" onclick="bSub('truck')">Per Truck</button>
       </div>
       <div id="billed-list"></div>
     </div>
@@ -477,8 +473,8 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
       </div>
       <div class="stabs">
         <button class="stab active" id="usub-all"   onclick="uSub('all')">All</button>
-        <button class="stab"         id="usub-month" onclick="uSub('month')">Per Month</button>
-        <button class="stab"         id="usub-truck" onclick="uSub('truck')">Per Truck</button>
+        <button class="stab"        id="usub-month" onclick="uSub('month')">Per Month</button>
+        <button class="stab"        id="usub-truck" onclick="uSub('truck')">Per Truck</button>
       </div>
       <div id="unbilled-list"></div>
     </div>
@@ -490,7 +486,7 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
       <div class="stat-strip" id="bo-stats"></div>
       <div class="filters">
         <input class="f-search" id="bos" type="text" placeholder="🔍 Search SOA..." oninput="renderBilledOut()">
-        <select class="f-sel" id="bom"  onchange="renderBilledOut()"><option value="">All Months</option></select>
+        <select class="f-sel" id="bom" onchange="renderBilledOut()"><option value="">All Months</option></select>
         <select class="f-sel" id="bost" onchange="renderBilledOut()">
           <option value="">All Status</option>
           <option value="done">Billed Out</option>
@@ -507,8 +503,8 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
       <div class="stat-strip" id="liq-stats"></div>
       <div class="filters">
         <input class="f-search" id="ls" type="text" placeholder="🔍 Search SOA..." oninput="renderLiquidation()">
-        <select class="f-sel" id="lm"  onchange="renderLiquidation()"><option value="">All Months</option></select>
-        <select class="f-sel" id="lf"  onchange="renderLiquidation()">
+        <select class="f-sel" id="lm" onchange="renderLiquidation()"><option value="">All Months</option></select>
+        <select class="f-sel" id="lf" onchange="renderLiquidation()">
           <option value="">All Status</option>
           <option value="full">Fully Liquidated</option>
           <option value="partial">Partially Liquidated</option>
@@ -522,13 +518,34 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
     <div id="pane-report" style="display:none">
       <div class="page-eyebrow">Billing Analytics</div>
       <div class="page-title">Full Report</div>
+
+      <!-- OVERALL KPIs -->
       <div class="stat-strip" id="rpt-stats"></div>
 
+      <!-- FINANCIAL SUMMARY -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><span class="card-title">💰 Financial Summary</span></div>
+        <div style="padding:12px 16px">
+          <div class="stat-strip" id="rpt-fin-stats"></div>
+          <div id="rpt-receivables"></div>
+        </div>
+      </div>
+
+      <!-- BILLED OUT vs LIQUIDATION COMPARISON -->
       <div class="card" style="margin-bottom:12px">
         <div class="card-head"><span class="card-title">📊 Billed Out vs Liquidation</span></div>
         <div style="padding:12px 16px">
           <div class="stat-strip" id="rpt-cmp-stats"></div>
           <div id="rpt-cmp-detail"></div>
+        </div>
+      </div>
+
+      <!-- SHIPMENT ACCURACY -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><span class="card-title">🎯 Shipment Number Accuracy</span></div>
+        <div style="padding:12px 16px">
+          <div class="stat-strip" id="rpt-acc-stats"></div>
+          <div id="rpt-acc-detail"></div>
         </div>
       </div>
 
@@ -554,7 +571,7 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
       </div>
 
       <div class="card" style="margin-bottom:12px">
-        <div class="card-head"><span class="card-title">Per Truck — Billed</span></div>
+        <div class="card-head"><span class="card-title">Per Truck — Billed Revenue</span></div>
         <div style="padding:0 16px 14px" id="rpt-truck-list"></div>
       </div>
 
@@ -575,27 +592,30 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
       </div>
 
       <div class="divider"></div>
-      <div class="report-section">🔍 Cross-Check Summary</div>
+      <div class="report-section">🔍 Trips Number Corrections Log</div>
 
       <div class="card" style="margin-bottom:12px">
-        <div class="card-head"><span class="card-title">Billing vs Trips Matching</span></div>
+        <div class="card-head">
+          <span class="card-title">Confirmed Corrections (SOA vs Trips)</span>
+          <span class="badge badge-orange" id="rpt-cc-bdg"></span>
+        </div>
         <div style="padding:12px 16px 14px">
           <div class="stat-strip" id="rpt-cc-stats" style="margin-bottom:12px"></div>
           <div id="rpt-cc-ex-wrap" style="display:none">
             <div class="cc-section-label g">✅ Exact Matches</div>
-            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Billing Ship#</th><th>Trips Ship#</th><th>Truck</th><th>Trip Date</th><th>Status</th></tr></thead><tbody id="rpt-cc-ex-list"></tbody></table></div>
+            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>SOA Ship#</th><th>Trips Ship#</th><th>Truck</th><th>Trip Date</th><th>Status</th></tr></thead><tbody id="rpt-cc-ex-list"></tbody></table></div>
           </div>
           <div id="rpt-cc-fz-wrap" style="display:none;margin-top:8px">
-            <div class="cc-section-label o">⚠️ Possible Matches</div>
-            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Billing Ship#</th><th>Trips Ship#</th><th>Truck</th><th>Issue</th></tr></thead><tbody id="rpt-cc-fz-list"></tbody></table></div>
+            <div class="cc-section-label o">⚠️ Corrected (Fuzzy)</div>
+            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>SOA Ship#</th><th>Old Trips #</th><th>Truck</th><th>Issue</th><th>Action</th></tr></thead><tbody id="rpt-cc-fz-list"></tbody></table></div>
           </div>
           <div id="rpt-cc-nm-wrap" style="display:none;margin-top:8px">
             <div class="cc-section-label r">❌ Not Found</div>
-            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Billing Ship#</th><th>SOA</th><th>Truck</th><th>Date</th></tr></thead><tbody id="rpt-cc-nm-list"></tbody></table></div>
+            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>SOA Ship#</th><th>SOA</th><th>Truck</th><th>Date</th></tr></thead><tbody id="rpt-cc-nm-list"></tbody></table></div>
           </div>
           <div id="rpt-cc-inv-wrap" style="display:none;margin-top:8px">
             <div class="cc-section-label r">⛔ Invalid Numbers</div>
-            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Billing Ship#</th><th>SOA</th><th>Truck</th><th>Issue</th></tr></thead><tbody id="rpt-cc-inv-list"></tbody></table></div>
+            <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Ship#</th><th>SOA</th><th>Truck</th><th>Issue</th></tr></thead><tbody id="rpt-cc-inv-list"></tbody></table></div>
           </div>
         </div>
       </div>
@@ -622,6 +642,18 @@ body.dark .liq-input-wrap { border-top-color: rgba(255,255,255,.05); }
   </div>
 </div>
 
+<!-- CONFIRM MODAL -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirm Action</div>
+    <div class="confirm-msg" id="confirm-msg">Are you sure?</div>
+    <div class="confirm-btns">
+      <button class="cb cb-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="cb cb-confirm" id="confirm-ok-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <div class="loader-overlay" id="lov">
   <div class="loader-box">
@@ -638,6 +670,9 @@ const SHEET_ID      = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SHEET_BILLING = 'Billing Statement';
 const SHEET_TRIPS   = 'Trips';
 
+// Shipment number validation: 10 or 11 digits (SMFI uses both formats)
+const SHIP_VALID = /^\d{10,11}$/;
+
 let token   = null;
 let isAdmin = false;
 let parsed  = [];
@@ -646,6 +681,10 @@ let trips   = [];
 let unbilled= [];
 let ccR     = { exact:[], fuzzy:[], noMatch:[], invalid:[] };
 let bSt = 'all', uSt = 'all';
+let soaMasterData = []; // all SOAs for SOA Manager
+
+// Track corrections made this session
+let correctionsLog = [];
 
 /* ── INIT ── */
 (function(){
@@ -664,11 +703,12 @@ let bSt = 'all', uSt = 'all';
 
 /* ── TAB SWITCH ── */
 function switchTab(t){
-  ['upload','billed','unbilled','billedout','liquidation','report'].forEach(x=>{
+  ['upload','soa','billed','unbilled','billedout','liquidation','report'].forEach(x=>{
     document.getElementById('pane-'+x).style.display = x===t ? '' : 'none';
     const tab = document.getElementById('tab-'+x);
     if(tab) tab.classList.toggle('active', x===t);
   });
+  if(t==='soa')         loadSOAManager();
   if(t==='billed')      loadBilled();
   if(t==='unbilled')    loadUnbilled();
   if(t==='billedout')   loadBilledOut();
@@ -714,7 +754,7 @@ async function processFiles(files){
   for(let i=0;i<files.length;i++){
     setP(Math.round(i/files.length*80), 'Reading: '+files[i].name);
     try{ parsed.push(...await parseExcel(files[i])); }
-    catch(e){ showToast('Cannot read '+files[i].name); }
+    catch(e){ showToast('Cannot read '+files[i].name); console.error(e); }
   }
   setP(100,'Done — '+parsed.length+' row(s)');
   document.getElementById('upc').textContent = parsed.length+' shipment(s) found';
@@ -722,10 +762,9 @@ async function processFiles(files){
     renderPreview(parsed);
     const pc = document.getElementById('preview-card');
     pc.style.display=''; pc.classList.remove('hidden');
-    const sb = document.getElementById('save-btn');
-    sb.style.display = 'block';
+    document.getElementById('save-btn').style.display='block';
   } else {
-    showToast('No data found');
+    showToast('No data found in this file');
   }
 }
 
@@ -735,82 +774,147 @@ function parseExcel(file){
     r.onload = function(e){
       try{
         const wb = XLSX.read(e.target.result,{type:'array'});
+        // Try each sheet, prefer Routing sheet
         const sn = wb.SheetNames.find(n=>
-          n.toLowerCase().includes('routing')||n.toLowerCase().includes('billing')||n.toLowerCase().includes('soa')
+          n.toLowerCase().includes('routing')
+        ) || wb.SheetNames.find(n=>
+          n.toLowerCase().includes('billing')||n.toLowerCase().includes('soa')
         ) || wb.SheetNames[0];
+
         const raw = XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:''});
-        let hR=-1, cD=-1, cP=-1, cS=-1, cR=-1;
+
+        // Find header row: must have SHIPMENT NO and RATE columns
+        let hR=-1, cDate=-1, cPlate=-1, cShip=-1, cRate=-1;
         for(let i=0;i<raw.length;i++){
           const row = raw[i].map(c=>String(c).toUpperCase().trim());
-          const si = row.findIndex(c=>c.includes('SHIPMENT NO'));
-          const ri = row.findIndex(c=>c==='RATE');
-          if(si!==-1&&ri!==-1){ hR=i; cD=row.findIndex(c=>c.includes('DATE')); cP=row.findIndex(c=>c.includes('PLATE')); cS=si; cR=ri; break; }
+          const si  = row.findIndex(c=>c.includes('SHIPMENT NO'));
+          const ri  = row.findIndex(c=>c==='RATE');
+          if(si!==-1&&ri!==-1){
+            hR=i;
+            cDate  = row.findIndex(c=>c==='DATE');
+            cPlate = row.findIndex(c=>c.includes('PLATE'));
+            cShip  = si;
+            cRate  = ri;
+            break;
+          }
         }
         if(hR===-1){ res([]); return; }
+
+        // Extract SOA number from header area
         let soa = '';
         for(let i=0;i<hR&&!soa;i++){
           raw[i].forEach((cell,ci)=>{
             const s = String(cell).trim().toUpperCase();
             if(s.includes('SOA NO')||s.includes('ROUTING SOA')){
               for(let nc=ci+1;nc<raw[i].length;nc++){
-                if(raw[i][nc]&&String(raw[i][nc]).trim()){ soa=String(raw[i][nc]).trim(); break; }
+                const v = String(raw[i][nc]).trim();
+                if(v && /501466/i.test(v)){ soa=v; break; }
+                if(v && v.length>3 && !v.includes('VENDOR')){ soa=v; break; }
               }
             }
           });
         }
+
         const rows = [];
         for(let i=hR+1;i<raw.length;i++){
           const row = raw[i];
-          const rawShip = row[cS];
-          const ship = String(typeof rawShip==='number' ? Math.round(rawShip) : (rawShip||'')).trim();
-          if(!ship||ship.toUpperCase().includes('TOTAL')||ship.length<5) continue;
-          const valid = /^\d{10}$/.test(ship);
+          const rawShip = row[cShip];
+          // Normalize: if number, round to integer; else string
+          const ship = String(
+            typeof rawShip==='number' ? Math.round(rawShip) : (rawShip||'')
+          ).trim().replace(/\s/g,'');
+
+          if(!ship) continue;
+          const shipUpper = ship.toUpperCase();
+          if(shipUpper.includes('TOTAL')||shipUpper.includes('GRAND')) continue;
+          if(ship.length<5) continue;
+
+          const valid = SHIP_VALID.test(ship);
+          let invalidReason = '';
+          if(!valid){
+            if(!/^\d+$/.test(ship)) invalidReason = 'Non-numeric characters';
+            else if(ship.length<10) invalidReason = ship.length+' digit(s) — min 10';
+            else invalidReason = ship.length+' digit(s) — max 11';
+          }
+
           rows.push({
-            date: xDate(cD!==-1?row[cD]:''), shipment: ship, soa,
-            truck: cP!==-1?String(row[cP]||'').trim():'',
-            rate: cR!==-1?String(row[cR]||'').trim():'',
+            date:  xDate(cDate!==-1?row[cDate]:''),
+            shipment: ship,
+            soa,
+            truck: cPlate!==-1 ? String(row[cPlate]||'').trim() : '',
+            rate:  cRate!==-1  ? parseFloat(row[cRate])||0 : 0,
             invalid: !valid,
-            invalidReason: !valid ? ship.length+' digit(s) — must be exactly 10' : ''
+            invalidReason
           });
         }
         res(rows);
       }catch(err){ rej(err); }
     };
-    r.onerror = rej; r.readAsArrayBuffer(file);
+    r.onerror = rej;
+    r.readAsArrayBuffer(file);
   });
 }
 
 function renderPreview(rows){
   const invalid = rows.filter(r=>r.invalid).length;
-  document.getElementById('preview-bdg').textContent = rows.length+' rows'+(invalid?' · ⚠️ '+invalid+' invalid':'');
+  const soaSet  = new Set(rows.map(r=>r.soa).filter(Boolean));
+  document.getElementById('preview-bdg').textContent =
+    rows.length+' rows · '+soaSet.size+' SOA'+(invalid?' · ⚠️ '+invalid+' invalid':'');
   document.getElementById('preview-body').innerHTML = rows.map(r=>{
-    if(r.invalid) return `<tr style="background:rgba(192,57,43,0.07)"><td class="nowrap">${r.date}</td><td style="color:var(--red)"><b>${r.shipment}</b> ⚠️</td><td class="ell">${r.soa}</td><td class="nowrap">${r.truck}</td><td style="color:var(--red);font-size:10px">${r.invalidReason}</td></tr>`;
-    return `<tr><td class="nowrap">${r.date}</td><td><b>${r.shipment}</b></td><td class="ell">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">${Number(r.rate||0).toLocaleString()}</td></tr>`;
+    if(r.invalid) return `<tr style="background:rgba(192,57,43,0.07)"><td class="nowrap">${r.date}</td><td style="color:var(--red)"><b>${r.shipment}</b> ⛔</td><td class="ell">${r.soa}</td><td class="nowrap">${r.truck}</td><td style="color:var(--red)">₱${Number(r.rate||0).toLocaleString()}</td><td style="color:var(--red);font-size:10px">${r.invalidReason}</td></tr>`;
+    return `<tr><td class="nowrap">${r.date}</td><td><b>${r.shipment}</b></td><td class="ell">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td><span class="pill pill-billed">Valid</span></td></tr>`;
   }).join('');
 }
 
 async function saveToSheet(){
   if(!parsed.length||!token) return;
-  showLoad(true,'Saving to Google Sheet...');
-  const sb = document.getElementById('save-btn'); sb.disabled=true;
+
+  // ── Duplicate SOA check ──
+  showLoad(true,'Checking for duplicate SOA...');
   try{
-    const ex = await apiGet(SHEET_BILLING+'!A2:A');
-    let nid = (ex.values||[]).filter(r=>r[0]).length+1;
+    const ex = await apiGet(SHEET_BILLING+'!A2:M');
+    const existing = mapMaster(ex.values||[]);
+    const existSOAs = new Set(existing.map(r=>r.soa).filter(Boolean));
+    const newSOAs   = [...new Set(parsed.map(r=>r.soa).filter(Boolean))];
+    const dups = newSOAs.filter(s=>existSOAs.has(s));
+
+    if(dups.length){
+      showLoad(false);
+      // Show warning in CC card
+      const cc = document.getElementById('cc-card');
+      cc.style.display=''; cc.classList.remove('hidden');
+      document.getElementById('cc-dup-wrap').style.display='';
+      document.getElementById('cc-dup-msg').innerHTML =
+        `<b>⚠️ Duplicate SOA Detected:</b> ${dups.join(', ')}<br>These SOAs already exist in the Billing sheet. <b>Please delete the existing SOA first</b> using the SOA Manager tab before re-uploading.`;
+      cc.scrollIntoView({behavior:'smooth',block:'start'});
+      return;
+    }
+
+    showLoad(true,'Saving to Google Sheet...');
+    const sb = document.getElementById('save-btn'); sb.disabled=true;
+
+    let nid = existing.filter(r=>r.id).length+1;
     await apiAppend(SHEET_BILLING+'!A:M', parsed.map(r=>[
       nid++, r.date, r.shipment, r.soa, r.truck, r.rate,
       r.invalid?'No':'Yes','No','','','No','',''
     ]));
+
     showLoad(false);
     showToast(parsed.length+' rows saved!','ok');
     const pc = document.getElementById('preview-card');
     pc.style.display='none'; pc.classList.add('hidden');
     sb.style.display='none'; sb.disabled=false;
     hideUprog(); fi.value='';
+
+    // Clear dup warning
+    document.getElementById('cc-dup-wrap').style.display='none';
+
     await runCC(parsed);
     renderSOASummary(parsed);
+
   }catch(err){
     console.error(err); showLoad(false);
-    showToast('Save failed'); sb.disabled=false;
+    showToast('Save failed'); document.getElementById('save-btn').disabled=false;
   }
 }
 
@@ -829,53 +933,98 @@ async function runCC(rows){
       billed: String(r[6]||'').trim(),
       route: r[7]||'', rate: r[8]||''
     }));
+
     const byShip = {};
-    trips.forEach(t=>{ if(/^\d{10}$/.test(t.shipmentNumber)) byShip[t.shipmentNumber]=t; });
+    trips.forEach(t=>{ if(SHIP_VALID.test(t.shipmentNumber)) byShip[t.shipmentNumber]=t; });
+
     ccR = { exact:[], fuzzy:[], noMatch:[], invalid:[] };
     rows.forEach(bRow=>{
       const bNum = bRow.shipment;
       if(bRow.invalid){ ccR.invalid.push({billing:bRow}); return; }
       if(byShip[bNum]){ ccR.exact.push({billing:bRow,trip:byShip[bNum]}); return; }
-      let bestTrip=null, bestReason='';
+      // Fuzzy match
+      let bestTrip=null, bestReason='', bestScore=99;
       for(const tNum of Object.keys(byShip)){
-        const reason = fuzzyReason(bNum,tNum);
-        if(reason){ bestTrip=byShip[tNum]; bestReason=reason; break; }
+        const result = fuzzyMatch(bNum, tNum);
+        if(result && result.score < bestScore){
+          bestTrip=byShip[tNum]; bestReason=result.reason; bestScore=result.score;
+        }
       }
-      if(bestTrip) ccR.fuzzy.push({billing:bRow,trip:bestTrip,reason:bestReason});
+      if(bestTrip) ccR.fuzzy.push({billing:bRow, trip:bestTrip, reason:bestReason});
       else ccR.noMatch.push({billing:bRow});
     });
+
     showLoad(false);
     renderCC();
   }catch(err){ console.error(err); showLoad(false); showToast('Cross-check failed'); }
 }
 
-function fuzzyReason(a,b){
-  if(!/^\d+$/.test(a)||!/^\d{10}$/.test(b)) return null;
-  if(a.length===11){
-    for(let i=0;i<a.length-1;i++)
-      if(a[i]===a[i+1]&&a.slice(0,i)+a.slice(i+1)===b)
-        return 'Extra repeated digit "'+a[i]+'" at pos '+(i+1);
+function fuzzyMatch(soaNum, tripsNum){
+  if(!SHIP_VALID.test(soaNum)||!SHIP_VALID.test(tripsNum)) return null;
+  const a = soaNum, b = tripsNum;
+
+  // Extra repeated digit in SOA (11-digit SOA vs 10-digit Trips)
+  if(a.length===11 && b.length===10){
+    for(let i=0;i<a.length-1;i++){
+      if(a[i]===a[i+1] && a.slice(0,i)+a.slice(i+1)===b)
+        return { reason:'Extra repeated digit "'+a[i]+'" at position '+(i+1)+' in SOA entry', score:1 };
+    }
+    // General: removing any one char from SOA gives Trips
+    for(let i=0;i<a.length;i++){
+      if(a.slice(0,i)+a.slice(i+1)===b)
+        return { reason:'SOA has extra digit "'+a[i]+'" at position '+(i+1), score:2 };
+    }
   }
-  if(a.length===9){
-    for(let i=0;i<=b.length;i++)
+
+  // Missing digit in SOA (9-digit vs 10-digit)
+  if(a.length===9 && b.length===10){
+    for(let i=0;i<=b.length;i++){
       if(a.slice(0,i)===b.slice(0,i)&&a.slice(i)===b.slice(i+1))
-        return 'Missing digit "'+b[i]+'" at pos '+(i+1);
+        return { reason:'Missing digit "'+b[i]+'" at position '+(i+1)+' in Trips entry', score:1 };
+    }
   }
-  if(a.length===10){
+
+  // Same length, single digit difference (typo)
+  if(a.length===b.length){
     let diff=0, pos=-1;
-    for(let i=0;i<10;i++) if(a[i]!==b[i]){ diff++; pos=i; }
-    if(diff===1) return 'Digit diff at pos '+(pos+1)+': billing "'+a[pos]+'" vs trips "'+b[pos]+'"';
+    for(let i=0;i<a.length;i++) if(a[i]!==b[i]){ diff++; pos=i; }
+    if(diff===1) return { reason:'Digit mismatch at pos '+(pos+1)+': SOA has "'+a[pos]+'", Trips has "'+b[pos]+'"', score:1 };
+    if(diff===2) return { reason:'2 digit differences — possible transposition or double typo', score:3 };
   }
   return null;
+}
+
+/* Build side-by-side character diff HTML */
+function buildDiffHTML(soaNum, tripsNum){
+  const maxLen = Math.max(soaNum.length, tripsNum.length);
+  let soaHTML='', tripsHTML='';
+
+  // Align by padding shorter string
+  const a = soaNum.padEnd(maxLen,' ');
+  const b = tripsNum.padEnd(maxLen,' ');
+
+  for(let i=0;i<maxLen;i++){
+    const ac = a[i]||' ', bc = b[i]||' ';
+    const same = ac===bc;
+    soaHTML   += `<span class="diff-char ${same?'same':'diff-soa'}">${ac==' '?'&nbsp;':ac}</span>`;
+    tripsHTML += `<span class="diff-char ${same?'same':'diff-trips'}">${bc==' '?'&nbsp;':bc}</span>`;
+  }
+
+  return `<div class="diff-wrap">
+    <div class="diff-row"><span class="diff-label soa-lbl">SOA ✓</span><span>${soaHTML}</span></div>
+    <div class="diff-row"><span class="diff-label trips-lbl">Trips</span><span>${tripsHTML}</span></div>
+  </div>`;
 }
 
 function renderCC(){
   const cc = document.getElementById('cc-card');
   cc.style.display=''; cc.classList.remove('hidden');
   const {exact,fuzzy,noMatch,invalid} = ccR;
-  document.getElementById('cc-bdg').textContent = exact.length+'✅ '+fuzzy.length+'⚠️ '+noMatch.length+'❌'+(invalid.length?' '+invalid.length+'⛔':'');
+  document.getElementById('cc-bdg').textContent =
+    exact.length+'✅ '+fuzzy.length+'⚠️ '+noMatch.length+'❌'+(invalid.length?' '+invalid.length+'⛔':'');
 
-  const iw = document.getElementById('cc-inv-wrap');
+  // Invalid
+  const iw=document.getElementById('cc-inv-wrap');
   if(invalid.length){
     iw.style.display='';
     document.getElementById('cc-inv-list').innerHTML = invalid.map(m=>`
@@ -886,39 +1035,50 @@ function renderCC(){
       </div>`).join('');
   } else iw.style.display='none';
 
-  const ew = document.getElementById('cc-ex-wrap');
+  // Exact
+  const ew=document.getElementById('cc-ex-wrap');
   if(exact.length){
     ew.style.display='';
     document.getElementById('cc-ex-list').innerHTML = exact.map(m=>`
       <div class="cc-item ex">
         <div class="cc-ship">${m.billing.shipment}</div>
-        <div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.trip.truck} · Date: ${m.trip.deliveryDate}</div>
+        <div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.trip.truck} · ${m.trip.deliveryDate}</div>
       </div>`).join('');
   } else ew.style.display='none';
 
-  const fw = document.getElementById('cc-fz-wrap');
+  // Fuzzy — with diff display + 3-option action
+  const fw=document.getElementById('cc-fz-wrap');
   if(fuzzy.length){
     fw.style.display='';
     document.getElementById('cc-fz-list').innerHTML = fuzzy.map((m,i)=>`
       <div class="cc-item fz" id="fi-${i}">
-        <div class="cc-ship">Billing: ${m.billing.shipment}</div>
-        <div class="cc-det">Trips has: <b>${m.trip.shipmentNumber}</b> · Truck: ${m.trip.truck} · Date: ${m.trip.deliveryDate}</div>
-        <div class="cc-reason" style="color:var(--orange)">🔎 ${m.reason}</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div>
+            <div class="cc-ship">SOA Shipment: <b style="color:var(--blue)">${m.billing.shipment}</b></div>
+            <div class="cc-det">Found in Trips as: <b style="color:var(--orange)">${m.trip.shipmentNumber}</b></div>
+          </div>
+          <span class="badge badge-orange" style="flex-shrink:0">${m.trip.truck}</span>
+        </div>
+        ${buildDiffHTML(m.billing.shipment, m.trip.shipmentNumber)}
+        <div class="cc-reason" style="color:var(--orange);font-size:11px;margin-top:4px">🔎 ${m.reason}</div>
+        <div class="cc-det" style="margin-top:3px">Trip date: ${m.trip.deliveryDate} · Route: ${m.trip.route||'—'}</div>
         <div class="cc-acts">
-          <button class="btn btn-green" onclick="confirmFuzzy(${i})">✅ Mark Billed</button>
+          <button class="btn btn-blue" onclick="confirmFuzzyFix(${i})" title="Mark billed AND correct the number in Trips">✅ Mark Billed + Fix Trips #</button>
+          <button class="btn btn-green" onclick="confirmFuzzyBillOnly(${i})" title="Mark billed but keep original Trips number">Mark Billed Only</button>
           <button class="btn btn-ghost" onclick="skipFuzzy(${i},this)">Skip</button>
         </div>
       </div>`).join('');
   } else fw.style.display='none';
 
-  const nw = document.getElementById('cc-nm-wrap');
+  // Not found
+  const nw=document.getElementById('cc-nm-wrap');
   if(noMatch.length){
     nw.style.display='';
     document.getElementById('cc-nm-list').innerHTML = noMatch.map(m=>`
       <div class="cc-item nm">
         <div class="cc-ship">${m.billing.shipment}</div>
-        <div class="cc-det">SOA: ${m.billing.soa} · Not found in any Trip</div>
-        <div class="cc-reason" style="color:var(--red)">❌ May need to be added in Trips manually</div>
+        <div class="cc-det">SOA: ${m.billing.soa} · Truck: ${m.billing.truck} · ${m.billing.date}</div>
+        <div class="cc-reason" style="color:var(--red)">❌ Not found in Trips — helper may not have entered this trip yet, or entered a completely different number</div>
       </div>`).join('');
   } else nw.style.display='none';
 
@@ -926,7 +1086,7 @@ function renderCC(){
 }
 
 async function applyExact(){
-  const btn = document.getElementById('apply-btn');
+  const btn=document.getElementById('apply-btn');
   btn.disabled=true; showLoad(true,'Marking trips as Billed...');
   let ok=0;
   for(const m of ccR.exact){
@@ -935,44 +1095,239 @@ async function applyExact(){
     catch(e){ console.error(e); }
   }
   showLoad(false);
-  btn.textContent = '✅ Done — '+ok+' trip(s) marked as Billed';
-  btn.style.background = 'var(--text3)';
+  btn.textContent='✅ Done — '+ok+' trip(s) marked as Billed';
+  btn.style.background='var(--text3)';
   showToast(ok+' marked as Billed!','ok');
 }
 
-async function confirmFuzzy(i){
+// Fix Trips number AND mark billed
+async function confirmFuzzyFix(i){
+  const m = ccR.fuzzy[i]; if(!m) return;
+  const oldNum = m.trip.shipmentNumber;
+  const newNum = m.billing.shipment;
+  showConfirm(
+    'Fix Trips Number + Mark Billed',
+    `Change Trips shipment number from:\n\n${oldNum} → ${newNum}\n\nTruck: ${m.trip.truck} · ${m.trip.deliveryDate}\n\nThis confirms the SOA number is correct.`,
+    async ()=>{
+      showLoad(true,'Updating Trips + marking Billed...');
+      try{
+        // Update shipment number (col F = index 6) AND billed status (col G = index 7)
+        await apiPut(SHEET_TRIPS+'!F'+m.trip.rowIndex+':G'+m.trip.rowIndex,[[newNum,'Yes']]);
+        m.trip.shipmentNumber = newNum;
+        m.trip.billed = 'Yes';
+        // Log the correction
+        correctionsLog.push({ soaNum: newNum, oldTripsNum: oldNum, truck: m.trip.truck, date: m.trip.deliveryDate, action:'Fixed + Billed' });
+        showLoad(false);
+        showToast('Trips number corrected + marked as Billed!','ok');
+        markFuzzyDone(i,'✅ Fixed + Marked Billed');
+      }catch(e){ showLoad(false); showToast('Failed to update'); }
+    }
+  );
+}
+
+// Mark billed only, don't change Trips number
+async function confirmFuzzyBillOnly(i){
   const m = ccR.fuzzy[i]; if(!m) return;
   showLoad(true,'Marking as Billed...');
   try{
     await apiPut(SHEET_TRIPS+'!G'+m.trip.rowIndex,[['Yes']]);
-    m.trip.billed='Yes'; showLoad(false);
+    m.trip.billed='Yes';
+    correctionsLog.push({ soaNum: m.billing.shipment, oldTripsNum: m.trip.shipmentNumber, truck: m.trip.truck, date: m.trip.deliveryDate, action:'Billed Only (no fix)' });
+    showLoad(false);
     showToast('Marked as Billed!','ok');
-    const el = document.getElementById('fi-'+i);
-    if(el){ el.style.opacity='.4'; el.querySelector('.cc-acts').innerHTML='<span style="font-size:11px;color:var(--green);font-weight:600">✅ Marked as Billed</span>'; }
+    markFuzzyDone(i,'✅ Marked Billed (number kept)');
   }catch(e){ showLoad(false); showToast('Failed'); }
 }
-function skipFuzzy(i,btn){
-  btn.textContent='Skipped'; btn.disabled=true;
-  const el = document.getElementById('fi-'+i); if(el) el.style.opacity='.4';
+
+function skipFuzzy(i,btn){ btn.textContent='Skipped'; btn.disabled=true; const el=document.getElementById('fi-'+i); if(el) el.style.opacity='.4'; }
+function markFuzzyDone(i,msg){
+  const el=document.getElementById('fi-'+i);
+  if(el){ el.style.opacity='.4'; el.querySelector('.cc-acts').innerHTML=`<span style="font-size:11px;color:var(--green);font-weight:600">${msg}</span>`; }
 }
 
 function renderSOASummary(rows){
-  const map = {};
+  const map={};
   rows.forEach(r=>{
     if(!map[r.soa]) map[r.soa]={soa:r.soa,count:0,total:0,trucks:new Set()};
     map[r.soa].count++; map[r.soa].total+=Number(r.rate||0);
     if(r.truck) map[r.soa].trucks.add(r.truck);
   });
-  const list = Object.values(map);
-  document.getElementById('soa-bdg').textContent = list.length+' SOA(s)';
-  document.getElementById('soa-list').innerHTML = list.map(s=>`
+  const list=Object.values(map);
+  document.getElementById('soa-bdg').textContent=list.length+' SOA(s)';
+  document.getElementById('soa-list').innerHTML=list.map(s=>`
     <div class="soa-row">
       <div class="soa-row-top"><div class="soa-number">${s.soa}</div><div class="soa-amount">₱${s.total.toLocaleString()}</div></div>
       <div class="soa-meta"><span>${s.count} shipment(s)</span></div>
       <div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
     </div>`).join('');
-  const sc = document.getElementById('soa-card');
+  const sc=document.getElementById('soa-card');
   sc.style.display=''; sc.classList.remove('hidden');
+}
+
+/* ══════════════════════════════════════
+   SOA MANAGER TAB
+══════════════════════════════════════ */
+async function loadSOAManager(){
+  document.getElementById('soa-loading').style.display='block';
+  document.getElementById('soa-manager-list').innerHTML='';
+  document.getElementById('soa-mgr-empty').style.display='none';
+  try{
+    const res = await apiGet(SHEET_BILLING+'!A2:M');
+    master = mapMaster(res.values||[]);
+    soaMasterData = master;
+    buildSOAMgrFilters();
+    renderSOAMgrStats();
+    renderSOAManager();
+    document.getElementById('soa-loading').style.display='none';
+  }catch(e){
+    document.getElementById('soa-loading').style.display='none';
+    showToast('Failed to load');
+  }
+}
+
+function buildSOAMgrFilters(){
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('soa-filter-month').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+}
+
+function renderSOAMgrStats(){
+  const soaMap=buildSOAMap(master,'billedout');
+  const total=Object.keys(soaMap).length;
+  const totalAmt=master.reduce((s,r)=>s+Number(r.rate||0),0);
+  const liqAmt=master.reduce((s,r)=>s+Number(r.liquidatedAmount||0),0);
+  document.getElementById('soa-mgr-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-blue">${total}</div><div class="stat-lbl">Total SOA</div></div>
+    <div class="stat-card"><div class="stat-val sv-green" style="font-size:13px">₱${(totalAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Billed</div></div>
+    <div class="stat-card"><div class="stat-val sv-purple" style="font-size:13px">₱${(liqAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
+    <div class="stat-card"><div class="stat-val sv-orange" style="font-size:13px">₱${((totalAmt-liqAmt)/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>`;
+}
+
+function renderSOAManager(){
+  const srch=(document.getElementById('soa-search').value||'').toLowerCase();
+  const monF=document.getElementById('soa-filter-month').value;
+
+  // Group by SOA
+  const soaMap={};
+  master.forEach(r=>{
+    if(!soaMap[r.soa]) soaMap[r.soa]={
+      soa:r.soa, count:0, total:0, trucks:new Set(),
+      months:new Set(), billedOut:0, liquidated:0, liquidatedAmt:0,
+      invalid:0, rows:[]
+    };
+    const s=soaMap[r.soa];
+    s.count++; s.total+=Number(r.rate||0);
+    if(r.truck) s.trucks.add(r.truck);
+    const m=dateMonth(r.date); if(m) s.months.add(m);
+    if(r.billedOut==='Yes') s.billedOut++;
+    if(r.liquidated==='Yes'||r.liquidated==='Partial') s.liquidated++;
+    s.liquidatedAmt+=Number(r.liquidatedAmount||0);
+    if(r.valid==='No') s.invalid++;
+    s.rows.push(r);
+  });
+
+  let soas=Object.values(soaMap).filter(s=>{
+    if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
+    if(monF&&![...s.months].includes(monF)) return false;
+    return true;
+  }).sort((a,b)=>b.soa.localeCompare(a.soa));
+
+  const list=document.getElementById('soa-manager-list');
+  if(!soas.length){
+    list.innerHTML='';
+    document.getElementById('soa-mgr-empty').style.display='block';
+    return;
+  }
+  document.getElementById('soa-mgr-empty').style.display='none';
+
+  list.innerHTML='<div class="soa-manager-card">'+soas.map(s=>{
+    const billedPct = s.count>0?(s.billedOut/s.count*100):0;
+    const liqPct    = s.total>0?Math.min(100,s.liquidatedAmt/s.total*100):0;
+    const monthLabels=[...s.months].sort().reverse().map(monthLabel).join(', ');
+    const statusPill = s.billedOut>=s.count
+      ? '<span class="pill pill-billedout">Billed Out</span>'
+      : '<span class="pill pill-unbilled">Pending BO</span>';
+    return `<div class="soa-mgr-row">
+      <div class="soa-mgr-left">
+        <div class="soa-mgr-num">${s.soa} ${s.invalid?`<span style="color:var(--red);font-size:11px">⛔ ${s.invalid} invalid</span>`:''}</div>
+        <div class="soa-mgr-meta">
+          ${statusPill}
+          ${s.liquidatedAmt>0?`<span class="pill pill-full" style="margin-left:4px">₱${s.liquidatedAmt.toLocaleString()} collected</span>`:''}
+        </div>
+        <div class="soa-mgr-meta" style="margin-top:5px">
+          <b>${s.count}</b> shipments ·
+          <b style="color:var(--green)">₱${s.total.toLocaleString()}</b> ·
+          ${[...s.trucks].map(t=>'🚛 '+t).join(' · ')}
+        </div>
+        <div class="soa-mgr-meta">${monthLabels}</div>
+        <div style="margin-top:8px">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:3px;font-weight:600">BILLED OUT</div>
+          <div class="prog-track"><div class="prog-fill prog-fill-blue" style="width:${billedPct.toFixed(0)}%"></div></div>
+          <div style="font-size:9px;color:var(--text3);margin-top:2px">${s.billedOut}/${s.count} shipments (${billedPct.toFixed(0)}%)</div>
+          <div style="font-size:9px;color:var(--text3);margin-bottom:3px;font-weight:600;margin-top:6px">LIQUIDATION</div>
+          <div class="prog-track"><div class="prog-fill ${liqPct>=100?'prog-fill-green':liqPct>0?'prog-fill-orange':'prog-fill-red'}" style="width:${liqPct.toFixed(0)}%"></div></div>
+          <div style="font-size:9px;color:var(--text3);margin-top:2px">₱${s.liquidatedAmt.toLocaleString()} / ₱${s.total.toLocaleString()} (${liqPct.toFixed(0)}%)</div>
+        </div>
+      </div>
+      <div class="soa-mgr-actions">
+        <button class="btn btn-danger" onclick="promptDeleteSOA('${s.soa}',${s.count})">🗑️ Delete</button>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+function promptDeleteSOA(soa, count){
+  showConfirm(
+    '⚠️ Delete SOA?',
+    `You are about to delete SOA <b>${soa}</b>.\n\nThis will:\n• Remove all ${count} shipment record(s) from the Billing sheet\n• Reset Billed = "No" on matching Trips\n\nThis cannot be undone.`,
+    ()=>executeDeleteSOA(soa)
+  );
+}
+
+async function executeDeleteSOA(soa){
+  showLoad(true,`Deleting SOA ${soa}...`);
+  try{
+    // 1. Get all current billing rows
+    const res = await apiGet(SHEET_BILLING+'!A2:M');
+    const allRows = res.values||[];
+
+    // 2. Find rows to delete (matching SOA) and get their shipment numbers
+    const toDelete=[], shipToUnbill=[];
+    allRows.forEach((r,i)=>{
+      if((r[3]||'')===soa){
+        toDelete.push(i+2); // 1-indexed row in sheet
+        const ship=String(r[2]||'').trim();
+        if(ship) shipToUnbill.push(ship);
+      }
+    });
+
+    if(!toDelete.length){ showLoad(false); showToast('No rows found for this SOA'); return; }
+
+    // 3. Clear those rows in Billing sheet (can't delete rows via Sheets API easily, so blank them)
+    // Sort descending to clear from bottom up
+    const blankRow = ['','','','','','','','','','','','',''];
+    for(const rowNum of toDelete.sort((a,b)=>b-a)){
+      await apiPut(SHEET_BILLING+'!A'+rowNum+':M'+rowNum,[blankRow]);
+    }
+
+    // 4. Reset Billed = "No" in Trips for matching shipment numbers
+    const tripsRes = await apiGet(SHEET_TRIPS+'!A2:I');
+    const tripsRows = tripsRes.values||[];
+    let tripsFixed=0;
+    for(let i=0;i<tripsRows.length;i++){
+      const tNum=String(tripsRows[i][5]||'').trim();
+      if(shipToUnbill.includes(tNum)){
+        await apiPut(SHEET_TRIPS+'!G'+(i+2),[['No']]);
+        tripsFixed++;
+      }
+    }
+
+    showLoad(false);
+    showToast(`✅ SOA ${soa} deleted. ${toDelete.length} billing rows cleared, ${tripsFixed} trips reset.`,'ok');
+    loadSOAManager(); // Refresh
+  }catch(err){
+    console.error(err); showLoad(false);
+    showToast('Delete failed: '+err.message);
+  }
 }
 
 /* ══════════════════════════════════════
@@ -982,26 +1337,26 @@ async function loadBilled(){
   if(!token) return;
   showLoad(true,'Loading billed records...');
   try{
-    const res = await apiGet(SHEET_BILLING+'!A2:M');
-    master = mapMaster(res.values||[]);
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
+    master=mapMaster(res.values||[]);
     showLoad(false);
     buildBFilters(); renderBStats(); renderBilled();
   }catch(e){ showLoad(false); showToast('Failed to load'); }
 }
 
 function buildBFilters(){
-  const months = [...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
-  document.getElementById('bm').innerHTML = '<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
-  const soas = [...new Set(master.map(r=>r.soa).filter(Boolean))].sort();
-  document.getElementById('bso').innerHTML = '<option value="">All SOA</option>'+soas.map(s=>`<option value="${s}">${s}</option>`).join('');
-  const trucks = [...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
-  document.getElementById('bt').innerHTML = '<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('bm').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+  const soas=[...new Set(master.map(r=>r.soa).filter(Boolean))].sort();
+  document.getElementById('bso').innerHTML='<option value="">All SOA</option>'+soas.map(s=>`<option value="${s}">${s}</option>`).join('');
+  const trucks=[...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
+  document.getElementById('bt').innerHTML='<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
 }
 
 function renderBStats(){
-  const amt = master.reduce((s,r)=>s+Number(r.rate||0),0);
-  const inv = master.filter(r=>r.valid==='No').length;
-  document.getElementById('billed-stats').innerHTML = `
+  const amt=master.reduce((s,r)=>s+Number(r.rate||0),0);
+  const inv=master.filter(r=>r.valid==='No').length;
+  document.getElementById('billed-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-green">${master.length}</div><div class="stat-lbl">Shipments</div></div>
     <div class="stat-card"><div class="stat-val sv-red">${new Set(master.map(r=>r.soa).filter(Boolean)).size}</div><div class="stat-lbl">SOA Bills</div></div>
     <div class="stat-card"><div class="stat-val sv-green" style="font-size:14px">₱${(amt/1000).toFixed(1)}K</div><div class="stat-lbl">Total</div></div>
@@ -1011,21 +1366,21 @@ function renderBStats(){
 function bSub(s){ bSt=s; ['all','soa','month','truck'].forEach(x=>document.getElementById('bsub-'+x).classList.toggle('active',x===s)); renderBilled(); }
 
 function renderBilled(){
-  const srch = document.getElementById('bs').value.toLowerCase();
-  const mo = document.getElementById('bm').value;
-  const so = document.getElementById('bso').value;
-  const tr = document.getElementById('bt').value;
-  let rows = master.filter(r=>{
+  const srch=document.getElementById('bs').value.toLowerCase();
+  const mo=document.getElementById('bm').value;
+  const so=document.getElementById('bso').value;
+  const tr=document.getElementById('bt').value;
+  let rows=master.filter(r=>{
     if(srch&&!r.shipment.toLowerCase().includes(srch)&&!r.soa.toLowerCase().includes(srch)) return false;
     if(so&&r.soa!==so) return false;
     if(tr&&r.truck!==tr) return false;
     if(mo&&dateMonth(r.date)!==mo) return false;
     return true;
   });
-  const list = document.getElementById('billed-list');
+  const list=document.getElementById('billed-list');
   if(!rows.length){ list.innerHTML=emptyH('No billed records','Try adjusting your filters.'); return; }
-  const cardFn = r=>{
-    const inv = r.valid==='No';
+  const cardFn=r=>{
+    const inv=r.valid==='No';
     return `<div class="ship-card${inv?' invalid-card':''}">
       <div class="ship-card-top">
         <div>
@@ -1037,10 +1392,10 @@ function renderBilled(){
       <div class="ship-meta"><span>📅 ${r.date}</span><span>🚛 ${r.truck}</span><span>${r.soa}</span></div>
     </div>`;
   };
-  if(bSt==='all')   list.innerHTML = rows.map(cardFn).join('');
-  else if(bSt==='soa')   list.innerHTML = grpBy(rows,'soa').map(({key,items})=>grpHTML(key,items,cardFn,'SOA: ','green')).join('');
-  else if(bSt==='month') list.innerHTML = grpByMonth(rows).map(({label,items})=>grpHTML(label,items,cardFn,'','green')).join('');
-  else if(bSt==='truck') list.innerHTML = grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','green')).join('');
+  if(bSt==='all')   list.innerHTML=rows.map(cardFn).join('');
+  else if(bSt==='soa')   list.innerHTML=grpBy(rows,'soa').map(({key,items})=>grpHTML(key,items,cardFn,'SOA: ','green')).join('');
+  else if(bSt==='month') list.innerHTML=grpByMonth(rows).map(({label,items})=>grpHTML(label,items,cardFn,'','green')).join('');
+  else if(bSt==='truck') list.innerHTML=grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','green')).join('');
 }
 
 /* ══════════════════════════════════════
@@ -1050,53 +1405,55 @@ async function loadUnbilled(){
   if(!token) return;
   showLoad(true,'Loading unbilled trips...');
   try{
-    const [bRes,tRes] = await Promise.all([apiGet(SHEET_BILLING+'!A2:M'), apiGet(SHEET_TRIPS+'!A2:I')]);
-    const billedSet = new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
-    trips = mapTrips(tRes.values||[]);
-    unbilled = trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:M'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const billedSet=new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
+    trips=mapTrips(tRes.values||[]);
+    unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
     showLoad(false);
     buildUFilters(); renderUStats(); renderUnbilled();
   }catch(e){ showLoad(false); showToast('Failed to load'); }
 }
 
 function buildUFilters(){
-  const months = [...new Set(unbilled.map(r=>dateMonth(r.deliveryDate)).filter(Boolean))].sort().reverse();
-  document.getElementById('um').innerHTML = '<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
-  const trucks = [...new Set(unbilled.map(r=>r.truck).filter(Boolean))].sort();
-  document.getElementById('ut').innerHTML = '<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const months=[...new Set(unbilled.map(r=>dateMonth(r.deliveryDate)).filter(Boolean))].sort().reverse();
+  document.getElementById('um').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+  const trucks=[...new Set(unbilled.map(r=>r.truck).filter(Boolean))].sort();
+  document.getElementById('ut').innerHTML='<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
 }
 
 function renderUStats(){
-  document.getElementById('unbilled-stats').innerHTML = `
+  const estRev=unbilled.reduce((s,r)=>s+Number(r.rate||0),0);
+  document.getElementById('unbilled-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-orange">${unbilled.length}</div><div class="stat-lbl">Unbilled</div></div>
     <div class="stat-card"><div class="stat-val sv-red">${new Set(unbilled.map(r=>r.truck).filter(Boolean)).size}</div><div class="stat-lbl">Trucks</div></div>
-    <div class="stat-card"><div class="stat-val sv-orange">${new Set(unbilled.map(r=>dateMonth(r.deliveryDate)).filter(Boolean)).size}</div><div class="stat-lbl">Months</div></div>`;
+    <div class="stat-card"><div class="stat-val sv-orange">${new Set(unbilled.map(r=>dateMonth(r.deliveryDate)).filter(Boolean)).size}</div><div class="stat-lbl">Months</div></div>
+    ${estRev>0?`<div class="stat-card"><div class="stat-val sv-orange" style="font-size:13px">₱${(estRev/1000).toFixed(1)}K</div><div class="stat-lbl">Est. Revenue</div></div>`:''}`;
 }
 
 function uSub(s){ uSt=s; ['all','month','truck'].forEach(x=>document.getElementById('usub-'+x).classList.toggle('active',x===s)); renderUnbilled(); }
 
 function renderUnbilled(){
-  const srch = document.getElementById('us').value.toLowerCase();
-  const mo = document.getElementById('um').value;
-  const tr = document.getElementById('ut').value;
-  let rows = unbilled.filter(r=>{
+  const srch=document.getElementById('us').value.toLowerCase();
+  const mo=document.getElementById('um').value;
+  const tr=document.getElementById('ut').value;
+  let rows=unbilled.filter(r=>{
     if(srch&&!r.shipmentNumber.toLowerCase().includes(srch)) return false;
     if(tr&&r.truck!==tr) return false;
     if(mo&&dateMonth(r.deliveryDate)!==mo) return false;
     return true;
   });
-  const list = document.getElementById('unbilled-list');
+  const list=document.getElementById('unbilled-list');
   if(!rows.length){ list.innerHTML=emptyH('No unbilled trips','All trips have been billed! ✅'); return; }
-  const cardFn = r=>`<div class="ship-card">
+  const cardFn=r=>`<div class="ship-card">
     <div class="ship-card-top">
       <div><div class="ship-num">${r.shipmentNumber||'—'}</div><span class="pill pill-unbilled">⚠️ Unbilled</span></div>
       <div class="ship-rate ship-rate-orange">₱${Number(r.rate||0).toLocaleString()}</div>
     </div>
     <div class="ship-meta"><span>📅 ${r.deliveryDate}</span><span>🚛 ${r.truck}</span><span>${r.route||'—'}</span></div>
   </div>`;
-  if(uSt==='all')   list.innerHTML = rows.map(cardFn).join('');
-  else if(uSt==='month') list.innerHTML = grpByMonth(rows.map(r=>({...r,date:r.deliveryDate}))).map(({label,items})=>grpHTML(label,items,cardFn,'','orange')).join('');
-  else if(uSt==='truck') list.innerHTML = grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','orange')).join('');
+  if(uSt==='all')   list.innerHTML=rows.map(cardFn).join('');
+  else if(uSt==='month') list.innerHTML=grpByMonth(rows.map(r=>({...r,date:r.deliveryDate}))).map(({label,items})=>grpHTML(label,items,cardFn,'','orange')).join('');
+  else if(uSt==='truck') list.innerHTML=grpBy(rows,'truck').map(({key,items})=>grpHTML('🚛 '+key,items,cardFn,'','orange')).join('');
 }
 
 /* ══════════════════════════════════════
@@ -1106,54 +1463,56 @@ async function loadBilledOut(){
   if(!token) return;
   showLoad(true,'Loading billed out data...');
   try{
-    const res = await apiGet(SHEET_BILLING+'!A2:M');
-    master = mapMaster(res.values||[]);
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
+    master=mapMaster(res.values||[]);
     showLoad(false);
     buildBOFilters(); renderBOStats(); renderBilledOut();
   }catch(e){ showLoad(false); showToast('Failed to load'); }
 }
 
 function buildBOFilters(){
-  const months = [...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
-  document.getElementById('bom').innerHTML = '<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('bom').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
 }
 
 function renderBOStats(){
-  const billedOut = master.filter(r=>r.billedOut==='Yes').length;
-  const pending = master.filter(r=>r.billedOut==='No').length;
-  document.getElementById('bo-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val sv-blue">${billedOut}</div><div class="stat-lbl">Billed Out</div></div>
-    <div class="stat-card"><div class="stat-val sv-orange">${pending}</div><div class="stat-lbl">Pending</div></div>
-    <div class="stat-card"><div class="stat-val sv-purple">${new Set(master.map(r=>r.soa)).size}</div><div class="stat-lbl">Total SOA</div></div>`;
+  const soaMap=buildSOAMap(master,'billedout');
+  const soas=Object.values(soaMap);
+  const done=soas.filter(s=>s.billedOut>=s.count&&s.count>0).length;
+  const pend=soas.filter(s=>s.billedOut<s.count).length;
+  document.getElementById('bo-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-blue">${done}</div><div class="stat-lbl">Billed Out</div></div>
+    <div class="stat-card"><div class="stat-val sv-orange">${pend}</div><div class="stat-lbl">Pending</div></div>
+    <div class="stat-card"><div class="stat-val sv-purple">${soas.length}</div><div class="stat-lbl">Total SOA</div></div>`;
 }
 
 function renderBilledOut(){
-  const srch = document.getElementById('bos').value.toLowerCase();
-  const mo = document.getElementById('bom').value;
-  const st = document.getElementById('bost').value;
-  const soaMap = buildSOAMap(master, 'billedout');
-  let rows = Object.values(soaMap).filter(s=>{
+  const srch=document.getElementById('bos').value.toLowerCase();
+  const mo=document.getElementById('bom').value;
+  const st=document.getElementById('bost').value;
+  const soaMap=buildSOAMap(master,'billedout');
+  let rows=Object.values(soaMap).filter(s=>{
     if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
     if(mo&&!s.monthSet.has(mo)) return false;
     if(st==='done'&&s.billedOut<s.count) return false;
-    if(st==='pending'&&s.billedOut===s.count) return false;
+    if(st==='pending'&&s.billedOut>=s.count) return false;
     return true;
   });
-  const list = document.getElementById('bo-list');
+  const list=document.getElementById('bo-list');
   if(!rows.length){ list.innerHTML=emptyH('No SOA found','Try adjusting your filters.'); return; }
-  list.innerHTML = rows.map(s=>{
-    const pct = s.count>0?(s.billedOut/s.count*100):0;
-    const done = pct>=100;
+  list.innerHTML=rows.map(s=>{
+    const pct=s.count>0?(s.billedOut/s.count*100):0;
+    const done=pct>=100;
     return `<div class="card" style="margin-bottom:10px">
       <div style="padding:13px 16px">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
           <div>
             <div class="soa-number">${s.soa}</div>
-            <span class="pill ${done?'pill-billedout':'pill-unbilled'}">${done?'✅ Billed Out':'⏳ Pending Bill Out'}</span>
+            <span class="pill ${done?'pill-billedout':'pill-unbilled'}">${done?'✅ Billed Out':'⏳ Pending'}</span>
           </div>
           <div class="ship-rate ${done?'':'ship-rate-orange'}" style="${done?'color:var(--blue)':''}">₱${s.total.toLocaleString()}</div>
         </div>
-        <div class="soa-meta"><span>Billed Out: ${s.billedOut} / ${s.count} shipments</span><span>${[...s.months].join(', ')}</span></div>
+        <div class="soa-meta"><span>Billed Out: ${s.billedOut}/${s.count} shipments</span><span>${[...s.months].join(', ')}</span></div>
         <div class="prog-track"><div class="prog-fill prog-fill-blue" style="width:${pct}%"></div></div>
         <div class="soa-chips" style="margin-top:7px">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
         ${!done?`<div style="margin-top:9px"><button class="btn btn-blue" onclick="markBilledOut('${s.soa}')">📤 Mark SOA as Billed Out</button></div>`:''}
@@ -1163,119 +1522,111 @@ function renderBilledOut(){
 }
 
 async function markBilledOut(soa){
-  if(!confirm('Mark SOA '+soa+' as billed out to client?')) return;
-  showLoad(true,'Updating billed out status...');
-  try{
-    const items = master.filter(r=>r.soa===soa&&r.billedOut==='No');
-    const today = todayStr();
-    for(const item of items){
-      await apiPut(SHEET_BILLING+'!K'+item.rowIndex+':L'+item.rowIndex,[['Yes',today]]);
-      item.billedOut='Yes'; item.billedOutDate=today;
-    }
-    showLoad(false); showToast('SOA marked as billed out!','ok');
-    renderBOStats(); renderBilledOut();
-  }catch(e){ console.error(e); showLoad(false); showToast('Failed to update'); }
+  showConfirm('Mark as Billed Out?',`Mark SOA ${soa} as submitted to client?`,async()=>{
+    showLoad(true,'Updating...');
+    try{
+      const items=master.filter(r=>r.soa===soa&&r.billedOut==='No');
+      const today=todayStr();
+      for(const item of items){
+        await apiPut(SHEET_BILLING+'!K'+item.rowIndex+':L'+item.rowIndex,[['Yes',today]]);
+        item.billedOut='Yes'; item.billedOutDate=today;
+      }
+      showLoad(false); showToast('SOA marked as billed out!','ok');
+      renderBOStats(); renderBilledOut();
+    }catch(e){ showLoad(false); showToast('Failed'); }
+  });
 }
 
 /* ══════════════════════════════════════
-   LIQUIDATION TAB  — per SOA, manual amount input
+   LIQUIDATION TAB
 ══════════════════════════════════════ */
 async function loadLiquidation(){
   if(!token) return;
   showLoad(true,'Loading liquidation data...');
   try{
-    const res = await apiGet(SHEET_BILLING+'!A2:M');
-    master = mapMaster(res.values||[]);
+    const res=await apiGet(SHEET_BILLING+'!A2:M');
+    master=mapMaster(res.values||[]);
     showLoad(false);
     buildLFilters(); renderLStats(); renderLiquidation();
   }catch(e){ showLoad(false); showToast('Failed to load'); }
 }
 
 function buildLFilters(){
-  const months = [...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
-  document.getElementById('lm').innerHTML = '<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('lm').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
 }
 
-/* Build per-SOA liquidation summary from master */
 function buildSOALiquidation(){
-  const map = {};
+  const map={};
   master.forEach(r=>{
-    if(!map[r.soa]) map[r.soa]={soa:r.soa, totalBilled:0, totalLiquidated:0, items:[], monthSet:new Set(), months:[], trucks:new Set()};
-    const s = map[r.soa];
-    s.totalBilled   += Number(r.rate||0);
-    s.totalLiquidated += Number(r.liquidatedAmount||0);
+    if(!map[r.soa]) map[r.soa]={soa:r.soa,totalBilled:0,totalLiquidated:0,items:[],monthSet:new Set(),months:[],trucks:new Set()};
+    const s=map[r.soa];
+    s.totalBilled+=Number(r.rate||0);
+    s.totalLiquidated+=Number(r.liquidatedAmount||0);
     s.items.push(r);
-    const m = dateMonth(r.date); if(m){ s.monthSet.add(m); }
+    const m=dateMonth(r.date); if(m) s.monthSet.add(m);
     if(r.truck) s.trucks.add(r.truck);
   });
-  // build readable month labels
-  Object.values(map).forEach(s=>{
-    s.months = [...s.monthSet].sort().reverse().map(monthLabel);
-  });
+  Object.values(map).forEach(s=>{ s.months=[...s.monthSet].sort().reverse().map(monthLabel); });
   return map;
 }
 
 function renderLStats(){
-  const soaMap = buildSOALiquidation();
-  const soas = Object.values(soaMap);
-  const full    = soas.filter(s=>s.totalLiquidated>=s.totalBilled&&s.totalBilled>0).length;
-  const partial = soas.filter(s=>s.totalLiquidated>0&&s.totalLiquidated<s.totalBilled).length;
-  const pending = soas.filter(s=>s.totalLiquidated<=0).length;
-  const totalLiq = soas.reduce((a,s)=>a+s.totalLiquidated,0);
-  const totalBill = soas.reduce((a,s)=>a+s.totalBilled,0);
-  document.getElementById('liq-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val sv-green">${full}</div><div class="stat-lbl">Full Liq</div></div>
+  const soaMap=buildSOALiquidation();
+  const soas=Object.values(soaMap);
+  const full=soas.filter(s=>s.totalLiquidated>=s.totalBilled&&s.totalBilled>0).length;
+  const partial=soas.filter(s=>s.totalLiquidated>0&&s.totalLiquidated<s.totalBilled).length;
+  const pending=soas.filter(s=>s.totalLiquidated<=0).length;
+  const totalLiq=soas.reduce((a,s)=>a+s.totalLiquidated,0);
+  const totalBill=soas.reduce((a,s)=>a+s.totalBilled,0);
+  const outstanding=totalBill-totalLiq;
+  document.getElementById('liq-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-green">${full}</div><div class="stat-lbl">Full</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${partial}</div><div class="stat-lbl">Partial</div></div>
     <div class="stat-card"><div class="stat-val sv-red">${pending}</div><div class="stat-lbl">Pending</div></div>
-    <div class="stat-card"><div class="stat-val sv-green" style="font-size:13px">₱${(totalLiq/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
-    <div class="stat-card"><div class="stat-val sv-dim" style="font-size:13px">₱${((totalBill-totalLiq)/1000).toFixed(1)}K</div><div class="stat-lbl">Balance</div></div>`;
+    <div class="stat-card"><div class="stat-val sv-green" style="font-size:12px">₱${(totalLiq/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
+    <div class="stat-card"><div class="stat-val sv-red" style="font-size:12px">₱${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>`;
 }
 
 function renderLiquidation(){
-  const srch = document.getElementById('ls').value.toLowerCase();
-  const mo   = document.getElementById('lm').value;
-  const st   = document.getElementById('lf').value;
-  const soaMap = buildSOALiquidation();
-  let rows = Object.values(soaMap).filter(s=>{
+  const srch=document.getElementById('ls').value.toLowerCase();
+  const mo=document.getElementById('lm').value;
+  const st=document.getElementById('lf').value;
+  const soaMap=buildSOALiquidation();
+  let rows=Object.values(soaMap).filter(s=>{
     if(srch&&!s.soa.toLowerCase().includes(srch)) return false;
     if(mo&&!s.monthSet.has(mo)) return false;
-    const pct = s.totalBilled>0?(s.totalLiquidated/s.totalBilled*100):0;
-    if(st==='full'    && pct<100) return false;
-    if(st==='partial' && (pct<=0||pct>=100)) return false;
-    if(st==='pending' && pct>0) return false;
+    const pct=s.totalBilled>0?(s.totalLiquidated/s.totalBilled*100):0;
+    if(st==='full'&&pct<100) return false;
+    if(st==='partial'&&(pct<=0||pct>=100)) return false;
+    if(st==='pending'&&pct>0) return false;
     return true;
   });
-  const list = document.getElementById('liq-list');
+  const list=document.getElementById('liq-list');
   if(!rows.length){ list.innerHTML=emptyH('No SOA found','Try adjusting your filters.'); return; }
-
-  list.innerHTML = rows.map(s=>{
-    const pct = s.totalBilled>0 ? Math.min(100,s.totalLiquidated/s.totalBilled*100) : 0;
-    const balance = s.totalBilled - s.totalLiquidated;
-    const status = pct>=100 ? 'full' : (pct>0 ? 'partial' : 'pending');
-    const statusLabel = {full:'Fully Liquidated', partial:'Partially Liquidated', pending:'Not Yet Liquidated'}[status];
-    const fillCls = {full:'prog-fill-green', partial:'prog-fill-orange', pending:'prog-fill-red'}[status];
-    const shipCount = s.items.length;
+  list.innerHTML=rows.map(s=>{
+    const pct=s.totalBilled>0?Math.min(100,s.totalLiquidated/s.totalBilled*100):0;
+    const balance=s.totalBilled-s.totalLiquidated;
+    const status=pct>=100?'full':(pct>0?'partial':'pending');
+    const statusLabel={full:'Fully Liquidated',partial:'Partially Liquidated',pending:'Not Yet Liquidated'}[status];
+    const fillCls={full:'prog-fill-green',partial:'prog-fill-orange',pending:'prog-fill-red'}[status];
     return `<div class="card" style="margin-bottom:10px">
       <div style="padding:13px 16px">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
-          <div>
-            <div class="soa-number">${s.soa}</div>
-            <span class="pill pill-${status}">${statusLabel}</span>
-          </div>
+          <div><div class="soa-number">${s.soa}</div><span class="pill pill-${status}">${statusLabel}</span></div>
           <div style="text-align:right">
             <div style="font-size:14px;font-weight:700;color:var(--green)">₱${s.totalBilled.toLocaleString()}</div>
             <div style="font-size:10px;color:var(--text3)">total billed</div>
           </div>
         </div>
         <div class="soa-meta">
-          <span>${shipCount} shipment(s)</span>
+          <span>${s.items.length} shipment(s)</span>
           <span>Collected: <b style="color:var(--green)">₱${s.totalLiquidated.toLocaleString()}</b></span>
           <span>Balance: <b style="color:${balance>0?'var(--red)':'var(--green)'}">₱${balance.toLocaleString()}</b></span>
         </div>
         <div class="prog-track" style="margin-top:6px"><div class="prog-fill ${fillCls}" style="width:${pct.toFixed(1)}%"></div></div>
         <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text3)">
-          <span>${pct.toFixed(0)}% liquidated</span>
-          <span>${s.months.join(', ')}</span>
+          <span>${pct.toFixed(0)}% liquidated</span><span>${s.months.join(', ')}</span>
         </div>
         <div class="soa-chips" style="margin-top:6px">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
         ${status!=='full'?`
@@ -1294,112 +1645,154 @@ function renderLiquidation(){
 }
 
 async function recordLiquidation(soa){
-  const inputId = 'liq-amt-'+soa.replace(/[^a-z0-9]/gi,'_');
-  const input = document.getElementById(inputId);
-  if(!input) return;
-  const amount = parseFloat(input.value);
+  const inputId='liq-amt-'+soa.replace(/[^a-z0-9]/gi,'_');
+  const input=document.getElementById(inputId); if(!input) return;
+  const amount=parseFloat(input.value);
   if(isNaN(amount)||amount<=0){ showToast('Enter a valid amount','warn'); return; }
-  if(!confirm(`Record ₱${amount.toLocaleString()} payment for SOA ${soa}?`)) return;
 
-  showLoad(true,'Recording liquidation...');
-  try{
-    const today = todayStr();
-    const soaItems = master.filter(r=>r.soa===soa);
-    // Compute current total billed for this SOA
-    const totalBilled = soaItems.reduce((a,r)=>a+Number(r.rate||0),0);
-    const newStatus = amount>=totalBilled ? 'Yes' : 'Partial';
-    // Update all rows: set liquidated amount proportionally (or flat per-SOA tracking)
-    // Per-row: distribute payment proportionally
-    const perRowAmt = amount / soaItems.length;
-    for(const item of soaItems){
-      const rowAmt = (Number(item.rate||0)/totalBilled)*amount;
-      await apiPut(SHEET_BILLING+'!H'+item.rowIndex+':J'+item.rowIndex,
-        [[newStatus, today, rowAmt.toFixed(2)]]
-      );
-      item.liquidated = newStatus;
-      item.liquidationDate = today;
-      item.liquidatedAmount = rowAmt.toFixed(2);
+  showConfirm(
+    'Record Payment',
+    `Record ₱${amount.toLocaleString()} payment for SOA ${soa}?`,
+    async()=>{
+      showLoad(true,'Recording liquidation...');
+      try{
+        const today=todayStr();
+        const soaItems=master.filter(r=>r.soa===soa);
+        const totalBilled=soaItems.reduce((a,r)=>a+Number(r.rate||0),0);
+        const newStatus=amount>=totalBilled?'Yes':'Partial';
+        for(const item of soaItems){
+          const rowAmt=(Number(item.rate||0)/totalBilled)*amount;
+          await apiPut(SHEET_BILLING+'!H'+item.rowIndex+':J'+item.rowIndex,[[newStatus,today,rowAmt.toFixed(2)]]);
+          item.liquidated=newStatus; item.liquidationDate=today; item.liquidatedAmount=rowAmt.toFixed(2);
+        }
+        showLoad(false); showToast('Payment recorded!','ok');
+        renderLStats(); renderLiquidation();
+      }catch(e){ showLoad(false); showToast('Failed to record'); }
     }
-    showLoad(false);
-    showToast('Payment recorded!','ok');
-    renderLStats(); renderLiquidation();
-  }catch(e){ console.error(e); showLoad(false); showToast('Failed to record'); }
+  );
 }
 
 /* ══════════════════════════════════════
-   REPORT TAB
+   REPORT TAB — Enhanced
 ══════════════════════════════════════ */
 async function loadReport(){
   if(!token) return;
   showLoad(true,'Loading full report...');
   try{
-    const [bRes,tRes] = await Promise.all([apiGet(SHEET_BILLING+'!A2:M'), apiGet(SHEET_TRIPS+'!A2:I')]);
-    master = mapMaster(bRes.values||[]);
-    const billedSet = new Set(master.map(r=>r.shipment.trim()));
-    trips = mapTrips(tRes.values||[]);
-    unbilled = trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
+    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:M'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    master=mapMaster(bRes.values||[]);
+    const billedSet=new Set(master.map(r=>r.shipment.trim()));
+    trips=mapTrips(tRes.values||[]);
+    unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
     showLoad(false);
     buildRFilters(); renderRStats(); renderReport();
   }catch(e){ showLoad(false); showToast('Failed to load'); }
 }
 
 function buildRFilters(){
-  const months = [...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
-  document.getElementById('rm').innerHTML = '<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
-  const soas = [...new Set(master.map(r=>r.soa).filter(Boolean))].sort();
-  document.getElementById('rso').innerHTML = '<option value="">All SOA</option>'+soas.map(s=>`<option value="${s}">${s}</option>`).join('');
-  const trucks = [...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
-  document.getElementById('rt').innerHTML = '<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const months=[...new Set(master.map(r=>dateMonth(r.date)).filter(Boolean))].sort().reverse();
+  document.getElementById('rm').innerHTML='<option value="">All Months</option>'+months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+  const soas=[...new Set(master.map(r=>r.soa).filter(Boolean))].sort();
+  document.getElementById('rso').innerHTML='<option value="">All SOA</option>'+soas.map(s=>`<option value="${s}">${s}</option>`).join('');
+  const trucks=[...new Set(master.map(r=>r.truck).filter(Boolean))].sort();
+  document.getElementById('rt').innerHTML='<option value="">All Trucks</option>'+trucks.map(t=>`<option value="${t}">${t}</option>`).join('');
 }
 
 function renderRStats(){
-  const bAmt = master.reduce((s,r)=>s+Number(r.rate||0),0);
-  const inv = master.filter(r=>r.valid==='No').length;
-  const bo  = master.filter(r=>r.billedOut==='Yes').length;
-  const liq = master.filter(r=>r.liquidated==='Yes').length;
-  document.getElementById('rpt-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val sv-green">${master.length}</div><div class="stat-lbl">Billed</div></div>
+  const bAmt=master.reduce((s,r)=>s+Number(r.rate||0),0);
+  const inv=master.filter(r=>r.valid==='No').length;
+  const bo=master.filter(r=>r.billedOut==='Yes').length;
+  const liqAmt=master.reduce((s,r)=>s+Number(r.liquidatedAmount||0),0);
+  const outstanding=bAmt-liqAmt;
+  const uAmt=unbilled.reduce((s,r)=>s+Number(r.rate||0),0);
+  const collectionRate=bAmt>0?((liqAmt/bAmt)*100):0;
+
+  document.getElementById('rpt-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-green">${master.length}</div><div class="stat-lbl">Billed Ships</div></div>
     <div class="stat-card"><div class="stat-val sv-blue">${bo}</div><div class="stat-lbl">Billed Out</div></div>
-    <div class="stat-card"><div class="stat-val sv-purple">${liq}</div><div class="stat-lbl">Liquidated</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${unbilled.length}</div><div class="stat-lbl">Unbilled</div></div>
-    <div class="stat-card"><div class="stat-val sv-green" style="font-size:12px">₱${(bAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Billed Amt</div></div>
     ${inv?`<div class="stat-card"><div class="stat-val sv-red">${inv}</div><div class="stat-lbl">Invalid #</div></div>`:''}`;
 
-  // comparison
-  const soaMap = {};
+  // Financial Summary
+  document.getElementById('rpt-fin-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-green" style="font-size:13px">₱${(bAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Total Billed</div></div>
+    <div class="stat-card"><div class="stat-val sv-purple" style="font-size:13px">₱${(liqAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Collected</div></div>
+    <div class="stat-card"><div class="stat-val sv-red" style="font-size:13px">₱${(outstanding/1000).toFixed(1)}K</div><div class="stat-lbl">Outstanding</div></div>
+    <div class="stat-card"><div class="stat-val sv-orange" style="font-size:13px">₱${(uAmt/1000).toFixed(1)}K</div><div class="stat-lbl">Unbilled Est.</div></div>
+    <div class="stat-card"><div class="stat-val ${collectionRate>=80?'sv-green':collectionRate>=50?'sv-orange':'sv-red'}" style="font-size:16px">${collectionRate.toFixed(0)}%</div><div class="stat-lbl">Collection Rate</div></div>`;
+
+  // Receivables aging (by SOA)
+  const soaLiq=buildSOALiquidation();
+  const soaValues=Object.values(soaLiq).filter(s=>s.totalBilled>s.totalLiquidated);
+  document.getElementById('rpt-receivables').innerHTML=soaValues.length?`
+    <div style="margin-top:10px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">OUTSTANDING RECEIVABLES</div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>SOA</th><th>Billed</th><th>Collected</th><th>Balance</th><th>%</th></tr></thead>
+        <tbody>${soaValues.sort((a,b)=>b.totalBilled-b.totalLiquidated-(a.totalBilled-a.totalLiquidated)).map(s=>{
+          const bal=s.totalBilled-s.totalLiquidated;
+          const pct=s.totalBilled>0?((s.totalLiquidated/s.totalBilled)*100):0;
+          return `<tr><td><b>${s.soa}</b></td><td class="nowrap">₱${s.totalBilled.toLocaleString()}</td><td class="nowrap">₱${s.totalLiquidated.toLocaleString()}</td><td class="nowrap" style="color:var(--red)"><b>₱${bal.toLocaleString()}</b></td><td><span class="pill ${pct>=100?'pill-billed':pct>0?'pill-partial':'pill-pending'}">${pct.toFixed(0)}%</span></td></tr>`;
+        }).join('')}</tbody>
+      </table></div>
+    </div>`:'<div style="padding:8px 0;font-size:12px;color:var(--green);font-weight:600">✅ All SOAs fully liquidated!</div>';
+
+  // Billed Out vs Liquidation comparison
+  const soaMap2={};
   master.forEach(r=>{
-    if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,total:0,billedOut:0,liquidated:0};
-    soaMap[r.soa].total++;
-    if(r.billedOut==='Yes') soaMap[r.soa].billedOut++;
-    if(r.liquidated==='Yes') soaMap[r.soa].liquidated++;
+    if(!soaMap2[r.soa]) soaMap2[r.soa]={soa:r.soa,total:0,billedOut:0,liquidated:0,liqAmt:0};
+    soaMap2[r.soa].total++;
+    if(r.billedOut==='Yes') soaMap2[r.soa].billedOut++;
+    if(r.liquidated==='Yes'||r.liquidated==='Partial') soaMap2[r.soa].liquidated++;
+    soaMap2[r.soa].liqAmt+=Number(r.liquidatedAmount||0);
   });
-  const sl = Object.values(soaMap);
-  const bothDone = sl.filter(s=>s.billedOut===s.total&&s.liquidated===s.total).length;
-  const boOnly   = sl.filter(s=>s.billedOut===s.total&&s.liquidated<s.total).length;
-  const liqOnly  = sl.filter(s=>s.liquidated===s.total&&s.billedOut<s.total).length;
-  const neither  = sl.filter(s=>s.billedOut<s.total&&s.liquidated<s.total).length;
-  document.getElementById('rpt-cmp-stats').innerHTML = `
+  const sl=Object.values(soaMap2);
+  const bothDone=sl.filter(s=>s.billedOut>=s.total&&s.liquidated>=s.total).length;
+  const boOnly=sl.filter(s=>s.billedOut>=s.total&&s.liquidated<s.total).length;
+  const liqOnly=sl.filter(s=>s.liquidated>=s.total&&s.billedOut<s.total).length;
+  const neither=sl.filter(s=>s.billedOut<s.total&&s.liquidated<s.total).length;
+  document.getElementById('rpt-cmp-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-green">${bothDone}</div><div class="stat-lbl">Both Done</div></div>
     <div class="stat-card"><div class="stat-val sv-blue">${boOnly}</div><div class="stat-lbl">BO Only</div></div>
     <div class="stat-card"><div class="stat-val sv-purple">${liqOnly}</div><div class="stat-lbl">Liq Only</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${neither}</div><div class="stat-lbl">Both Pending</div></div>`;
-  document.getElementById('rpt-cmp-detail').innerHTML = `
+  document.getElementById('rpt-cmp-detail').innerHTML=`
     <div class="tbl-wrap" style="margin-top:10px"><table class="tbl">
-      <thead><tr><th>SOA</th><th>Total</th><th>Billed Out</th><th>Liquidated</th><th>Status</th></tr></thead>
+      <thead><tr><th>SOA</th><th>Ships</th><th>Billed Out</th><th>Collected</th><th>Status</th></tr></thead>
       <tbody>${sl.map(s=>{
-        const bos=s.billedOut===s.total?'✅':'⏳';
-        const lqs=s.liquidated===s.total?'✅':'⏳';
+        const bos=s.billedOut>=s.total?'✅':'⏳';
+        const lqs=s.liquidated>=s.total?'✅':'⏳';
         return `<tr><td><b>${s.soa}</b></td><td>${s.total}</td><td>${s.billedOut} ${bos}</td><td>${s.liquidated} ${lqs}</td><td>${bos==='✅'&&lqs==='✅'?'<span class="pill pill-billed">Complete</span>':'<span class="pill pill-unbilled">Pending</span>'}</td></tr>`;
       }).join('')}</tbody>
     </table></div>`;
+
+  // Accuracy stats
+  const totalCC=ccR.exact.length+ccR.fuzzy.length+ccR.noMatch.length+ccR.invalid.length;
+  const accRate=totalCC>0?((ccR.exact.length/totalCC)*100):0;
+  document.getElementById('rpt-acc-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val sv-green">${ccR.exact.length}</div><div class="stat-lbl">Exact Match</div></div>
+    <div class="stat-card"><div class="stat-val sv-orange">${ccR.fuzzy.length}</div><div class="stat-lbl">Helper Errors</div></div>
+    <div class="stat-card"><div class="stat-val sv-red">${ccR.noMatch.length}</div><div class="stat-lbl">Not Found</div></div>
+    <div class="stat-card"><div class="stat-val sv-red">${ccR.invalid.length}</div><div class="stat-lbl">Invalid #</div></div>
+    ${totalCC>0?`<div class="stat-card"><div class="stat-val ${accRate>=90?'sv-green':accRate>=70?'sv-orange':'sv-red'}" style="font-size:16px">${accRate.toFixed(0)}%</div><div class="stat-lbl">Accuracy</div></div>`:''}`;
+
+  const corrections=correctionsLog.filter(c=>c.action.includes('Fixed'));
+  document.getElementById('rpt-acc-detail').innerHTML=corrections.length?`
+    <div style="margin-top:10px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);margin-bottom:8px">CORRECTIONS MADE THIS SESSION</div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>SOA # (Correct)</th><th>Old Trips #</th><th>Truck</th><th>Date</th></tr></thead>
+        <tbody>${corrections.map(c=>`<tr><td><b style="color:var(--green)">${c.soaNum}</b></td><td style="color:var(--red)"><b>${c.oldTripsNum}</b></td><td class="nowrap">${c.truck}</td><td class="nowrap">${c.date}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </div>`:'<div style="padding:8px 0;font-size:12px;color:var(--text3)">No corrections logged this session. Cross-check from Upload tab to see accuracy data.</div>';
 }
 
 function renderReport(){
-  const srch = document.getElementById('rs').value.toLowerCase();
-  const mo = document.getElementById('rm').value;
-  const so = document.getElementById('rso').value;
-  const tr = document.getElementById('rt').value;
-  let bRows = master.filter(r=>{
+  const srch=document.getElementById('rs').value.toLowerCase();
+  const mo=document.getElementById('rm').value;
+  const so=document.getElementById('rso').value;
+  const tr=document.getElementById('rt').value;
+  let bRows=master.filter(r=>{
     if(srch&&!r.shipment.toLowerCase().includes(srch)&&!r.soa.toLowerCase().includes(srch)) return false;
     if(so&&r.soa!==so) return false;
     if(tr&&r.truck!==tr) return false;
@@ -1407,7 +1800,7 @@ function renderReport(){
     return true;
   });
 
-  // per SOA
+  // Per SOA
   const soaMap={};
   bRows.forEach(r=>{
     if(!soaMap[r.soa]) soaMap[r.soa]={soa:r.soa,count:0,total:0,trucks:new Set(),months:new Set()};
@@ -1415,60 +1808,65 @@ function renderReport(){
     if(r.truck) soaMap[r.soa].trucks.add(r.truck);
     const m=dateMonth(r.date); if(m) soaMap[r.soa].months.add(monthLabel(m));
   });
-  const soaList = Object.values(soaMap);
-  document.getElementById('rpt-soa-bdg').textContent = soaList.length+' SOA(s)';
-  document.getElementById('rpt-soa-list').innerHTML = soaList.map(s=>`
+  const soaList=Object.values(soaMap);
+  document.getElementById('rpt-soa-bdg').textContent=soaList.length+' SOA(s)';
+  document.getElementById('rpt-soa-list').innerHTML=soaList.map(s=>`
     <div class="soa-row">
       <div class="soa-row-top"><div class="soa-number">${s.soa}</div><div class="soa-amount">₱${s.total.toLocaleString()}</div></div>
       <div class="soa-meta"><span>${s.count} shipment(s)</span><span>${[...s.months].join(', ')}</span></div>
       <div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
-    </div>`).join('') || noData();
+    </div>`).join('')||noData();
 
-  // per month billed
-  const bByMonth = grpByMonth(bRows);
-  document.getElementById('rpt-month-list').innerHTML = bByMonth.map(({label,items})=>
+  // Per month billed
+  const bByMonth=grpByMonth(bRows);
+  document.getElementById('rpt-month-list').innerHTML=bByMonth.map(({label,items})=>
     grpTableHTML(label,items,['Date','Shipment No.','SOA','Truck','Rate','BO','Liq'],r=>{
       const inv=r.valid==='No';
-      return `<tr style="${inv?'background:rgba(192,57,43,0.05)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ell" title="${r.soa}">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${r.billedOut==='Yes'?'✅':'⏳'}</td><td>${r.liquidated==='Yes'?'✅':'⏳'}</td></tr>`;
+      return `<tr style="${inv?'background:rgba(192,57,43,.05)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ell" title="${r.soa}">${r.soa}</td><td class="nowrap">${r.truck}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${r.billedOut==='Yes'?'✅':'⏳'}</td><td>${r.liquidated==='Yes'?'✅':r.liquidated==='Partial'?'🔶':'⏳'}</td></tr>`;
     },'green')
-  ).join('') || noData();
+  ).join('')||noData();
 
-  // per truck billed
-  const bByTruck = grpBy(bRows,'truck');
-  document.getElementById('rpt-truck-list').innerHTML = bByTruck.map(({key,items})=>
-    grpTableHTML('🚛 '+key,items,['Date','Shipment No.','SOA','Rate','BO','Liq'],r=>{
+  // Per truck
+  const bByTruck=grpBy(bRows,'truck');
+  document.getElementById('rpt-truck-list').innerHTML=bByTruck.map(({key,items})=>{
+    const truckAmt=items.reduce((s,r)=>s+Number(r.rate||0),0);
+    const liqAmt=items.reduce((s,r)=>s+Number(r.liquidatedAmount||0),0);
+    const collRate=truckAmt>0?((liqAmt/truckAmt)*100):0;
+    return grpTableHTML('🚛 '+key+` <span style="font-size:9px;color:var(--text3);font-weight:400">(${collRate.toFixed(0)}% collected)</span>`,items,['Date','Shipment No.','SOA','Rate','BO','Liq'],r=>{
       const inv=r.valid==='No';
-      return `<tr style="${inv?'background:rgba(192,57,43,0.05)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ell" title="${r.soa}">${r.soa}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${r.billedOut==='Yes'?'✅':'⏳'}</td><td>${r.liquidated==='Yes'?'✅':'⏳'}</td></tr>`;
-    },'green')
-  ).join('') || noData();
+      return `<tr style="${inv?'background:rgba(192,57,43,.05)':''}"><td class="nowrap">${r.date}</td><td><b style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</b></td><td class="ell" title="${r.soa}">${r.soa}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td><td>${r.billedOut==='Yes'?'✅':'⏳'}</td><td>${r.liquidated==='Yes'?'✅':r.liquidated==='Partial'?'🔶':'⏳'}</td></tr>`;
+    },'green');
+  }).join('')||noData();
 
-  // unbilled
-  document.getElementById('rpt-umonth-bdg').textContent = unbilled.length+' total';
-  const uByMonth = grpByMonth(unbilled.map(r=>({...r,date:r.deliveryDate})));
-  document.getElementById('rpt-umonth-list').innerHTML = uByMonth.map(({label,items})=>
+  // Unbilled
+  document.getElementById('rpt-umonth-bdg').textContent=unbilled.length+' total';
+  const uByMonth=grpByMonth(unbilled.map(r=>({...r,date:r.deliveryDate})));
+  document.getElementById('rpt-umonth-list').innerHTML=uByMonth.map(({label,items})=>
     grpTableHTML(label,items,['Date','Shipment No.','Truck','Route','Rate'],r=>
       `<tr><td class="nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td class="nowrap">${r.truck}</td><td class="ell" title="${r.route||''}">${r.route||'—'}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`
     ,'orange')
-  ).join('') || '<div style="padding:12px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
+  ).join('')||'<div style="padding:12px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
-  const uByTruck = grpBy(unbilled,'truck');
-  document.getElementById('rpt-utruck-list').innerHTML = uByTruck.map(({key,items})=>
+  const uByTruck=grpBy(unbilled,'truck');
+  document.getElementById('rpt-utruck-list').innerHTML=uByTruck.map(({key,items})=>
     grpTableHTML('🚛 '+key,items,['Date','Shipment No.','Route','Rate'],r=>
       `<tr><td class="nowrap">${r.deliveryDate}</td><td><b>${r.shipmentNumber||'—'}</b></td><td class="ell" title="${r.route||''}">${r.route||'—'}</td><td class="nowrap">₱${Number(r.rate||0).toLocaleString()}</td></tr>`
     ,'orange')
-  ).join('') || '<div style="padding:12px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
+  ).join('')||'<div style="padding:12px 0;font-size:12px;color:var(--text3)">All trips are billed! ✅</div>';
 
-  // CC in report
-  const inv2 = (ccR.invalid||[]).length;
-  document.getElementById('rpt-cc-stats').innerHTML = `
+  // Cross-check in report
+  const inv2=(ccR.invalid||[]).length;
+  document.getElementById('rpt-cc-bdg').textContent=ccR.fuzzy.length+' corrections';
+  document.getElementById('rpt-cc-stats').innerHTML=`
     <div class="stat-card"><div class="stat-val sv-green">${ccR.exact.length}</div><div class="stat-lbl">Exact</div></div>
     <div class="stat-card"><div class="stat-val sv-orange">${ccR.fuzzy.length}</div><div class="stat-lbl">Flagged</div></div>
     <div class="stat-card"><div class="stat-val sv-red">${ccR.noMatch.length}</div><div class="stat-lbl">Not Found</div></div>
-    <div class="stat-card"><div class="stat-val sv-red">${inv2}</div><div class="stat-lbl">Invalid #</div></div>`;
+    <div class="stat-card"><div class="stat-val sv-red">${inv2}</div><div class="stat-lbl">Invalid</div></div>`;
+
   const exW=document.getElementById('rpt-cc-ex-wrap');
   if(ccR.exact.length){ exW.style.display=''; document.getElementById('rpt-cc-ex-list').innerHTML=ccR.exact.map(m=>`<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td class="nowrap">${m.trip.truck}</td><td class="nowrap">${m.trip.deliveryDate}</td><td><span class="pill pill-billed">✅ Matched</span></td></tr>`).join(''); } else exW.style.display='none';
   const fzW=document.getElementById('rpt-cc-fz-wrap');
-  if(ccR.fuzzy.length){ fzW.style.display=''; document.getElementById('rpt-cc-fz-list').innerHTML=ccR.fuzzy.map(m=>`<tr><td><b>${m.billing.shipment}</b></td><td>${m.trip.shipmentNumber}</td><td class="nowrap">${m.trip.truck}</td><td style="color:var(--orange)">${m.reason}</td></tr>`).join(''); } else fzW.style.display='none';
+  if(ccR.fuzzy.length){ fzW.style.display=''; document.getElementById('rpt-cc-fz-list').innerHTML=ccR.fuzzy.map(m=>`<tr><td><b style="color:var(--blue)">${m.billing.shipment}</b></td><td style="color:var(--orange)"><b>${m.trip.shipmentNumber}</b></td><td class="nowrap">${m.trip.truck}</td><td>${m.reason}</td><td>${correctionsLog.find(c=>c.soaNum===m.billing.shipment)?'<span class="pill pill-billed">Fixed</span>':'<span class="pill pill-unbilled">Pending</span>'}</td></tr>`).join(''); } else fzW.style.display='none';
   const nmW=document.getElementById('rpt-cc-nm-wrap');
   if(ccR.noMatch.length){ nmW.style.display=''; document.getElementById('rpt-cc-nm-list').innerHTML=ccR.noMatch.map(m=>`<tr><td><b>${m.billing.shipment}</b></td><td class="ell" title="${m.billing.soa}">${m.billing.soa}</td><td class="nowrap">${m.billing.truck}</td><td class="nowrap">${m.billing.date}</td></tr>`).join(''); } else nmW.style.display='none';
   const invList=ccR.invalid||[];
@@ -1480,7 +1878,7 @@ function renderReport(){
    HELPERS
 ══════════════════════════════════════ */
 function mapMaster(vals){
-  return (vals||[]).filter(r=>r[0]).map(r=>({
+  return (vals||[]).filter(r=>r[0]&&(r[2]||r[1])).map(r=>({
     rowIndex: Number(r[0])+1,
     id:r[0]||'', date:r[1]||'', shipment:r[2]||'', soa:r[3]||'', truck:r[4]||'', rate:r[5]||'',
     valid:(r[6]||'Yes').trim(),
@@ -1501,7 +1899,7 @@ function mapTrips(vals){
     route:r[7]||'', rate:r[8]||''
   }));
 }
-function buildSOAMap(rows, type){
+function buildSOAMap(rows,type){
   const map={};
   rows.forEach(r=>{
     if(!map[r.soa]) map[r.soa]={soa:r.soa,count:0,billedOut:0,total:0,items:[],monthSet:new Set(),months:[],trucks:new Set()};
@@ -1516,24 +1914,13 @@ function buildSOAMap(rows, type){
   return map;
 }
 function todayStr(){ return new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'}); }
-function grpBy(rows,key){
-  const map={};
-  rows.forEach(r=>{ const k=r[key]||'Unknown'; if(!map[k]) map[k]=[]; map[k].push(r); });
-  return Object.keys(map).sort().map(k=>({key:k,items:map[k]}));
-}
-function grpByMonth(rows){
-  const map={};
-  rows.forEach(r=>{ const k=dateMonth(r.date||r.deliveryDate||'')||'Unknown'; if(!map[k]) map[k]=[]; map[k].push(r); });
-  return Object.keys(map).sort().reverse().map(k=>({label:monthLabel(k),items:map[k]}));
-}
+function grpBy(rows,key){ const map={}; rows.forEach(r=>{ const k=r[key]||'Unknown'; if(!map[k]) map[k]=[]; map[k].push(r); }); return Object.keys(map).sort().map(k=>({key:k,items:map[k]})); }
+function grpByMonth(rows){ const map={}; rows.forEach(r=>{ const k=dateMonth(r.date||r.deliveryDate||'')||'Unknown'; if(!map[k]) map[k]=[]; map[k].push(r); }); return Object.keys(map).sort().reverse().map(k=>({label:monthLabel(k),items:map[k]})); }
 function grpHTML(title,items,cardFn,prefix,color){
   const amt=items.reduce((s,r)=>s+Number(r.rate||0),0);
   return `<div style="margin-bottom:18px">
     <div class="grp-header">${prefix}${title}</div>
-    <div class="grp-tally">
-      <div class="tally tally-${color}">${items.length} shipments</div>
-      <div class="tally tally-dim">₱${amt.toLocaleString()}</div>
-    </div>
+    <div class="grp-tally"><div class="tally tally-${color}">${items.length} shipments</div><div class="tally tally-dim">₱${amt.toLocaleString()}</div></div>
     ${items.map(cardFn).join('')}
   </div>`;
 }
@@ -1541,44 +1928,36 @@ function grpTableHTML(title,items,headers,rowFn,color){
   const amt=items.reduce((s,r)=>s+Number(r.rate||0),0);
   return `<div class="grp" style="margin-top:14px">
     <div class="grp-header">${title}</div>
-    <div class="grp-tally">
-      <div class="tally tally-${color}">${items.length} shipments</div>
-      <div class="tally tally-dim">₱${amt.toLocaleString()}</div>
-    </div>
-    <div class="tbl-wrap"><table class="tbl">
-      <thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
-      <tbody>${items.map(rowFn).join('')}</tbody>
-    </table></div>
+    <div class="grp-tally"><div class="tally tally-${color}">${items.length} shipments</div><div class="tally tally-dim">₱${amt.toLocaleString()}</div></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${items.map(rowFn).join('')}</tbody></table></div>
   </div>`;
 }
 function noData(){ return '<div style="padding:12px 0;font-size:12px;color:var(--text3)">No data</div>'; }
 function emptyH(t,s){ return `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="empty-title">${t}</div><div class="empty-sub">${s}</div></div>`; }
 
 /* ── SHEETS API ── */
-function apiGet(range){
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,
-    {headers:{Authorization:'Bearer '+token}}).then(r=>{if(!r.ok) throw r.status; return r.json();});
+function apiGet(range){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}`,{headers:{Authorization:'Bearer '+token}}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
+function apiAppend(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
+function apiPut(range,values){ return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok)throw r.status;return r.json();}); }
+
+/* ── CONFIRM MODAL ── */
+let _confirmCb=null;
+function showConfirm(title,msg,cb){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').innerHTML=msg.replace(/\n/g,'<br>');
+  _confirmCb=cb;
+  document.getElementById('confirm-ok-btn').onclick=()=>{ closeConfirm(); if(_confirmCb) _confirmCb(); };
+  document.getElementById('confirm-overlay').classList.add('open');
 }
-function apiAppend(range,values){
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-    {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok) throw r.status; return r.json();});
-}
-function apiPut(range,values){
-  return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
-    {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})}).then(r=>{if(!r.ok) throw r.status; return r.json();});
-}
+function closeConfirm(){ document.getElementById('confirm-overlay').classList.remove('open'); _confirmCb=null; }
 
 /* ── UI HELPERS ── */
 function showUprog(s){ document.getElementById('uprog').classList.toggle('show',s); }
 function hideUprog(){ document.getElementById('uprog').classList.remove('show'); }
 function setP(p,m){ document.getElementById('upb').style.width=p+'%'; document.getElementById('upm').textContent=m; }
-function showLoad(s,m=''){ document.getElementById('lov').classList.toggle('show',s); document.getElementById('lmsg').textContent=m; }
+function showLoad(s,m=''){ document.getElementById('lov').classList.toggle('show',s); if(m) document.getElementById('lmsg').textContent=m; }
 let _tt;
-function showToast(m,type=''){
-  const el=document.getElementById('toast'); el.textContent=m;
-  el.className='toast show'+(type==='ok'?' ok':type==='warn'?' warn':'');
-  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3500);
-}
+function showToast(m,type=''){ const el=document.getElementById('toast'); el.textContent=m; el.className='toast show'+(type==='ok'?' ok':type==='warn'?' warn':''); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),3500); }
 </script>
 </body>
 </html>
