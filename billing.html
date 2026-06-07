@@ -1619,14 +1619,14 @@ async function runUnbilledScan() {
     ]);
     showLoad(false);
 
-    const allTrips = (tRes.values || []).filter(r => r[0]).map((r, i) => ({
+    const allTrips = (tRes.values || []).map((r, i) => ({
       rowIndex: i + 2,
       deliveryDate: r[1] || '', truck: r[2] || '',
       shipmentDate: r[3] || '', type: r[4] || '',
       shipmentNumber: String(r[5] || '').trim(),
       billed: String(r[6] || '').trim(),
       route: r[7] || '', rate: r[8] || ''
-    }));
+    })).filter(r => r.shipmentNumber || r.deliveryDate || r.truck);
 
     // All billed numbers — from Billing sheet AND Trips where Billed=Yes
     const billedFromSheet = new Set(
@@ -1820,15 +1820,17 @@ async function fixScanTypo(i) {
     async () => {
       document.getElementById('st-acts-'+i).innerHTML = '<span style="font-size:11px;color:var(--text2)">Updating...</span>';
       try {
-        await apiPut(SHEET_TRIPS + '!F' + t.rowIndex, [[newNum]]);
+        console.log('Updating Trips row', t.rowIndex, 'column F with:', newNum);
+        const result = await apiPut(SHEET_TRIPS + '!F' + t.rowIndex, [[newNum]]);
+        console.log('apiPut result:', result);
         t.shipmentNumber = newNum;
-        scanSkip('st', i, '✅ Fixed — number updated in Trips sheet');
-        showToast('Shipment number corrected!', 'ok');
-        // Refresh unbilled list
-        loadUnbilled();
+        scanSkip('st', i, '✅ Fixed — Trips row ' + t.rowIndex + ' updated');
+        showToast('✅ Row ' + t.rowIndex + ' corrected!', 'ok');
+        // Refresh unbilled list with fresh data
+        await loadUnbilled();
       } catch (e) {
-        console.error(e);
-        showToast('Update failed', 'warn');
+        console.error('apiPut failed:', e);
+        showToast('Update failed (row ' + t.rowIndex + '): ' + e, 'warn');
         document.getElementById('st-acts-'+i).innerHTML = `
           <button class="btn btn-blue" onclick="fixScanTypo(${i})">✏️ Retry Fix</button>
           <button class="btn btn-ghost" onclick="scanSkip('st',${i})">Skip</button>`;
@@ -2600,7 +2602,7 @@ function showCalDay(iso){
    HELPERS
 ══════════════════════════════════════ */
 function mapMaster(vals){
-  return (vals||[]).filter(r=>r[0]&&(r[2]||r[1])).map((r,i)=>({
+  return (vals||[]).map((r,i)=>({
     rowIndex: i+2,
     id:r[0]||'', date:r[1]||'', shipment:r[2]||'', soa:r[3]||'', truck:r[4]||'', rate:r[5]||'',
     valid:(r[6]||'Yes').trim(),
@@ -2610,16 +2612,16 @@ function mapMaster(vals){
     billedOut:(r[10]||'No').trim(),
     billedOutDate:r[11]||'',
     notes:r[12]||''
-  }));
+  })).filter(r=>r.shipment||r.date||r.soa);
 }
 function mapTrips(vals){
-  return (vals||[]).filter(r=>r[0]).map((r,i)=>({
+  return (vals||[]).map((r,i)=>({
     rowIndex:i+2, deliveryDate:r[1]||'', truck:r[2]||'',
     shipmentDate:r[3]||'', type:r[4]||'',
     shipmentNumber:String(r[5]||'').trim(),
     billed:String(r[6]||'').trim(),
     route:r[7]||'', rate:r[8]||''
-  }));
+  })).filter(r=>r.shipmentNumber||r.deliveryDate||r.truck);
 }
 function buildSOAMap(rows,type){
   const map={};
