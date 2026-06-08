@@ -1387,6 +1387,39 @@ async function runUnbilledScan(){
   }
 }
 
+/* ── Shared typo card builder ── */
+function buildTypoCard(item, idx){
+  const t = item.trip;
+  const diffHTML = scanBuildDiff(t.shipmentNumber, item.similar);
+  const dateInfo = item.similarDate
+    ? '<span style="margin-left:6px;color:var(--text3)">\u{1F4C5} billed on ' + item.similarDate + '</span>'
+    : '';
+  return '<div class="scan-item typo" id="st-' + idx + '">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">'
+      + '<div>'
+        + '<div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">&#x26A0;&#xFE0F; Typo &mdash; ' + item.dist + ' digit' + (item.dist>1?'s':'') + ' off from a billed number</div>'
+        + '<div class="scan-num" style="color:var(--orange)">' + t.shipmentNumber + '</div>'
+      + '</div>'
+      + '<div style="text-align:right;flex-shrink:0">'
+        + '<div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ' + t.rowIndex + '</div>'
+        + '<div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">&#x20B1;' + Number(t.rate||0).toLocaleString() + '</div>'
+      + '</div>'
+    + '</div>'
+    + '<div class="scan-meta">&#x1F69B; ' + t.truck + ' &middot; &#x1F4C5; ' + (t.deliveryDate||'&mdash;') + ' &middot; ' + (t.route||'&mdash;') + '</div>'
+    + diffHTML
+    + '<div style="font-size:11px;color:var(--text2);margin-top:3px">'
+      + 'Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">' + item.similar + '</b>'
+      + dateInfo
+    + '</div>'
+    + '<div style="font-size:11px;color:var(--text2);margin-top:2px">&#x1F4C5; This trip: <b>' + (t.deliveryDate||'&mdash;') + '</b></div>'
+    + '<div class="scan-acts" id="st-acts-' + idx + '">'
+      + '<button class="btn btn-blue" onclick="fixScanTypo(' + idx + ')">&#x270F;&#xFE0F; Fix &rarr; Use ' + item.similar + '</button>'
+      + '<button class="btn btn-ghost" onclick="scanSkip(' + idx + ')">Skip</button>'
+    + '</div>'
+    + '<div id="st-done-' + idx + '" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>'
+  + '</div>';
+}
+
 /* ── Re-render scan results in place (called after fix/skip) ── */
 function refreshScanResults(){
   /* Count active (non-resolved) items */
@@ -1408,37 +1441,7 @@ function refreshScanResults(){
   const typoWrap=document.getElementById('scan-typo-wrap');
   if(activeTypos.length){
     typoWrap.style.display='block';
-    document.getElementById('scan-typo-list').innerHTML=activeTypos.map((item,_)=>{
-      /* use the index in the FULL scanTypos array for the button callbacks */
-      const realIdx = scanTypos.indexOf(item);
-      const t = item.trip;
-      return `<div class="scan-item typo" id="st-${realIdx}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
-          <div>
-            <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">⚠️ Typo — ${item.dist} digit${item.dist>1?'s':''} off from a billed number</div>
-            <div class="scan-num" style="color:var(--orange)">${t.shipmentNumber}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ${t.rowIndex}</div>
-            <div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">₱${Number(t.rate||0).toLocaleString()}</div>
-          </div>
-        </div>
-        <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route||'—'}</div>
-        ${scanBuildDiff(t.shipmentNumber,item.similar)}
-        <div style="font-size:11px;color:var(--text2);margin-top:3px">
-          Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
-          ${item.similarDate ? '<span style="margin-left:6px;color:var(--text3)">📅 billed on ' + item.similarDate + '</span>' : ''}
-        </div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px">
-          📅 This trip: <b>${t.deliveryDate||'—'}</b>
-        </div>
-        <div class="scan-acts" id="st-acts-${realIdx}">
-          <button class="btn btn-blue" onclick="fixScanTypo(${realIdx})">✏️ Fix → Use <span style="font-family:var(--mono)">${item.similar}</span></button>
-          <button class="btn btn-ghost" onclick="scanSkip(${realIdx})">Skip</button>
-        </div>
-        <div id="st-done-${realIdx}" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>
-      </div>`;
-    }).join('');
+    document.getElementById('scan-typo-list').innerHTML=activeTypos.map((item)=>{ const realIdx=scanTypos.indexOf(item); return buildTypoCard(item,realIdx); }).join('');
   } else {
     typoWrap.style.display='none';
   }
@@ -1463,35 +1466,7 @@ function renderScanResults(cleanCount, totalUnb){
   const typoWrap=document.getElementById('scan-typo-wrap');
   if(scanTypos.length){
     typoWrap.style.display='block';
-    document.getElementById('scan-typo-list').innerHTML=scanTypos.map((item,i)=>{
-      const t=item.trip;
-      return `<div class="scan-item typo" id="st-${i}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">
-          <div>
-            <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">⚠️ Typo — ${item.dist} digit${item.dist>1?'s':''} off from a billed number</div>
-            <div class="scan-num" style="color:var(--orange)">${t.shipmentNumber}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ${t.rowIndex}</div>
-            <div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">₱${Number(t.rate||0).toLocaleString()}</div>
-          </div>
-        </div>
-        <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route||'—'}</div>
-        ${scanBuildDiff(t.shipmentNumber,item.similar)}
-        <div style="font-size:11px;color:var(--text2);margin-top:3px">
-          Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
-          ${item.similarDate ? '<span style="margin-left:6px;color:var(--text3)">📅 billed on ' + item.similarDate + '</span>' : ''}
-        </div>
-        <div style="font-size:11px;color:var(--text2);margin-top:2px">
-          📅 This trip: <b>${t.deliveryDate||'—'}</b>
-        </div>
-        <div class="scan-acts" id="st-acts-${i}">
-          <button class="btn btn-blue" onclick="fixScanTypo(${i})">✏️ Fix → Use <span style="font-family:var(--mono)">${item.similar}</span></button>
-          <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>
-        </div>
-        <div id="st-done-${i}" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>
-      </div>`;
-    }).join('');
+    document.getElementById('scan-typo-list').innerHTML=scanTypos.map((item,i)=>{ return buildTypoCard(item,i); }).join('');
   } else typoWrap.style.display='none';
 
   /* NEAR DUPES */
