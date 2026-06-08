@@ -1298,88 +1298,128 @@ function renderBilledList(){
 async function runUnbilledScan(){
   const btn = document.getElementById('scan-issues-btn');
   btn.disabled=true; btn.textContent='⏳ Scanning...';
+
   try{
     showLoad(true,'Loading data for scan...');
-    const [tRes,bRes] = await Promise.all([apiGet(SHEET_TRIPS+'!A2:I'), apiGet(SHEET_BILLING+'!A2:M')]);
+    const [tRes, bRes] = await Promise.all([
+      apiGet(SHEET_TRIPS+'!A2:I'),
+      apiGet(SHEET_BILLING+'!A2:G')  /* A=ID B=Date C=ShipNum D=SOA E=Truck F=Rate G=Valid */
+    ]);
     showLoad(false);
 
+    /* All trips */
     const allTrips = (tRes.values||[]).map((r,i)=>({
-      rowIndex:i+2, deliveryDate:r[1]||'', truck:r[2]||'', shipmentDate:r[3]||'', type:r[4]||'',
-      shipmentNumber:String(r[5]||'').trim(), billed:String(r[6]||'').trim(), route:r[7]||'', rate:r[8]||''
+      rowIndex:       i+2,
+      deliveryDate:   r[1]||'',
+      truck:          r[2]||'',
+      shipmentNumber: String(r[5]||'').trim(),
+      billed:         String(r[6]||'').trim(),
+      route:          r[7]||'',
+      rate:           r[8]||''
     })).filter(r=>r.shipmentNumber||r.deliveryDate||r.truck);
 
-    const billedFromSheet = new Set(
-      (bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()).filter(s=>SHIP_VALID.test(s))
-    );
-    const billedFromTrips = new Set(
-      allTrips.filter(t=>t.billed==='Yes'&&SHIP_VALID.test(t.shipmentNumber)).map(t=>t.shipmentNumber)
-    );
-    const allBilled = new Set([...billedFromSheet,...billedFromTrips]);
-
-    /* Build a detail array for billed trips so we can date/truck match */
-    const allBilledDetails = allTrips
-      .filter(t=>t.billed==='Yes' && SHIP_VALID.test(t.shipmentNumber))
-      .map(t=>({ num:t.shipmentNumber, date:t.deliveryDate, truck:t.truck }));
-    /* Also add billing-sheet-only entries (may not be in Trips) */
-    (bRes.values||[]).filter(r=>r[2]&&SHIP_VALID.test(String(r[2]).trim())).forEach(r=>{
-      if(!allTrips.find(t=>t.shipmentNumber===String(r[2]).trim()))
-        allBilledDetails.push({ num:String(r[2]).trim(), date:r[1]||'', truck:r[4]||'' });
-    });
-
-    const unb = allTrips.filter(t=>
-      t.billed!=='Yes' &&
-      !billedFromSheet.has(t.shipmentNumber) &&
+    /* Unbilled trips only (not yet billed, not already fixed this session) */
+    const unbilledTrips = allTrips.filter(t=>
+      t.billed !== 'Yes' &&
       !fixedRowIndexes.has(t.rowIndex)
     );
 
+    /* Billing Statement entries = source of truth (already saved SOA data) */
+    const billingEntries = (bRes.values||[])
+      .filter(r => r[2] && SHIP_VALID.test(String(r[2]).trim()))
+      .map(r=>({
+        date:     r[1]||'',
+        shipment: String(r[2]).trim(),
+        soa:      r[3]||'',
+        truck:    r[4]||'',
+        valid:    r[6]||'Yes'
+      }));
+
     scanTypos=[]; scanDups=[]; scanInvalids=[]; scanNearDupes=[];
-    const seen={}, cleanList=[];
+    const seen={};
 
-    unb.forEach(t=>{
+    /* Check unbilled for invalid format and duplicates */
+    unbilledTrips.forEach(t=>{
       const num = t.shipmentNumber;
-
-      /* Skip rows we already fixed this session (handles sheet propagation delay) */
-      if(fixedRowIndexes.has(t.rowIndex)) return;
-
-      if(!SHIP_VALID.test(num)){ scanInvalids.push({trip:t,reason:scanInvalidReason(num)}); return; }
-
-      if(seen[num]) scanDups.push({trip:t,other:seen[num]});
-      else seen[num]=t;
-
-      let bestMatch=null, bestDist=99, bestMatchDate='';
-      for(const bd of allBilledDetails){
-        const bn=bd.num;
-        if(Math.abs(num.length-bn.length)>2) continue;
-        /* Date proximity: ±2 days strictly.
-           Both dates must parse; if either is missing/unparseable, skip the check. */
-        if(t.deliveryDate && bd.date){
-          const dA=new Date(t.deliveryDate), dB=new Date(bd.date);
-          if(!isNaN(dA) && !isNaN(dB)){
-            const diffDays = Math.abs(dA - dB) / 86400000;
-            if(diffDays > 2) continue;
-          }
-        }
-        const d=scanEditDist(num,bn);
-        if(d>0&&d<bestDist){bestMatch=bn;bestDist=d;bestMatchDate=bd.date;}
-        if(bestDist===1) break;
+      if(!SHIP_VALID.test(num)){
+        scanInvalids.push({trip:t, reason:scanInvalidReason(num)});
+        return;
       }
-      if(bestMatch&&bestDist<=2){ scanTypos.push({trip:t,similar:bestMatch,dist:bestDist,similarDate:bestMatchDate,resolved:false}); return; }
-      cleanList.push(t);
+      if(seen[num]) scanDups.push({trip:t, other:seen[num]});
+      else seen[num]=t;
+    });
+
+    /* MAIN LOGIC:
+       For each Billing Statement entry (source of truth):
+       - Find unbilled Trips within ±2 days by delivery date
+       - If exact shipment number found among those trips → already matched, skip
+       - If NO exact match → possible typo in Trips
+         Find closest number (1–2 digit diff) and flag for fix */
+    const flaggedRows = new Set();
+
+    billingEntries.forEach(bill=>{
+      const billDate = new Date(bill.date);
+      if(isNaN(billDate)) return;
+
+      /* Unbilled trips within ±2 days */
+      const nearbyTrips = unbilledTrips.filter(t=>{
+        if(flaggedRows.has(t.rowIndex)) return false;
+        if(!t.deliveryDate) return false;
+        const tripDate = new Date(t.deliveryDate);
+        if(isNaN(tripDate)) return false;
+        return Math.abs(billDate - tripDate) / 86400000 <= 2;
+      });
+
+      if(!nearbyTrips.length) return;
+
+      /* Exact match found → no problem */
+      if(nearbyTrips.find(t => t.shipmentNumber === bill.shipment)) return;
+
+      /* No exact match → find closest number */
+      let bestTrip=null, bestDist=99;
+      for(const t of nearbyTrips){
+        if(!SHIP_VALID.test(t.shipmentNumber)) continue;
+        const d = scanEditDist(t.shipmentNumber, bill.shipment);
+        if(d > 0 && d <= 2 && d < bestDist){
+          bestTrip = t;
+          bestDist = d;
+        }
+      }
+
+      if(bestTrip){
+        flaggedRows.add(bestTrip.rowIndex);
+        scanTypos.push({
+          trip:        bestTrip,      /* Trips row with typo */
+          similar:     bill.shipment, /* correct number from Billing Statement */
+          dist:        bestDist,
+          similarDate: bill.date,
+          similarSoa:  bill.soa,
+          resolved:    false
+        });
+      }
     });
 
     /* Near-dupes within unbilled */
-    const validUnb=unb.filter(t=>SHIP_VALID.test(t.shipmentNumber)&&!fixedRowIndexes.has(t.rowIndex));
-    const typoNums=new Set(scanTypos.map(x=>x.trip.shipmentNumber));
+    const validUnb = unbilledTrips.filter(t=>
+      SHIP_VALID.test(t.shipmentNumber) &&
+      !flaggedRows.has(t.rowIndex)
+    );
     for(let i=0;i<validUnb.length;i++){
       for(let j=i+1;j<validUnb.length;j++){
-        if(typoNums.has(validUnb[i].shipmentNumber)||typoNums.has(validUnb[j].shipmentNumber)) continue;
         if(scanEditDist(validUnb[i].shipmentNumber,validUnb[j].shipmentNumber)===1)
           scanNearDupes.push({a:validUnb[i],b:validUnb[j]});
       }
     }
 
-    renderScanResults(cleanList.length, unb.length);
+    const cleanCount = unbilledTrips.filter(t=>
+      SHIP_VALID.test(t.shipmentNumber) &&
+      !flaggedRows.has(t.rowIndex) &&
+      !scanDups.find(x=>x.trip.rowIndex===t.rowIndex)
+    ).length;
+
+    renderScanResults(cleanCount, unbilledTrips.length);
     btn.textContent='🔄 Re-Scan'; btn.disabled=false;
+
   }catch(e){
     showLoad(false); console.error(e);
     showToast('Scan failed — check connection','warn');
@@ -1409,9 +1449,13 @@ function buildTypoCard(item, idx){
   html += '<div class="scan-meta">' + t.truck + ' - ' + (t.deliveryDate||'') + ' - ' + (t.route||'') + '</div>';
   html += diffHTML;
   html += '<div style="font-size:11px;color:var(--text2);margin-top:3px">';
-  html += 'Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">' + item.similar + '</b> ' + dateInfo;
+  html += 'SOA shipment #: <b style="font-family:var(--mono);color:var(--blue)">' + item.similar + '</b>';
+  html += (item.similarSoa ? ' <span style="color:var(--text3)">(' + item.similarSoa + ')</span>' : '');
   html += '</div>';
-  html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">This trip date: <b>' + (t.deliveryDate||'') + '</b></div>';
+  html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">';
+  html += 'SOA date: <b>' + (item.similarDate||'—') + '</b>';
+  html += ' &nbsp;|&nbsp; Trip date: <b>' + (t.deliveryDate||'—') + '</b>';
+  html += '</div>';
   html += '<div class="scan-acts" id="st-acts-' + idx + '">';
   html += '<button class="btn btn-blue" onclick="fixScanTypo(' + idx + ')">Fix: use ' + item.similar + '</button>';
   html += '<button class="btn btn-ghost" onclick="scanSkip(' + idx + ')">Skip</button>';
