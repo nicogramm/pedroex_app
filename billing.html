@@ -1392,32 +1392,33 @@ function buildTypoCard(item, idx){
   const t = item.trip;
   const diffHTML = scanBuildDiff(t.shipmentNumber, item.similar);
   const dateInfo = item.similarDate
-    ? '<span style="margin-left:6px;color:var(--text3)">\u{1F4C5} billed on ' + item.similarDate + '</span>'
+    ? '<span style="margin-left:6px;color:var(--text3)">billed on ' + item.similarDate + '</span>'
     : '';
-  return '<div class="scan-item typo" id="st-' + idx + '">'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">'
-      + '<div>'
-        + '<div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">&#x26A0;&#xFE0F; Typo &mdash; ' + item.dist + ' digit' + (item.dist>1?'s':'') + ' off from a billed number</div>'
-        + '<div class="scan-num" style="color:var(--orange)">' + t.shipmentNumber + '</div>'
-      + '</div>'
-      + '<div style="text-align:right;flex-shrink:0">'
-        + '<div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ' + t.rowIndex + '</div>'
-        + '<div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">&#x20B1;' + Number(t.rate||0).toLocaleString() + '</div>'
-      + '</div>'
-    + '</div>'
-    + '<div class="scan-meta">&#x1F69B; ' + t.truck + ' &middot; &#x1F4C5; ' + (t.deliveryDate||'&mdash;') + ' &middot; ' + (t.route||'&mdash;') + '</div>'
-    + diffHTML
-    + '<div style="font-size:11px;color:var(--text2);margin-top:3px">'
-      + 'Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">' + item.similar + '</b>'
-      + dateInfo
-    + '</div>'
-    + '<div style="font-size:11px;color:var(--text2);margin-top:2px">&#x1F4C5; This trip: <b>' + (t.deliveryDate||'&mdash;') + '</b></div>'
-    + '<div class="scan-acts" id="st-acts-' + idx + '">'
-      + '<button class="btn btn-blue" onclick="fixScanTypo(' + idx + ')">&#x270F;&#xFE0F; Fix &rarr; Use ' + item.similar + '</button>'
-      + '<button class="btn btn-ghost" onclick="scanSkip(' + idx + ')">Skip</button>'
-    + '</div>'
-    + '<div id="st-done-' + idx + '" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>'
-  + '</div>';
+  let html = '';
+  html += '<div class="scan-item typo" id="st-' + idx + '">';
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px">';
+  html += '<div>';
+  html += '<div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:3px">Possible Typo — ' + item.dist + ' digit' + (item.dist>1?'s':'') + ' off</div>';
+  html += '<div class="scan-num" style="color:var(--orange)">' + t.shipmentNumber + '</div>';
+  html += '</div>';
+  html += '<div style="text-align:right;flex-shrink:0">';
+  html += '<div style="font-size:9px;color:var(--text3);font-weight:600">Trips Row ' + t.rowIndex + '</div>';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--text2);margin-top:1px">P' + Number(t.rate||0).toLocaleString() + '</div>';
+  html += '</div>';
+  html += '</div>';
+  html += '<div class="scan-meta">' + t.truck + ' - ' + (t.deliveryDate||'') + ' - ' + (t.route||'') + '</div>';
+  html += diffHTML;
+  html += '<div style="font-size:11px;color:var(--text2);margin-top:3px">';
+  html += 'Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">' + item.similar + '</b> ' + dateInfo;
+  html += '</div>';
+  html += '<div style="font-size:11px;color:var(--text2);margin-top:2px">This trip date: <b>' + (t.deliveryDate||'') + '</b></div>';
+  html += '<div class="scan-acts" id="st-acts-' + idx + '">';
+  html += '<button class="btn btn-blue" onclick="fixScanTypo(' + idx + ')">Fix: use ' + item.similar + '</button>';
+  html += '<button class="btn btn-ghost" onclick="scanSkip(' + idx + ')">Skip</button>';
+  html += '</div>';
+  html += '<div id="st-done-' + idx + '" style="display:none;font-size:11px;font-weight:600;color:var(--green);margin-top:6px"></div>';
+  html += '</div>';
+  return html;
 }
 
 /* ── Re-render scan results in place (called after fix/skip) ── */
