@@ -1361,13 +1361,16 @@ async function runUnbilledScan(){
       const billDate = new Date(bill.date);
       if(isNaN(billDate)) return;
 
-      /* Unbilled trips within ±2 days */
+      /* Unbilled trips within ±2 days AND same truck */
       const nearbyTrips = unbilledTrips.filter(t=>{
         if(flaggedRows.has(t.rowIndex)) return false;
         if(!t.deliveryDate) return false;
         const tripDate = new Date(t.deliveryDate);
         if(isNaN(tripDate)) return false;
-        return Math.abs(billDate - tripDate) / 86400000 <= 2;
+        if(Math.abs(billDate - tripDate) / 86400000 > 2) return false;
+        /* Same truck — if both have truck info, must match */
+        if(bill.truck && t.truck && bill.truck !== t.truck) return false;
+        return true;
       });
 
       if(!nearbyTrips.length) return;
