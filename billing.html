@@ -1427,7 +1427,7 @@ function refreshScanResults(){
         ${scanBuildDiff(t.shipmentNumber,item.similar)}
         <div style="font-size:11px;color:var(--text2);margin-top:3px">
           Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
-          ${item.similarDate ? `<span style="margin-left:6px;color:var(--text3)">📅 billed on ${item.similarDate}</span>` : ''}
+          ${item.similarDate ? '<span style="margin-left:6px;color:var(--text3)">📅 billed on ' + item.similarDate + '</span>' : ''}
         </div>
         <div style="font-size:11px;color:var(--text2);margin-top:2px">
           📅 This trip: <b>${t.deliveryDate||'—'}</b>
@@ -1480,7 +1480,7 @@ function renderScanResults(cleanCount, totalUnb){
         ${scanBuildDiff(t.shipmentNumber,item.similar)}
         <div style="font-size:11px;color:var(--text2);margin-top:3px">
           Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
-          ${item.similarDate ? `<span style="margin-left:6px;color:var(--text3)">📅 billed on ${item.similarDate}</span>` : ''}
+          ${item.similarDate ? '<span style="margin-left:6px;color:var(--text3)">📅 billed on ' + item.similarDate + '</span>' : ''}
         </div>
         <div style="font-size:11px;color:var(--text2);margin-top:2px">
           📅 This trip: <b>${t.deliveryDate||'—'}</b>
