@@ -1315,14 +1315,21 @@ async function runUnbilledScan(){
       allTrips.filter(t=>t.billed==='Yes'&&SHIP_VALID.test(t.shipmentNumber)).map(t=>t.shipmentNumber)
     );
     const allBilled = new Set([...billedFromSheet,...billedFromTrips]);
-    const allBilledArr = [...allBilled];
 
-    /* Also treat any billed numbers from fixedRows as billed
-       in case the sheet hasn't propagated the write yet */
+    /* Build a detail array for billed trips so we can date/truck match */
+    const allBilledDetails = allTrips
+      .filter(t=>t.billed==='Yes' && SHIP_VALID.test(t.shipmentNumber))
+      .map(t=>({ num:t.shipmentNumber, date:t.deliveryDate, truck:t.truck }));
+    /* Also add billing-sheet-only entries (may not be in Trips) */
+    (bRes.values||[]).filter(r=>r[2]&&SHIP_VALID.test(String(r[2]).trim())).forEach(r=>{
+      if(!allTrips.find(t=>t.shipmentNumber===String(r[2]).trim()))
+        allBilledDetails.push({ num:String(r[2]).trim(), date:r[1]||'', truck:r[4]||'' });
+    });
+
     const unb = allTrips.filter(t=>
       t.billed!=='Yes' &&
       !billedFromSheet.has(t.shipmentNumber) &&
-      !fixedRowIndexes.has(t.rowIndex)   /* skip rows we already fixed this session */
+      !fixedRowIndexes.has(t.rowIndex)
     );
 
     scanTypos=[]; scanDups=[]; scanInvalids=[]; scanNearDupes=[];
@@ -1340,8 +1347,14 @@ async function runUnbilledScan(){
       else seen[num]=t;
 
       let bestMatch=null, bestDist=99;
-      for(const bn of allBilledArr){
+      for(const bd of allBilledDetails){
+        const bn=bd.num;
         if(Math.abs(num.length-bn.length)>2) continue;
+        /* Date proximity check: within 5 days */
+        if(t.deliveryDate && bd.date){
+          const dA=new Date(t.deliveryDate), dB=new Date(bd.date);
+          if(!isNaN(dA)&&!isNaN(dB)&&Math.abs(dA-dB)>5*86400000) continue;
+        }
         const d=scanEditDist(num,bn);
         if(d>0&&d<bestDist){bestMatch=bn;bestDist=d;}
         if(bestDist===1) break;
