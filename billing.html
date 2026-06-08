@@ -1346,20 +1346,26 @@ async function runUnbilledScan(){
       if(seen[num]) scanDups.push({trip:t,other:seen[num]});
       else seen[num]=t;
 
-      let bestMatch=null, bestDist=99;
+      let bestMatch=null, bestDist=99, bestMatchDate='';
       for(const bd of allBilledDetails){
         const bn=bd.num;
         if(Math.abs(num.length-bn.length)>2) continue;
-        /* Date proximity check: within 5 days */
+        /* Date proximity: same month OR within ~30 days if parseable */
         if(t.deliveryDate && bd.date){
-          const dA=new Date(t.deliveryDate), dB=new Date(bd.date);
-          if(!isNaN(dA)&&!isNaN(dB)&&Math.abs(dA-dB)>5*86400000) continue;
+          const mA=dateMonth(t.deliveryDate), mB=dateMonth(bd.date);
+          if(mA && mB && mA!==mB){
+            /* allow one month gap at most */
+            const [yA,moA]=mA.split('-').map(Number);
+            const [yB,moB]=mB.split('-').map(Number);
+            const diff=Math.abs((yA*12+moA)-(yB*12+moB));
+            if(diff>1) continue;
+          }
         }
         const d=scanEditDist(num,bn);
-        if(d>0&&d<bestDist){bestMatch=bn;bestDist=d;}
+        if(d>0&&d<bestDist){bestMatch=bn;bestDist=d;bestMatchDate=bd.date;}
         if(bestDist===1) break;
       }
-      if(bestMatch&&bestDist<=2){ scanTypos.push({trip:t,similar:bestMatch,dist:bestDist,resolved:false}); return; }
+      if(bestMatch&&bestDist<=2){ scanTypos.push({trip:t,similar:bestMatch,dist:bestDist,similarDate:bestMatchDate,resolved:false}); return; }
       cleanList.push(t);
     });
 
