@@ -966,7 +966,12 @@ async function saveToSheet(){
     showLoad(true,'Saving to Google Sheet...');
     const sb = document.getElementById('save-btn'); sb.disabled=true;
     let nid = existing.filter(r=>r.id).length+1;
-    await apiAppend(SHEET_BILLING+'!A:M', parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes','No','','','No','','']));
+    /* Use PUT to a specific row instead of APPEND to avoid
+       Google Sheets appending to wrong column when sheet has
+       stray data in far-right columns */
+    const lastRow = existing.length + 2; /* +2 for header + 1-indexed */
+    const newRows = parsed.map(r=>[nid++,r.date,r.shipment,r.soa,r.truck,r.rate,r.invalid?'No':'Yes','No','','','No','','']);
+    await apiPut(SHEET_BILLING+'!A'+lastRow+':M'+(lastRow+newRows.length-1), newRows);
     showLoad(false);
     showToast(parsed.length+' rows saved!','ok');
     const pc = document.getElementById('preview-card'); pc.style.display='none'; pc.classList.add('hidden');
