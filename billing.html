@@ -1427,7 +1427,13 @@ function refreshScanResults(){
         </div>
         <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route||'—'}</div>
         ${scanBuildDiff(t.shipmentNumber,item.similar)}
-        <div style="font-size:11px;color:var(--text2);margin-top:3px">Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b></div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">
+          Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
+          ${item.similarDate ? `<span style="margin-left:6px;color:var(--text3)">📅 billed on ${item.similarDate}</span>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">
+          📅 This trip: <b>${t.deliveryDate||'—'}</b>
+        </div>
         <div class="scan-acts" id="st-acts-${realIdx}">
           <button class="btn btn-blue" onclick="fixScanTypo(${realIdx})">✏️ Fix → Use <span style="font-family:var(--mono)">${item.similar}</span></button>
           <button class="btn btn-ghost" onclick="scanSkip(${realIdx})">Skip</button>
@@ -1474,7 +1480,13 @@ function renderScanResults(cleanCount, totalUnb){
         </div>
         <div class="scan-meta">🚛 ${t.truck} · 📅 ${t.deliveryDate} · ${t.route||'—'}</div>
         ${scanBuildDiff(t.shipmentNumber,item.similar)}
-        <div style="font-size:11px;color:var(--text2);margin-top:3px">Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b></div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">
+          Closest billed #: <b style="font-family:var(--mono);color:var(--blue)">${item.similar}</b>
+          ${item.similarDate ? `<span style="margin-left:6px;color:var(--text3)">📅 billed on ${item.similarDate}</span>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">
+          📅 This trip: <b>${t.deliveryDate||'—'}</b>
+        </div>
         <div class="scan-acts" id="st-acts-${i}">
           <button class="btn btn-blue" onclick="fixScanTypo(${i})">✏️ Fix → Use <span style="font-family:var(--mono)">${item.similar}</span></button>
           <button class="btn btn-ghost" onclick="scanSkip(${i})">Skip</button>
