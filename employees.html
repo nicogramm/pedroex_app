@@ -1107,7 +1107,7 @@ async function calculatePayroll() {
     const pedroexPagibig    = selectedPeriod==='1st' ? 200 : 0;
     const pedroexPhilHealth = selectedPeriod==='2nd' ? 250 : 0;
 
-    const histRows    = (histRes.values||[]).filter(r=>(r[1]||'')===empName).sort((a,b)=>new Date(b[2])-new Date(a[2]));
+    const histRows = (histRes.values||[]).filter(r=>(r[1]||'')===empName).sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));
     const existingAdv = histRows.length>0 ? (parseFloat(histRows[0][16])||0) : 0;
     const periodAdv   = (advRes.values||[]).filter(r=>(r[2]||'')===empName&&(r[1]||'')>=startDate&&(r[1]||'')<=endDate).reduce((s,r)=>s+(parseFloat(r[3])||0),0);
     const totalAdv    = existingAdv+periodAdv;
