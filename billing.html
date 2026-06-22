@@ -312,6 +312,13 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
 .scan-num{font-size:13px;font-weight:700;font-family:var(--mono);margin-bottom:3px}
 .scan-meta{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:5px}
 .scan-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
+.up-tag{display:block;font-size:7px;font-weight:800;border-radius:3px;padding:2px 3px;margin-top:2px;width:100%;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.up-tag.red{background:var(--red-soft);color:var(--red);}
+.up-tag.grn{background:var(--green-soft);color:var(--green);}
+.up-more{font-size:6px;font-weight:700;color:var(--text3);text-align:center;margin-top:2px;}
+
+
 </style>
 </head>
 <body>
@@ -572,51 +579,57 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
       </div>
 
       <!-- REGULAR UNBILLED LIST -->
-      <div class="filters">
-        <input class="f-search" id="us" type="text" placeholder="🔍 Search..." oninput="renderUnbilled()">
-        <select class="f-sel" id="um" onchange="renderUnbilled()"><option value="">All Months</option></select>
-        <select class="f-sel" id="ut" onchange="renderUnbilled()"><option value="">All Trucks</option></select>
-      </div>
-   <div class="stabs">
+        <div class="stabs">
         <button class="stab active" id="usub-cal"   onclick="uSub('cal')">📅 Calendar</button>
         <button class="stab"        id="usub-all"   onclick="uSub('all')">📋 All</button>
         <button class="stab"        id="usub-month" onclick="uSub('month')">Per Month</button>
         <button class="stab"        id="usub-truck" onclick="uSub('truck')">Per Truck</button>
         </div>
 
-        <!-- UNBILLED CALENDAR — ilagay ito agad pagkatapos ng stabs -->
+        <!-- UNBILLED CALENDAR -->
         <div id="unbilled-cal-view">
-        <div style="background:var(--bg);border-radius:var(--r);box-shadow:var(--out);padding:16px;margin-bottom:14px">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="card" style="margin-bottom:14px">
+            <div class="card-head" style="flex-wrap:nowrap">
             <div style="display:flex;gap:8px;align-items:center">
-                <button style="width:34px;height:34px;border-radius:10px;background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center" onclick="unbilCalPrev()">&#x2039;</button>
-                <div style="font-size:15px;font-weight:700;color:var(--text);min-width:130px;text-align:center" id="unbil-cal-month-label">—</div>
-                <button style="width:34px;height:34px;border-radius:10px;background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center" onclick="unbilCalNext()">&#x203a;</button>
+                <button class="tb-back" onclick="unbilCalPrev()">&#x2039;</button>
+                <div style="font-size:14px;font-weight:700;color:var(--text);min-width:130px;text-align:center" id="unbil-cal-month-label">—</div>
+                <button class="tb-back" onclick="unbilCalNext()">&#x203a;</button>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+                <div style="display:flex;align-items:center;gap:4px">
+                <div style="width:10px;height:10px;border-radius:2px;background:var(--red-soft);border:1.5px solid var(--red)"></div>
+                <span style="font-size:9px;font-weight:700;color:var(--text3)">Unbilled</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px">
+                <div style="width:10px;height:10px;border-radius:2px;background:var(--green-soft);border:1.5px solid var(--green)"></div>
+                <span style="font-size:9px;font-weight:700;color:var(--text3)">Billed</span>
+                </div>
             </div>
             </div>
-            <!-- Legend -->
-            <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap">
-            <div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text2)">
-                <div style="width:28px;height:14px;border-radius:4px;background:var(--red-soft);border:1.5px solid var(--red)"></div>Unbilled
-            </div>
-            <div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text2)">
-                <div style="width:28px;height:14px;border-radius:4px;background:var(--green-soft);border:1.5px solid var(--green)"></div>Billed na
-            </div>
-            </div>
-            <!-- Day headers -->
+            <div style="padding:12px 12px 14px">
             <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px">
-            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sun</div>
-            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Mon</div>
-            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Tue</div>
-            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Wed</div>
-            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Thu</div>
-            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Fri</div>
-            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sat</div>
+                <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sun</div>
+                <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Mon</div>
+                <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Tue</div>
+                <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Wed</div>
+                <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Thu</div>
+                <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Fri</div>
+                <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sat</div>
             </div>
             <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px" id="unbil-cal-days"></div>
+            </div>
         </div>
         </div>
-      <div id="unbilled-list"></div>
+
+        <!-- LIST VIEW (hidden by default) -->
+        <div id="unbilled-list-wrap" style="display:none">
+        <div class="filters">
+            <input class="f-search" id="us" type="text" placeholder="🔍 Search..." oninput="renderUnbilled()">
+            <select class="f-sel" id="um" onchange="renderUnbilled()"><option value="">All Months</option></select>
+            <select class="f-sel" id="ut" onchange="renderUnbilled()"><option value="">All Trucks</option></select>
+        </div>
+        <div id="unbilled-list"></div>
+        </div>
     </div>
 
     <!-- ════ BILLED OUT TAB ════ -->
@@ -813,7 +826,7 @@ let master  = [];
 let trips   = [];
 let unbilled= [];
 let ccR     = { exact:[], fuzzy:[], noMatch:[], invalid:[] };
-let bSt = 'cal', uSt = 'all';
+let bSt = 'cal', uSt = 'cal';
 let soaMasterData = [];
 let correctionsLog = [];
 
@@ -1678,13 +1691,22 @@ async function loadUnbilled(){
   if(!token) return;
   showLoad(true,'Loading unbilled trips...');
   try{
-    const [bRes,tRes]=await Promise.all([apiGet(SHEET_BILLING+'!A2:M'),apiGet(SHEET_TRIPS+'!A2:I')]);
+    const [bRes,tRes]=await Promise.all([
+      apiGet(SHEET_BILLING+'!A2:M'),
+      apiGet(SHEET_TRIPS+'!A2:I')
+    ]);
     const billedSet=new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
+    master=mapMaster(bRes.values||[]);
     trips=mapTrips(tRes.values||[]);
-    unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
-    showLoad(false); buildUFilters(); renderUStats();
-if(uSt==='cal') renderUnbilledCal(); else renderUnbilled();
-  }catch(e){showLoad(false);console.error('Load error:',e);showToast('Failed to load: '+e.message,'warn');}
+    unbilled=trips.filter(t=>t.shipmentNumber&&t.billed!=='Yes');
+    showLoad(false);
+    buildUFilters(); renderUStats();
+    if(uSt==='cal') renderUnbilledCal(); else renderUnbilled();
+  }catch(e){
+    showLoad(false);
+    console.error('Load error:',e);
+    showToast('Failed to load: '+e.message,'warn');
+  }
 }
 
 function buildUFilters(){
@@ -1709,12 +1731,10 @@ function uSub(s){
     const el=document.getElementById('usub-'+x);
     if(el) el.classList.toggle('active',x===s);
   });
-  const calView  = document.getElementById('unbilled-cal-view');
-  const listView = document.getElementById('unbilled-list');
-  const filters  = document.querySelector('#pane-unbilled .filters');
-  if(calView)  calView.style.display  = s==='cal' ? '' : 'none';
-  if(listView) listView.style.display = s==='cal' ? 'none' : '';
-  if(filters)  filters.style.display  = s==='cal' ? 'none' : '';
+  const calV  = document.getElementById('unbilled-cal-view');
+  const listW = document.getElementById('unbilled-list-wrap');
+  if(calV)  calV.style.display  = s==='cal' ? '' : 'none';
+  if(listW) listW.style.display = s==='cal' ? 'none' : '';
   if(s==='cal') renderUnbilledCal();
   else renderUnbilled();
 }
@@ -2189,25 +2209,15 @@ let unbilCalYear  = new Date().getFullYear();
 let unbilCalMonth = new Date().getMonth();
 
 function renderUnbilledCal(){
-  /* Auto-navigate to latest month with unbilled data */
-  const months = [...new Set(trips.map(r=>dateMonth(r.deliveryDate)).filter(Boolean))].sort().reverse();
-  const viewMon = unbilCalYear+'-'+String(unbilCalMonth+1).padStart(2,'0');
-  if(!months.includes(viewMon) && months.length>0){
-    const [y,m] = months[0].split('-').map(Number);
-    unbilCalYear=y; unbilCalMonth=m-1;
-  }
-
-  /* Set of billed shipment numbers for quick lookup */
-  const billedNums = new Set(master.map(r=>r.shipment.trim()));
-
-  /* Build date map from ALL trips (not just unbilled) */
+  /* Build date map from ALL trips — use t.billed for status */
   const dateMap = {};
-  trips.forEach(r=>{
-    const iso = toISO(r.deliveryDate); if(!iso) return;
+  trips.forEach(t=>{
+    if(!t.deliveryDate) return;
+    const iso = toISO(t.deliveryDate); if(!iso) return;
     const [y,m] = iso.split('-').map(Number);
     if(y!==unbilCalYear || m-1!==unbilCalMonth) return;
     if(!dateMap[iso]) dateMap[iso]=[];
-    dateMap[iso].push(r);
+    dateMap[iso].push(t);
   });
 
   const label = new Date(unbilCalYear, unbilCalMonth, 1)
@@ -2220,44 +2230,38 @@ function renderUnbilledCal(){
   let html = '';
 
   for(let i=0;i<firstDay;i++)
-    html+='<div class="bil-cal-day empty"></div>';
+    html+='<div class="bil-cal-day empty" style="height:82px"></div>';
 
   for(let day=1; day<=daysInMonth; day++){
     const iso = unbilCalYear+'-'+String(unbilCalMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
     const dayTrips  = dateMap[iso]||[];
     const isToday   = iso===todayI;
-    const hasUnbilled = dayTrips.some(t=>!billedNums.has(t.shipmentNumber));
-    const hasAny    = dayTrips.length>0;
+    const hasData   = dayTrips.length>0;
+    const hasUnbill = dayTrips.some(t=>t.billed!=='Yes');
 
-    /* Build plate tags */
-    let plateTags = '';
-    dayTrips.forEach(t=>{
-      const isBilled = billedNums.has(t.shipmentNumber);
-      plateTags += `<div style="
-        font-size:7.5px;font-weight:800;letter-spacing:.3px;
-        border-radius:4px;padding:2px 4px;margin-top:2px;
-        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-        max-width:100%;text-align:center;cursor:pointer;
-        background:${isBilled?'var(--green-soft)':'var(--red-soft)'};
-        color:${isBilled?'var(--green)':'var(--red)'};
-        border:1px solid ${isBilled?'var(--green)':'var(--red)'};
-      " title="${t.truck} — ${t.shipmentNumber} (${isBilled?'Billed':'Unbilled'})"
-        onclick="event.stopPropagation();showUnbilCalDayDetail('${iso}')">
-        ${t.truck||'—'}
-      </div>`;
+    /* Plate tags — max 4 shown, rest = "+N more" */
+    const MAX_SHOW = 4;
+    let tagHTML = '';
+    const shown = dayTrips.slice(0, MAX_SHOW);
+    const extra = dayTrips.length - MAX_SHOW;
+    shown.forEach(t=>{
+      const billed = t.billed==='Yes';
+      tagHTML += `<span class="up-tag ${billed?'grn':'red'}">${t.truck||'—'}</span>`;
     });
+    if(extra>0)
+      tagHTML += `<div class="up-more">+${extra} more</div>`;
 
     html += `<div
-      class="bil-cal-day${isToday?' today':''}${hasAny?' has-data':''}"
-      style="min-height:60px;padding:4px 3px;cursor:${hasAny?'pointer':'default'};
-             ${hasUnbilled?'box-shadow:inset 0 0 0 1.5px var(--red);':''}"
-      onclick="${hasAny?'showUnbilCalDayDetail(\''+iso+'\')':''}"
+      class="bil-cal-day${isToday?' today':''}${hasData?' has-data':''}"
+      style="height:82px;overflow:hidden;padding:4px 3px;align-items:stretch;
+             ${hasUnbill?'box-shadow:inset 0 0 0 1.5px var(--red),var(--xs);':''}"
+      ${hasData?`onclick="showUnbilCalDay('${iso}')"`:''}
     >
-      <div class="bil-cal-daynum" style="font-size:10px;text-align:center;margin-bottom:1px;
-        ${hasUnbilled?'color:var(--red);font-weight:800':isToday?'color:var(--text)':''}">
+      <div class="bil-cal-daynum" style="text-align:center;font-size:10px;
+        ${hasUnbill?'color:var(--red);':isToday?'':'color:var(--text)'}">
         ${day}
       </div>
-      ${plateTags}
+      ${tagHTML}
     </div>`;
   }
 
@@ -2265,79 +2269,79 @@ function renderUnbilledCal(){
 }
 
 function unbilCalPrev(){
-  unbilCalMonth--; if(unbilCalMonth<0){unbilCalMonth=11;unbilCalYear--;} renderUnbilledCal();
+  unbilCalMonth--;
+  if(unbilCalMonth<0){unbilCalMonth=11;unbilCalYear--;}
+  renderUnbilledCal();
 }
 function unbilCalNext(){
-  unbilCalMonth++; if(unbilCalMonth>11){unbilCalMonth=0;unbilCalYear++;} renderUnbilledCal();
+  unbilCalMonth++;
+  if(unbilCalMonth>11){unbilCalMonth=0;unbilCalYear++;}
+  renderUnbilledCal();
 }
 
-function showUnbilCalDayDetail(iso){
-  const billedNums = new Set(master.map(r=>r.shipment.trim()));
+function showUnbilCalDay(iso){
   const dayTrips = trips.filter(t=>toISO(t.deliveryDate)===iso);
   if(!dayTrips.length) return;
 
   const d = new Date(iso+'T00:00:00');
-  const label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('cal-day-modal-title').textContent = label;
+  document.getElementById('cal-day-modal-title').textContent =
+    d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 
-  const unbilledDay = dayTrips.filter(t=>!billedNums.has(t.shipmentNumber));
-  const billedDay   = dayTrips.filter(t=> billedNums.has(t.shipmentNumber));
-
+  const unbilledDay = dayTrips.filter(t=>t.billed!=='Yes');
+  const billedDay   = dayTrips.filter(t=>t.billed==='Yes');
   let html = '';
 
+  /* ── UNBILLED section ── */
   if(unbilledDay.length){
-    html += `<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-      color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:6px">
-      <span style="width:3px;height:10px;background:var(--red);border-radius:2px;display:inline-block"></span>
-      UNBILLED (${unbilledDay.length})
+    html += `<div class="report-section" style="color:var(--red);margin-top:0">
+      <span>⚠️ UNBILLED (${unbilledDay.length})</span>
     </div>`;
     unbilledDay.forEach(t=>{
-      html += `<div style="display:flex;align-items:center;justify-content:space-between;
-        padding:10px 12px;margin-bottom:6px;border-radius:var(--rsm);
-        background:var(--red-soft);border-left:3px solid var(--red)">
-        <div>
-          <div style="font-size:13px;font-weight:800;color:var(--red)">${t.truck||'—'}</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)">${t.shipmentNumber||'—'}</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:1px">${t.route||'—'}</div>
+      html += `<div class="ship-card invalid-card" style="margin-bottom:8px">
+        <div class="ship-card-top">
+          <div>
+            <div class="ship-num" style="color:var(--red)">${t.truck||'—'}</div>
+            <span class="pill pill-unbilled">⚠️ Unbilled</span>
+          </div>
+          <div class="ship-rate ship-rate-orange">₱${Number(t.rate||0).toLocaleString()}</div>
         </div>
-        <div style="font-size:13px;font-weight:700;color:var(--orange)">₱${Number(t.rate||0).toLocaleString()}</div>
+        <div class="ship-meta">
+          <span style="font-family:var(--mono)">${t.shipmentNumber||'—'}</span>
+          <span>${t.route||'—'}</span>
+        </div>
       </div>`;
     });
   }
 
+  /* ── BILLED section ── */
   if(billedDay.length){
-    html += `<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
-      color:var(--green);margin:14px 0 8px;display:flex;align-items:center;gap:6px">
-      <span style="width:3px;height:10px;background:var(--green);border-radius:2px;display:inline-block"></span>
-      BILLED NA (${billedDay.length})
+    html += `<div class="report-section" style="color:var(--green);${unbilledDay.length?'':'margin-top:0'}">
+      <span>✅ BILLED NA (${billedDay.length})</span>
     </div>`;
     billedDay.forEach(t=>{
-      const billingEntry = master.find(r=>r.shipment===t.shipmentNumber);
-      html += `<div style="display:flex;align-items:center;justify-content:space-between;
-        padding:10px 12px;margin-bottom:6px;border-radius:var(--rsm);
-        background:var(--green-soft);border-left:3px solid var(--green)">
-        <div>
-          <div style="font-size:13px;font-weight:800;color:var(--green)">${t.truck||'—'}</div>
-          <div style="font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)">${t.shipmentNumber||'—'}</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:1px">${billingEntry?'SOA: '+billingEntry.soa:''}</div>
+      const bilEntry = master.find(r=>r.shipment===t.shipmentNumber);
+      html += `<div class="ship-card" style="margin-bottom:8px">
+        <div class="ship-card-top">
+          <div>
+            <div class="ship-num">${t.truck||'—'}</div>
+            <span class="pill pill-billed">✅ Billed</span>
+          </div>
+          <div class="ship-rate ship-rate-green">₱${Number(t.rate||0).toLocaleString()}</div>
         </div>
-        <div style="font-size:13px;font-weight:700;color:var(--green)">₱${Number(t.rate||0).toLocaleString()}</div>
+        <div class="ship-meta">
+          <span style="font-family:var(--mono)">${t.shipmentNumber||'—'}</span>
+          ${bilEntry?`<span>${bilEntry.soa}</span>`:''}
+        </div>
       </div>`;
     });
   }
 
-  /* Day summary footer */
-  const totalAmt = dayTrips.reduce((s,t)=>s+Number(t.rate||0),0);
-  const unbilAmt = unbilledDay.reduce((s,t)=>s+Number(t.rate||0),0);
-  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
-    <div style="padding:10px;background:var(--red-soft);border-radius:var(--rsm);text-align:center">
-      <div style="font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px">Unbilled</div>
-      <div style="font-size:16px;font-weight:800;color:var(--red)">₱${unbilAmt.toLocaleString()}</div>
-    </div>
-    <div style="padding:10px;background:var(--green-soft);border-radius:var(--rsm);text-align:center">
-      <div style="font-size:9px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Total Day</div>
-      <div style="font-size:16px;font-weight:800;color:var(--green)">₱${totalAmt.toLocaleString()}</div>
-    </div>
+  /* ── Day totals ── */
+  const totalAmt  = dayTrips.reduce((s,t)=>s+Number(t.rate||0),0);
+  const unbilAmt  = unbilledDay.reduce((s,t)=>s+Number(t.rate||0),0);
+  html += `<div class="stat-strip" style="margin-top:14px">
+    <div class="stat-card"><div class="stat-val sv-red" style="font-size:16px">₱${unbilAmt.toLocaleString()}</div><div class="stat-lbl">Unbilled</div></div>
+    <div class="stat-card"><div class="stat-val sv-green" style="font-size:16px">₱${totalAmt.toLocaleString()}</div><div class="stat-lbl">Day Total</div></div>
   </div>`;
 
   document.getElementById('cal-day-modal-body').innerHTML = html;
