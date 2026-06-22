@@ -577,11 +577,45 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
         <select class="f-sel" id="um" onchange="renderUnbilled()"><option value="">All Months</option></select>
         <select class="f-sel" id="ut" onchange="renderUnbilled()"><option value="">All Trucks</option></select>
       </div>
-      <div class="stabs">
-        <button class="stab active" id="usub-all"   onclick="uSub('all')">All</button>
+   <div class="stabs">
+        <button class="stab active" id="usub-cal"   onclick="uSub('cal')">📅 Calendar</button>
+        <button class="stab"        id="usub-all"   onclick="uSub('all')">📋 All</button>
         <button class="stab"        id="usub-month" onclick="uSub('month')">Per Month</button>
         <button class="stab"        id="usub-truck" onclick="uSub('truck')">Per Truck</button>
-      </div>
+        </div>
+
+        <!-- UNBILLED CALENDAR — ilagay ito agad pagkatapos ng stabs -->
+        <div id="unbilled-cal-view">
+        <div style="background:var(--bg);border-radius:var(--r);box-shadow:var(--out);padding:16px;margin-bottom:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="display:flex;gap:8px;align-items:center">
+                <button style="width:34px;height:34px;border-radius:10px;background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center" onclick="unbilCalPrev()">&#x2039;</button>
+                <div style="font-size:15px;font-weight:700;color:var(--text);min-width:130px;text-align:center" id="unbil-cal-month-label">—</div>
+                <button style="width:34px;height:34px;border-radius:10px;background:var(--bg);box-shadow:var(--sm);border:none;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center" onclick="unbilCalNext()">&#x203a;</button>
+            </div>
+            </div>
+            <!-- Legend -->
+            <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text2)">
+                <div style="width:28px;height:14px;border-radius:4px;background:var(--red-soft);border:1.5px solid var(--red)"></div>Unbilled
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text2)">
+                <div style="width:28px;height:14px;border-radius:4px;background:var(--green-soft);border:1.5px solid var(--green)"></div>Billed na
+            </div>
+            </div>
+            <!-- Day headers -->
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px">
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sun</div>
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Mon</div>
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Tue</div>
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Wed</div>
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Thu</div>
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Fri</div>
+            <div style="text-align:center;font-size:9px;font-weight:700;color:var(--text3)">Sat</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px" id="unbil-cal-days"></div>
+        </div>
+        </div>
       <div id="unbilled-list"></div>
     </div>
 
@@ -1648,7 +1682,8 @@ async function loadUnbilled(){
     const billedSet=new Set((bRes.values||[]).filter(r=>r[2]).map(r=>String(r[2]).trim()));
     trips=mapTrips(tRes.values||[]);
     unbilled=trips.filter(t=>t.shipmentNumber&&!billedSet.has(t.shipmentNumber));
-    showLoad(false); buildUFilters(); renderUStats(); renderUnbilled();
+    showLoad(false); buildUFilters(); renderUStats();
+if(uSt==='cal') renderUnbilledCal(); else renderUnbilled();
   }catch(e){showLoad(false);console.error('Load error:',e);showToast('Failed to load: '+e.message,'warn');}
 }
 
@@ -1668,7 +1703,21 @@ function renderUStats(){
     ${estRev>0?`<div class="stat-card"><div class="stat-val sv-orange" style="font-size:13px">₱${(estRev/1000).toFixed(1)}K</div><div class="stat-lbl">Est. Revenue</div></div>`:''}`;
 }
 
-function uSub(s){ uSt=s; ['all','month','truck'].forEach(x=>document.getElementById('usub-'+x).classList.toggle('active',x===s)); renderUnbilled(); }
+function uSub(s){
+  uSt=s;
+  ['cal','all','month','truck'].forEach(x=>{
+    const el=document.getElementById('usub-'+x);
+    if(el) el.classList.toggle('active',x===s);
+  });
+  const calView  = document.getElementById('unbilled-cal-view');
+  const listView = document.getElementById('unbilled-list');
+  const filters  = document.querySelector('#pane-unbilled .filters');
+  if(calView)  calView.style.display  = s==='cal' ? '' : 'none';
+  if(listView) listView.style.display = s==='cal' ? 'none' : '';
+  if(filters)  filters.style.display  = s==='cal' ? 'none' : '';
+  if(s==='cal') renderUnbilledCal();
+  else renderUnbilled();
+}
 
 function renderUnbilled(){
   const srch=document.getElementById('us').value.toLowerCase();
@@ -2134,6 +2183,169 @@ function setP(p,m){document.getElementById('upb').style.width=p+'%';document.get
 function showLoad(s,m=''){document.getElementById('lov').classList.toggle('show',s);if(m)document.getElementById('lmsg').textContent=m;}
 let _tt;
 function showToast(m,type=''){const el=document.getElementById('toast');el.textContent=m;el.className='toast show'+(type==='ok'?' ok':type==='warn'?' warn':'');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3500);}
+
+/* ══ UNBILLED CALENDAR ══ */
+let unbilCalYear  = new Date().getFullYear();
+let unbilCalMonth = new Date().getMonth();
+
+function renderUnbilledCal(){
+  /* Auto-navigate to latest month with unbilled data */
+  const months = [...new Set(trips.map(r=>dateMonth(r.deliveryDate)).filter(Boolean))].sort().reverse();
+  const viewMon = unbilCalYear+'-'+String(unbilCalMonth+1).padStart(2,'0');
+  if(!months.includes(viewMon) && months.length>0){
+    const [y,m] = months[0].split('-').map(Number);
+    unbilCalYear=y; unbilCalMonth=m-1;
+  }
+
+  /* Set of billed shipment numbers for quick lookup */
+  const billedNums = new Set(master.map(r=>r.shipment.trim()));
+
+  /* Build date map from ALL trips (not just unbilled) */
+  const dateMap = {};
+  trips.forEach(r=>{
+    const iso = toISO(r.deliveryDate); if(!iso) return;
+    const [y,m] = iso.split('-').map(Number);
+    if(y!==unbilCalYear || m-1!==unbilCalMonth) return;
+    if(!dateMap[iso]) dateMap[iso]=[];
+    dateMap[iso].push(r);
+  });
+
+  const label = new Date(unbilCalYear, unbilCalMonth, 1)
+    .toLocaleDateString('en-PH',{month:'long',year:'numeric'});
+  document.getElementById('unbil-cal-month-label').textContent = label;
+
+  const firstDay    = new Date(unbilCalYear, unbilCalMonth, 1).getDay();
+  const daysInMonth = new Date(unbilCalYear, unbilCalMonth+1, 0).getDate();
+  const todayI      = todayISO();
+  let html = '';
+
+  for(let i=0;i<firstDay;i++)
+    html+='<div class="bil-cal-day empty"></div>';
+
+  for(let day=1; day<=daysInMonth; day++){
+    const iso = unbilCalYear+'-'+String(unbilCalMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const dayTrips  = dateMap[iso]||[];
+    const isToday   = iso===todayI;
+    const hasUnbilled = dayTrips.some(t=>!billedNums.has(t.shipmentNumber));
+    const hasAny    = dayTrips.length>0;
+
+    /* Build plate tags */
+    let plateTags = '';
+    dayTrips.forEach(t=>{
+      const isBilled = billedNums.has(t.shipmentNumber);
+      plateTags += `<div style="
+        font-size:7.5px;font-weight:800;letter-spacing:.3px;
+        border-radius:4px;padding:2px 4px;margin-top:2px;
+        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+        max-width:100%;text-align:center;cursor:pointer;
+        background:${isBilled?'var(--green-soft)':'var(--red-soft)'};
+        color:${isBilled?'var(--green)':'var(--red)'};
+        border:1px solid ${isBilled?'var(--green)':'var(--red)'};
+      " title="${t.truck} — ${t.shipmentNumber} (${isBilled?'Billed':'Unbilled'})"
+        onclick="event.stopPropagation();showUnbilCalDayDetail('${iso}')">
+        ${t.truck||'—'}
+      </div>`;
+    });
+
+    html += `<div
+      class="bil-cal-day${isToday?' today':''}${hasAny?' has-data':''}"
+      style="min-height:60px;padding:4px 3px;cursor:${hasAny?'pointer':'default'};
+             ${hasUnbilled?'box-shadow:inset 0 0 0 1.5px var(--red);':''}"
+      onclick="${hasAny?'showUnbilCalDayDetail(\''+iso+'\')':''}"
+    >
+      <div class="bil-cal-daynum" style="font-size:10px;text-align:center;margin-bottom:1px;
+        ${hasUnbilled?'color:var(--red);font-weight:800':isToday?'color:var(--text)':''}">
+        ${day}
+      </div>
+      ${plateTags}
+    </div>`;
+  }
+
+  document.getElementById('unbil-cal-days').innerHTML = html;
+}
+
+function unbilCalPrev(){
+  unbilCalMonth--; if(unbilCalMonth<0){unbilCalMonth=11;unbilCalYear--;} renderUnbilledCal();
+}
+function unbilCalNext(){
+  unbilCalMonth++; if(unbilCalMonth>11){unbilCalMonth=0;unbilCalYear++;} renderUnbilledCal();
+}
+
+function showUnbilCalDayDetail(iso){
+  const billedNums = new Set(master.map(r=>r.shipment.trim()));
+  const dayTrips = trips.filter(t=>toISO(t.deliveryDate)===iso);
+  if(!dayTrips.length) return;
+
+  const d = new Date(iso+'T00:00:00');
+  const label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('cal-day-modal-title').textContent = label;
+
+  const unbilledDay = dayTrips.filter(t=>!billedNums.has(t.shipmentNumber));
+  const billedDay   = dayTrips.filter(t=> billedNums.has(t.shipmentNumber));
+
+  let html = '';
+
+  if(unbilledDay.length){
+    html += `<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+      <span style="width:3px;height:10px;background:var(--red);border-radius:2px;display:inline-block"></span>
+      UNBILLED (${unbilledDay.length})
+    </div>`;
+    unbilledDay.forEach(t=>{
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;
+        padding:10px 12px;margin-bottom:6px;border-radius:var(--rsm);
+        background:var(--red-soft);border-left:3px solid var(--red)">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--red)">${t.truck||'—'}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)">${t.shipmentNumber||'—'}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:1px">${t.route||'—'}</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--orange)">₱${Number(t.rate||0).toLocaleString()}</div>
+      </div>`;
+    });
+  }
+
+  if(billedDay.length){
+    html += `<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      color:var(--green);margin:14px 0 8px;display:flex;align-items:center;gap:6px">
+      <span style="width:3px;height:10px;background:var(--green);border-radius:2px;display:inline-block"></span>
+      BILLED NA (${billedDay.length})
+    </div>`;
+    billedDay.forEach(t=>{
+      const billingEntry = master.find(r=>r.shipment===t.shipmentNumber);
+      html += `<div style="display:flex;align-items:center;justify-content:space-between;
+        padding:10px 12px;margin-bottom:6px;border-radius:var(--rsm);
+        background:var(--green-soft);border-left:3px solid var(--green)">
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--green)">${t.truck||'—'}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px;font-family:var(--mono)">${t.shipmentNumber||'—'}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:1px">${billingEntry?'SOA: '+billingEntry.soa:''}</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--green)">₱${Number(t.rate||0).toLocaleString()}</div>
+      </div>`;
+    });
+  }
+
+  /* Day summary footer */
+  const totalAmt = dayTrips.reduce((s,t)=>s+Number(t.rate||0),0);
+  const unbilAmt = unbilledDay.reduce((s,t)=>s+Number(t.rate||0),0);
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+    <div style="padding:10px;background:var(--red-soft);border-radius:var(--rsm);text-align:center">
+      <div style="font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px">Unbilled</div>
+      <div style="font-size:16px;font-weight:800;color:var(--red)">₱${unbilAmt.toLocaleString()}</div>
+    </div>
+    <div style="padding:10px;background:var(--green-soft);border-radius:var(--rsm);text-align:center">
+      <div style="font-size:9px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px">Total Day</div>
+      <div style="font-size:16px;font-weight:800;color:var(--green)">₱${totalAmt.toLocaleString()}</div>
+    </div>
+  </div>`;
+
+  document.getElementById('cal-day-modal-body').innerHTML = html;
+  openModal('cal-day-modal');
+}
+
+
+
 </script>
 </body>
 </html>
