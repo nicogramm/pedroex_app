@@ -426,8 +426,8 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
          Did every trip get billed in an SOA?
     ══════════════════════════════════════ -->
 
-    <!-- 1A: UPLOAD SOA -->
-    <div id="pane-upload" style="display:none">
+    <!-- 1A: UPLOAD SOA — visible by default, other panes hidden -->
+    <div id="pane-upload">
       <div class="page-eyebrow">Step 1</div>
       <div class="page-title">Upload SOA from San Miguel</div>
       <div class="info-box blue">
@@ -940,6 +940,9 @@ let currentPaymentSOA = null;
 let _confirmCb = null;
 let _toastTimer;
 
+/* ALL_PANES must be declared BEFORE the init IIFE — it's used by showPane() which is called from init */
+const ALL_PANES = ['pane-upload','pane-billed','pane-unbilled','pane-soa-manager','pane-billed-out','pane-report','pane-denied'];
+
 /* ════════════════════════════════════════════════════════
    SECTION 2 — INITIALISATION
 ════════════════════════════════════════════════════════ */
@@ -992,7 +995,6 @@ function renderSubtabBar(){
 }
 
 /* Show one pane, hide all others */
-const ALL_PANES = ['pane-upload','pane-billed','pane-unbilled','pane-soa-manager','pane-billed-out','pane-report','pane-denied'];
 function showPane(id){
   ALL_PANES.forEach(p => document.getElementById(p).style.display = p===id ? '' : 'none');
 }
