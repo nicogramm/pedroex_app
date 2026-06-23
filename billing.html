@@ -931,7 +931,9 @@ let bilCalYear  = new Date().getFullYear();
 let bilCalMonth = new Date().getMonth();
 let unbilCalYear  = new Date().getFullYear();
 let unbilCalMonth = new Date().getMonth();
-let truckColorMap = {};
+let truckColorMap    = {};
+let _bilCalDateMap   = {};   /* cached for showBilledCalDay onclick */
+let _unbilCalDateMap = {};   /* cached for showUnbilledCalDay onclick */
 
 /* Misc */
 let currentPaymentSOA = null;
@@ -1061,7 +1063,8 @@ async function processUpload(files){
   document.getElementById('upc').textContent = parsedUpload.length+' shipment(s) found';
   if(parsedUpload.length){
     renderUploadPreview(parsedUpload);
-    showEl('preview-card'); showEl('save-btn');
+    showEl('preview-card');                        /* removes .hidden class + inline display:none */
+    el('save-btn').style.display = 'block';
   } else {
     toast('No data found in this file');
   }
@@ -1166,7 +1169,7 @@ function renderUploadPreview(rows){
       <td class="nowrap">₱${fmtNum(r.rate)}</td>
       <td><span class="pill pill-billed">Valid</span></td></tr>`;
   }).join('');
-  document.getElementById('preview-card').classList.remove('hidden');
+  /* Note: caller (processUpload) calls showEl('preview-card') which removes .hidden class */
 }
 
 async function saveToSheet(){
@@ -1377,8 +1380,8 @@ async function confirmFuzzyBillOnly(i){
   }catch(e){ showLoader(false); toast('Failed'); }
 }
 
-function skipFuzzy(i, btn){ btn.textContent='Skipped'; btn.disabled=true; const el=document.getElementById('ccfz-'+i); if(el) el.style.opacity='.4'; }
-function markFuzzyDone(i, msg){ const el=document.getElementById('ccfz-'+i); if(el){el.style.opacity='.4';el.querySelector('.cc-acts').innerHTML=`<span style="font-size:11px;color:var(--green);font-weight:600">${msg}</span>`;} }
+function skipFuzzy(i, btn){ btn.textContent='Skipped'; btn.disabled=true; const row=document.getElementById('ccfz-'+i); if(row) row.style.opacity='.4'; }
+function markFuzzyDone(i, msg){ const row=document.getElementById('ccfz-'+i); if(row){row.style.opacity='.4';row.querySelector('.cc-acts').innerHTML=`<span style="font-size:11px;color:var(--green);font-weight:600">${msg}</span>`;} }
 
 function renderSoaSummaryAfterUpload(rows){
   const bySOA = {};
@@ -1539,14 +1542,19 @@ function renderBilledCal(){
     if(!dateMap[iso]) dateMap[iso]=[];
     dateMap[iso].push(r);
   });
-  el('bil-cal-days').innerHTML = buildCalendarHTML(bilCalYear, bilCalMonth, dateMap, iso=>{
-    const dayRows = dateMap[iso]||[];
-    if(!dayRows.length) return '';
-    const byTruck = {};
-    dayRows.forEach(r=>{ if(!byTruck[r.truck])byTruck[r.truck]=0; byTruck[r.truck]++; });
-    const dots = Object.keys(byTruck).map(t=>`<div class="cal-dot" style="background:${truckColorMap[t]||'#888'}" title="${t}"></div>`).join('');
-    return `<div class="cal-dots">${dots}</div><div class="cal-count">${dayRows.length}</div>`;
-  }, iso=>{ if(dateMap[iso]?.length) showBilledCalDay(iso); });
+  /* Store dateMap globally so showBilledCalDay can access it */
+  _bilCalDateMap = dateMap;
+  el('bil-cal-days').innerHTML = buildCalendarHTML(bilCalYear, bilCalMonth, dateMap,
+    iso=>{
+      const dayRows = dateMap[iso]||[];
+      if(!dayRows.length) return '';
+      const byTruck = {};
+      dayRows.forEach(r=>{ if(!byTruck[r.truck])byTruck[r.truck]=0; byTruck[r.truck]++; });
+      const dots = Object.keys(byTruck).map(t=>`<div class="cal-dot" style="background:${truckColorMap[t]||'#888'}" title="${t}"></div>`).join('');
+      return `<div class="cal-dots">${dots}</div><div class="cal-count">${dayRows.length}</div>`;
+    },
+    'showBilledCalDay'   /* string function name — no closure issues */
+  );
 }
 
 function bilCalPrev(){ bilCalMonth--; if(bilCalMonth<0){bilCalMonth=11;bilCalYear--;} renderBilledCal(); }
@@ -1680,16 +1688,21 @@ function renderUnbilledCal(){
   });
   el('unbil-cal-month-label').textContent = new Date(unbilCalYear,unbilCalMonth,1)
     .toLocaleDateString('en-PH',{month:'long',year:'numeric'});
-  el('unbil-cal-days').innerHTML = buildCalendarHTML(unbilCalYear, unbilCalMonth, dateMap, iso=>{
-    const dayTrips = dateMap[iso]||[];
-    if(!dayTrips.length) return '';
-    const shown = dayTrips.slice(0,4);
-    const extra = dayTrips.length - 4;
-    let tags = shown.map(t=>`<span class="plate-tag ${t.billed==='Yes'?'billed':'unbilled'}">${t.truck||'—'}</span>`).join('');
-    if(extra>0) tags += `<div class="plate-tag-more">+${extra} more</div>`;
-    return tags;
-  }, iso=>{ if(dateMap[iso]?.length) showUnbilledCalDay(iso); },
-  iso=>{ const trips=dateMap[iso]||[]; return trips.some(t=>t.billed!=='Yes') ? 'has-unbilled' : ''; });
+  /* Store dateMap globally so showUnbilledCalDay can access it */
+  _unbilCalDateMap = dateMap;
+  el('unbil-cal-days').innerHTML = buildCalendarHTML(unbilCalYear, unbilCalMonth, dateMap,
+    iso=>{
+      const dayTrips = dateMap[iso]||[];
+      if(!dayTrips.length) return '';
+      const shown = dayTrips.slice(0,4);
+      const extra = dayTrips.length - 4;
+      let tags = shown.map(t=>`<span class="plate-tag ${t.billed==='Yes'?'billed':'unbilled'}">${t.truck||'—'}</span>`).join('');
+      if(extra>0) tags += `<div class="plate-tag-more">+${extra} more</div>`;
+      return tags;
+    },
+    'showUnbilledCalDay',   /* string function name */
+    iso=>{ const trips=dateMap[iso]||[]; return trips.some(t=>t.billed!=='Yes') ? 'has-unbilled' : ''; }
+  );
 }
 
 function unbilCalPrev(){ unbilCalMonth--; if(unbilCalMonth<0){unbilCalMonth=11;unbilCalYear--;} renderUnbilledCal(); }
@@ -2393,21 +2406,26 @@ function buildSOALiqMap(rows){
    SECTION 7 — SHARED UTILITIES
 ════════════════════════════════════════════════════════ */
 
-/* ── Calendar builder (shared by Billed and Unbilled) ── */
-function buildCalendarHTML(year, month, dateMap, cellContentFn, onClickFn, extraClassFn){
-  const firstDay = new Date(year,month,1).getDay();
+/* ── Calendar builder (shared by Billed and Unbilled) ──
+   onClickFnName: string name of a global function, e.g. 'showBilledCalDay'
+   cellContentFn: function(iso) → HTML string for cell interior
+   extraClassFn:  function(iso) → extra CSS class string (optional)
+── */
+function buildCalendarHTML(year, month, dateMap, cellContentFn, onClickFnName, extraClassFn){
+  const firstDay    = new Date(year,month,1).getDay();
   const daysInMonth = new Date(year,month+1,0).getDate();
-  const todayI = todayISO();
+  const todayI      = todayISO();
   let html = '';
   for(let i=0;i<firstDay;i++) html+=`<div class="cal-day empty"></div>`;
   for(let day=1;day<=daysInMonth;day++){
-    const iso=year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
-    const isToday=iso===todayI, hasData=(dateMap[iso]||[]).length>0;
-    const extraClass=extraClassFn?extraClassFn(iso):'';
-    const content=cellContentFn(iso);
-    html+=`<div class="cal-day${isToday?' today':''}${hasData?' has-data':''}${extraClass?' '+extraClass:''}"
-      style="${isToday?'border:2px solid var(--red);':''}"
-      onclick="${hasData?`(${onClickFn.toString()})('${iso}')`:''}"
+    const iso        = year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const isToday    = iso===todayI;
+    const hasData    = (dateMap[iso]||[]).length>0;
+    const extraClass = extraClassFn ? extraClassFn(iso) : '';
+    const content    = cellContentFn(iso);
+    html += `<div
+      class="cal-day${isToday?' today':''}${hasData?' has-data':''}${extraClass?' '+extraClass:''}"
+      ${hasData ? `onclick="${onClickFnName}('${iso}')"` : ''}
     >
       <div class="cal-daynum${extraClass==='has-unbilled'?' is-unbilled':''}">${day}</div>
       ${content}
@@ -2502,7 +2520,8 @@ function uniq(arr){ return [...new Set(arr.filter(Boolean))]; }
 
 /* ── DOM shortcuts ── */
 function el(id){ return document.getElementById(id); }
-function showEl(id){ document.getElementById(id).style.display=''; }
+function showEl(id){ const e=document.getElementById(id); if(e){e.style.display='';e.classList.remove('hidden');} }
+function hideEl(id){ const e=document.getElementById(id); if(e) e.style.display='none'; }
 
 /* ── Empty & no-data templates ── */
 function emptyHTML(title, sub){
