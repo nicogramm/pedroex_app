@@ -715,6 +715,8 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
           <option value="">All Status</option>
           <option value="done">Submitted</option>
           <option value="pending">Not Yet Submitted</option>
+          <option value="paid">Fully Paid</option>
+          <option value="unpaid">Unpaid / Partial</option>
         </select>
       </div>
       <div id="bo-list"></div>
@@ -833,6 +835,24 @@ body.dark .modal-head{border-bottom-color:rgba(255,255,255,.05)}
 </div>
 
 <!-- ════ MODALS ════ -->
+
+<!-- Rate Adjustment Modal -->
+<div class="modal-overlay" id="rate-edit-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-head">
+      <div class="modal-title" id="rate-edit-title">Adjust Rates</div>
+      <button class="modal-close" onclick="closeModal('rate-edit-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box orange" style="margin-bottom:12px">
+        <b>⚠️ Note:</b> This adjusts the rate in the Billing sheet. Use this when San Miguel issued a correction after you already submitted.
+      </div>
+      <div id="rate-edit-list"></div>
+      <button class="btn-full btn-full-green" style="margin-top:16px" onclick="saveRateAdjustments()">💾 Save Rate Adjustments</button>
+    </div>
+  </div>
+</div>
 
 <!-- Payment modal -->
 <div class="modal-overlay" id="payment-modal">
@@ -1550,10 +1570,12 @@ function renderBilledCal(){
     iso=>{
       const dayRows = dateMap[iso]||[];
       if(!dayRows.length) return '';
-      const byTruck = {};
-      dayRows.forEach(r=>{ if(!byTruck[r.truck])byTruck[r.truck]=0; byTruck[r.truck]++; });
-      const dots = Object.keys(byTruck).map(t=>`<div class="cal-dot" style="background:${truckColorMap[t]||'#888'}" title="${t}"></div>`).join('');
-      return `<div class="cal-dots">${dots}</div><div class="cal-count">${dayRows.length}</div>`;
+      /* Show plate numbers (same style as unbilled calendar) */
+      const shown = dayRows.slice(0,4);
+      const extra = dayRows.length - 4;
+      let tags = shown.map(r=>`<span class="plate-tag billed">${r.truck||'—'}</span>`).join('');
+      if(extra>0) tags += `<div class="plate-tag-more">+${extra} more</div>`;
+      return tags;
     },
     'showBilledCalDay'   /* string function name — no closure issues */
   );
@@ -1716,10 +1738,30 @@ function showUnbilledCalDay(iso){
   el('cal-day-modal-title').textContent = fmtDate(iso);
   const unbilledToday = dayTrips.filter(t=>t.billed!=='Yes');
   const billedToday   = dayTrips.filter(t=>t.billed==='Yes');
+
+  /* Build lookup of billed shipment numbers for quick typo-check */
+  const billedNums = billingRows.map(r=>({shipment:r.shipment.trim(), soa:r.soa, truck:r.truck, date:r.date}));
+
   let html = '';
   if(unbilledToday.length){
     html += `<div class="section-label" style="color:var(--red);margin-top:0"><span>⚠️ UNBILLED (${unbilledToday.length})</span></div>`;
     unbilledToday.forEach(t=>{
+      /* Check if this shipment number is close to any billed number (possible typo or already billed) */
+      let closeMatch = null;
+      for(const b of billedNums){
+        const d = editDist(t.shipmentNumber, b.shipment);
+        if(d === 0){ closeMatch = {entry:b, dist:0}; break; }  /* exact match — might be duplicate */
+        if(d <= 2 && (!closeMatch || d < closeMatch.dist)) closeMatch = {entry:b, dist:d};
+      }
+      const matchBadge = closeMatch
+        ? (closeMatch.dist === 0
+            ? `<div style="margin-top:6px;padding:6px 8px;background:var(--blue-soft);border-radius:var(--rxs);font-size:10px;color:var(--blue);font-weight:600">
+                ⚠️ Same number already exists in SOA <b>${closeMatch.entry.soa}</b> — possible duplicate or already billed?
+               </div>`
+            : `<div style="margin-top:6px;padding:6px 8px;background:var(--orange-soft);border-radius:var(--rxs);font-size:10px;color:var(--orange);font-weight:600">
+                🔎 Close to billed #<b>${closeMatch.entry.shipment}</b> (${closeMatch.dist} digit${closeMatch.dist>1?'s':''} off) · SOA ${closeMatch.entry.soa}
+               </div>`)
+        : '';
       html += `<div class="ship-card unbilled-card" style="margin-bottom:8px">
         <div class="ship-card-top">
           <div>
@@ -1732,6 +1774,7 @@ function showUnbilledCalDay(iso){
           <span style="font-family:var(--mono)">${t.shipmentNumber||'—'}</span>
           <span>${t.route||'—'}</span>
         </div>
+        ${matchBadge}
       </div>`;
     });
   }
@@ -1812,7 +1855,12 @@ async function runNumberScan(){
     const validUnb=unbilled.filter(t=>SHIP_VALID.test(t.shipmentNumber)&&!flagged.has(t.rowIndex));
     for(let i=0;i<validUnb.length;i++)
       for(let j=i+1;j<validUnb.length;j++)
-        if(editDist(validUnb[i].shipmentNumber,validUnb[j].shipmentNumber)===1)
+        /* Only flag near-dupes on the SAME truck.
+           Different trucks can legitimately have similar shipment numbers — that's valid.
+           Same truck + same or adjacent date + 1 digit diff = suspicious typo. */
+        if(editDist(validUnb[i].shipmentNumber,validUnb[j].shipmentNumber)===1
+           && validUnb[i].truck && validUnb[j].truck
+           && validUnb[i].truck === validUnb[j].truck)
           scanNearDups.push({a:validUnb[i],b:validUnb[j]});
     const cleanCount = unbilled.filter(t=>SHIP_VALID.test(t.shipmentNumber)&&!flagged.has(t.rowIndex)&&!scanDups.find(x=>x.trip.rowIndex===t.rowIndex)).length;
     renderScanResults(cleanCount, unbilled.length);
@@ -2050,6 +2098,7 @@ function renderSoaManager(){
       </div>
       <div class="soa-mgr-actions">
         <button class="btn btn-ghost" style="margin-bottom:6px" onclick="openPaymentModal('${s.soa}')">💰 Pay</button>
+        <button class="btn btn-blue" style="margin-bottom:6px" onclick="openRateEditModal('${s.soa}')">✏️ Rates</button>
         <button class="btn btn-danger" onclick="confirmDeleteSOA('${s.soa}',${s.count})">🗑️ Delete</button>
       </div>
     </div>`;
@@ -2111,29 +2160,57 @@ function renderBOStats(){
 function renderBilledOut(){
   const srch=el('bos').value.toLowerCase(), mo=el('bom').value, st=el('bost').value;
   const bySOA = buildSOAMap(billingRows);
+  const liqMap = buildSOALiqMap(billingRows);
   let soas = Object.values(bySOA).filter(s=>{
     if(srch && !s.soa.toLowerCase().includes(srch)) return false;
     if(mo   && ![...s.months].includes(mo)) return false;
     if(st==='done'    && s.billedOut<s.count)  return false;
     if(st==='pending' && s.billedOut>=s.count) return false;
+    if(st==='paid'){
+      const liq=liqMap[s.soa]; if(!liq || liq.totalLiquidated<liq.totalBilled) return false;
+    }
+    if(st==='unpaid'){
+      const liq=liqMap[s.soa]; if(liq && liq.totalLiquidated>=liq.totalBilled) return false;
+    }
     return true;
   });
   const list=el('bo-list');
   if(!soas.length){ list.innerHTML=emptyHTML('No SOA found','Try adjusting your filters.'); return; }
   list.innerHTML=soas.map(s=>{
-    const pct=s.count>0?(s.billedOut/s.count*100):0, done=pct>=100;
+    const pct=s.count>0?(s.billedOut/s.count*100):0, submitted=pct>=100;
+    const liq = liqMap[s.soa] || {totalBilled:s.totalBilled,totalLiquidated:0};
+    const liqPct = liq.totalBilled>0 ? Math.min(100,(liq.totalLiquidated/liq.totalBilled*100)) : 0;
+    const paid = liqPct>=100, partial = liqPct>0 && liqPct<100;
     return `<div class="card" style="margin-bottom:10px"><div style="padding:13px 16px">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+      <!-- SOA Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
         <div>
           <div class="soa-number">${s.soa}</div>
-          <span class="pill ${done?'pill-billedout':'pill-unbilled'}">${done?'✅ Submitted to Client':'⏳ Not Yet Submitted'}</span>
+          <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+            <span class="pill ${submitted?'pill-billedout':'pill-unbilled'}">${submitted?'✅ Submitted':'⏳ Not Submitted'}</span>
+            <span class="pill ${paid?'pill-full':partial?'pill-partial':'pill-pending'}">${paid?'💰 Fully Paid':partial?'🔶 Partial':'⏳ Unpaid'}</span>
+          </div>
         </div>
-        <div style="font-size:14px;font-weight:700;${done?'color:var(--blue)':'color:var(--orange)'}">₱${fmtNum(s.totalBilled)}</div>
+        <div style="text-align:right">
+          <div style="font-size:14px;font-weight:700;color:var(--text)">₱${fmtNum(s.totalBilled)}</div>
+          ${liq.totalLiquidated>0?`<div style="font-size:11px;color:var(--green);font-weight:600">₱${fmtNum(liq.totalLiquidated)} received</div>`:''}
+        </div>
       </div>
-      <div class="soa-meta"><span>${s.billedOut}/${s.count} submitted</span><span>${[...s.months].sort().reverse().map(monthLabel).join(', ')}</span></div>
-      <div class="prog-track"><div class="prog-fill prog-blue" style="width:${pct}%"></div></div>
-      <div class="soa-chips" style="margin-top:7px">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
-      ${!done?`<div style="margin-top:9px"><button class="btn btn-blue" onclick="markAsSubmitted('${s.soa}')">📤 Mark SOA as Submitted to Client</button></div>`:''}
+      <!-- Submission progress -->
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Submission to Client</div>
+      <div class="prog-track"><div class="prog-fill prog-blue" style="width:${pct.toFixed(0)}%"></div></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px;margin-bottom:8px">${s.billedOut}/${s.count} shipments submitted</div>
+      <!-- Payment progress -->
+      <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Payment Received</div>
+      <div class="prog-track"><div class="prog-fill ${paid?'prog-green':partial?'prog-orange':'prog-red'}" style="width:${liqPct.toFixed(0)}%"></div></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px;margin-bottom:10px">₱${fmtNum(liq.totalLiquidated)} / ₱${fmtNum(liq.totalBilled)} (${liqPct.toFixed(0)}%)</div>
+      <!-- Trucks -->
+      <div class="soa-chips">${[...s.trucks].map(t=>`<span class="soa-chip">🚛 ${t}</span>`).join('')}</div>
+      <!-- Action buttons -->
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        ${!submitted?`<button class="btn btn-blue" onclick="markAsSubmitted('${s.soa}')">📤 Mark as Submitted</button>`:''}
+        <button class="btn ${paid?'btn-ghost':'btn-green'}" onclick="openPaymentModal('${s.soa}')">${paid?'💰 Record More Payment':'💰 Record Payment'}</button>
+      </div>
     </div></div>`;
   }).join('');
 }
@@ -2196,7 +2273,61 @@ async function savePayment(){
   }catch(e){ showLoader(false); toast('Failed to record'); console.error(e); }
 }
 
-/* ── 5C: REPORT ── */
+/* ── Rate Adjustment ── */
+let _rateEditSOA = null;
+
+function openRateEditModal(soa){
+  _rateEditSOA = soa;
+  const soaRows = billingRows.filter(r=>r.soa===soa);
+  el('rate-edit-title').textContent = 'Adjust Rates — '+soa;
+  el('rate-edit-list').innerHTML = soaRows.map((r,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;font-family:var(--mono);color:var(--text)">${r.shipment}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">🚛 ${r.truck} · 📅 ${r.date}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <span style="font-size:11px;color:var(--text3)">₱</span>
+        <input
+          id="rate-inp-${r.rowIndex}"
+          type="number"
+          value="${num(r.rate)}"
+          style="width:90px;padding:7px 9px;border:none;border-radius:var(--rxs);background:var(--bg);box-shadow:var(--in);font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono);text-align:right"
+          data-orig="${num(r.rate)}"
+          data-row="${r.rowIndex}"
+        >
+      </div>
+    </div>`).join('');
+  openModal('rate-edit-modal');
+}
+
+async function saveRateAdjustments(){
+  if(!_rateEditSOA) return;
+  const soaRows = billingRows.filter(r=>r.soa===_rateEditSOA);
+  const changes = [];
+  soaRows.forEach(r=>{
+    const inp = document.getElementById('rate-inp-'+r.rowIndex);
+    if(!inp) return;
+    const newRate = parseFloat(inp.value)||0;
+    const origRate = parseFloat(inp.dataset.orig)||0;
+    if(Math.abs(newRate - origRate) > 0.01) changes.push({row:r, newRate});
+  });
+  if(!changes.length){ toast('No changes to save'); return; }
+  closeModal('rate-edit-modal');
+  showLoader(true, 'Saving rate adjustments...');
+  try{
+    for(const c of changes){
+      await apiPut(SHEET_BILLING+'!F'+c.row.rowIndex, [[c.newRate]]);
+      /* Update local cache */
+      c.row.rate = String(c.newRate);
+    }
+    showLoader(false);
+    toast(`✅ ${changes.length} rate(s) updated!`, 'ok');
+    /* Refresh SOA manager stats */
+    renderSoaMgrStats();
+    renderSoaManager();
+  }catch(e){ showLoader(false); toast('Failed to save: '+e.message,'warn'); console.error(e); }
+}
 async function loadReport(){
   showLoader(true,'Loading report...');
   try{
