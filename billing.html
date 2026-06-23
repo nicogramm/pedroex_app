@@ -963,6 +963,52 @@ let _toastTimer;
 /* ALL_PANES must be declared BEFORE the init IIFE — it's used by showPane() which is called from init */
 const ALL_PANES = ['pane-upload','pane-billed','pane-unbilled','pane-soa-manager','pane-billed-out','pane-report','pane-denied'];
 
+/* ── Roster Logic — for identifying responsible helper per trip ──
+   Sourced from employees.html: same rotation used for task assignment.
+   Truck plate prefix → index → weekly rotation by helper.           */
+const ROSTER_TRUCKS  = ['CAH','CBQ','CAN','NHE','CBJ'];
+const ROSTER_ANCHOR  = new Date(2026,4,18);  /* Monday May 18 2026 */
+const ROSTER_HELPERS = [
+  'Jessie Briones',
+  'Anewlesis Amor',
+  'Joey Mison',
+  'John Richard Cordovilla',
+  'Michael Tibayan'
+];
+function getMondayOfWeek(d){
+  const dt=new Date(d); dt.setHours(0,0,0,0);
+  const day=dt.getDay();
+  dt.setDate(dt.getDate()+(day===0?-6:1-day));
+  return dt;
+}
+function getScheduledHelper(truckPlate, date){
+  /* Match by plate prefix (e.g. "CAH 1415" → "CAH") */
+  const prefix=(truckPlate||'').trim().toUpperCase().split(' ')[0];
+  const idx=ROSTER_TRUCKS.findIndex(t=>prefix.startsWith(t)||t.startsWith(prefix));
+  if(idx===-1) return null;
+  const wDiff=Math.round((getMondayOfWeek(date)-getMondayOfWeek(ROSTER_ANCHOR))/(7*86400000));
+  return ROSTER_HELPERS[((idx-wDiff)%5+500)%5];
+}
+/* Smart calendar date: given a billing row, return the DELIVERY DATE from Trips if available.
+   Accounts for Shipment Date vs Delivery Date discrepancy (often 1-2 days apart). */
+function resolveDeliveryDate(billingRow){
+  if(!billingRow.shipment) return billingRow.date;
+  /* Try exact match by shipment number */
+  const trip = tripRows.find(t=>t.shipmentNumber===billingRow.shipment.trim());
+  if(trip && trip.deliveryDate) return trip.deliveryDate;
+  /* Fallback: find trip by truck within ±2 days of billing date */
+  if(billingRow.date && billingRow.truck){
+    const bilMs = new Date(billingRow.date+'T00:00:00').getTime();
+    const near = tripRows.find(t=>{
+      if(!t.deliveryDate) return false;
+      if(t.truck.trim().toLowerCase()!==billingRow.truck.trim().toLowerCase()) return false;
+      return Math.abs(new Date(t.deliveryDate+'T00:00:00').getTime()-bilMs) <= 2*86400000;
+    });
+    if(near && near.deliveryDate) return near.deliveryDate;
+  }
+  return billingRow.date; /* last resort: use SOA date */
+}
+
 /* ════════════════════════════════════════════════════════
    SECTION 2 — INITIALISATION
 ════════════════════════════════════════════════════════ */
@@ -1447,7 +1493,13 @@ function buildNumberDiffHTML(soaNum, tripsNum){
 async function loadBilled(){
   showLoader(true, 'Loading billed records...');
   try{
-    billingRows = mapBillingRows((await apiGet(SHEET_BILLING+'!A2:M')).values||[]);
+    /* Fetch both billing AND trips so we can resolve delivery dates on the calendar */
+    const [bRes, tRes] = await Promise.all([
+      apiGet(SHEET_BILLING+'!A2:M'),
+      apiGet(SHEET_TRIPS+'!A2:I')
+    ]);
+    billingRows = mapBillingRows(bRes.values||[]);
+    tripRows    = mapTripRows(tRes.values||[]);   /* needed by resolveDeliveryDate() */
     buildTruckColors();
     buildBilledFilters();
     renderBilledStats();
@@ -1507,23 +1559,51 @@ function renderBilledList(){
   });
   const list = el('billed-list');
   if(!rows.length){ list.innerHTML = emptyHTML('No billed records','Try adjusting your filters.'); return; }
-  const card = r=>{
+
+  /* ── Table header ── */
+  const thead = `<div class="tbl-wrap"><table class="tbl">
+    <thead><tr>
+      <th>Delivery Date</th>
+      <th>Shipment #</th>
+      <th>Truck</th>
+      <th>SOA</th>
+      <th style="text-align:right">Rate</th>
+      <th>Submitted</th>
+      <th>Paid</th>
+    </tr></thead><tbody>`;
+  const tfoot = `</tbody></table></div>`;
+
+  const trow = r=>{
     const inv = r.valid==='No';
-    return `<div class="ship-card${inv?' invalid-card':''}">
-      <div class="ship-card-top">
-        <div>
-          <div class="ship-num" style="${inv?'color:var(--red)':''}">${r.shipment}${inv?' ⛔':''}</div>
-          <span class="pill ${inv?'pill-invalid':'pill-billed'}">${inv?'⛔ Invalid #':'✅ Billed'}</span>
-        </div>
-        <div class="ship-rate ${inv?'ship-rate-orange':'ship-rate-green'}">₱${fmtNum(r.rate)}</div>
-      </div>
-      <div class="ship-meta"><span>📅 ${r.date}</span><span>🚛 ${r.truck}</span><span>${r.soa}</span></div>
-    </div>`;
+    const delivDate = toISO(resolveDeliveryDate(r)); /* show delivery date in table */
+    return `<tr style="${inv?'background:rgba(192,57,43,.04)':''}">
+      <td class="nowrap">${delivDate||r.date}</td>
+      <td><b style="${inv?'color:var(--red)':'font-family:var(--mono)'}">${r.shipment}${inv?' ⛔':''}</b></td>
+      <td class="nowrap">${r.truck}</td>
+      <td class="ell" title="${r.soa}">${r.soa}</td>
+      <td class="nowrap" style="text-align:right;color:var(--green);font-weight:600">₱${fmtNum(r.rate)}</td>
+      <td>${r.billedOut==='Yes'?'<span class="pill pill-billedout">✅</span>':'<span class="pill pill-pending">⏳</span>'}</td>
+      <td>${r.liquidated==='Yes'?'<span class="pill pill-billed">💰</span>':r.liquidated==='Partial'?'<span class="pill pill-partial">🔶</span>':'<span class="pill pill-pending">⏳</span>'}</td>
+    </tr>`;
   };
-  if(billedSubView==='list')  list.innerHTML = rows.map(card).join('');
-  else if(billedSubView==='soa')   list.innerHTML = groupBy(rows,'soa').map(({key,items})=>groupHTML(key,items,card,'SOA: ','green')).join('');
-  else if(billedSubView==='truck') list.innerHTML = groupBy(rows,'truck').map(({key,items})=>groupHTML('🚛 '+key,items,card,'','green')).join('');
-  else list.innerHTML = rows.map(card).join('');
+
+  /* Group headers for soa/truck views */
+  const groupTable = (groups) => groups.map(({key,items})=>{
+    const amt = items.reduce((s,r)=>s+num(r.rate),0);
+    return `<div style="margin-bottom:18px">
+      <div class="grp-header">${key}</div>
+      <div class="grp-tally">
+        <div class="tally tally-green">${items.length} shipments</div>
+        <div class="tally tally-dim">₱${fmtNum(amt)}</div>
+      </div>
+      ${thead}${items.map(trow).join('')}${tfoot}
+    </div>`;
+  }).join('');
+
+  if(billedSubView==='list')        list.innerHTML = thead+rows.map(trow).join('')+tfoot;
+  else if(billedSubView==='soa')    list.innerHTML = groupTable(groupBy(rows,'soa').map(({key,items})=>({key:'SOA: '+key,items})));
+  else if(billedSubView==='truck')  list.innerHTML = groupTable(groupBy(rows,'truck').map(({key,items})=>({key:'🚛 '+key,items})));
+  else                               list.innerHTML = thead+rows.map(trow).join('')+tfoot;
 }
 
 /* ── Billed Calendar ── */
@@ -1545,9 +1625,9 @@ function renderBilledCal(){
     if(shipF  && r.shipment!==shipF) return false;
     return true;
   });
-  /* Auto-navigate to latest month with data */
+  /* Auto-navigate to latest month with data (using resolved delivery dates) */
   if(rows.length){
-    const months = uniq(rows.map(r=>dateMonth(r.date))).filter(Boolean).sort().reverse();
+    const months = uniq(rows.map(r=>dateMonth(resolveDeliveryDate(r)))).filter(Boolean).sort().reverse();
     const viewMon = bilCalYear+'-'+String(bilCalMonth+1).padStart(2,'0');
     if(!months.includes(viewMon) && months.length){
       const [y,m] = months[0].split('-').map(Number);
@@ -1556,13 +1636,16 @@ function renderBilledCal(){
   }
   el('bil-cal-month-label').textContent = new Date(bilCalYear,bilCalMonth,1)
     .toLocaleDateString('en-PH',{month:'long',year:'numeric'});
+
+  /* Build dateMap using DELIVERY DATE (smart: resolves Shipment Date discrepancy) */
   const dateMap = {};
   rows.forEach(r=>{
-    const iso = toISO(r.date); if(!iso) return;
+    const displayDate = resolveDeliveryDate(r);  /* smart date lookup */
+    const iso = toISO(displayDate); if(!iso) return;
     const [y,m] = iso.split('-').map(Number);
     if(y!==bilCalYear || m-1!==bilCalMonth) return;
     if(!dateMap[iso]) dateMap[iso]=[];
-    dateMap[iso].push(r);
+    dateMap[iso].push({...r, _displayDate: displayDate}); /* store resolved date */
   });
   /* Store dateMap globally so showBilledCalDay can access it */
   _bilCalDateMap = dateMap;
@@ -1570,14 +1653,14 @@ function renderBilledCal(){
     iso=>{
       const dayRows = dateMap[iso]||[];
       if(!dayRows.length) return '';
-      /* Show plate numbers (same style as unbilled calendar) */
+      /* Show plate numbers */
       const shown = dayRows.slice(0,4);
       const extra = dayRows.length - 4;
       let tags = shown.map(r=>`<span class="plate-tag billed">${r.truck||'—'}</span>`).join('');
       if(extra>0) tags += `<div class="plate-tag-more">+${extra} more</div>`;
       return tags;
     },
-    'showBilledCalDay'   /* string function name — no closure issues */
+    'showBilledCalDay'
   );
 }
 
@@ -1587,8 +1670,10 @@ function bilCalNext(){ bilCalMonth++; if(bilCalMonth>11){bilCalMonth=0;bilCalYea
 function showBilledCalDay(iso){
   const truckF = el('bcal-truck').value;
   const shipF  = el('bcal-ship').value;
+  /* Match using resolved delivery date (same date resolution as the calendar grid) */
   const dayRows = billingRows.filter(r=>{
-    if(toISO(r.date)!==iso) return false;
+    const displayDate = toISO(resolveDeliveryDate(r));
+    if(displayDate !== iso) return false;
     if(truckF && r.truck!==truckF) return false;
     if(shipF  && r.shipment!==shipF) return false;
     return true;
@@ -1685,19 +1770,47 @@ function renderUnbilledList(){
   });
   const list = el('unbilled-list');
   if(!rows.length){ list.innerHTML = emptyHTML('No unbilled trips','All trips have been billed! ✅'); return; }
-  const card = r=>`<div class="ship-card unbilled-card">
-    <div class="ship-card-top">
-      <div>
-        <div class="ship-num">${r.shipmentNumber||'—'}</div>
-        <span class="pill pill-unbilled">⚠️ Unbilled</span>
+
+  const thead = `<div class="tbl-wrap"><table class="tbl">
+    <thead><tr>
+      <th>Delivery Date</th>
+      <th>Shipment #</th>
+      <th>Truck</th>
+      <th>Route</th>
+      <th style="text-align:right">Rate</th>
+      <th>Scheduled Helper</th>
+    </tr></thead><tbody>`;
+  const tfoot = `</tbody></table></div>`;
+
+  const trow = r=>{
+    const helper = getScheduledHelper(r.truck, r.deliveryDate);
+    const missing = !r.shipmentNumber || r.shipmentNumber.trim()==='';
+    return `<tr>
+      <td class="nowrap">${r.deliveryDate}</td>
+      <td><b style="font-family:var(--mono);${missing?'color:var(--text3)':''}">${r.shipmentNumber||'—'}</b></td>
+      <td class="nowrap">${r.truck}</td>
+      <td class="ell" title="${r.route||''}">${r.route||'—'}</td>
+      <td class="nowrap" style="text-align:right;color:var(--orange);font-weight:600">₱${fmtNum(r.rate)}</td>
+      <td style="font-size:10px;color:var(--text2)">${helper||'—'}</td>
+    </tr>`;
+  };
+
+  const groupTable = (groups) => groups.map(({key,items})=>{
+    const amt = items.reduce((s,r)=>s+num(r.rate),0);
+    return `<div style="margin-bottom:18px">
+      <div class="grp-header">${key}</div>
+      <div class="grp-tally">
+        <div class="tally tally-orange">${items.length} trips</div>
+        <div class="tally tally-dim">₱${fmtNum(amt)}</div>
       </div>
-      <div class="ship-rate ship-rate-orange">₱${fmtNum(r.rate)}</div>
-    </div>
-    <div class="ship-meta"><span>📅 ${r.deliveryDate}</span><span>🚛 ${r.truck}</span><span>${r.route||'—'}</span></div>
-  </div>`;
-  if(unbilledSubView==='all')   list.innerHTML = rows.map(card).join('');
-  else if(unbilledSubView==='month') list.innerHTML = groupByMonth(rows.map(r=>({...r,date:r.deliveryDate}))).map(({label,items})=>groupHTML(label,items,card,'','orange')).join('');
-  else if(unbilledSubView==='truck') list.innerHTML = groupBy(rows,'truck').map(({key,items})=>groupHTML('🚛 '+key,items,card,'','orange')).join('');
+      ${thead}${items.map(trow).join('')}${tfoot}
+    </div>`;
+  }).join('');
+
+  if(unbilledSubView==='all')        list.innerHTML = thead+rows.map(trow).join('')+tfoot;
+  else if(unbilledSubView==='month') list.innerHTML = groupTable(groupByMonth(rows.map(r=>({...r,date:r.deliveryDate}))).map(({label,items})=>({key:label,items})));
+  else if(unbilledSubView==='truck') list.innerHTML = groupTable(groupBy(rows,'truck').map(({key,items})=>({key:'🚛 '+key,items})));
+  else                                list.innerHTML = thead+rows.map(trow).join('')+tfoot;
 }
 
 /* ── Unbilled Calendar ── */
@@ -1943,16 +2056,39 @@ function refreshScanResultsUI(cleanCount, totalScanned){
   const dw=el('scan-dup-wrap');
   if(scanDups.length){
     dw.style.display='block';
-    el('scan-dup-list').innerHTML = scanDups.map(item=>`
-      <div class="scan-item dup">
-        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:5px">🚨 Exact Duplicate</div>
-        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)">${item.trip.shipmentNumber}</div>
-        <div style="font-size:11px;color:var(--text2);margin-top:5px;line-height:1.7">
-          Row ${item.other.rowIndex}: 🚛 ${item.other.truck} · ${item.other.deliveryDate}<br>
-          Row ${item.trip.rowIndex}: 🚛 ${item.trip.truck} · ${item.trip.deliveryDate}
+    el('scan-dup-list').innerHTML = scanDups.map(item=>{
+      /* Identify who should own each trip based on roster rotation */
+      const helperA = getScheduledHelper(item.other.truck, item.other.deliveryDate);
+      const helperB = getScheduledHelper(item.trip.truck,  item.trip.deliveryDate);
+      const sameHelper = helperA && helperB && helperA === helperB;
+      const suspicion = sameHelper
+        ? `<div style="margin-top:6px;padding:6px 8px;background:var(--red-soft);border-radius:var(--rxs);font-size:10px;color:var(--red);font-weight:700">
+             ⚠️ SAME HELPER on both entries — possible fraud: <b>${helperA}</b>
+           </div>`
+        : `<div style="margin-top:6px;padding:6px 8px;background:var(--blue-soft);border-radius:var(--rxs);font-size:10px;color:var(--blue);font-weight:600">
+             Different helpers — may be a coincidence or data entry error
+           </div>`;
+      return `<div class="scan-item dup">
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:5px">🚨 Exact Duplicate Shipment Number</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red);margin-bottom:8px">${item.trip.shipmentNumber}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">
+          <div style="background:var(--bg2);border-radius:var(--rxs);padding:8px">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:4px">Entry A · Row ${item.other.rowIndex}</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text)">🚛 ${item.other.truck}</div>
+            <div style="font-size:11px;color:var(--text2)">📅 ${item.other.deliveryDate}</div>
+            <div style="font-size:11px;color:var(--blue);font-weight:600;margin-top:3px">👤 ${helperA||'Unknown'}</div>
+          </div>
+          <div style="background:var(--bg2);border-radius:var(--rxs);padding:8px">
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:4px">Entry B · Row ${item.trip.rowIndex}</div>
+            <div style="font-size:12px;font-weight:700;color:var(--text)">🚛 ${item.trip.truck}</div>
+            <div style="font-size:11px;color:var(--text2)">📅 ${item.trip.deliveryDate}</div>
+            <div style="font-size:11px;color:var(--blue);font-weight:600;margin-top:3px">👤 ${helperB||'Unknown'}</div>
+          </div>
         </div>
-        <div style="font-size:11px;color:var(--red);font-weight:600;margin-top:5px">Same number entered twice — fix manually in Trips sheet.</div>
-      </div>`).join('');
+        ${suspicion}
+        <div style="font-size:11px;color:var(--red);font-weight:600;margin-top:6px">Fix manually in Trips sheet.</div>
+      </div>`;
+    }).join('');
   } else dw.style.display='none';
   /* Invalid */
   const iw=el('scan-inv-wrap');
