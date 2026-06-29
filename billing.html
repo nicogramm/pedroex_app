@@ -403,12 +403,36 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
     <!-- ══════════════════════════════ TAB 3: SOA MONITOR ══════════════════════════════ -->
     <div id="tab-soa" style="display:none">
 
-      <!-- SUMMARY -->
+      <!-- SUMMARY STATS -->
       <div class="stat-grid" id="soa-summary-stats"></div>
 
-      <!-- CHARTS -->
+      <!-- CHARTS (donut + bars) -->
       <div id="soa-charts" style="margin-bottom:4px"></div>
 
+      <!-- SOA CALENDAR -->
+      <div class="neu-card" id="soa-cal-card" style="display:none;margin-bottom:14px;padding:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3)">SOA Coverage Calendar</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="cal-nav" onclick="changeSoaCalMonth(-1)">‹</button>
+            <span id="soa-cal-title" style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap"></span>
+            <button class="cal-nav" onclick="changeSoaCalMonth(1)">›</button>
+          </div>
+        </div>
+        <!-- Legend -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Paid</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Partial</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Pending</div>
+        </div>
+        <div class="cal-grid" id="soa-cal-grid"></div>
+        <div class="day-panel" id="soa-cal-day-panel" style="margin-top:10px">
+          <div class="day-panel-title" id="soa-cal-day-title"></div>
+          <div id="soa-cal-day-list"></div>
+        </div>
+      </div>
+
+      <!-- SOA LIST HEADER -->
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div style="font-size:14px;font-weight:700;color:var(--text)">All SOAs</div>
         <div style="display:flex;gap:8px">
@@ -424,7 +448,11 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
 
       <div id="soa-list"><div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading SOAs...</div></div>
 
+      <!-- FINANCIAL REPORT -->
+      <div id="soa-report-section" style="display:none;margin-top:4px"></div>
+
     </div><!-- end tab-soa -->
+
 
   </div><!-- end page-wrap -->
 
@@ -844,54 +872,42 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
-// ═══ MATCHING ENGINE ══════════════════════════════════
-// Strategy:
-//   SOA date = shipment date (recorded by San Miguel)
-//   Trips delivery date = 0-2 days BEFORE the SOA date
-//   Shipment # in SOA (col E) = 10-digit number e.g. 1004792410
-//   Ground truth = SOA. Typo = Trips has a different number for same truck+date window.
 // ═══ MATCHING ENGINE ════════════════════════════════
 //
-// STRATEGY (in order of priority):
-//   Pass 1 — Exact shipment# match (Trips has number, SOA has same) → MATCHED
-//   Pass 2 — Truck + date window: SOA date = delivery date ± 0-2 days,
-//             trip has NO shipnum yet → MATCHED (SOA fills it in)
-//   Pass 3 — Truck + date window: trip HAS a number but differs →
-//             Levenshtein ≤ 4 → TYPO
-//   Pass 4 — Sequential gap analysis across all SOA nums per truck →
-//             flag suspicious numbers that break monotonic sequence
-//   Rule: shipment number is UNIQUE — no two trucks share one
+// DUAL GROUND TRUTH: Both Shipment # AND Shipment Date from SOA
 //
-// ═══ MATCHING ENGINE ════════════════════════════════
+// ANCHOR PRIORITY:
+//   Pass 1 — Exact Ship# match (SOA ship# = Trips ship#, same truck) → MATCHED
+//   Pass 2 — Exact ShipDate match (SOA date = Trips shipmentDate, same truck)
+//             AND ship# also matches → MATCHED (strongest confirmation)
+//   Pass 2b — Exact ShipDate match but trip has no ship# yet → MATCHED (SOA fills it)
+//   Pass 3 — Delivery date window fallback (SOA date = delivery ± 0-2 days) → MATCHED
+//   Pass 4 — Levenshtein typo (within date window, edit dist ≤ 4) → TYPO
+//   Pass 5 — Sequential gap analysis per truck → flag anomalies
 //
-// ANCHOR PRIORITY (in order):
-//   1. Exact shipment# match between SOA and Trips → MATCHED
-//   2. Exact shipment date match (SOA date = Trips.shipmentDate) + same truck → MATCHED
-//   3. Delivery date window (SOA date = delivery date + 0-2 days) + blank ship# → MATCHED
-//   4. Levenshtein typo detection within date window → TYPO
-//   Ground truth = SOA. Ship# is unique per truck.
+// Ship# is unique per truck. SOA is always ground truth.
 //
 function runMatching(parsedFiles, allTrips) {
   var results = [];
 
-  // Index trips by exact shipment number for O(1) lookup
-  var tripsByShipNum = {};
+  // ── Index 1: Ship# → trips (for exact number match) ──
+  var byShipNum = {};
   allTrips.forEach(function(t) {
     var num = (t.shipmentNumber || '').trim();
     if (!num) return;
-    if (!tripsByShipNum[num]) tripsByShipNum[num] = [];
-    tripsByShipNum[num].push(t);
+    if (!byShipNum[num]) byShipNum[num] = [];
+    byShipNum[num].push(t);
   });
 
-  // Index trips by shipmentDate+truck for direct date anchor
-  var tripsByShipDate = {};
+  // ── Index 2: ShipDate|TruckCode → trips (for date anchor) ──
+  var byShipDate = {};
   allTrips.forEach(function(t) {
     var sd = (t.shipmentDate || '').trim();
     var tc = extractTruckCode(t.truck);
     if (!sd || !tc) return;
     var key = sd + '|' + tc;
-    if (!tripsByShipDate[key]) tripsByShipDate[key] = [];
-    tripsByShipDate[key].push(t);
+    if (!byShipDate[key]) byShipDate[key] = [];
+    byShipDate[key].push(t);
   });
 
   var soaByTruck = {};
@@ -906,7 +922,8 @@ function runMatching(parsedFiles, allTrips) {
         status:       'unmatched',
         typoFlag:     null,
         deliveryDate: null,
-        diagnosis:    ''
+        diagnosis:    '',
+        matchMethod:  ''
       };
 
       var truckCode  = soaRow.truck;
@@ -915,53 +932,89 @@ function runMatching(parsedFiles, allTrips) {
       if (!soaByTruck[truckCode]) soaByTruck[truckCode] = [];
       soaByTruck[truckCode].push({ num: parseInt(soaRow.shipNum), result: result });
 
-      // ── PASS 1: Exact shipment number match ──
-      var exactList = tripsByShipNum[soaRow.shipNum] || [];
+      // ══ PASS 1: Exact shipment NUMBER match ══
+      // SOA shipNum == Trips shipmentNumber, same truck
+      var exactList = byShipNum[soaRow.shipNum] || [];
       var exact = exactList.find(function(t){ return extractTruckCode(t.truck) === truckCode; })
                || exactList[0];
       if (exact) {
         result.matchedTrip  = exact;
         result.status       = 'matched';
         result.deliveryDate = exact.deliveryDate;
+        result.matchMethod  = 'Ship# exact';
+        // Bonus: if trip also has matching shipment date → double confirmation
+        if (exact.shipmentDate && exact.shipmentDate === soaRow.date) {
+          result.matchMethod = 'Ship# + ShipDate exact ✓✓';
+        }
         results.push(result);
         return;
       }
 
-      // ── PASS 2: Exact shipment DATE match (SOA date = Trips shipmentDate) ──
-      // Now that helpers are required to enter shipment date, this is the best anchor.
+      // ══ PASS 2: Exact shipment DATE match ══
+      // SOA date == Trips shipmentDate, same truck
       var sdKey = soaRow.date + '|' + truckCode;
-      var sdCandidates = (tripsByShipDate[sdKey] || []).filter(function(t) {
-        // Must have no shipment number yet (or will be caught in pass 1)
+      var sdCandidates = byShipDate[sdKey] || [];
+
+      // 2a: date matches AND ship# also matches → strongest
+      var sdAndNum = sdCandidates.find(function(t){
+        return (t.shipmentNumber||'').trim() === soaRow.shipNum;
+      });
+      if (sdAndNum) {
+        result.matchedTrip  = sdAndNum;
+        result.status       = 'matched';
+        result.deliveryDate = sdAndNum.deliveryDate;
+        result.matchMethod  = 'ShipDate + Ship# exact ✓✓';
+        results.push(result);
+        return;
+      }
+
+      // 2b: date matches, trip has no ship# yet → SOA provides it
+      var sdBlank = sdCandidates.filter(function(t){
         return !t.shipmentNumber || !t.shipmentNumber.trim();
       });
-      if (sdCandidates.length === 1) {
-        result.matchedTrip  = sdCandidates[0];
+      if (sdBlank.length >= 1) {
+        // If multiple blanks on same date+truck, pick first (ambiguous but best effort)
+        result.matchedTrip  = sdBlank[0];
         result.status       = 'matched';
-        result.deliveryDate = sdCandidates[0].deliveryDate;
-        result.diagnosis    = 'Matched via Shipment Date anchor';
-        results.push(result);
-        return;
-      }
-      if (sdCandidates.length > 1) {
-        // Multiple blanks with same shipment date — pick first
-        result.matchedTrip  = sdCandidates[0];
-        result.status       = 'matched';
-        result.deliveryDate = sdCandidates[0].deliveryDate;
-        result.diagnosis    = 'Matched via Shipment Date (multiple candidates, picked first)';
+        result.deliveryDate = sdBlank[0].deliveryDate;
+        result.matchMethod  = 'ShipDate exact (ship# blank, SOA fills it)';
         results.push(result);
         return;
       }
 
-      // ── PASS 3: Delivery date window (SOA date = delivery date + 0-2 days) ──
-      var candidates = allTrips.filter(function(t) {
+      // 2c: date matches, trip HAS a different ship# → possible typo
+      if (sdCandidates.length > 0) {
+        var sdBest = null, sdBestDist = Infinity;
+        sdCandidates.forEach(function(t) {
+          var d = levenshtein(soaRow.shipNum, (t.shipmentNumber||'').trim());
+          if (d < sdBestDist) { sdBestDist = d; sdBest = t; }
+        });
+        if (sdBest && sdBestDist <= 4) {
+          result.matchedTrip  = sdBest;
+          result.status       = 'typo';
+          result.deliveryDate = sdBest.deliveryDate;
+          result.matchMethod  = 'ShipDate exact, ship# typo (dist '+sdBestDist+')';
+          result.typoFlag = {
+            soaNum:   soaRow.shipNum,
+            tripsNum: (sdBest.shipmentNumber||'').trim(),
+            dist:     sdBestDist
+          };
+          results.push(result);
+          return;
+        }
+      }
+
+      // ══ PASS 3: Delivery date window fallback ══
+      // SOA date ≈ delivery date + 0-2 days (pre-shipmentDate enforcement)
+      var delivCandidates = allTrips.filter(function(t) {
         if (!t.truck || !t.deliveryDate) return false;
         if (extractTruckCode(t.truck) !== truckCode) return false;
         var diff = Math.round((soaDateObj - new Date(t.deliveryDate + 'T00:00:00')) / 86400000);
         return diff >= 0 && diff <= 2;
       });
 
-      if (!candidates.length) {
-        // Widen for diagnosis
+      if (!delivCandidates.length) {
+        // Widen to ±5 days for diagnosis info only
         var wider = allTrips.filter(function(t) {
           if (!t.truck || !t.deliveryDate) return false;
           if (extractTruckCode(t.truck) !== truckCode) return false;
@@ -970,94 +1023,91 @@ function runMatching(parsedFiles, allTrips) {
         });
         if (wider.length) {
           var nearest = wider.reduce(function(a,b){
-            var da = Math.abs(Math.round((soaDateObj - new Date(a.deliveryDate+'T00:00:00'))/86400000));
-            var db = Math.abs(Math.round((soaDateObj - new Date(b.deliveryDate+'T00:00:00'))/86400000));
-            return da < db ? a : b;
+            var da = Math.abs(Math.round((soaDateObj-new Date(a.deliveryDate+'T00:00:00'))/86400000));
+            var db = Math.abs(Math.round((soaDateObj-new Date(b.deliveryDate+'T00:00:00'))/86400000));
+            return da<db?a:b;
           });
-          var diffD = Math.round((soaDateObj - new Date(nearest.deliveryDate+'T00:00:00'))/86400000);
-          result.diagnosis = 'Nearest '+truckCode+' trip: '+nearest.deliveryDate
-            +' ('+diffD+' day offset) · ship#: '+(nearest.shipmentNumber||'blank')
-            +' · ship date: '+(nearest.shipmentDate||'blank');
+          var dDiff = Math.round((soaDateObj-new Date(nearest.deliveryDate+'T00:00:00'))/86400000);
+          result.diagnosis = 'Nearest '+truckCode+': delivery '+nearest.deliveryDate
+            +' ('+dDiff+'d offset)'
+            +' · ship#: '+(nearest.shipmentNumber||'blank')
+            +' · shipDate: '+(nearest.shipmentDate||'blank');
         } else {
           var truckTrips = allTrips.filter(function(t){ return extractTruckCode(t.truck)===truckCode; });
           result.diagnosis = truckTrips.length
-            ? 'No trips for '+truckCode+' near SOA date '+soaRow.date+'. '+truckTrips.length+' total trips exist.'
-            : 'Truck '+truckCode+' has NO entries in Trips sheet at all.';
+            ? 'No '+truckCode+' trip near '+soaRow.date+' ('+truckTrips.length+' total exist)'
+            : 'Truck '+truckCode+' not found in Trips sheet';
         }
         results.push(result);
         return;
       }
 
-      // Blank shipnum in window
-      var blanks = candidates.filter(function(t){ return !t.shipmentNumber || !t.shipmentNumber.trim(); });
-      if (blanks.length >= 1) {
-        // Sort by: prefer trips that have a shipment date closest to SOA date
-        blanks.sort(function(a,b){
-          // If trip has shipment date, exact match wins
-          var aExact = a.shipmentDate === soaRow.date ? 0 : 1;
-          var bExact = b.shipmentDate === soaRow.date ? 0 : 1;
-          if (aExact !== bExact) return aExact - bExact;
-          // Fall back to delivery date proximity
-          var da = Math.abs(Math.round((soaDateObj - new Date(a.deliveryDate+'T00:00:00'))/86400000));
-          var db = Math.abs(Math.round((soaDateObj - new Date(b.deliveryDate+'T00:00:00'))/86400000));
-          return da - db;
+      // Blank ship# in window → MATCHED
+      var dlBlanks = delivCandidates.filter(function(t){ return !t.shipmentNumber || !t.shipmentNumber.trim(); });
+      if (dlBlanks.length >= 1) {
+        // Prefer trip whose shipmentDate matches SOA date
+        dlBlanks.sort(function(a,b){
+          var aEx = a.shipmentDate===soaRow.date?0:1, bEx = b.shipmentDate===soaRow.date?0:1;
+          if (aEx!==bEx) return aEx-bEx;
+          var da=Math.abs(Math.round((soaDateObj-new Date(a.deliveryDate+'T00:00:00'))/86400000));
+          var db=Math.abs(Math.round((soaDateObj-new Date(b.deliveryDate+'T00:00:00'))/86400000));
+          return da-db;
         });
-        result.matchedTrip  = blanks[0];
+        result.matchedTrip  = dlBlanks[0];
         result.status       = 'matched';
-        result.deliveryDate = blanks[0].deliveryDate;
+        result.deliveryDate = dlBlanks[0].deliveryDate;
+        result.matchMethod  = 'Delivery window (ship# blank)';
         results.push(result);
         return;
       }
 
-      // ── PASS 4: Typo detection via Levenshtein ──
-      var withNums = candidates.filter(function(t){ return t.shipmentNumber && t.shipmentNumber.trim(); });
+      // ══ PASS 4: Levenshtein typo within delivery window ══
+      var withNums = delivCandidates.filter(function(t){ return t.shipmentNumber && t.shipmentNumber.trim(); });
       var bestDist = Infinity, bestTrip = null;
       withNums.forEach(function(t) {
-        var dist = levenshtein(soaRow.shipNum, t.shipmentNumber.trim());
-        if (dist < bestDist) { bestDist = dist; bestTrip = t; }
+        var d = levenshtein(soaRow.shipNum, t.shipmentNumber.trim());
+        if (d < bestDist) { bestDist = d; bestTrip = t; }
       });
-
       if (bestTrip && bestDist >= 1 && bestDist <= 4) {
         result.matchedTrip  = bestTrip;
         result.status       = 'typo';
         result.deliveryDate = bestTrip.deliveryDate;
+        result.matchMethod  = 'Levenshtein typo (dist '+bestDist+')';
         result.typoFlag = {
           soaNum:   soaRow.shipNum,
           tripsNum: bestTrip.shipmentNumber.trim(),
           dist:     bestDist
         };
       } else if (bestTrip) {
-        result.diagnosis = 'Candidate trip exists (delivery: '+bestTrip.deliveryDate+')'
-          +' but ship# too different — Trips: '+bestTrip.shipmentNumber
-          +' vs SOA: '+soaRow.shipNum+' (distance '+bestDist+')';
+        result.diagnosis = 'Candidate found (delivery: '+bestTrip.deliveryDate
+          +') but ship# too different: Trips='+bestTrip.shipmentNumber
+          +' SOA='+soaRow.shipNum+' (dist '+bestDist+')';
       }
-
       results.push(result);
     });
   });
 
-  // ── PASS 5: Sequential gap check per truck ──
+  // ══ PASS 5: Sequential gap check per truck ══
   Object.keys(soaByTruck).forEach(function(truck) {
-    var entries = soaByTruck[truck].filter(function(e){ return !isNaN(e.num); });
+    var entries = soaByTruck[truck].filter(function(e){ return !isNaN(e.num) && e.num > 0; });
     entries.sort(function(a,b){ return a.result.soaRow.date.localeCompare(b.result.soaRow.date); });
     for (var i = 1; i < entries.length; i++) {
       var gap = entries[i].num - entries[i-1].num;
       if (gap < 0 && entries[i].result.status !== 'typo' && entries[i].result.status !== 'matched') {
-        if (!entries[i].result.typoFlag) {
-          entries[i].result.typoFlag = {
-            soaNum: entries[i].result.soaRow.shipNum,
-            tripsNum: entries[i].result.soaRow.shipNum,
-            dist: 0, seqFlag: true,
-            seqNote: 'Ship# decreased from '+entries[i-1].num+' to '+entries[i].num+' — possible transposition'
-          };
-          entries[i].result.status = 'typo';
-        }
+        entries[i].result.status = 'typo';
+        entries[i].result.typoFlag = {
+          soaNum: entries[i].result.soaRow.shipNum,
+          tripsNum: entries[i].result.soaRow.shipNum,
+          dist: 0, seqFlag: true,
+          seqNote: 'Ship# decreased '+entries[i-1].num+' → '+entries[i].num+' (possible transposition)'
+        };
       }
     }
   });
 
   return results;
 }
+
 
 
 // ═══ RENDER MATCH RESULTS ═════════════════════════════
@@ -1627,8 +1677,12 @@ function selectBillingDay(dateStr) {
 }
 
 // ═══ SOA MONITOR ══════════════════════════════════════
+var soaCalYear, soaCalMonth, soaCalSelectedDay = null;
+
 function loadSOAData() {
-  document.getElementById('soa-list').innerHTML = '<div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading SOAs...</div>';
+  document.getElementById('soa-list').innerHTML =
+    '<div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading SOAs...</div>';
+
   apiGet(TAB_SOA+'!A2:M').then(function(res) {
     var rows = res.values || [];
     allSOAs = rows.map(function(r, i) {
@@ -1650,26 +1704,191 @@ function loadSOAData() {
       };
     }).filter(function(r){ return r.soaNum; });
 
+    // Init SOA calendar to current month
+    var now = new Date();
+    soaCalYear  = now.getFullYear();
+    soaCalMonth = now.getMonth();
+
     renderSOASummary();
     renderSOACharts();
     renderSOAList();
+    renderSOAReport();
+
+    // Show calendar only if we have SOAs
+    if (allSOAs.length) {
+      document.getElementById('soa-cal-card').style.display = '';
+      renderSOACalendar();
+    }
   }).catch(function(err) {
     document.getElementById('soa-list').innerHTML =
-      '<div class="empty-hint">SOA_Master sheet not found.<br>Upload SOA files first to create it.</div>';
+      '<div class="empty-hint">SOA_Master sheet not found.<br>Upload SOA Excel files to get started.</div>';
     console.error(err);
   });
 }
 
+// ── Parse period string into {from, to} date strings ──
+function parseSoaPeriod(period) {
+  if (!period) return null;
+  // e.g. "Jun. 01 - Jun. 20, 2026" or "June 1-15, 2026" or "2026-06-01 to 2026-06-15"
+  var iso = period.match(/(\d{4}-\d{2}-\d{2})\s*(?:to|-)\s*(\d{4}-\d{2}-\d{2})/);
+  if (iso) return { from: iso[1], to: iso[2] };
+
+  var MONTHS_P = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  // "Jun. 01 - Jun. 20, 2026"
+  var m = period.match(/([A-Za-z]{3})[.,\s]*(\d{1,2})\s*[-–]\s*([A-Za-z]{3})[.,\s]*(\d{1,2}),?\s*(\d{4})/);
+  if (m) {
+    var m1 = MONTHS_P[m[1].toLowerCase()], m2 = MONTHS_P[m[3].toLowerCase()];
+    var yr = parseInt(m[5]);
+    if (m1 !== undefined && m2 !== undefined) {
+      return {
+        from: yr+'-'+pad(m1+1)+'-'+pad(parseInt(m[2])),
+        to:   yr+'-'+pad(m2+1)+'-'+pad(parseInt(m[4]))
+      };
+    }
+  }
+  // "June 1-15, 2026" or "Jun 1-15 2026"
+  var m2p = period.match(/([A-Za-z]{3,})\s+(\d{1,2})\s*[-–]\s*(\d{1,2}),?\s*(\d{4})/);
+  if (m2p) {
+    var mIdx = MONTHS_P[m2p[1].substring(0,3).toLowerCase()];
+    var yr = parseInt(m2p[4]);
+    if (mIdx !== undefined) {
+      return {
+        from: yr+'-'+pad(mIdx+1)+'-'+pad(parseInt(m2p[2])),
+        to:   yr+'-'+pad(mIdx+1)+'-'+pad(parseInt(m2p[3]))
+      };
+    }
+  }
+  return null;
+}
+
+// ── SOA Coverage Calendar ──
+function changeSoaCalMonth(d) {
+  soaCalMonth += d;
+  if (soaCalMonth < 0)  { soaCalMonth = 11; soaCalYear--; }
+  if (soaCalMonth > 11) { soaCalMonth = 0;  soaCalYear++; }
+  soaCalSelectedDay = null;
+  document.getElementById('soa-cal-day-panel').classList.remove('show');
+  renderSOACalendar();
+}
+
+function renderSOACalendar() {
+  document.getElementById('soa-cal-title').textContent = MONTHS[soaCalMonth] + ' ' + soaCalYear;
+
+  // Build day map: date string → array of SOAs covering that date
+  var dayMap = {};
+  allSOAs.forEach(function(soa) {
+    var range = parseSoaPeriod(soa.period);
+    if (!range) return;
+    // Walk from range.from to range.to
+    var cur = new Date(range.from + 'T00:00:00');
+    var end = new Date(range.to   + 'T00:00:00');
+    while (cur <= end) {
+      var ds = fmtDate(cur);
+      var parts = ds.split('-');
+      if (parseInt(parts[0]) === soaCalYear && parseInt(parts[1])-1 === soaCalMonth) {
+        if (!dayMap[parseInt(parts[2])]) dayMap[parseInt(parts[2])] = [];
+        dayMap[parseInt(parts[2])].push(soa);
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+
+  var days  = new Date(soaCalYear, soaCalMonth+1, 0).getDate();
+  var first = new Date(soaCalYear, soaCalMonth, 1).getDay();
+
+  var html = DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
+  for (var i = 0; i < first; i++) html += '<div class="cal-day other-month"></div>';
+
+  for (var d = 1; d <= days; d++) {
+    var dateStr = soaCalYear+'-'+pad(soaCalMonth+1)+'-'+pad(d);
+    var soasOnDay = dayMap[d] || [];
+    var cls = 'cal-day';
+    if (dateStr === todayStr)        cls += ' today';
+    if (dateStr === soaCalSelectedDay) cls += ' selected';
+
+    var inner = '<div class="cal-day-num">'+d+'</div>';
+    if (soasOnDay.length) {
+      // Color based on status of SOAs on this day
+      var hasPaid    = soasOnDay.some(function(s){ return s.status==='Paid'; });
+      var hasPartial = soasOnDay.some(function(s){ return s.status==='Partial'; });
+      var hasPending = soasOnDay.some(function(s){ return s.status==='Pending'; });
+      if (hasPaid && !hasPartial && !hasPending)       cls += ' has-billed';
+      else if (hasPartial || (hasPaid && hasPending))  cls += ' has-mixed';
+      else                                              cls += ' has-unbilled';
+
+      // Show SOA number pill(s)
+      var pills = '<div class="cal-names">';
+      soasOnDay.slice(0,2).forEach(function(s){
+        var bg = s.status==='Paid'?'var(--green)':s.status==='Partial'?'var(--orange)':'var(--blue)';
+        pills += '<div class="cal-name-pill" style="background:'+bg+';color:#fff">'+s.soaNum.split('_')[1]+'</div>';
+      });
+      if (soasOnDay.length > 2) {
+        pills += '<div class="cal-name-pill" style="background:var(--text3);color:#fff">+'+(soasOnDay.length-2)+'</div>';
+      }
+      pills += '</div>';
+      inner += pills;
+    }
+
+    html += '<div class="'+cls+'" onclick="selectSoaCalDay(\''+dateStr+'\')" style="min-height:52px;height:auto;max-height:none">'
+      + inner + '</div>';
+      + inner + '</div>';
+  }
+  document.getElementById('soa-cal-grid').innerHTML = html;
+}
+
+function selectSoaCalDay(dateStr) {
+  soaCalSelectedDay = dateStr;
+  renderSOACalendar();
+
+  // Find SOAs covering this date
+  var soasOnDay = allSOAs.filter(function(soa) {
+    var range = parseSoaPeriod(soa.period);
+    if (!range) return false;
+    return dateStr >= range.from && dateStr <= range.to;
+  });
+
+  var d = new Date(dateStr + 'T00:00:00');
+  var label = d.toLocaleDateString('en-PH',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('soa-cal-day-title').textContent = label + ' — ' + soasOnDay.length + ' SOA(s)';
+
+  var panel = document.getElementById('soa-cal-day-panel');
+  document.getElementById('soa-cal-day-list').innerHTML = !soasOnDay.length
+    ? '<div class="empty-hint">No SOAs cover this date</div>'
+    : soasOnDay.map(function(s) {
+        var pct = s.grandTotal > 0 ? Math.round(s.amtReceived/s.grandTotal*100) : 0;
+        var borderColor = s.status==='Paid'?'var(--green)':s.status==='Partial'?'var(--orange)':'var(--blue)';
+        return '<div style="background:var(--bg);border-radius:12px;box-shadow:var(--neu-xs);'
+          +'padding:12px 14px;margin-bottom:8px;border-left:3px solid '+borderColor+';cursor:pointer"'
+          +' onclick="openSOADetail('+s.rowIndex+')">'
+          +'<div style="display:flex;justify-content:space-between;align-items:center">'
+          +'<span style="font-size:13px;font-weight:700;color:var(--text)">SOA '+s.soaNum+'</span>'
+          +'<span class="soa-status-badge '+(s.status==='Paid'?'paid':s.status==='Partial'?'partial':'pending')+'">'+s.status+'</span>'
+          +'</div>'
+          +'<div style="font-size:11px;color:var(--text2);margin-top:2px">'+(s.period||'—')+'</div>'
+          +'<div style="font-size:11px;margin-top:6px;display:flex;justify-content:space-between">'
+          +'<span style="color:var(--text2)">Billed: <strong>'+formatCurrencyShort(s.grandTotal)+'</strong></span>'
+          +'<span style="color:var(--green)">Received: <strong>'+formatCurrencyShort(s.amtReceived)+'</strong></span>'
+          +'<span style="color:'+(pct===100?'var(--green)':pct>0?'var(--orange)':'var(--text3)')+'"><strong>'+pct+'%</strong></span>'
+          +'</div>'
+          +'<div class="prog-bar" style="margin:6px 0 0"><div class="prog-fill" style="width:'+pct+'%;background:'
+          +(s.status==='Paid'?'var(--green)':s.status==='Partial'?'var(--orange)':'var(--blue)')+'"></div></div>'
+          +'</div>';
+      }).join('');
+
+  panel.classList.add('show');
+  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+}
+
+// ── Summary stats (4-box grid) ──
 function renderSOASummary() {
   var totalBilled   = allSOAs.reduce(function(s,r){return s+r.grandTotal;},0);
   var totalReceived = allSOAs.reduce(function(s,r){return s+r.amtReceived;},0);
   var totalPending  = totalBilled - totalReceived;
   var totalVAT      = allSOAs.reduce(function(s,r){return s+r.vatAmt;},0);
-  var totalNet      = allSOAs.reduce(function(s,r){return s+r.netAmount;},0);
   var paidCount     = allSOAs.filter(function(r){return r.status==='Paid';}).length;
   var partialCount  = allSOAs.filter(function(r){return r.status==='Partial';}).length;
   var pendingCount  = allSOAs.filter(function(r){return r.status==='Pending';}).length;
-  var collectionPct = totalBilled > 0 ? (totalReceived/totalBilled*100).toFixed(1) : '0.0';
+  var pct = totalBilled > 0 ? (totalReceived/totalBilled*100).toFixed(1) : '0.0';
 
   document.getElementById('soa-summary-stats').innerHTML =
     '<div class="stat-box"><div class="stat-label">Total Billed</div>'
@@ -1678,40 +1897,38 @@ function renderSOASummary() {
 
     +'<div class="stat-box"><div class="stat-label">Total Collected</div>'
     +'<div class="stat-val green" style="font-size:16px">'+formatCurrencyShort(totalReceived)+'</div>'
-    +'<div class="stat-sub">'+collectionPct+'% of billed</div></div>'
+    +'<div class="stat-sub">'+pct+'% of billed</div></div>'
 
     +'<div class="stat-box"><div class="stat-label">Outstanding</div>'
     +'<div class="stat-val '+(totalPending>0?'orange':'green')+'" style="font-size:16px">'+formatCurrencyShort(totalPending)+'</div>'
     +'<div class="stat-sub">'+pendingCount+' pending · '+partialCount+' partial</div></div>'
 
-    +'<div class="stat-box"><div class="stat-label">Net (ex-VAT)</div>'
-    +'<div class="stat-val" style="font-size:16px">'+formatCurrencyShort(totalNet)+'</div>'
-    +'<div class="stat-sub">'+paidCount+' paid SOAs</div></div>';
+    +'<div class="stat-box"><div class="stat-label">Paid SOAs</div>'
+    +'<div class="stat-val green" style="font-size:16px">'+paidCount+'</div>'
+    +'<div class="stat-sub">of '+allSOAs.length+' total</div></div>';
 }
 
+// ── Charts ──
 function renderSOACharts() {
   var chartsEl = document.getElementById('soa-charts');
   if (!chartsEl || !allSOAs.length) return;
 
-  // ── Chart 1: Collection Donut ──
   var totalBilled   = allSOAs.reduce(function(s,r){return s+r.grandTotal;},0);
   var totalReceived = allSOAs.reduce(function(s,r){return s+r.amtReceived;},0);
-  var totalPending  = Math.max(0, totalBilled - totalReceived);
   var pct = totalBilled > 0 ? totalReceived/totalBilled : 0;
-  var angle = pct * 360;
+  var paid = allSOAs.filter(function(r){return r.status==='Paid';}).length;
+  var partial = allSOAs.filter(function(r){return r.status==='Partial';}).length;
+  var pending = allSOAs.filter(function(r){return r.status==='Pending';}).length;
 
-  // ── Chart 2: Monthly Billed vs Received ──
-  // Parse month from period field (e.g. "Jun. 01 - Jun. 20, 2026")
+  // Monthly data
   var monthMap = {};
   allSOAs.forEach(function(r) {
-    // Try to extract year-month from period or soaNum
     var ym = '';
     if (r.period) {
-      var mMatch = r.period.match(/(\w{3})[.,\s]+\d+[^,]*,?\s*(\d{4})/);
-      if (mMatch) {
-        var monthNames = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-        var m = monthNames[mMatch[1]];
-        if (m !== undefined) ym = mMatch[2]+'-'+pad(m+1);
+      var mm = r.period.match(/([A-Za-z]{3})[.,\s]*\d+[^,]*,?\s*(\d{4})/);
+      if (mm) {
+        var mIdx = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11}[mm[1].substring(0,3)];
+        if (mIdx !== undefined) ym = mm[2]+'-'+pad(mIdx+1);
       }
     }
     if (!ym && r.dateSent) ym = r.dateSent.substring(0,7);
@@ -1722,141 +1939,78 @@ function renderSOACharts() {
   });
   var months = Object.values(monthMap).filter(function(m){return m.label!=='Unknown';})
     .sort(function(a,b){return a.label.localeCompare(b.label);}).slice(-6);
-
   var maxVal = months.reduce(function(mx,m){return Math.max(mx,m.billed);},1);
 
-  // ── Chart 3: Status breakdown ──
-  var paid    = allSOAs.filter(function(r){return r.status==='Paid';}).length;
-  var partial = allSOAs.filter(function(r){return r.status==='Partial';}).length;
-  var pending = allSOAs.filter(function(r){return r.status==='Pending';}).length;
-  var total   = allSOAs.length;
-
   chartsEl.innerHTML =
-    // ── Row 1: Donut + Status pills ──
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">'
-
     // Donut
     +'<div class="neu-card" style="padding:16px;display:flex;flex-direction:column;align-items:center">'
-    +'<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:12px">Collection Rate</div>'
+    +'<div class="card-title" style="margin-bottom:10px">Collection Rate</div>'
     +buildDonut(pct, formatCurrencyShort(totalReceived), (pct*100).toFixed(0)+'% collected')
     +'</div>'
-
-    // Status breakdown
+    // Status bars
     +'<div class="neu-card" style="padding:16px">'
-    +'<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:12px">SOA Status</div>'
-    +buildStatusBars(paid, partial, pending, total)
+    +'<div class="card-title" style="margin-bottom:10px">SOA Status</div>'
+    +buildStatusBars(paid, partial, pending, allSOAs.length)
     +'</div>'
     +'</div>'
-
-    // ── Row 2: Monthly bar chart ──
+    // Monthly bar chart
     +(months.length
       ? '<div class="neu-card" style="padding:16px;margin-bottom:14px">'
-        +'<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:16px">Monthly Billed vs Collected</div>'
+        +'<div class="card-title" style="margin-bottom:14px">Monthly Billed vs Collected</div>'
         +buildBarChart(months, maxVal)
         +'<div style="display:flex;gap:12px;margin-top:10px;justify-content:center">'
-        +'<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)">'
-        +'<div style="width:10px;height:10px;border-radius:3px;background:var(--blue)"></div>Billed</div>'
-        +'<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)">'
-        +'<div style="width:10px;height:10px;border-radius:3px;background:var(--green)"></div>Collected</div>'
+        +'<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:var(--blue)"></div>Billed</div>'
+        +'<div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)"><div style="width:10px;height:10px;border-radius:3px;background:var(--green)"></div>Collected</div>'
         +'</div></div>'
-      : '')
-
-    // ── Row 3: VAT + Deductions summary ──
-    + buildFinancialSummary();
+      : '');
 }
 
 function buildDonut(pct, centerLabel, subLabel) {
-  var r = 42, cx = 56, cy = 56, stroke = 10;
-  var circ = 2 * Math.PI * r;
-  var filled = circ * pct;
-  var remaining = circ - filled;
-  // SVG donut
+  var r=42,cx=56,cy=56,stroke=10;
+  var circ=2*Math.PI*r, filled=circ*pct, remaining=circ-filled;
   return '<svg width="112" height="112" viewBox="0 0 112 112">'
-    // Background circle
     +'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="var(--bg2)" stroke-width="'+stroke+'"/>'
-    // Collected arc
-    +'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none"'
-    +' stroke="var(--green)" stroke-width="'+stroke+'"'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="var(--green)" stroke-width="'+stroke+'"'
     +' stroke-dasharray="'+filled.toFixed(1)+' '+remaining.toFixed(1)+'"'
-    +' stroke-linecap="round"'
-    +' transform="rotate(-90 '+cx+' '+cy+')"'
-    +' style="transition:stroke-dasharray 0.5s ease"/>'
-    // Center text
-    +'<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" font-family="Inter,sans-serif"'
-    +' font-size="11" font-weight="700" fill="var(--text)">'+centerLabel+'</text>'
-    +'<text x="'+cx+'" y="'+(cy+10)+'" text-anchor="middle" font-family="Inter,sans-serif"'
-    +' font-size="8" fill="var(--text3)">'+subLabel+'</text>'
+    +' stroke-linecap="round" transform="rotate(-90 '+cx+' '+cy+')" style="transition:stroke-dasharray 0.5s"/>'
+    +'<text x="'+cx+'" y="'+(cy-4)+'" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="var(--text)">'+centerLabel+'</text>'
+    +'<text x="'+cx+'" y="'+(cy+10)+'" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="var(--text3)">'+subLabel+'</text>'
     +'</svg>';
 }
 
 function buildStatusBars(paid, partial, pending, total) {
   if (!total) return '<div class="empty-hint" style="padding:20px">No data</div>';
-  function bar(label, count, color) {
-    var pct = total > 0 ? (count/total*100).toFixed(0) : 0;
+  function bar(lbl, cnt, color) {
+    var p = total>0?(cnt/total*100).toFixed(0):0;
     return '<div style="margin-bottom:10px">'
       +'<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">'
-      +'<span style="color:var(--text2)">'+label+'</span>'
-      +'<span style="font-weight:700;color:'+color+'">'+count+' ('+pct+'%)</span>'
-      +'</div>'
+      +'<span style="color:var(--text2)">'+lbl+'</span><span style="font-weight:700;color:'+color+'">'+cnt+' ('+p+'%)</span></div>'
       +'<div style="background:var(--bg2);border-radius:6px;height:7px;overflow:hidden">'
-      +'<div style="background:'+color+';width:'+pct+'%;height:100%;border-radius:6px;transition:width 0.5s"></div>'
+      +'<div style="background:'+color+';width:'+p+'%;height:100%;border-radius:6px;transition:width 0.5s"></div>'
       +'</div></div>';
   }
-  return bar('✅ Paid', paid, 'var(--green)')
-    + bar('🟡 Partial', partial, 'var(--orange)')
-    + bar('🔵 Pending', pending, 'var(--blue)')
-    + '<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:4px">Total: '+total+' SOAs</div>';
+  return bar('✅ Paid',paid,'var(--green)')+bar('🟡 Partial',partial,'var(--orange)')+bar('🔵 Pending',pending,'var(--blue)')
+    +'<div style="font-size:10px;color:var(--text3);text-align:right;margin-top:4px">Total: '+total+' SOAs</div>';
 }
 
 function buildBarChart(months, maxVal) {
-  var barW = Math.max(24, Math.floor(260 / months.length) - 6);
-  var chartH = 80;
-  var html = '<div style="display:flex;align-items:flex-end;gap:4px;height:'+(chartH+24)+'px;overflow-x:auto">';
+  var barW = Math.max(22, Math.floor(240/months.length)-4), chartH = 72;
+  var html = '<div style="display:flex;align-items:flex-end;gap:4px;height:'+(chartH+20)+'px;overflow-x:auto">';
   months.forEach(function(m) {
-    var billedH  = Math.round((m.billed/maxVal)   * chartH);
-    var recvdH   = Math.round((m.received/maxVal)  * chartH);
-    var lbl = m.label.length === 7 ? m.label.slice(0,4).slice(2)+'-'+m.label.slice(5) : m.label;
-    html += '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;width:'+(barW*2+4)+'px">'
+    var bH=Math.max(2,Math.round((m.billed/maxVal)*chartH));
+    var rH=Math.max(m.received>0?2:0,Math.round((m.received/maxVal)*chartH));
+    var lbl = m.label.length===7 ? m.label.slice(2,4)+'-'+m.label.slice(5) : m.label;
+    html+='<div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:'+(barW*2+4)+'px">'
       +'<div style="display:flex;align-items:flex-end;gap:2px;height:'+chartH+'px">'
-      // Billed bar
-      +'<div title="Billed: '+formatCurrency(m.billed)+'" style="width:'+barW+'px;height:'+billedH+'px;background:var(--blue);border-radius:4px 4px 0 0;opacity:0.8;min-height:2px"></div>'
-      // Received bar
-      +'<div title="Received: '+formatCurrency(m.received)+'" style="width:'+barW+'px;height:'+recvdH+'px;background:var(--green);border-radius:4px 4px 0 0;min-height:'+(m.received>0?'2':'0')+'px"></div>'
-      +'</div>'
-      +'<div style="font-size:8px;color:var(--text3);text-align:center;margin-top:2px">'+lbl+'</div>'
-      +'</div>';
+      +'<div title="Billed: '+formatCurrency(m.billed)+'" style="width:'+barW+'px;height:'+bH+'px;background:var(--blue);border-radius:3px 3px 0 0;opacity:0.8"></div>'
+      +'<div title="Received: '+formatCurrency(m.received)+'" style="width:'+barW+'px;height:'+rH+'px;background:var(--green);border-radius:3px 3px 0 0"></div>'
+      +'</div><div style="font-size:8px;color:var(--text3);text-align:center;margin-top:3px">'+lbl+'</div></div>';
   });
-  html += '</div>';
-  return html;
+  return html+'</div>';
 }
 
-function buildFinancialSummary() {
-  var totalBilled    = allSOAs.reduce(function(s,r){return s+r.grandTotal;},0);
-  var totalVAT       = allSOAs.reduce(function(s,r){return s+r.vatAmt;},0);
-  var totalNet       = allSOAs.reduce(function(s,r){return s+r.netAmount;},0);
-  var totalDeduct    = allSOAs.reduce(function(s,r){return s+r.deductions;},0);
-  var totalReceived  = allSOAs.reduce(function(s,r){return s+r.amtReceived;},0);
-  var actualNet      = totalReceived - totalDeduct;
-
-  return '<div class="neu-card" style="padding:16px;margin-bottom:14px">'
-    +'<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:14px">Financial Breakdown</div>'
-    +finRow('Gross Billed', formatCurrency(totalBilled), 'var(--text)')
-    +finRow('VAT 12%', '−'+formatCurrency(totalVAT), 'var(--text3)')
-    +finRow('Net (excl. VAT)', formatCurrency(totalNet), 'var(--text)')
-    +'<div style="border-top:1px solid rgba(0,0,0,0.06);margin:8px 0"></div>'
-    +finRow('Total Received', formatCurrency(totalReceived), 'var(--green)')
-    +finRow('Total Deductions', '−'+formatCurrency(totalDeduct), 'var(--red)')
-    +finRow('Net Cash In', formatCurrency(actualNet), actualNet>=totalNet*0.9?'var(--green)':'var(--orange)')
-    +'</div>';
-}
-
-function finRow(label, val, color) {
-  return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04)">'
-    +'<span style="font-size:12px;color:var(--text2)">'+label+'</span>'
-    +'<span style="font-size:13px;font-weight:700;color:'+color+'">'+val+'</span>'
-    +'</div>';
-}
-
+// ── SOA List (per SOA, not per shipment) ──
 function renderSOAList() {
   var filterStatus = document.getElementById('soa-filter-status').value;
   var source = allSOAs.filter(function(r){ return !filterStatus || r.status===filterStatus; });
@@ -1867,52 +2021,110 @@ function renderSOAList() {
     return;
   }
 
-  // Sort: Pending first, then Partial, then Paid; within each by date desc
   source.sort(function(a,b){
-    var ord = {Pending:0, Partial:1, Paid:2};
-    var oa = ord[a.status]||99, ob = ord[b.status]||99;
-    return oa !== ob ? oa - ob : b.soaNum.localeCompare(a.soaNum);
+    var ord={Pending:0,Partial:1,Paid:2};
+    var oa=ord[a.status]||99, ob=ord[b.status]||99;
+    return oa!==ob?oa-ob:b.soaNum.localeCompare(a.soaNum);
   });
 
   document.getElementById('soa-list').innerHTML = source.map(function(r) {
-    var outstanding = r.grandTotal - r.amtReceived - r.deductions;
-    var paidPct     = r.grandTotal > 0 ? Math.round(r.amtReceived/r.grandTotal*100) : 0;
-    var statusClass = r.status==='Paid' ? 'paid' : r.status==='Partial' ? 'partial' : '';
-    var badgeCls    = r.status==='Paid' ? 'paid' : r.status==='Partial' ? 'partial' : 'pending';
-    var borderColor = r.status==='Paid' ? 'var(--green)' : r.status==='Partial' ? 'var(--orange)' : 'var(--blue)';
+    var outstanding = Math.max(0, r.grandTotal - r.amtReceived - r.deductions);
+    var pct = r.grandTotal>0 ? Math.round(r.amtReceived/r.grandTotal*100) : 0;
+    var borderColor = r.status==='Paid'?'var(--green)':r.status==='Partial'?'var(--orange)':'var(--blue)';
+    var badgeCls    = r.status==='Paid'?'paid':r.status==='Partial'?'partial':'pending';
 
-    return '<div class="soa-card '+statusClass+'" onclick="openSOADetail('+r.rowIndex+')"'
-      +' style="border-left-color:'+borderColor+'">'
+    // Parse period for display
+    var range = parseSoaPeriod(r.period);
+    var periodDisplay = range
+      ? range.from + ' → ' + range.to
+      : (r.period || '—');
+
+    return '<div class="soa-card '+(r.status==='Paid'?'paid':r.status==='Partial'?'partial':'')+'"'
+      +' onclick="openSOADetail('+r.rowIndex+')" style="border-left-color:'+borderColor+'">'
       +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
       +'<div>'
       +'<div class="soa-num">SOA '+r.soaNum+'</div>'
-      +'<div class="soa-period">'+(r.period||'—')+(r.totalTrips?' · '+r.totalTrips+' trips':'')+'</div>'
+      +'<div class="soa-period">'+periodDisplay+(r.totalTrips?' · '+r.totalTrips+' trips':'')+'</div>'
       +'</div>'
       +'<span class="soa-status-badge '+badgeCls+'">'+r.status+'</span>'
       +'</div>'
-      // Amount boxes
       +'<div class="soa-amounts">'
-      +'<div class="soa-amount-box"><div class="soa-amount-label">Billed</div>'
-      +'<div class="soa-amount-val">'+formatCurrencyShort(r.grandTotal)+'</div></div>'
-      +'<div class="soa-amount-box"><div class="soa-amount-label">Received</div>'
-      +'<div class="soa-amount-val green">'+formatCurrencyShort(r.amtReceived)+'</div></div>'
-      +'<div class="soa-amount-box"><div class="soa-amount-label">Outstanding</div>'
-      +'<div class="soa-amount-val '+(outstanding>0?'orange':'green')+'">'+formatCurrencyShort(Math.max(0,outstanding))+'</div></div>'
+      +'<div class="soa-amount-box"><div class="soa-amount-label">Billed</div><div class="soa-amount-val">'+formatCurrencyShort(r.grandTotal)+'</div></div>'
+      +'<div class="soa-amount-box"><div class="soa-amount-label">Received</div><div class="soa-amount-val green">'+formatCurrencyShort(r.amtReceived)+'</div></div>'
+      +'<div class="soa-amount-box"><div class="soa-amount-label">Outstanding</div><div class="soa-amount-val '+(outstanding>0?'orange':'green')+'">'+formatCurrencyShort(outstanding)+'</div></div>'
       +'</div>'
-      // Progress bar
-      +'<div class="prog-bar"><div class="prog-fill" style="width:'+paidPct+'%;background:'
+      +'<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%;background:'
       +(r.status==='Paid'?'var(--green)':r.status==='Partial'?'var(--orange)':'var(--blue)')+'"></div></div>'
-      // Footer
       +'<div class="soa-footer">'
       +'<span style="font-size:10px;color:var(--text3)">'
-      +(r.dateReceived?'Received: '+r.dateReceived:(r.dateSent?'Sent: '+r.dateSent:'Not yet submitted'))
+      +(r.dateReceived?'Received: '+r.dateReceived:r.dateSent?'Sent: '+r.dateSent:'Not yet submitted')
       +'</span>'
-      +'<span style="font-size:11px;font-weight:700;color:'+(paidPct===100?'var(--green)':paidPct>0?'var(--orange)':'var(--text3)')+'">'+paidPct+'% paid</span>'
+      +'<span style="font-size:11px;font-weight:700;color:'+(pct===100?'var(--green)':pct>0?'var(--orange)':'var(--text3)')+'">'+pct+'% paid</span>'
       +'</div>'
       +'</div>';
   }).join('');
 }
 
+// ── Financial Report Section ──
+function renderSOAReport() {
+  var sec = document.getElementById('soa-report-section');
+  if (!sec || !allSOAs.length) return;
+
+  var totalBilled   = allSOAs.reduce(function(s,r){return s+r.grandTotal;},0);
+  var totalVAT      = allSOAs.reduce(function(s,r){return s+r.vatAmt;},0);
+  var totalNet      = allSOAs.reduce(function(s,r){return s+r.netAmount;},0);
+  var totalReceived = allSOAs.reduce(function(s,r){return s+r.amtReceived;},0);
+  var totalDeduct   = allSOAs.reduce(function(s,r){return s+r.deductions;},0);
+  var netCashIn     = totalReceived - totalDeduct;
+  var outstanding   = totalBilled - totalReceived;
+
+  sec.style.display = '';
+  sec.innerHTML =
+    '<div class="neu-card" style="padding:16px;margin-bottom:14px">'
+    +'<div class="card-title" style="margin-bottom:16px">📊 Financial Report</div>'
+    // Totals breakdown
+    +finRow('Gross Billed',      formatCurrency(totalBilled),   'var(--text)')
+    +finRow('VAT 12% (included)',formatCurrency(totalVAT),      'var(--text3)')
+    +finRow('Net excl. VAT',     formatCurrency(totalNet),      'var(--text)')
+    +'<div style="border-top:1px solid rgba(0,0,0,0.07);margin:10px 0"></div>'
+    +finRow('Total Received',    formatCurrency(totalReceived), 'var(--green)')
+    +finRow('Total Deductions',  '('+formatCurrency(totalDeduct)+')', 'var(--red)')
+    +finRow('Net Cash In',       formatCurrency(netCashIn),
+            netCashIn>=totalNet*0.9?'var(--green)':'var(--orange)')
+    +finRow('Still Outstanding', formatCurrency(Math.max(0,outstanding)),
+            outstanding>0?'var(--red)':'var(--green)')
+    +'<div style="border-top:1px solid rgba(0,0,0,0.07);margin:10px 0"></div>'
+    // Per-status breakdown
+    +'<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">By Status</div>'
+    +['Paid','Partial','Pending'].map(function(st) {
+        var group = allSOAs.filter(function(r){return r.status===st;});
+        if (!group.length) return '';
+        var gBilled = group.reduce(function(s,r){return s+r.grandTotal;},0);
+        var gRecv   = group.reduce(function(s,r){return s+r.amtReceived;},0);
+        var color   = st==='Paid'?'var(--green)':st==='Partial'?'var(--orange)':'var(--blue)';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;'
+          +'padding:8px 10px;margin-bottom:6px;background:var(--bg2);border-radius:10px;'
+          +'border-left:3px solid '+color+'">'
+          +'<div>'
+          +'<div style="font-size:12px;font-weight:700;color:var(--text)">'+st+' ('+group.length+' SOAs)</div>'
+          +'<div style="font-size:10px;color:var(--text3)">Billed: '+formatCurrencyShort(gBilled)+'</div>'
+          +'</div>'
+          +'<div style="text-align:right">'
+          +'<div style="font-size:13px;font-weight:700;color:'+color+'">'+formatCurrencyShort(gRecv)+'</div>'
+          +'<div style="font-size:10px;color:var(--text3)">received</div>'
+          +'</div></div>';
+      }).join('')
+    +'</div>';
+}
+
+function finRow(label, val, color) {
+  return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(0,0,0,0.04)">'
+    +'<span style="font-size:12px;color:var(--text2)">'+label+'</span>'
+    +'<span style="font-size:13px;font-weight:700;color:'+color+'">'+val+'</span>'
+    +'</div>';
+}
+
+// ── SOA Detail Sheet ──
 function openSOADetail(rowIndex) {
   currentSOA = allSOAs.find(function(r){ return r.rowIndex===rowIndex; });
   if (!currentSOA) return;
@@ -1921,27 +2133,25 @@ function openSOADetail(rowIndex) {
   document.getElementById('soa-sheet-sub').textContent   = r.period || 'No period specified';
 
   var outstanding = r.grandTotal - r.amtReceived - r.deductions;
-  var body = document.getElementById('soa-sheet-body');
-  body.innerHTML =
-    // Financial summary (read-only)
-    '<div class="neu-card" style="padding:14px;margin-bottom:14px">'
+  var pct = r.grandTotal>0 ? Math.round(r.amtReceived/r.grandTotal*100) : 0;
+
+  document.getElementById('soa-sheet-body').innerHTML =
+    // Mini donut
+    '<div style="display:flex;justify-content:center;margin-bottom:16px">'
+    +(r.grandTotal>0?buildDonut(r.amtReceived/r.grandTotal,formatCurrencyShort(r.amtReceived),pct+'% collected'):'')
+    +'</div>'
+    // Read-only summary
+    +'<div class="neu-card" style="padding:14px;margin-bottom:14px">'
     +'<div class="card-title">Financial Summary</div>'
-    +finRow('Gross Amount',   formatCurrency(r.grandTotal),  'var(--text)')
-    +finRow('VAT 12%',        formatCurrency(r.vatAmt),      'var(--text3)')
-    +finRow('Net (excl. VAT)',formatCurrency(r.netAmount),   'var(--text)')
-    +finRow('Deductions',     '('+formatCurrency(r.deductions)+')', 'var(--red)')
-    +finRow('Outstanding',    formatCurrency(Math.max(0,outstanding)),
+    +finRow('Gross Amount',     formatCurrency(r.grandTotal),  'var(--text)')
+    +finRow('VAT 12%',          formatCurrency(r.vatAmt),      'var(--text3)')
+    +finRow('Net (excl. VAT)',  formatCurrency(r.netAmount),   'var(--text)')
+    +finRow('Amount Received',  formatCurrency(r.amtReceived), 'var(--green)')
+    +finRow('Deductions',       '('+formatCurrency(r.deductions)+')', 'var(--red)')
+    +finRow('Outstanding',      formatCurrency(Math.max(0,outstanding)),
             outstanding>0?'var(--orange)':'var(--green)')
     +'</div>'
-
-    // Mini donut for this SOA
-    +'<div style="display:flex;justify-content:center;margin-bottom:14px">'
-    +(r.grandTotal>0 ? buildDonut(r.amtReceived/r.grandTotal,
-        formatCurrencyShort(r.amtReceived),
-        Math.round(r.amtReceived/r.grandTotal*100)+'% collected') : '')
-    +'</div>'
-
-    // Editable collection fields
+    // Editable fields
     +'<div class="card-title">Update Collection</div>'
     +'<div class="fg"><label class="fl">Status</label>'
     +'<select class="fi" id="soa-edit-status">'
@@ -1952,7 +2162,9 @@ function openSOADetail(rowIndex) {
     +'<div class="fg"><label class="fl">Date Submitted to Client</label>'
     +'<input class="fi" type="date" id="soa-edit-sent" value="'+(r.dateSent||'')+'"></div>'
     +'<div class="fg"><label class="fl">Amount Received (₱)</label>'
-    +'<input class="fi" type="number" id="soa-edit-received" value="'+(r.amtReceived||'')+'"></div>'
+    +'<input class="fi" type="number" id="soa-edit-received" value="'+(r.amtReceived||'')+'" '
+    +'placeholder="0.00" oninput="previewSOAReceived(this)"></div>'
+    +'<div id="soa-recv-preview" style="font-size:10px;color:var(--blue);margin-top:-10px;margin-bottom:14px;display:none"></div>'
     +'<div class="fg"><label class="fl">Date Received / OR Date</label>'
     +'<input class="fi" type="date" id="soa-edit-date-received" value="'+(r.dateReceived||'')+'"></div>'
     +'<div class="fg"><label class="fl">Deductions (₱)</label>'
@@ -1969,6 +2181,18 @@ function openSOADetail(rowIndex) {
   document.getElementById('soa-sheet').classList.add('open');
 }
 
+// Live preview of received amount vs billed
+function previewSOAReceived(input) {
+  if (!currentSOA) return;
+  var val = parseFloat(input.value) || 0;
+  var outstanding = currentSOA.grandTotal - val;
+  var pct = currentSOA.grandTotal > 0 ? (val/currentSOA.grandTotal*100).toFixed(1) : 0;
+  var prev = document.getElementById('soa-recv-preview');
+  if (!prev) return;
+  prev.style.display = val > 0 ? '' : 'none';
+  prev.textContent = pct+'% of billed · Outstanding: '+formatCurrencyShort(Math.max(0,outstanding));
+}
+
 function saveSOAEdit() {
   if (!currentSOA) return;
   var r = currentSOA;
@@ -1980,16 +2204,23 @@ function saveSOAEdit() {
   var orNumber     = document.getElementById('soa-edit-or').value;
   var notes        = document.getElementById('soa-edit-notes').value;
 
+  // Auto-set status to Paid if received >= billed
+  if (amtReceived >= r.grandTotal && r.grandTotal > 0) status = 'Paid';
+  else if (amtReceived > 0) status = document.getElementById('soa-edit-status').value;
+
   var row = [r.soaNum, r.period, r.totalTrips, r.grandTotal, r.vatAmt, r.netAmount,
              dateSent, amtReceived, dateReceived, status, deductions, orNumber, notes];
   showSaving('Updating SOA...');
   apiUpdate(TAB_SOA+'!A'+r.rowIndex+':M'+r.rowIndex, [row]).then(function() {
     hideSaving();
-    Object.assign(r, {status, dateSent, amtReceived, dateReceived, deductions, orNumber, notes});
+    Object.assign(r, {status:status, dateSent:dateSent, amtReceived:amtReceived,
+                      dateReceived:dateReceived, deductions:deductions, orNumber:orNumber, notes:notes});
     closeSOASheet();
     renderSOASummary();
     renderSOACharts();
     renderSOAList();
+    renderSOAReport();
+    renderSOACalendar();
     showToast('✅ SOA updated!');
   }).catch(function(err){ hideSaving(); showToast('❌ Save failed'); console.error(err); });
 }
