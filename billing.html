@@ -1512,9 +1512,54 @@ function doCommit() {
     });
   }
 
-  // ── Step 3: Append SOA Master rows (single call) ──
+  // ── Step 3: Append SOA Masters rows — auto-create sheet if missing ──
   function appendSOAMaster() {
-    return soaRows.length ? apiAppend(TAB_SOA+'!A:M', soaRows) : Promise.resolve();
+    if (!soaRows.length) return Promise.resolve();
+
+    // Try append; if 400 (sheet doesn't exist) → create it, then retry once
+    return apiAppend(TAB_SOA+'!A:M', soaRows)
+      .catch(function(err) {
+        console.log('SOA append error (will try to create sheet):', err.message);
+        document.getElementById('saving-text').textContent = 'Creating SOA Masters sheet...';
+        return createSOAMastersSheet().then(function() {
+          document.getElementById('saving-text').textContent = 'Step 3/3: Saving SOA records (retry)...';
+          return apiAppend(TAB_SOA+'!A:M', soaRows);
+        });
+      });
+  }
+
+  // Create the SOA Masters tab via Sheets batchUpdate addSheet request
+  function createSOAMastersSheet() {
+    return fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + ':batchUpdate',
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requests: [{ addSheet: { properties: {
+            title: TAB_SOA,
+            gridProperties: { rowCount: 1000, columnCount: 13 }
+          }}}]
+        })
+      }
+    ).then(function(r) {
+      return r.json().then(function(data) {
+        // "already exists" is fine — just continue
+        if (!r.ok) {
+          var msg = (data.error && data.error.message) || '';
+          if (msg.toLowerCase().indexOf('already exists') > -1) return {};
+          throw new Error('Create sheet failed: ' + msg);
+        }
+        return data;
+      });
+    }).then(function() {
+      // Write header row
+      return apiUpdate(TAB_SOA+'!A1:M1', [[
+        'SOA#','Period','Total Trips','Grand Total','VAT','Net Amount',
+        'Date Sent','Amount Received','Date Received','Status',
+        'Deductions','OR Number','Notes'
+      ]]);
+    });
   }
 
   // ── Execute steps sequentially to avoid quota issues ──
@@ -1695,7 +1740,7 @@ function loadSOAData() {
   document.getElementById('soa-list').innerHTML =
     '<div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading SOAs...</div>';
 
-  apiGet(TAB_SOA+'!A2:M').then(function(res) {
+  apiGet("'" + TAB_SOA + "'!A2:M").then(function(res) {
     var rows = res.values || [];
     allSOAs = rows.map(function(r, i) {
       return {
@@ -2222,7 +2267,7 @@ function saveSOAEdit() {
   var row = [r.soaNum, r.period, r.totalTrips, r.grandTotal, r.vatAmt, r.netAmount,
              dateSent, amtReceived, dateReceived, status, deductions, orNumber, notes];
   showSaving('Updating SOA...');
-  apiUpdate(TAB_SOA+'!A'+r.rowIndex+':M'+r.rowIndex, [row]).then(function() {
+  apiUpdate("'" + TAB_SOA + "'!A"+r.rowIndex+':M'+r.rowIndex, [row]).then(function() {
     hideSaving();
     Object.assign(r, {status:status, dateSent:dateSent, amtReceived:amtReceived,
                       dateReceived:dateReceived, deductions:deductions, orNumber:orNumber, notes:notes});
