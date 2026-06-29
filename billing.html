@@ -847,18 +847,33 @@ function levenshtein(a, b) {
 //   Trips delivery date = 0-2 days BEFORE the SOA date
 //   Shipment # in SOA (col E) = 10-digit number e.g. 1004792410
 //   Ground truth = SOA. Typo = Trips has a different number for same truck+date window.
+// ═══ MATCHING ENGINE ════════════════════════════════
+//
+// STRATEGY (in order of priority):
+//   Pass 1 — Exact shipment# match (Trips has number, SOA has same) → MATCHED
+//   Pass 2 — Truck + date window: SOA date = delivery date ± 0-2 days,
+//             trip has NO shipnum yet → MATCHED (SOA fills it in)
+//   Pass 3 — Truck + date window: trip HAS a number but differs →
+//             Levenshtein ≤ 4 → TYPO
+//   Pass 4 — Sequential gap analysis across all SOA nums per truck →
+//             flag suspicious numbers that break monotonic sequence
+//   Rule: shipment number is UNIQUE — no two trucks share one
+//
 function runMatching(parsedFiles, allTrips) {
   var results = [];
 
-  // Build lookup of trips by shipment number for fast exact match
+  // Index trips by exact shipment number
   var tripsByShipNum = {};
   allTrips.forEach(function(t) {
     var num = (t.shipmentNumber || '').trim();
-    if (num) {
-      if (!tripsByShipNum[num]) tripsByShipNum[num] = [];
-      tripsByShipNum[num].push(t);
-    }
+    if (!num) return;
+    if (!tripsByShipNum[num]) tripsByShipNum[num] = [];
+    tripsByShipNum[num].push(t);
   });
+
+  // Collect all SOA shipnums per truck (for sequential gap analysis)
+  // Map: truckCode -> sorted array of {soaNum:int, result:obj}
+  var soaByTruck = {};
 
   parsedFiles.forEach(function(pf) {
     pf.shipments.forEach(function(soaRow) {
@@ -869,36 +884,68 @@ function runMatching(parsedFiles, allTrips) {
         matchedTrip:  null,
         status:       'unmatched',
         typoFlag:     null,
-        deliveryDate: null
+        deliveryDate: null,
+        diagnosis:    ''   // human-readable reason for unmatched
       };
 
-      var soaTruckCode = soaRow.truck; // 3-letter code e.g. "CAH"
-      var soaDateObj   = new Date(soaRow.date + 'T00:00:00');
+      var truckCode  = soaRow.truck;
+      var soaDateObj = new Date(soaRow.date + 'T00:00:00');
 
-      // ── Pass 1: Exact shipment number match ──
-      var exactMatches = tripsByShipNum[soaRow.shipNum] || [];
-      if (exactMatches.length) {
-        var best = exactMatches.find(function(t){ return extractTruckCode(t.truck) === soaTruckCode; })
-                || exactMatches[0];
-        result.matchedTrip  = best;
+      // Collect for sequential analysis
+      if (!soaByTruck[truckCode]) soaByTruck[truckCode] = [];
+      soaByTruck[truckCode].push({ num: parseInt(soaRow.shipNum), result: result });
+
+      // ── PASS 1: Exact shipment number match ──
+      var exactList = tripsByShipNum[soaRow.shipNum] || [];
+      // Prefer same truck; fallback to any (shouldn't happen — ship# is unique)
+      var exact = exactList.find(function(t){ return extractTruckCode(t.truck) === truckCode; })
+               || exactList[0];
+      if (exact) {
+        result.matchedTrip  = exact;
         result.status       = 'matched';
-        result.deliveryDate = best.deliveryDate;
+        result.deliveryDate = exact.deliveryDate;
         results.push(result);
         return;
       }
 
-      // ── Pass 2: Date + truck window (delivery date 0-2 days before SOA date) ──
-      var windowCandidates = allTrips.filter(function(t) {
+      // ── PASS 2 & 3: Date+truck window ──
+      // SOA date is the SHIPMENT date. Delivery date is 0-2 days before.
+      // We cast a window of: soaDate - 2 days  TO  soaDate + 0 days
+      var candidates = allTrips.filter(function(t) {
         if (!t.truck || !t.deliveryDate) return false;
-        if (extractTruckCode(t.truck) !== soaTruckCode) return false;
+        if (extractTruckCode(t.truck) !== truckCode) return false;
         var diff = Math.round((soaDateObj - new Date(t.deliveryDate + 'T00:00:00')) / 86400000);
-        return diff >= 0 && diff <= 2;
+        return diff >= 0 && diff <= 2; // delivery must be 0-2 days BEFORE soa date
       });
 
-      // Trips with no shipment number yet → SOA provides it
-      var blanks = windowCandidates.filter(function(t){
-        return !t.shipmentNumber || t.shipmentNumber.trim() === '';
-      });
+      if (!candidates.length) {
+        // Widen to ±3 for diagnosis only
+        var wider = allTrips.filter(function(t) {
+          if (!t.truck || !t.deliveryDate) return false;
+          if (extractTruckCode(t.truck) !== truckCode) return false;
+          var diff = Math.round((soaDateObj - new Date(t.deliveryDate+'T00:00:00')) / 86400000);
+          return Math.abs(diff) <= 5;
+        });
+        if (wider.length) {
+          var nearest = wider.reduce(function(a,b){
+            var da = Math.abs(Math.round((soaDateObj - new Date(a.deliveryDate+'T00:00:00'))/86400000));
+            var db = Math.abs(Math.round((soaDateObj - new Date(b.deliveryDate+'T00:00:00'))/86400000));
+            return da < db ? a : b;
+          });
+          var diff = Math.round((soaDateObj - new Date(nearest.deliveryDate+'T00:00:00'))/86400000);
+          result.diagnosis = 'Nearest '+truckCode+' trip: '+nearest.deliveryDate+' ('+diff+' day offset) · ship#: '+(nearest.shipmentNumber||'blank');
+        } else {
+          var truckTrips = allTrips.filter(function(t){ return extractTruckCode(t.truck)===truckCode; });
+          result.diagnosis = truckTrips.length
+            ? 'No trips for '+truckCode+' near this date. '+truckTrips.length+' total trips exist.'
+            : 'Truck '+truckCode+' has NO entries in Trips sheet at all.';
+        }
+        results.push(result);
+        return;
+      }
+
+      // PASS 2: blank shipnum in window → unambiguous → MATCHED
+      var blanks = candidates.filter(function(t){ return !t.shipmentNumber || !t.shipmentNumber.trim(); });
       if (blanks.length === 1) {
         result.matchedTrip  = blanks[0];
         result.status       = 'matched';
@@ -906,16 +953,29 @@ function runMatching(parsedFiles, allTrips) {
         results.push(result);
         return;
       }
+      if (blanks.length > 1) {
+        // Ambiguous: multiple blank trips in window — pick closest date
+        blanks.sort(function(a,b){
+          var da = Math.abs(Math.round((soaDateObj - new Date(a.deliveryDate+'T00:00:00'))/86400000));
+          var db = Math.abs(Math.round((soaDateObj - new Date(b.deliveryDate+'T00:00:00'))/86400000));
+          return da-db;
+        });
+        result.matchedTrip  = blanks[0];
+        result.status       = 'matched';
+        result.deliveryDate = blanks[0].deliveryDate;
+        result.diagnosis    = 'Multiple blank trips in window; picked closest date.';
+        results.push(result);
+        return;
+      }
 
-      // ── Pass 3: Typo detection via Levenshtein ──
-      var withNums = windowCandidates.filter(function(t){
-        return t.shipmentNumber && t.shipmentNumber.trim() !== '';
-      });
+      // PASS 3: candidates have numbers — check for typo
+      var withNums = candidates.filter(function(t){ return t.shipmentNumber && t.shipmentNumber.trim(); });
       var bestDist = Infinity, bestTrip = null;
       withNums.forEach(function(t) {
         var dist = levenshtein(soaRow.shipNum, t.shipmentNumber.trim());
         if (dist < bestDist) { bestDist = dist; bestTrip = t; }
       });
+
       if (bestTrip && bestDist >= 1 && bestDist <= 4) {
         result.matchedTrip  = bestTrip;
         result.status       = 'typo';
@@ -925,15 +985,44 @@ function runMatching(parsedFiles, allTrips) {
           tripsNum: bestTrip.shipmentNumber.trim(),
           dist:     bestDist
         };
+      } else if (bestTrip) {
+        result.diagnosis = 'Candidate trip exists ('+bestTrip.deliveryDate+') but ship# too different: Trips='+bestTrip.shipmentNumber+' vs SOA='+soaRow.shipNum+' (distance '+bestDist+')';
       }
 
       results.push(result);
     });
   });
 
+  // ── PASS 4: Sequential gap analysis per truck ──
+  // Ship numbers for a truck should increase monotonically over time.
+  // Flag any SOA entry where the number is wildly out of sequence (possible digit transposition).
+  Object.keys(soaByTruck).forEach(function(truck) {
+    var entries = soaByTruck[truck].filter(function(e){ return !isNaN(e.num); });
+    entries.sort(function(a,b){ return a.result.soaRow.date.localeCompare(b.result.soaRow.date); });
+
+    for (var i = 1; i < entries.length; i++) {
+      var prev = entries[i-1], curr = entries[i];
+      var gap  = curr.num - prev.num;
+      // Normal gap between consecutive trips: 0 to ~3000
+      // Suspicious: negative gap (number went DOWN) or huge jump then drop
+      if (gap < 0 && curr.result.status !== 'typo' && curr.result.status !== 'matched') {
+        // Number decreased — very suspicious (digit swap?)
+        if (!curr.result.typoFlag) {
+          curr.result.typoFlag = {
+            soaNum:   curr.result.soaRow.shipNum,
+            tripsNum: curr.result.soaRow.shipNum,  // same, flagging the SOA entry itself
+            dist:     0,
+            seqFlag:  true,
+            seqNote:  'Ship# decreased from '+prev.num+' to '+curr.num+' — possible transposition'
+          };
+          curr.result.status = 'typo';
+        }
+      }
+    }
+  });
+
   return results;
 }
-
 
 // ═══ RENDER MATCH RESULTS ═════════════════════════════
 var _allMatchResults = [];
@@ -983,15 +1072,14 @@ function renderSOAPreviewCalendar() {
   var filterTruck = document.getElementById('preview-truck-filter').value;
   document.getElementById('preview-cal-title').textContent = MONTHS[previewMonth] + ' ' + previewYear;
 
-  // Build day map from matchResults
-  var dayMap = {}; // date -> {matched:[], unmatched:[], typo:[]}
+  // Build day map: SOA date -> {matched:[], unmatched:[], typo:[]}
+  var dayMap = {};
   matchResults.forEach(function(r) {
-    var date = r.soaRow.date;
-    var parts = date.split('-');
+    var parts = r.soaRow.date.split('-');
     if (parseInt(parts[0]) !== previewYear || parseInt(parts[1])-1 !== previewMonth) return;
     if (filterTruck && r.soaRow.truck !== filterTruck) return;
     var d = parseInt(parts[2]);
-    if (!dayMap[d]) dayMap[d] = {matched:[], unmatched:[], typo:[]};
+    if (!dayMap[d]) dayMap[d] = { matched:[], unmatched:[], typo:[] };
     dayMap[d][r.status].push(r);
   });
 
@@ -1008,27 +1096,38 @@ function renderSOAPreviewCalendar() {
     if (dateStr === todayStr)           cls += ' today';
     if (dateStr === previewSelectedDay) cls += ' selected';
 
-    var dots = '', numLabel = '';
+    var inner = '<div class="cal-day-num">'+d+'</div>';
+
     if (info) {
-      var total = info.matched.length + info.unmatched.length + info.typo.length;
-      numLabel = '<div style="font-size:9px;color:var(--text3);margin-top:1px">'+total+'</div>';
-      var hasM = info.matched.length > 0, hasU = info.unmatched.length > 0, hasT = info.typo.length > 0;
-      // Background hint
-      if (hasU || hasT) cls += ' has-unbilled'; // orange for attention
-      else if (hasM)    cls += ' has-billed';   // green = all good
-      dots = '<div class="cal-dot-row">'
-        + (hasM ? '<div class="cal-dot" style="background:var(--green)"></div>' : '')
-        + (hasU ? '<div class="cal-dot" style="background:var(--red)"></div>' : '')
-        + (hasT ? '<div class="cal-dot" style="background:var(--orange)"></div>' : '')
-        + '</div>';
+      var all = info.matched.concat(info.typo).concat(info.unmatched);
+      var hasU = info.unmatched.length > 0, hasT = info.typo.length > 0, hasM = info.matched.length > 0;
+      if (hasU || hasT) cls += ' has-unbilled';
+      else if (hasM)    cls += ' has-billed';
+
+      // Pills: truck code + last 4 digits of shipnum
+      var pills = '<div class="cal-names">';
+      var shown = all.slice(0, 3);
+      shown.forEach(function(r) {
+        var bg = r.status==='matched' ? '#16a34a' : r.status==='typo' ? '#f59e0b' : '#B32533';
+        var shortNum = r.soaRow.shipNum ? r.soaRow.shipNum.slice(-4) : '????';
+        pills += '<div class="cal-name-pill" style="background:'+bg+';color:#fff">'
+          + r.soaRow.truck+' ·'+shortNum+'</div>';
+      });
+      if (all.length > 3) {
+        pills += '<div class="cal-name-pill" style="background:var(--text3);color:#fff">+' + (all.length-3) + '</div>';
+      }
+      pills += '</div>';
+      inner += pills;
     }
 
-    html += '<div class="'+cls+'" onclick="selectPreviewDay(\''+dateStr+'\')">'  
-      + '<div class="cal-day-num">'+d+'</div>'
-      + numLabel + dots + '</div>';
+    html += '<div class="'+cls+'" '
+      + 'onclick="selectPreviewDay(\''+dateStr+'\')" '
+      + 'style="min-height:52px;height:auto;max-height:none">'
+      + inner + '</div>';
   }
   document.getElementById('preview-cal-grid').innerHTML = html;
 }
+
 
 function selectPreviewDay(dateStr) {
   previewSelectedDay = dateStr;
@@ -1036,38 +1135,66 @@ function selectPreviewDay(dateStr) {
 
   var filterTruck = document.getElementById('preview-truck-filter').value;
   var dayResults  = matchResults.filter(function(r) {
-    if (r.soaRow.date !== dateStr) return false;
-    if (filterTruck && r.soaRow.truck !== filterTruck) return false;
-    return true;
+    return r.soaRow.date === dateStr && (!filterTruck || r.soaRow.truck === filterTruck);
   });
 
   var d     = new Date(dateStr + 'T00:00:00');
-  var label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric'});
+  var label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   document.getElementById('preview-day-title').textContent = label + ' — ' + dayResults.length + ' shipment(s)';
 
   var panel = document.getElementById('preview-day-panel');
-  document.getElementById('preview-day-list').innerHTML = !dayResults.length
-    ? '<div class="empty-hint">No SOA shipments on this date</div>'
-    : dayResults.map(function(r) {
-        var statusColor = r.status==='matched' ? 'var(--green)' : r.status==='typo' ? 'var(--orange)' : 'var(--red)';
-        var statusIcon  = r.status==='matched' ? '✅' : r.status==='typo' ? '⚠️' : '❌';
-        var matchedInfo = r.matchedTrip
-          ? '<div style="font-size:10px;color:var(--text3);margin-top:4px">Delivery: '+r.deliveryDate+' · Trips row: '+r.matchedTrip.rowIndex+'</div>'
-          : '<div style="font-size:10px;color:var(--red);margin-top:4px">No matching trip found in Trips sheet</div>';
-        var typoInfo = r.typoFlag
-          ? '<div class="typo-flag" style="margin-top:6px">SOA: <strong>'+r.typoFlag.soaNum+'</strong> · Trips: <strong>'+r.typoFlag.tripsNum+'</strong>'
-            + ' <button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
-            + 'style="margin-left:8px;background:var(--orange);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer">Fix in Trips</button></div>'
-          : '';
-        return '<div class="match-item" style="border-left:3px solid '+statusColor+';margin-bottom:8px">'
-          + '<div style="display:flex;justify-content:space-between">'
-          + '<span style="font-size:13px;font-weight:700;color:'+statusColor+'">'+statusIcon+' Shipment # '+r.soaRow.shipNum+'</span>'
-          + '<span style="font-size:11px;color:var(--text3)">'+r.soaRow.truck+'</span>'
-          + '</div>'
-          + '<div style="font-size:11px;color:var(--text2);margin-top:3px">'+r.soaRow.dest+(r.soaRow.rate?' · ₱'+r.soaRow.rate.toLocaleString():'')+'</div>'
-          + matchedInfo + typoInfo
-          + '</div>';
-      }).join('');
+
+  if (!dayResults.length) {
+    document.getElementById('preview-day-list').innerHTML = '<div class="empty-hint">No SOA shipments on this date</div>';
+    panel.classList.add('show');
+    return;
+  }
+
+  document.getElementById('preview-day-list').innerHTML = dayResults.map(function(r) {
+    var statusColor = r.status==='matched' ? 'var(--green)' : r.status==='typo' ? 'var(--orange)' : 'var(--red)';
+    var statusIcon  = r.status==='matched' ? '✅' : r.status==='typo' ? '⚠️' : '❌';
+    var statusLabel = r.status==='matched' ? 'Matched' : r.status==='typo' ? 'Typo Detected' : 'Unmatched';
+
+    var deliveryInfo = r.matchedTrip
+      ? '<div style="font-size:11px;color:var(--text3);margin-top:3px">'
+        + 'Delivery: <strong>'+r.deliveryDate+'</strong> · Row: '+r.matchedTrip.rowIndex
+        + (r.matchedTrip.route ? ' · '+r.matchedTrip.route : '')
+        + '</div>'
+      : '<div style="font-size:11px;color:var(--red);margin-top:3px">No matching trip in Trips sheet</div>';
+
+    var typoBlock = '';
+    if (r.typoFlag && !r.typoFlag.seqFlag && r.matchedTrip) {
+      typoBlock = '<div style="background:rgba(245,158,11,0.1);border-radius:8px;padding:8px 10px;margin-top:8px">'
+        + '<div style="font-size:11px;margin-bottom:6px">'
+        + 'Trips has: <strong style="color:var(--red)">'+r.typoFlag.tripsNum+'</strong><br>'
+        + 'SOA says: <strong style="color:var(--green)">'+r.typoFlag.soaNum+'</strong>'
+        + ' <span style="color:var(--text3);font-size:10px">('+r.typoFlag.dist+' char diff)</span>'
+        + '</div>'
+        + '<button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
+        + 'style="width:100%;background:var(--orange);color:#fff;border:none;border-radius:8px;'
+        + 'padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">'
+        + '🔧 Fix Shipment # in Trips Sheet</button></div>';
+    }
+
+    var diagBlock = '';
+    if (r.status==='unmatched' && r.diagnosis) {
+      diagBlock = '<div style="font-size:10px;color:var(--orange);margin-top:6px;background:rgba(245,158,11,0.08);'
+        +'border-radius:6px;padding:6px 8px">ℹ️ '+r.diagnosis+'</div>';
+    }
+
+    return '<div class="match-item" style="border-left:4px solid '+statusColor+';margin-bottom:10px">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center">'
+      + '<span style="font-size:14px;font-weight:700;color:var(--text)">🚛 '+r.soaRow.truck+'</span>'
+      + '<span style="font-size:11px;font-weight:700;color:'+statusColor+'">'+statusIcon+' '+statusLabel+'</span>'
+      + '</div>'
+      + '<div style="font-size:13px;font-weight:600;color:var(--text2);margin-top:4px;font-family:monospace">'
+      + r.soaRow.shipNum + '</div>'
+      + '<div style="font-size:11px;color:var(--text2);margin-top:2px">'
+      + (r.soaRow.dest || '—') + (r.soaRow.rate ? ' · ₱'+r.soaRow.rate.toLocaleString() : '')
+      + '</div>'
+      + deliveryInfo + typoBlock + diagBlock
+      + '</div>';
+  }).join('');
 
   panel.classList.add('show');
   setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
@@ -1118,34 +1245,36 @@ function renderMatchResults() {
   var total     = matchResults.length;
 
   document.getElementById('match-stats').innerHTML = [
-    {label:'Total Shipments', val:total,    cls:''},
-    {label:'Matched ✅',      val:matched,  cls:'green'},
-    {label:'Unmatched ❌',    val:unmatched,cls:'red'},
-    {label:'Typo Flags ⚠️',  val:typos,    cls:'orange'}
+    {label:'Total',     val:total,    cls:''},
+    {label:'Matched ✅', val:matched,  cls:'green'},
+    {label:'Unmatched ❌',val:unmatched,cls:'red'},
+    {label:'Typo ⚠️',   val:typos,    cls:'orange'}
   ].map(function(s){
-    return '<div class="stat-box">'
-      + '<div class="stat-label">'+s.label+'</div>'
-      + '<div class="stat-val '+s.cls+'">'+s.val+'</div>'
-      + '</div>';
+    return '<div class="stat-box"><div class="stat-label">'+s.label+'</div>'
+      +'<div class="stat-val '+s.cls+'">'+s.val+'</div></div>';
   }).join('');
 
-  // Typo section — with inline fix buttons
-  var typoItems = matchResults.filter(function(r){ return r.status==='typo'; });
-  var typoSec  = document.getElementById('typo-section');
+  // Typo section with Fix buttons
+  var typoItems = matchResults.filter(function(r){ return r.status==='typo' && r.typoFlag && !r.typoFlag.seqFlag; });
+  var typoSec   = document.getElementById('typo-section');
   if (typoItems.length) {
     typoSec.style.display = '';
     document.getElementById('typo-list').innerHTML = typoItems.map(function(r) {
       var rowIdx = r.matchedTrip ? r.matchedTrip.rowIndex : 0;
-      return '<div class="typo-flag" style="margin-bottom:10px">'
-        + '🚛 <strong>' + r.soaRow.truck + '</strong> · ' + r.soaRow.date + '<br>'
-        + 'SOA (correct): <strong style="color:var(--green)">' + r.typoFlag.soaNum + '</strong><br>'
-        + 'Trips (wrong): <strong style="color:var(--red)">'  + r.typoFlag.tripsNum + '</strong>'
-        + ' <span style="color:var(--text3);font-size:10px">(edit distance: '+r.typoFlag.dist+')</span><br>'
+      return '<div class="typo-flag" style="margin-bottom:12px;padding:12px 14px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+        + '<div>'
+        + '<div style="font-weight:700;color:var(--text);margin-bottom:4px">🚛 '+r.soaRow.truck+' · '+r.soaRow.date+'</div>'
+        + '<div style="font-size:11px;margin-bottom:2px">SOA (correct): <strong style="color:var(--green)">'+r.typoFlag.soaNum+'</strong></div>'
+        + '<div style="font-size:11px;margin-bottom:2px">Trips (wrong): <strong style="color:var(--red)">'+r.typoFlag.tripsNum+'</strong>'
+        + ' <span style="color:var(--text3);font-size:10px">edit dist: '+r.typoFlag.dist+'</span></div>'
+        + (r.deliveryDate ? '<div style="font-size:10px;color:var(--text3)">Delivery date: '+r.deliveryDate+'</div>' : '')
+        + '</div>'
         + (rowIdx ? '<button onclick="applyTypoFix('+rowIdx+',\''+r.typoFlag.soaNum+'\')" '
-          + 'style="margin-top:6px;background:var(--orange);color:#fff;border:none;border-radius:8px;'
-          + 'padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">'
-          + '🔧 Fix in Trips Sheet</button>' : '')
-        + '</div>';
+          + 'style="flex-shrink:0;margin-left:10px;background:var(--orange);color:#fff;border:none;'
+          + 'border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;'
+          + 'font-family:Inter,sans-serif;white-space:nowrap">🔧 Fix</button>' : '')
+        + '</div></div>';
     }).join('');
   } else { typoSec.style.display = 'none'; }
 
@@ -1155,9 +1284,9 @@ function renderMatchResults() {
 function filterMatchResults() {
   var filter = document.getElementById('match-filter').value;
   var source = _allMatchResults.filter(function(r) {
-    if (filter === 'matched')   return r.status === 'matched';
-    if (filter === 'unmatched') return r.status === 'unmatched';
-    if (filter === 'typo')      return r.status === 'typo';
+    if (filter==='matched')   return r.status==='matched';
+    if (filter==='unmatched') return r.status==='unmatched';
+    if (filter==='typo')      return r.status==='typo';
     return true;
   });
 
@@ -1165,51 +1294,37 @@ function filterMatchResults() {
   if (!source.length) { list.innerHTML='<div class="empty-hint">No items to show</div>'; return; }
 
   list.innerHTML = source.map(function(r) {
-    var statusBadge = r.status === 'matched' ? '<span class="badge green">✅ Matched</span>'
-                    : r.status === 'typo'    ? '<span class="badge orange">⚠️ Typo</span>'
-                    :                          '<span class="badge red">❌ Unmatched</span>';
-    // Diagnosis for unmatched
-    var unmatchedNote = '';
-    if (r.status === 'unmatched') {
-      // Check if any trip exists for this truck on this date window
-      var soaDate = new Date(r.soaRow.date + 'T00:00:00');
-      var truckTrips = allTrips.filter(function(t){ return extractTruckCode(t.truck) === r.soaRow.truck; });
-      // Find nearest trip date
-      var nearest = null, nearestDiff = Infinity;
-      truckTrips.forEach(function(t) {
-        if (!t.deliveryDate) return;
-        var diff = Math.abs((soaDate - new Date(t.deliveryDate+'T00:00:00')) / 86400000);
-        if (diff < nearestDiff) { nearestDiff = diff; nearest = t; }
-      });
-      if (!truckTrips.length) {
-        unmatchedNote = '<div style="font-size:10px;color:var(--red);margin-top:4px">⚠️ No trips at all for truck <strong>'+r.soaRow.truck+'</strong> in Trips sheet</div>';
-      } else if (nearest) {
-        unmatchedNote = '<div style="font-size:10px;color:var(--orange);margin-top:4px">Nearest '+r.soaRow.truck+' trip: <strong>'+nearest.deliveryDate+'</strong> ('+Math.round(nearestDiff)+' days away) · ship#: '+(nearest.shipmentNumber||'blank')+'</div>';
-      }
-    }
-
+    var statusBadge = r.status==='matched'  ? '<span class="badge green">✅ Matched</span>'
+                    : r.status==='typo'     ? '<span class="badge orange">⚠️ Typo</span>'
+                    :                         '<span class="badge red">❌ Unmatched</span>';
     var typoInfo = '';
-    if (r.typoFlag && r.matchedTrip) {
-      typoInfo = '<div class="typo-flag" style="margin-top:6px">Trips has: <strong>'+r.typoFlag.tripsNum+'</strong> → SOA: <strong>'+r.typoFlag.soaNum+'</strong>'
-        + ' <button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
-        + 'style="margin-left:6px;background:var(--orange);color:#fff;border:none;border-radius:6px;'
-        + 'padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer">Fix</button></div>';
+    if (r.typoFlag && r.matchedTrip && !r.typoFlag.seqFlag) {
+      typoInfo = '<div class="typo-flag" style="margin-top:6px;display:flex;align-items:center;gap:8px">'
+        + '<div style="flex:1;font-size:11px">Trips: <strong>'+r.typoFlag.tripsNum+'</strong> → SOA: <strong>'+r.typoFlag.soaNum+'</strong></div>'
+        + '<button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
+        + 'style="background:var(--orange);color:#fff;border:none;border-radius:6px;'
+        + 'padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Fix</button></div>';
     }
-
+    var diagNote = '';
+    if (r.status==='unmatched' && r.diagnosis) {
+      diagNote = '<div style="font-size:10px;color:var(--orange);margin-top:4px;background:rgba(245,158,11,0.08);'
+        +'border-radius:6px;padding:4px 8px">ℹ️ '+r.diagnosis+'</div>';
+    }
     return '<div class="match-item">'
-      + '<div class="match-header"><div>'
-      + '<div class="match-ship">Shipment # ' + r.soaRow.shipNum + '</div>'
-      + '<div class="match-date">SOA Date: ' + r.soaRow.date
-      + (r.deliveryDate ? ' · Delivery: '+r.deliveryDate : '') + '</div>'
-      + '</div></div>'
-      + '<div class="match-badges">'
-      + statusBadge
-      + '<span class="badge blue">🚛 '+r.soaRow.truck+'</span>'
-      + (r.soaRow.dest ? '<span class="badge">📍 '+r.soaRow.dest+'</span>' : '')
-      + (r.soaRow.rate ? '<span class="badge">₱'+r.soaRow.rate.toLocaleString()+'</span>' : '')
-      + (r.soaNum ? '<span class="badge purple">SOA: '+r.soaNum+'</span>' : '')
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+      + '<div>'
+      + '<div class="match-ship">'+r.soaRow.truck+' · #'+r.soaRow.shipNum.slice(-6)+'</div>'
+      + '<div class="match-date">SOA: '+r.soaRow.date+(r.deliveryDate?' · Delivery: '+r.deliveryDate:'')+'</div>'
       + '</div>'
-      + unmatchedNote + typoInfo
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
+      + statusBadge
+      + (r.soaRow.rate ? '<span style="font-size:10px;color:var(--text3)">₱'+r.soaRow.rate.toLocaleString()+'</span>' : '')
+      + '</div></div>'
+      + '<div class="match-badges" style="margin-top:6px">'
+      + (r.soaRow.dest ? '<span class="badge">📍 '+r.soaRow.dest+'</span>' : '')
+      + (r.soaNum ? '<span class="badge purple">SOA '+r.soaNum+'</span>' : '')
+      + '</div>'
+      + typoInfo + diagNote
       + '</div>';
   }).join('');
 }
