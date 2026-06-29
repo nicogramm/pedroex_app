@@ -1320,5 +1320,260 @@ function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.c
   if(el) el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('open');});
 });
 </script>
+<!-- 
+=======================================================
+RECORDS.HTML PATCH — Shipment Date sa My Tasks
+=======================================================
+PAANO I-APPLY:
+
+Hanapin ang </body> tag sa dulo ng records.html
+at i-paste ang buong block na ito BAGO ang </body>:
+=======================================================
+-->
+<script>
+// ═══ PATCH: SHIPMENT DATE IN MY TASKS ════════════════════════════════════
+// This patch overrides key functions from records.html to add Shipment Date
+// tracking alongside Shipment Number in the "My Tasks" view.
+
+// ── Override: isRecordSubmitted (ShipmentNum needs both) ──
+var _orig_isRecordSubmitted = window.isRecordSubmitted || null;
+// Redefine getStatus inline via monkey-patch approach
+// ACTUAL IMPLEMENTATION: override buildTasks after load
+
+// ── Override: task status uses 'partial' for incomplete ShipmentNum ──
+function getShipNumStatus(task, today) {
+  var hasN = !!(task.shipmentNum  && task.shipmentNum.trim());
+  var hasD = !!(task.shipmentDate && task.shipmentDate.trim());
+  if (hasN && hasD) return 'submitted';
+  if (hasN || hasD) return 'partial';
+  return 'missing';
+}
+
+// Override getStatus to handle ShipmentNum partial
+var _origGetStatus = window.getStatus;
+window.getStatus = function(task, today) {
+  if (task.type === 'ShipmentNum') return getShipNumStatus(task, today);
+  return _origGetStatus ? _origGetStatus(task, today) : 'pending';
+};
+
+// Override dueLabel
+var _origDueLabel = window.dueLabel;
+window.dueLabel = function(t) {
+  if (t.type === 'ShipmentNum') {
+    if (t.status === 'submitted') return '✓ Shipment # at Date na-file';
+    var hasN = !!(t.shipmentNum  && t.shipmentNum.trim());
+    var hasD = !!(t.shipmentDate && t.shipmentDate.trim());
+    if (hasN && !hasD) return '📅 May Shipment # — kulang ang Shipment Date!';
+    if (hasD && !hasN) return '🔢 May Shipment Date — kulang ang Shipment #!';
+    return '📋 Wala pang Shipment # at Date';
+  }
+  return _origDueLabel ? _origDueLabel(t) : '';
+};
+
+// Override dueLabelClass
+var _origDueLabelClass = window.dueLabelClass;
+window.dueLabelClass = function(t) {
+  if (t.type === 'ShipmentNum') {
+    if (t.status === 'submitted') return 'ok';
+    if (t.status === 'partial')   return 'overdue';
+    return 'purple';
+  }
+  return _origDueLabelClass ? _origDueLabelClass(t) : 'warning';
+};
+
+// Override buildShipmentForm — add Shipment Date field
+window.buildShipmentForm = function(t) {
+  var hasN = !!(t.shipmentNum  && t.shipmentNum.trim());
+  var hasD = !!(t.shipmentDate && t.shipmentDate.trim());
+  // Suggest next working day
+  var suggested = '';
+  if (!hasD && t.date) {
+    var sd = new Date(t.date + 'T00:00:00');
+    sd.setDate(sd.getDate() + 1);
+    if (sd.getDay() === 6) sd.setDate(sd.getDate() + 2);
+    if (sd.getDay() === 0) sd.setDate(sd.getDate() + 1);
+    suggested = sd.getFullYear() + '-'
+      + (sd.getMonth()+1<10?'0':'') + (sd.getMonth()+1) + '-'
+      + (sd.getDate()<10?'0':'') + sd.getDate();
+  }
+  return '<div style="background:rgba(124,58,237,0.07);border-left:3px solid var(--purple);'
+    + 'border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:var(--purple);font-weight:600">'
+    + '📋 Kailangan: Shipment Number AT Shipment Date</div>'
+
+    // Shipment Number
+    + '<div class="fg"><label class="fl">Shipment Number'
+    + (hasN ? ' <span style="color:var(--green);font-size:9px">✓ OK</span>'
+            : ' <span style="color:var(--red);font-size:9px">★ Required</span>') + '</label>'
+    + '<input class="fi" id="sf-shipnum" type="text" inputmode="numeric" '
+    + 'value="' + (t.shipmentNum||'') + '" placeholder="e.g. 1004766903" '
+    + 'oninput="onSfShipNumChange(this)"></div>'
+
+    // Shipment Date
+    + '<div class="fg"><label class="fl">Shipment Date'
+    + (hasD ? ' <span style="color:var(--green);font-size:9px">✓ OK</span>'
+            : ' <span style="color:var(--red);font-size:9px">★ Required</span>') + '</label>'
+    + '<input class="fi" id="sf-shipdate" type="date" '
+    + 'value="' + (t.shipmentDate||suggested) + '" onchange="onSfShipDateChange(this)">'
+    + '<div style="font-size:10px;color:var(--blue);margin-top:5px">'
+    + '💡 Date na irerehistro ng San Miguel — usually 1-2 working days matapos ng delivery (' + t.date + ')'
+    + '</div></div>'
+
+    // Partial warning
+    + '<div id="sf-partial-warn" style="display:' + ((hasN&&!hasD)||(!hasN&&hasD)?'block':'none')
+    + ';background:rgba(179,37,51,0.08);border-left:3px solid var(--red);'
+    + 'border-radius:10px;padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--red);font-weight:600">'
+    + (hasN&&!hasD ? '⚠️ May Shipment # — ilagay din ang Shipment Date!'
+                   : '⚠️ May Shipment Date — ilagay din ang Shipment Number!') + '</div>'
+
+    + '<button class="btn btn-purple" onclick="saveShipmentNum()">💾 '
+    + (t.status==='submitted' ? 'I-update' : 'I-file') + ' ang Shipment # at Date</button>';
+};
+
+window.onSfShipNumChange = function(input) {
+  var warn=document.getElementById('sf-partial-warn');
+  var dateEl=document.getElementById('sf-shipdate');
+  if (!warn||!dateEl) return;
+  var hasNum=input.value.trim().length>0, hasDate=dateEl.value.trim().length>0;
+  if (hasNum&&!hasDate) {
+    warn.style.display='block';
+    warn.textContent='⚠️ May Shipment # ka — ilagay din ang Shipment Date!';
+    dateEl.style.boxShadow='var(--neu-in), 0 0 0 2px rgba(179,37,51,0.4)';
+  } else { warn.style.display='none'; dateEl.style.boxShadow=''; }
+};
+
+window.onSfShipDateChange = function(el) {
+  var warn=document.getElementById('sf-partial-warn');
+  var numEl=document.getElementById('sf-shipnum');
+  if (!warn||!numEl) return;
+  var hasDate=el.value.trim().length>0, hasNum=numEl.value.trim().length>0;
+  if (hasDate&&!hasNum) {
+    warn.style.display='block';
+    warn.textContent='⚠️ May Shipment Date ka — ilagay din ang Shipment Number!';
+    numEl.style.boxShadow='var(--neu-in), 0 0 0 2px rgba(179,37,51,0.4)';
+  } else { warn.style.display='none'; numEl.style.boxShadow=''; }
+};
+
+// Override saveShipmentNum — save BOTH num and date
+window.saveShipmentNum = function() {
+  var t=window.selectedTask; if(!t||t.type!=='ShipmentNum') return;
+  var numVal =(document.getElementById('sf-shipnum') ||{}).value||'';
+  var dateVal=(document.getElementById('sf-shipdate')||{}).value||'';
+  if (!numVal.trim()) {
+    showToast('❌ Ilagay ang Shipment Number!');
+    var el=document.getElementById('sf-shipnum');
+    if(el){el.style.boxShadow='var(--neu-in), 0 0 0 3px rgba(179,37,51,0.5)';el.focus();}
+    setTimeout(function(){var e=document.getElementById('sf-shipnum');if(e)e.style.boxShadow='';},3000);
+    return;
+  }
+  if (!dateVal.trim()) {
+    showToast('❌ Ilagay ang Shipment Date!');
+    var el=document.getElementById('sf-shipdate');
+    if(el){el.style.boxShadow='var(--neu-in), 0 0 0 3px rgba(179,37,51,0.5)';el.focus();}
+    setTimeout(function(){var e=document.getElementById('sf-shipdate');if(e)e.style.boxShadow='';},3000);
+    return;
+  }
+  showSaving('Filing Shipment # at Date...');
+  // Save D=ShipmentDate, E=Type, F=ShipmentNum in one range update
+  apiUpdate(TAB_TRIPS+'!D'+t.tripRowIndex+':F'+t.tripRowIndex,
+            [[dateVal.trim(), t.tripType||'', numVal.trim()]])
+    .then(function(){
+      hideSaving();
+      showToast('✅ Shipment # at Date na-file!');
+      closeSheet('task-sheet');
+      loadAll();
+    })
+    .catch(function(err){ hideSaving(); showToast('❌ Save failed.'); console.error(err); });
+};
+
+// Override the task card meta to show per-field status for ShipmentNum
+// We patch renderList to add this — monkey-patch via post-render hook
+var _origRenderList = window.renderList;
+window.renderList = function(tasks, containerId, filter) {
+  // Call original
+  _origRenderList(tasks, containerId, filter);
+  
+  // Post-process: fix ShipmentNum partial badges and add ship date status
+  var el=document.getElementById(containerId);
+  if (!el) return;
+
+  // Re-render from scratch if we have ShipmentNum tasks with partial status
+  var list=tasks;
+  if (filter==='pending')   list=tasks.filter(function(t){return t.status==='pending';});
+  if (filter==='missing')   list=tasks.filter(function(t){return t.status==='missing';});
+  if (filter==='overdue')   list=tasks.filter(function(t){return t.status==='overdue';});
+  if (filter==='submitted') list=tasks.filter(function(t){return t.status==='submitted'||t.status==='late';});
+  if (filter==='shipment')  list=tasks.filter(function(t){return t.type==='ShipmentNum';});
+  if (filter==='pod')       list=tasks.filter(function(t){return t.type==='POD';});
+  if (filter==='crates')    list=tasks.filter(function(t){return t.type==='Crates';});
+  if (filter==='all' && list.some(function(t){return t.status==='partial';})) {
+    // Include partial in 'all' view (original may have excluded them)
+    list = tasks;
+  }
+
+  if (!list.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
+
+  el.innerHTML=list.map(function(t){
+    var bl = t.status==='submitted'?'✓ Done'
+            :t.status==='late'     ?'⚠ Late'
+            :t.status==='overdue'  ?'⚠ Overdue'
+            :t.status==='missing'  ?'📋 Missing'
+            :t.status==='partial'  ?'⚠ Incomplete'
+            :'⏳ Pending';
+    var bc = t.status==='partial' ? 'badge-overdue' : 'badge-'+t.status;
+    var dc = window.dueLabelClass(t);
+    var dl = window.dueLabel(t);
+    var who=containerId==='all-list'?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
+    var cr=t.type==='Crates'?'<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>':'';
+    
+    // Per-field status for ShipmentNum
+    var sn='';
+    if (t.type==='ShipmentNum'){
+      var hasN=!!(t.shipmentNum&&t.shipmentNum.trim());
+      var hasD=!!(t.shipmentDate&&t.shipmentDate.trim());
+      sn='<div class="task-meta-row" style="gap:8px;flex-wrap:wrap">'
+        +(hasN?'<span style="color:var(--green);font-size:10px">✓ #'+t.shipmentNum.slice(-6)+'</span>'
+              :'<span style="color:var(--red);font-size:10px">✗ No Ship #</span>')
+        +'&nbsp;'
+        +(hasD?'<span style="color:var(--green);font-size:10px">✓ '+t.shipmentDate+'</span>'
+              :'<span style="color:var(--red);font-size:10px">✗ No Ship Date</span>')
+        +'</div>';
+    } else {
+      sn=t.shipmentNum?'<div class="task-meta-row">🔢 '+t.shipmentNum+'</div>':'';
+    }
+    
+    var sub=(!t.isScheduled&&t.scheduledHelper)
+      ?'<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Sched: '
+        +t.scheduledHelper.split(' ')[0]+' → '+t.helperName.split(' ')[0]+'</span>':'';
+    return '<div class="task-card status-'+t.status+'" onclick="openTask(\''+t.id+'\')">'
+      +'<div class="task-header">'
+      +'<div class="task-title">'+taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck+'</div>'
+      +'<div class="task-badge '+bc+'">'+bl+'</div></div>'
+      +'<div class="task-meta"><div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+'</div>'
+      +who+cr+(t.type!=='ShipmentNum'?sn:'')+sub+'</div>'
+      +(t.type==='ShipmentNum'?sn:'')
+      +'<div class="task-due '+dc+'">'+dl+'</div></div>';
+  }).join('');
+};
+
+// Patch buildTasks to include shipmentDate and use new getStatus
+var _origBuildTasks = window.buildTasks;
+window.buildTasks = function() {
+  var tasks = _origBuildTasks ? _origBuildTasks() : [];
+  var today = new Date(); today.setHours(0,0,0,0);
+  // Recompute status for ShipmentNum tasks using new partial logic
+  tasks.forEach(function(t) {
+    if (t.type === 'ShipmentNum') {
+      t.status = getShipNumStatus(t, today);
+    }
+  });
+  return tasks;
+};
+
+console.log('✅ Records.html Shipment Date patch loaded');
+</script>
+</body>
+</html>
+
+
 </body>
 </html>
