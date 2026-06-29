@@ -626,91 +626,165 @@ function processFiles() {
 
 // ═══ PARSE SOA EXCEL ══════════════════════════════════
 function parseSOAExcel(arrayBuffer, fileName) {
-  var wb = XLSX.read(arrayBuffer, { type:'array', cellDates: true });
+  // raw:true keeps numbers as numbers and dates as Excel serial numbers
+  var wb = XLSX.read(arrayBuffer, { type:'array', raw:true });
 
   // Use first sheet (SOA BILLING FORMAT-Routing)
   var wsName = wb.SheetNames[0];
   var ws = wb.Sheets[wsName];
 
-  // SOA Number from M7 (row 7, col 13 = M)
+  // SOA Number from M7 — try cell value directly
   var soaCell = ws['M7'];
   var soaNum  = soaCell ? String(soaCell.v || '').trim() : '';
-
-  // Also try to get from filename pattern
+  // Also try L7, N7 in case of column shift
+  if (!soaNum) { var c = ws['L7']; soaNum = c ? String(c.v||'').trim() : ''; }
+  if (!soaNum) { var c = ws['N7']; soaNum = c ? String(c.v||'').trim() : ''; }
+  // Fallback to filename
   if (!soaNum) {
     var fnMatch = fileName.match(/(\d+_\d+)/);
     if (fnMatch) soaNum = fnMatch[1];
   }
 
   // Period from M8
-  var periodCell = ws['M8'];
+  var periodCell = ws['M8'] || ws['L8'] || ws['N8'];
   var period = periodCell ? String(periodCell.v || '').trim() : '';
 
-  // Extract truck from plate number (Col C = index 2)
-  // Row 11+ = data rows (0-indexed: row 10 = header, row 11 = first data = array index 10)
-  var jsonData = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, dateNF:'yyyy-mm-dd' });
+  // Get raw 2D array — raw:true means dates are Excel serials, numbers are numbers
+  var jsonData = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:null });
+
+  // ── STEP 1: Detect header row and column positions dynamically ──
+  // Look for the row containing 'SHIPMENT NO.' anywhere in rows 8-15
+  var colDate = 1, colPlate = 2, colCapacity = 3, colShipNum = 4, colShipCost = 5;
+  var colDest = 7, colType = 9, colKgs = 10, colRate = 11, colToll = 12, colDemurrage = 13;
+  var headerRowIdx = 9; // default: row 10 (0-indexed = 9)
+
+  for (var h = 7; h <= 14; h++) {
+    var hrow = jsonData[h];
+    if (!hrow) continue;
+    var found = false;
+    for (var c = 0; c < hrow.length; c++) {
+      var cellStr = String(hrow[c] || '').toUpperCase().trim();
+      if (cellStr === 'SHIPMENT NO.' || cellStr === 'SHIPMENT NO') {
+        colShipNum  = c;
+        headerRowIdx = h;
+        found = true;
+      }
+      if (cellStr === 'SHIPMENT COST NO.' || cellStr === 'SHIPMENT COST NO') colShipCost = c;
+      if (cellStr === 'DATE')              colDate     = c;
+      if (cellStr === 'PLATE NO.' || cellStr === 'PLATE NO') colPlate = c;
+      if (cellStr === 'CAPACITY')          colCapacity = c;
+      if (cellStr.includes('DESTINATION') || cellStr.includes('CLUSTER')) colDest = c;
+      if (cellStr === 'DELIVERY TYPE')     colType     = c;
+      if (cellStr === 'KGS')               colKgs      = c;
+      if (cellStr === 'RATE')              colRate     = c;
+      if (cellStr.includes('TOLL') || cellStr.includes('PARKING')) colToll = c;
+      if (cellStr === 'DEMURRAGE')         colDemurrage = c;
+    }
+    if (found) break;
+  }
+
+  console.log('📋 Header row:', headerRowIdx, '| Ship# col:', colShipNum, '| Date col:', colDate, '| Plate col:', colPlate);
 
   var shipments = [];
   var grandTotal = 0, vatAmt = 0, totalTripsCount = 0;
 
-  for (var i = 10; i < jsonData.length; i++) {
+  // ── STEP 2: Parse data rows starting after header ──
+  for (var i = headerRowIdx + 1; i < jsonData.length; i++) {
     var row = jsonData[i];
-    if (!row || !row[1] || !row[4]) continue; // Need date and shipment number
+    if (!row) continue;
 
-    var rawDate = row[1];
-    var parsedDate = '';
-    if (rawDate) {
-      // SheetJS with dateNF returns string like '2026-06-01'
-      if (typeof rawDate === 'string' && rawDate.match(/\d{4}-\d{2}-\d{2}/)) {
-        parsedDate = rawDate.substring(0, 10);
-      } else {
-        var d = new Date(rawDate);
-        if (!isNaN(d)) parsedDate = fmtDate(d);
-      }
-    }
+    // Date cell — Excel serial number or already a date string
+    var rawDate = row[colDate];
+    if (!rawDate) continue;
+    var parsedDate = excelSerialToDate(rawDate);
     if (!parsedDate) continue;
 
-    var shipNum = String(row[4] || '').trim();
-    if (!shipNum || !shipNum.match(/^\d+$/)) continue; // Must be numeric
+    // Shipment Number — col E (index 4) = 10-digit number like 1004792410
+    var shipNumRaw = row[colShipNum];
+    if (shipNumRaw === null || shipNumRaw === undefined) continue;
+    var shipNum = String(shipNumRaw).trim().replace(/\.0+$/, ''); // remove decimal if any
+    if (!shipNum || !shipNum.match(/^\d{7,}$/)) continue; // Must be at least 7 digits
 
-    // Extract truck ID from plate (e.g. "CAH 1415" → "CAH")
-    var plateRaw = String(row[2] || '').trim();
+    // Plate / truck
+    var plateRaw  = String(row[colPlate] || '').trim();
     var truckCode = extractTruckCode(plateRaw);
+    if (!truckCode) continue;
 
     shipments.push({
       date:        parsedDate,
       plate:       plateRaw,
       truck:       truckCode,
       shipNum:     shipNum,
-      shipCostNum: String(row[5] || '').trim(),
-      dest:        String(row[7] || '').trim(),
-      type:        String(row[9] || '').trim(),
-      kgs:         parseFloat(row[10]) || 0,
-      rate:        parseFloat(row[11]) || 0,
-      toll:        parseFloat(row[12]) || 0,
-      demurrage:   parseFloat(row[13]) || 0
+      shipCostNum: String(row[colShipCost] || '').trim(),
+      dest:        String(row[colDest]     || '').trim(),
+      type:        String(row[colType]     || '').trim(),
+      kgs:         parseFloat(row[colKgs])      || 0,
+      rate:        parseFloat(row[colRate])     || 0,
+      toll:        parseFloat(row[colToll])     || 0,
+      demurrage:   parseFloat(row[colDemurrage])|| 0
     });
   }
 
-  // Parse summary rows (around row 30-32)
-  for (var j = Math.max(10, jsonData.length - 20); j < jsonData.length; j++) {
+  // ── STEP 3: Parse summary/totals (scan all rows for keywords) ──
+  for (var j = 0; j < jsonData.length; j++) {
     var sr = jsonData[j];
     if (!sr) continue;
-    // Look for "Grand Total" pattern
-    var c1 = String(sr[1] || '').toLowerCase();
-    var c2 = String(sr[2] || '').toLowerCase();
-    if (c2.includes('grand total') || c2.includes('grand')) {
-      grandTotal = parseFloat(sr[3]) || 0;
-    }
-    if (String(sr[10] || '').toLowerCase().includes('vat')) {
-      vatAmt = parseFloat(sr[11]) || 0;
-    }
-    if (c2.includes('total trips')) {
-      totalTripsCount = parseInt(sr[3]) || 0;
+    for (var ci = 0; ci < sr.length; ci++) {
+      var cellVal = String(sr[ci] || '').toLowerCase().trim();
+      if (cellVal.includes('grand total')) {
+        // Grand total value is usually in the next non-null cell to the right
+        for (var ni = ci+1; ni < sr.length; ni++) {
+          if (sr[ni] !== null && sr[ni] !== undefined && !isNaN(parseFloat(sr[ni]))) {
+            grandTotal = parseFloat(sr[ni]); break;
+          }
+        }
+      }
+      if (cellVal === 'vat 12%' || cellVal.includes('vat 12')) {
+        for (var ni = ci+1; ni < sr.length; ni++) {
+          if (sr[ni] !== null && !isNaN(parseFloat(sr[ni]))) {
+            vatAmt = parseFloat(sr[ni]); break;
+          }
+        }
+      }
+      if (cellVal === 'total trips') {
+        for (var ni = ci+1; ni < sr.length; ni++) {
+          if (sr[ni] !== null && !isNaN(parseInt(sr[ni]))) {
+            totalTripsCount = parseInt(sr[ni]); break;
+          }
+        }
+      }
     }
   }
 
+  console.log('✅ Parsed:', fileName, '| SOA:', soaNum, '| Shipments:', shipments.length, '| Grand Total:', grandTotal);
+  if (shipments.length > 0) console.log('   Sample:', shipments[0].date, shipments[0].shipNum, shipments[0].truck);
+
   return { fileName, soaNum, period, shipments, grandTotal, vatAmt, totalTripsCount };
+}
+
+// ── Convert Excel serial date number OR date string to YYYY-MM-DD ──
+function excelSerialToDate(value) {
+  if (!value && value !== 0) return '';
+
+  // Already a proper date string
+  if (typeof value === 'string') {
+    var s = value.trim();
+    if (s.match(/^\d{4}-\d{2}-\d{2}/)) return s.substring(0,10);
+    var d = new Date(s);
+    if (!isNaN(d.getTime())) return fmtDate(d);
+    return '';
+  }
+
+  // Number: Excel serial (days since Dec 30, 1899)
+  var num = parseFloat(value);
+  if (!isNaN(num) && num > 1000 && num < 100000) {
+    // Excel epoch: Dec 30, 1899; also account for Excel's 1900 leap year bug
+    var d = new Date(Date.UTC(1899, 11, 30) + Math.round(num) * 86400000);
+    return d.getUTCFullYear() + '-' + pad(d.getUTCMonth()+1) + '-' + pad(d.getUTCDate());
+  }
+
+  // Large number — could be a shipment number mistaken for date, skip
+  return '';
 }
 
 // ═══ EXTRACT TRUCK CODE ═══════════════════════════════
@@ -737,92 +811,87 @@ function levenshtein(a, b) {
 }
 
 // ═══ MATCHING ENGINE ══════════════════════════════════
+// Strategy:
+//   SOA date = shipment date (recorded by San Miguel)
+//   Trips delivery date = 0-2 days BEFORE the SOA date
+//   Shipment # in SOA (col E) = 10-digit number e.g. 1004792410
+//   Ground truth = SOA. Typo = Trips has a different number for same truck+date window.
 function runMatching(parsedFiles, allTrips) {
   var results = [];
+
+  // Build lookup of trips by shipment number for fast exact match
+  var tripsByShipNum = {};
+  allTrips.forEach(function(t) {
+    var num = (t.shipmentNumber || '').trim();
+    if (num) {
+      if (!tripsByShipNum[num]) tripsByShipNum[num] = [];
+      tripsByShipNum[num].push(t);
+    }
+  });
 
   parsedFiles.forEach(function(pf) {
     pf.shipments.forEach(function(soaRow) {
       var result = {
-        soaRow:         soaRow,
-        soaNum:         pf.soaNum,
-        fileName:       pf.fileName,
-        matchedTrip:    null,
-        status:         'unmatched',  // matched | unmatched | typo
-        typoFlag:       null,
-        deliveryDate:   null
+        soaRow:       soaRow,
+        soaNum:       pf.soaNum,
+        fileName:     pf.fileName,
+        matchedTrip:  null,
+        status:       'unmatched',
+        typoFlag:     null,
+        deliveryDate: null
       };
 
-      // Strategy: SOA date = shipment date. Delivery date = 1 or 2 days BEFORE.
-      // Try to find matching trip by:
-      //   1. Truck code match
-      //   2. Delivery date within 2 days before SOA shipment date
-      //   3. Shipment number match (or near-match for typo detection)
+      var soaTruckCode = soaRow.truck; // 3-letter code e.g. "CAH"
+      var soaDateObj   = new Date(soaRow.date + 'T00:00:00');
 
-      var soaDateObj = new Date(soaRow.date);
-
-      // Candidate trips: same truck, delivery date = soaDate -1 or -2 (or same day)
-      var candidates = allTrips.filter(function(t) {
-        if (!t.truck || !t.deliveryDate) return false;
-        // Truck match (flexible: compare codes)
-        var tripCode = extractTruckCode(t.truck);
-        if (tripCode !== soaRow.truck) return false;
-
-        var tripDateObj = new Date(t.deliveryDate);
-        var diffDays = Math.round((soaDateObj - tripDateObj) / 86400000);
-        return diffDays >= 0 && diffDays <= 2; // SOA date is 0-2 days after delivery
-      });
-
-      if (!candidates.length) {
-        results.push(result);
-        return;
-      }
-
-      // Try exact shipment number match first
-      var exactMatch = candidates.find(function(t) {
-        return t.shipmentNumber && t.shipmentNumber.trim() === soaRow.shipNum;
-      });
-
-      if (exactMatch) {
-        result.matchedTrip  = exactMatch;
+      // ── Pass 1: Exact shipment number match ──
+      var exactMatches = tripsByShipNum[soaRow.shipNum] || [];
+      if (exactMatches.length) {
+        var best = exactMatches.find(function(t){ return extractTruckCode(t.truck) === soaTruckCode; })
+                || exactMatches[0];
+        result.matchedTrip  = best;
         result.status       = 'matched';
-        result.deliveryDate = exactMatch.deliveryDate;
+        result.deliveryDate = best.deliveryDate;
         results.push(result);
         return;
       }
 
-      // Try fuzzy: find trip with no shipment number yet (candidates that are blank)
-      // Match by date+truck alone, then check if shipNum is sequential gap (typo)
-      var blankCandidates = candidates.filter(function(t) {
+      // ── Pass 2: Date + truck window (delivery date 0-2 days before SOA date) ──
+      var windowCandidates = allTrips.filter(function(t) {
+        if (!t.truck || !t.deliveryDate) return false;
+        if (extractTruckCode(t.truck) !== soaTruckCode) return false;
+        var diff = Math.round((soaDateObj - new Date(t.deliveryDate + 'T00:00:00')) / 86400000);
+        return diff >= 0 && diff <= 2;
+      });
+
+      // Trips with no shipment number yet → SOA provides it
+      var blanks = windowCandidates.filter(function(t){
         return !t.shipmentNumber || t.shipmentNumber.trim() === '';
       });
-
-      if (blankCandidates.length === 1) {
-        // Likely a match — the SOA has the number, the trip doesn't yet
-        result.matchedTrip  = blankCandidates[0];
+      if (blanks.length === 1) {
+        result.matchedTrip  = blanks[0];
         result.status       = 'matched';
-        result.deliveryDate = blankCandidates[0].deliveryDate;
+        result.deliveryDate = blanks[0].deliveryDate;
         results.push(result);
         return;
       }
 
-      // Typo detection: compare against existing shipment numbers in trips
-      var existingNums = candidates.filter(function(t) { return t.shipmentNumber; });
-      var bestCandidate = null, bestDist = Infinity, bestTrip = null;
-
-      existingNums.forEach(function(t) {
-        var dist = levenshtein(soaRow.shipNum, t.shipmentNumber.trim());
-        if (dist < bestDist) { bestDist = dist; bestCandidate = soaRow.shipNum; bestTrip = t; }
+      // ── Pass 3: Typo detection via Levenshtein ──
+      var withNums = windowCandidates.filter(function(t){
+        return t.shipmentNumber && t.shipmentNumber.trim() !== '';
       });
-
-      // Also check sequential gap: if adjacent SOA shipments differ by expected delta
-      // but in the trips the number differs, flag as typo
-      if (bestTrip && bestDist <= 3 && bestDist > 0) {
+      var bestDist = Infinity, bestTrip = null;
+      withNums.forEach(function(t) {
+        var dist = levenshtein(soaRow.shipNum, t.shipmentNumber.trim());
+        if (dist < bestDist) { bestDist = dist; bestTrip = t; }
+      });
+      if (bestTrip && bestDist >= 1 && bestDist <= 4) {
         result.matchedTrip  = bestTrip;
         result.status       = 'typo';
         result.deliveryDate = bestTrip.deliveryDate;
         result.typoFlag = {
           soaNum:   soaRow.shipNum,
-          tripsNum: bestTrip.shipmentNumber,
+          tripsNum: bestTrip.shipmentNumber.trim(),
           dist:     bestDist
         };
       }
@@ -831,18 +900,9 @@ function runMatching(parsedFiles, allTrips) {
     });
   });
 
-  // Sequential gap check across all SOA rows (sorted by date)
-  var allSOANums = results.map(function(r) { return parseInt(r.soaRow.shipNum); }).filter(Boolean).sort(function(a,b){return a-b;});
-  for (var i = 1; i < allSOANums.length; i++) {
-    var gap = allSOANums[i] - allSOANums[i-1];
-    if (gap > 5 && gap < 100000) {
-      // Suspicious gap — could indicate missing entries or typo
-      // Mark the surrounding entries for review
-    }
-  }
-
   return results;
 }
+
 
 // ═══ RENDER MATCH RESULTS ═════════════════════════════
 var _allMatchResults = [];
@@ -1391,19 +1451,7 @@ function apiUpdate(range, values) {
 function fmtDate(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function pad(n) { return n<10?'0'+n:String(n); }
 
-function convertExcelDate(value) {
-  if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return value;
-  var num = parseFloat(value);
-  if (!isNaN(num) && num > 1000) {
-    var d = new Date(new Date(1899,11,30).getTime() + num*86400000);
-    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-  }
-  if (typeof value === 'string') {
-    var d2 = new Date(value);
-    if (!isNaN(d2.getTime())) return d2.getFullYear()+'-'+pad(d2.getMonth()+1)+'-'+pad(d2.getDate());
-  }
-  return '';
-}
+function convertExcelDate(value) { return excelSerialToDate(value); }
 
 function formatCurrency(n) {
   return '₱' + (parseFloat(n)||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
