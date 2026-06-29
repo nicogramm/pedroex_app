@@ -255,18 +255,16 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
     <!-- ══════════════════════════════ TAB 1: UPLOAD SOA ══════════════════════════════ -->
     <div id="tab-upload">
 
-      <!-- STEP 1: DROP ZONE -->
+      <!-- DROP ZONE -->
       <div class="neu-card">
         <div class="section-title">Import SOA Files</div>
-        <div class="section-sub">Upload one or multiple SOA Excel files to match shipments against Trips</div>
-
+        <div class="section-sub">Upload one or multiple SOA Excel files. Preview will appear before committing.</div>
         <div class="drop-zone" id="drop-zone">
           <input type="file" id="file-input" accept=".xlsx,.xls" multiple>
           <div class="drop-icon">📂</div>
           <div class="drop-title">Drop Excel files here</div>
-          <div class="drop-sub">or tap to browse · .xlsx files only · multiple supported</div>
+          <div class="drop-sub">or tap to browse · .xlsx · multiple supported</div>
         </div>
-
         <div id="file-queue" style="display:none">
           <div class="card-title" style="margin-bottom:10px">Files Queued</div>
           <div id="file-list"></div>
@@ -280,16 +278,46 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
       <!-- DEBUG PANEL -->
       <div id="debug-panel" style="display:none;margin-bottom:14px"></div>
 
-      <!-- STEP 2: RESULTS -->
+      <!-- SOA PREVIEW CALENDAR (shown after parse, before commit) -->
+      <div id="soa-preview-section" style="display:none">
+        <div class="neu-card" style="padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div class="section-title" style="margin-bottom:0">📅 SOA Shipment Preview</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="fi" id="preview-truck-filter" onchange="renderSOAPreviewCalendar()"
+                style="width:auto;padding:6px 10px;font-size:12px;box-shadow:var(--neu-xs)">
+                <option value="">All Trucks</option>
+              </select>
+              <button class="cal-nav" onclick="changePreviewMonth(-1)">‹</button>
+              <span id="preview-cal-title" style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap"></span>
+              <button class="cal-nav" onclick="changePreviewMonth(1)">›</button>
+            </div>
+          </div>
+          <!-- Legend -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Matched</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Unmatched</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Typo</div>
+          </div>
+          <div class="cal-grid" id="preview-cal-grid"></div>
+          <!-- Day detail -->
+          <div class="day-panel" id="preview-day-panel" style="margin-top:12px">
+            <div class="day-panel-title" id="preview-day-title"></div>
+            <div id="preview-day-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS SECTION -->
       <div id="match-results-section" style="display:none">
 
         <!-- SUMMARY STATS -->
         <div class="stat-grid" id="match-stats"></div>
 
-        <!-- TYPO FLAGS -->
+        <!-- TYPO FLAGS with fix buttons -->
         <div id="typo-section" style="display:none">
           <div class="neu-card" style="border-left:4px solid var(--orange);padding:16px">
-            <div class="card-title" style="color:var(--orange);margin-bottom:10px">⚠️ Possible Typo Errors</div>
+            <div class="card-title" style="color:var(--orange);margin-bottom:10px">⚠️ Possible Typo Errors — SOA is Ground Truth</div>
             <div id="typo-list"></div>
           </div>
         </div>
@@ -298,7 +326,8 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
         <div class="neu-card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
             <div class="card-title" style="margin-bottom:0">Match Results</div>
-            <select class="fi" id="match-filter" onchange="filterMatchResults()" style="width:auto;padding:6px 10px;font-size:12px;box-shadow:var(--neu-xs)">
+            <select class="fi" id="match-filter" onchange="filterMatchResults()"
+              style="width:auto;padding:6px 10px;font-size:12px;box-shadow:var(--neu-xs)">
               <option value="all">All</option>
               <option value="matched">Matched ✅</option>
               <option value="unmatched">Unmatched ❌</option>
@@ -314,14 +343,13 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
             ✅ Save to Google Sheets &amp; Mark Billed
           </button>
           <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">
-            This will update the Billing Statement tab and mark matched trips as Billed = Yes
+            Updates Billing Statement, marks matched trips as Billed = Yes, logs to SOA_Master
           </div>
         </div>
       </div>
 
     </div><!-- end tab-upload -->
 
-    <!-- ══════════════════════════════ TAB 2: TRIPS & BILLING CALENDAR ══════════════════════════════ -->
     <div id="tab-calendar" style="display:none">
 
       <!-- LEGEND -->
@@ -619,32 +647,11 @@ function processFiles() {
 
     // Run matching
     matchResults = runMatching(parsedFiles, allTrips);
-
-    // ── Temporary debug: surface key info in UI ──
-    var debugEl = document.getElementById('debug-panel');
-    if (debugEl) {
-      var soaSample = parsedFiles.length ? parsedFiles[0].shipments.slice(0,3) : [];
-      var tripSample = allTrips.slice(0,5);
-      var tripsWithNum = allTrips.filter(function(t){ return t.shipmentNumber && t.shipmentNumber.trim(); }).length;
-      debugEl.style.display = '';
-      debugEl.innerHTML = '<div style="background:var(--bg2);border-radius:12px;padding:14px;font-size:11px;font-family:monospace;color:var(--text)">'
-        + '<b>🔍 Debug</b><br>'
-        + 'allTrips: <b>' + allTrips.length + '</b> | with shipNum: <b>' + tripsWithNum + '</b><br><br>'
-        + '<b style="color:var(--orange)">Sample TRIPS (first 5):</b><br>'
-        + tripSample.map(function(t){
-            return '· truck=<b>'+t.truck+'</b> code=<b>'+extractTruckCode(t.truck)+'</b> date=<b>'+t.deliveryDate+'</b> ship=<b>'+(t.shipmentNumber||'blank')+'</b><br>';
-          }).join('')
-        + '<br><b style="color:var(--blue)">Sample SOA (first 3):</b><br>'
-        + soaSample.map(function(s){
-            return '· truck=<b>'+s.truck+'</b> date=<b>'+s.date+'</b> ship=<b>'+s.shipNum+'</b><br>';
-          }).join('')
-        + '</div>';
-    }
-
     renderMatchResults();
+    initSOAPreview();
     document.getElementById('match-results-section').style.display = '';
     if (isAdmin) document.getElementById('commit-section').style.display = '';
-    showToast('✅ Parsed ' + parsedFiles.length + ' file(s), ' + matchResults.length + ' shipments found');
+    showToast('✅ Parsed ' + parsedFiles.length + ' file(s) · ' + matchResults.filter(function(r){return r.status==='matched';}).length + ' matched / ' + matchResults.length + ' total');
   });
 }
 
@@ -931,20 +938,190 @@ function runMatching(parsedFiles, allTrips) {
 // ═══ RENDER MATCH RESULTS ═════════════════════════════
 var _allMatchResults = [];
 
+// ═══ PRE-PROCESS: SOA PREVIEW CALENDAR ══════════════
+var previewYear, previewMonth;
+var previewSelectedDay = null;
+
+function initSOAPreview() {
+  var now = new Date();
+  // Default to month of first SOA shipment
+  if (parsedFiles.length && parsedFiles[0].shipments.length) {
+    var d = new Date(parsedFiles[0].shipments[0].date + 'T00:00:00');
+    previewYear  = d.getFullYear();
+    previewMonth = d.getMonth();
+  } else {
+    previewYear  = now.getFullYear();
+    previewMonth = now.getMonth();
+  }
+
+  // Populate truck filter
+  var trucks = [];
+  parsedFiles.forEach(function(pf) {
+    pf.shipments.forEach(function(s) {
+      if (s.truck && trucks.indexOf(s.truck) === -1) trucks.push(s.truck);
+    });
+  });
+  trucks.sort();
+  var sel = document.getElementById('preview-truck-filter');
+  sel.innerHTML = '<option value="">All Trucks</option>'
+    + trucks.map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
+
+  document.getElementById('soa-preview-section').style.display = '';
+  renderSOAPreviewCalendar();
+}
+
+function changePreviewMonth(d) {
+  previewMonth += d;
+  if (previewMonth < 0)  { previewMonth = 11; previewYear--; }
+  if (previewMonth > 11) { previewMonth = 0;  previewYear++; }
+  previewSelectedDay = null;
+  document.getElementById('preview-day-panel').classList.remove('show');
+  renderSOAPreviewCalendar();
+}
+
+function renderSOAPreviewCalendar() {
+  var filterTruck = document.getElementById('preview-truck-filter').value;
+  document.getElementById('preview-cal-title').textContent = MONTHS[previewMonth] + ' ' + previewYear;
+
+  // Build day map from matchResults
+  var dayMap = {}; // date -> {matched:[], unmatched:[], typo:[]}
+  matchResults.forEach(function(r) {
+    var date = r.soaRow.date;
+    var parts = date.split('-');
+    if (parseInt(parts[0]) !== previewYear || parseInt(parts[1])-1 !== previewMonth) return;
+    if (filterTruck && r.soaRow.truck !== filterTruck) return;
+    var d = parseInt(parts[2]);
+    if (!dayMap[d]) dayMap[d] = {matched:[], unmatched:[], typo:[]};
+    dayMap[d][r.status].push(r);
+  });
+
+  var days  = new Date(previewYear, previewMonth+1, 0).getDate();
+  var first = new Date(previewYear, previewMonth, 1).getDay();
+
+  var html = DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
+  for (var i = 0; i < first; i++) html += '<div class="cal-day other-month"></div>';
+
+  for (var d = 1; d <= days; d++) {
+    var dateStr = previewYear+'-'+pad(previewMonth+1)+'-'+pad(d);
+    var info    = dayMap[d];
+    var cls     = 'cal-day';
+    if (dateStr === todayStr)           cls += ' today';
+    if (dateStr === previewSelectedDay) cls += ' selected';
+
+    var dots = '', numLabel = '';
+    if (info) {
+      var total = info.matched.length + info.unmatched.length + info.typo.length;
+      numLabel = '<div style="font-size:9px;color:var(--text3);margin-top:1px">'+total+'</div>';
+      var hasM = info.matched.length > 0, hasU = info.unmatched.length > 0, hasT = info.typo.length > 0;
+      // Background hint
+      if (hasU || hasT) cls += ' has-unbilled'; // orange for attention
+      else if (hasM)    cls += ' has-billed';   // green = all good
+      dots = '<div class="cal-dot-row">'
+        + (hasM ? '<div class="cal-dot" style="background:var(--green)"></div>' : '')
+        + (hasU ? '<div class="cal-dot" style="background:var(--red)"></div>' : '')
+        + (hasT ? '<div class="cal-dot" style="background:var(--orange)"></div>' : '')
+        + '</div>';
+    }
+
+    html += '<div class="'+cls+'" onclick="selectPreviewDay(\''+dateStr+'\')">'  
+      + '<div class="cal-day-num">'+d+'</div>'
+      + numLabel + dots + '</div>';
+  }
+  document.getElementById('preview-cal-grid').innerHTML = html;
+}
+
+function selectPreviewDay(dateStr) {
+  previewSelectedDay = dateStr;
+  renderSOAPreviewCalendar();
+
+  var filterTruck = document.getElementById('preview-truck-filter').value;
+  var dayResults  = matchResults.filter(function(r) {
+    if (r.soaRow.date !== dateStr) return false;
+    if (filterTruck && r.soaRow.truck !== filterTruck) return false;
+    return true;
+  });
+
+  var d     = new Date(dateStr + 'T00:00:00');
+  var label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('preview-day-title').textContent = label + ' — ' + dayResults.length + ' shipment(s)';
+
+  var panel = document.getElementById('preview-day-panel');
+  document.getElementById('preview-day-list').innerHTML = !dayResults.length
+    ? '<div class="empty-hint">No SOA shipments on this date</div>'
+    : dayResults.map(function(r) {
+        var statusColor = r.status==='matched' ? 'var(--green)' : r.status==='typo' ? 'var(--orange)' : 'var(--red)';
+        var statusIcon  = r.status==='matched' ? '✅' : r.status==='typo' ? '⚠️' : '❌';
+        var matchedInfo = r.matchedTrip
+          ? '<div style="font-size:10px;color:var(--text3);margin-top:4px">Delivery: '+r.deliveryDate+' · Trips row: '+r.matchedTrip.rowIndex+'</div>'
+          : '<div style="font-size:10px;color:var(--red);margin-top:4px">No matching trip found in Trips sheet</div>';
+        var typoInfo = r.typoFlag
+          ? '<div class="typo-flag" style="margin-top:6px">SOA: <strong>'+r.typoFlag.soaNum+'</strong> · Trips: <strong>'+r.typoFlag.tripsNum+'</strong>'
+            + ' <button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
+            + 'style="margin-left:8px;background:var(--orange);color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer">Fix in Trips</button></div>'
+          : '';
+        return '<div class="match-item" style="border-left:3px solid '+statusColor+';margin-bottom:8px">'
+          + '<div style="display:flex;justify-content:space-between">'
+          + '<span style="font-size:13px;font-weight:700;color:'+statusColor+'">'+statusIcon+' Shipment # '+r.soaRow.shipNum+'</span>'
+          + '<span style="font-size:11px;color:var(--text3)">'+r.soaRow.truck+'</span>'
+          + '</div>'
+          + '<div style="font-size:11px;color:var(--text2);margin-top:3px">'+r.soaRow.dest+(r.soaRow.rate?' · ₱'+r.soaRow.rate.toLocaleString():'')+'</div>'
+          + matchedInfo + typoInfo
+          + '</div>';
+      }).join('');
+
+  panel.classList.add('show');
+  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+}
+
+// ── Apply typo fix: update Trips sheet with correct shipment number from SOA ──
+function applyTypoFix(rowIndex, correctShipNum) {
+  var trip = allTrips.find(function(t){ return t.rowIndex === rowIndex; });
+  if (!trip) { showToast('❌ Trip not found'); return; }
+
+  document.getElementById('confirm-title').textContent = 'Fix Shipment Number?';
+  document.getElementById('confirm-msg').innerHTML =
+    'Update Trips row <strong>' + rowIndex + '</strong><br>'
+    + '🚛 ' + trip.truck + ' · ' + trip.deliveryDate + '<br><br>'
+    + 'Change: <span style="color:var(--red)">' + (trip.shipmentNumber||'(blank)') + '</span>'
+    + ' → <span style="color:var(--green)">' + correctShipNum + '</span><br>'
+    + '<span style="font-size:11px;color:var(--text3)">SOA is the ground truth</span>';
+  document.getElementById('confirm-ok').className = 'cb cb-green';
+  document.getElementById('confirm-ok').textContent = 'Fix It';
+  document.getElementById('confirm-ok').onclick = function() {
+    closeConfirm();
+    showSaving('Fixing shipment number...');
+    var row = [trip.id, trip.deliveryDate, trip.truck, trip.shipmentDate,
+               trip.type, correctShipNum, trip.billed, trip.route, trip.rate];
+    apiUpdate(TAB_TRIPS+'!A'+rowIndex+':I'+rowIndex, [row]).then(function() {
+      hideSaving();
+      // Update local state
+      trip.shipmentNumber = correctShipNum;
+      // Re-run matching with updated trips
+      matchResults = runMatching(parsedFiles, allTrips);
+      renderMatchResults();
+      initSOAPreview();
+      showToast('✅ Fixed! Row '+rowIndex+' updated.');
+    }).catch(function(err){ hideSaving(); showToast('❌ Fix failed: '+err.message); });
+  };
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+// ═══ RENDER MATCH RESULTS ═════════════════════════════
+var _allMatchResults = [];
+
 function renderMatchResults() {
   _allMatchResults = matchResults.slice();
 
-  // Stats
   var matched   = matchResults.filter(function(r){ return r.status==='matched'; }).length;
   var unmatched = matchResults.filter(function(r){ return r.status==='unmatched'; }).length;
   var typos     = matchResults.filter(function(r){ return r.status==='typo'; }).length;
   var total     = matchResults.length;
 
   document.getElementById('match-stats').innerHTML = [
-    {label:'Total Shipments', val:total, cls:''},
-    {label:'Matched ✅', val:matched, cls:'green'},
-    {label:'Unmatched ❌', val:unmatched, cls:'red'},
-    {label:'Typo Flags ⚠️', val:typos, cls:'orange'}
+    {label:'Total Shipments', val:total,    cls:''},
+    {label:'Matched ✅',      val:matched,  cls:'green'},
+    {label:'Unmatched ❌',    val:unmatched,cls:'red'},
+    {label:'Typo Flags ⚠️',  val:typos,    cls:'orange'}
   ].map(function(s){
     return '<div class="stat-box">'
       + '<div class="stat-label">'+s.label+'</div>'
@@ -952,22 +1129,25 @@ function renderMatchResults() {
       + '</div>';
   }).join('');
 
-  // Typo section
+  // Typo section — with inline fix buttons
   var typoItems = matchResults.filter(function(r){ return r.status==='typo'; });
-  var typoSec = document.getElementById('typo-section');
-  var typoList = document.getElementById('typo-list');
+  var typoSec  = document.getElementById('typo-section');
   if (typoItems.length) {
     typoSec.style.display = '';
-    typoList.innerHTML = typoItems.map(function(r) {
-      return '<div class="typo-flag">'
-        + '🚛 <strong>' + r.soaRow.truck + '</strong> on ' + r.soaRow.date + '<br>'
-        + 'SOA has: <strong>' + r.typoFlag.soaNum + '</strong> · '
-        + 'Trips has: <strong>' + r.typoFlag.tripsNum + '</strong> '
-        + '<span style="color:var(--red)">(distance: '+r.typoFlag.dist+')</span><br>'
-        + '<span style="color:var(--text3);font-size:10px">Ground truth = SOA number. Please correct in Trips.</span>'
+    document.getElementById('typo-list').innerHTML = typoItems.map(function(r) {
+      var rowIdx = r.matchedTrip ? r.matchedTrip.rowIndex : 0;
+      return '<div class="typo-flag" style="margin-bottom:10px">'
+        + '🚛 <strong>' + r.soaRow.truck + '</strong> · ' + r.soaRow.date + '<br>'
+        + 'SOA (correct): <strong style="color:var(--green)">' + r.typoFlag.soaNum + '</strong><br>'
+        + 'Trips (wrong): <strong style="color:var(--red)">'  + r.typoFlag.tripsNum + '</strong>'
+        + ' <span style="color:var(--text3);font-size:10px">(edit distance: '+r.typoFlag.dist+')</span><br>'
+        + (rowIdx ? '<button onclick="applyTypoFix('+rowIdx+',\''+r.typoFlag.soaNum+'\')" '
+          + 'style="margin-top:6px;background:var(--orange);color:#fff;border:none;border-radius:8px;'
+          + 'padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">'
+          + '🔧 Fix in Trips Sheet</button>' : '')
         + '</div>';
     }).join('');
-  } else { typoSec.style.display='none'; }
+  } else { typoSec.style.display = 'none'; }
 
   filterMatchResults();
 }
@@ -985,31 +1165,52 @@ function filterMatchResults() {
   if (!source.length) { list.innerHTML='<div class="empty-hint">No items to show</div>'; return; }
 
   list.innerHTML = source.map(function(r) {
-    var statusBadge = r.status === 'matched'   ? '<span class="badge green">✅ Matched</span>'
-                    : r.status === 'typo'       ? '<span class="badge orange">⚠️ Typo</span>'
-                    :                             '<span class="badge red">❌ Unmatched</span>';
-
-    var html = '<div class="match-item">'
-      + '<div class="match-header">'
-      + '<div><div class="match-ship">Shipment # ' + r.soaRow.shipNum + '</div>'
-      + '<div class="match-date">SOA Date: ' + r.soaRow.date
-      + (r.deliveryDate ? ' · Delivery: ' + r.deliveryDate : '')
-      + '</div></div>'
-      + '</div>'
-      + '<div class="match-badges">'
-      + statusBadge
-      + '<span class="badge blue">🚛 ' + r.soaRow.truck + '</span>'
-      + (r.soaRow.dest ? '<span class="badge">📍 ' + r.soaRow.dest + '</span>' : '')
-      + (r.soaRow.rate ? '<span class="badge">₱' + r.soaRow.rate.toLocaleString() + '</span>' : '')
-      + (r.soaNum ? '<span class="badge purple">SOA: ' + r.soaNum + '</span>' : '')
-      + '</div>';
-
-    if (r.typoFlag) {
-      html += '<div class="typo-flag">⚠️ Trips has <strong>' + r.typoFlag.tripsNum + '</strong>, SOA says <strong>' + r.typoFlag.soaNum + '</strong> — possible typo (edit distance: '+r.typoFlag.dist+')</div>';
+    var statusBadge = r.status === 'matched' ? '<span class="badge green">✅ Matched</span>'
+                    : r.status === 'typo'    ? '<span class="badge orange">⚠️ Typo</span>'
+                    :                          '<span class="badge red">❌ Unmatched</span>';
+    // Diagnosis for unmatched
+    var unmatchedNote = '';
+    if (r.status === 'unmatched') {
+      // Check if any trip exists for this truck on this date window
+      var soaDate = new Date(r.soaRow.date + 'T00:00:00');
+      var truckTrips = allTrips.filter(function(t){ return extractTruckCode(t.truck) === r.soaRow.truck; });
+      // Find nearest trip date
+      var nearest = null, nearestDiff = Infinity;
+      truckTrips.forEach(function(t) {
+        if (!t.deliveryDate) return;
+        var diff = Math.abs((soaDate - new Date(t.deliveryDate+'T00:00:00')) / 86400000);
+        if (diff < nearestDiff) { nearestDiff = diff; nearest = t; }
+      });
+      if (!truckTrips.length) {
+        unmatchedNote = '<div style="font-size:10px;color:var(--red);margin-top:4px">⚠️ No trips at all for truck <strong>'+r.soaRow.truck+'</strong> in Trips sheet</div>';
+      } else if (nearest) {
+        unmatchedNote = '<div style="font-size:10px;color:var(--orange);margin-top:4px">Nearest '+r.soaRow.truck+' trip: <strong>'+nearest.deliveryDate+'</strong> ('+Math.round(nearestDiff)+' days away) · ship#: '+(nearest.shipmentNumber||'blank')+'</div>';
+      }
     }
 
-    html += '</div>';
-    return html;
+    var typoInfo = '';
+    if (r.typoFlag && r.matchedTrip) {
+      typoInfo = '<div class="typo-flag" style="margin-top:6px">Trips has: <strong>'+r.typoFlag.tripsNum+'</strong> → SOA: <strong>'+r.typoFlag.soaNum+'</strong>'
+        + ' <button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
+        + 'style="margin-left:6px;background:var(--orange);color:#fff;border:none;border-radius:6px;'
+        + 'padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer">Fix</button></div>';
+    }
+
+    return '<div class="match-item">'
+      + '<div class="match-header"><div>'
+      + '<div class="match-ship">Shipment # ' + r.soaRow.shipNum + '</div>'
+      + '<div class="match-date">SOA Date: ' + r.soaRow.date
+      + (r.deliveryDate ? ' · Delivery: '+r.deliveryDate : '') + '</div>'
+      + '</div></div>'
+      + '<div class="match-badges">'
+      + statusBadge
+      + '<span class="badge blue">🚛 '+r.soaRow.truck+'</span>'
+      + (r.soaRow.dest ? '<span class="badge">📍 '+r.soaRow.dest+'</span>' : '')
+      + (r.soaRow.rate ? '<span class="badge">₱'+r.soaRow.rate.toLocaleString()+'</span>' : '')
+      + (r.soaNum ? '<span class="badge purple">SOA: '+r.soaNum+'</span>' : '')
+      + '</div>'
+      + unmatchedNote + typoInfo
+      + '</div>';
   }).join('');
 }
 
