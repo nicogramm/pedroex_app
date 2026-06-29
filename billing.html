@@ -343,7 +343,7 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
             ✅ Save to Google Sheets &amp; Mark Billed
           </button>
           <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">
-            Updates Billing Statement, marks matched trips as Billed = Yes, logs to SOA_Master
+            Updates Billing Statement, marks matched trips as Billed = Yes, logs to SOA Masters
           </div>
         </div>
       </div>
@@ -515,7 +515,7 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
 const SHEET_ID          = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const TAB_TRIPS         = 'Trips';
 const TAB_BILLING_STMT  = 'Billing Statement';
-const TAB_SOA           = 'SOA_Master';
+const TAB_SOA           = 'SOA Masters';
 const ADMIN_EMAIL       = 'nicolobalonzo@gmail.com';
 const VAT_RATE          = 0.12;
 
@@ -1427,7 +1427,7 @@ function commitToSheets() {
     'This will:<br>'
     + '• Add <strong>' + toCommit.length + ' rows</strong> to Billing Statement<br>'
     + '• Mark matched trips as <strong>Billed = Yes</strong><br>'
-    + '• Save SOA data to SOA_Master';
+    + '• Save SOA data to SOA Masters';
   document.getElementById('confirm-ok').className = 'cb cb-green';
   document.getElementById('confirm-ok').textContent = 'Proceed';
   document.getElementById('confirm-ok').onclick = doCommit;
@@ -1733,7 +1733,7 @@ function loadSOAData() {
     }
   }).catch(function(err) {
     document.getElementById('soa-list').innerHTML =
-      '<div class="empty-hint">SOA_Master sheet not found.<br>Upload SOA Excel files to get started.</div>';
+      '<div class="empty-hint">SOA Masters sheet not found.<br>Upload SOA Excel files to get started.</div>';
     console.error(err);
   });
 }
