@@ -277,6 +277,9 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
         </div>
       </div>
 
+      <!-- DEBUG PANEL -->
+      <div id="debug-panel" style="display:none;margin-bottom:14px"></div>
+
       <!-- STEP 2: RESULTS -->
       <div id="match-results-section" style="display:none">
 
@@ -616,10 +619,31 @@ function processFiles() {
 
     // Run matching
     matchResults = runMatching(parsedFiles, allTrips);
+
+    // ── Temporary debug: surface key info in UI ──
+    var debugEl = document.getElementById('debug-panel');
+    if (debugEl) {
+      var soaSample = parsedFiles.length ? parsedFiles[0].shipments.slice(0,3) : [];
+      var tripSample = allTrips.slice(0,5);
+      var tripsWithNum = allTrips.filter(function(t){ return t.shipmentNumber && t.shipmentNumber.trim(); }).length;
+      debugEl.style.display = '';
+      debugEl.innerHTML = '<div style="background:var(--bg2);border-radius:12px;padding:14px;font-size:11px;font-family:monospace;color:var(--text)">'
+        + '<b>🔍 Debug</b><br>'
+        + 'allTrips: <b>' + allTrips.length + '</b> | with shipNum: <b>' + tripsWithNum + '</b><br><br>'
+        + '<b style="color:var(--orange)">Sample TRIPS (first 5):</b><br>'
+        + tripSample.map(function(t){
+            return '· truck=<b>'+t.truck+'</b> code=<b>'+extractTruckCode(t.truck)+'</b> date=<b>'+t.deliveryDate+'</b> ship=<b>'+(t.shipmentNumber||'blank')+'</b><br>';
+          }).join('')
+        + '<br><b style="color:var(--blue)">Sample SOA (first 3):</b><br>'
+        + soaSample.map(function(s){
+            return '· truck=<b>'+s.truck+'</b> date=<b>'+s.date+'</b> ship=<b>'+s.shipNum+'</b><br>';
+          }).join('')
+        + '</div>';
+    }
+
     renderMatchResults();
     document.getElementById('match-results-section').style.display = '';
     if (isAdmin) document.getElementById('commit-section').style.display = '';
-
     showToast('✅ Parsed ' + parsedFiles.length + ' file(s), ' + matchResults.length + ' shipments found');
   });
 }
