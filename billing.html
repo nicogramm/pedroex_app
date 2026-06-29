@@ -1438,100 +1438,112 @@ function doCommit() {
   closeConfirm();
   showSaving('Saving to Google Sheets...');
 
-  var toCommit   = matchResults.filter(function(r){ return r.status==='matched' || r.status==='typo'; });
+  var toCommit    = matchResults.filter(function(r){ return r.status==='matched' || r.status==='typo'; });
   var billingRows = [];
   var tripUpdates = [];
-
-  // Group by SOA to also save SOA records
-  var soaMap = {};
+  var soaMap      = {};
 
   toCommit.forEach(function(r, i) {
-    var id = 'BILL-' + Date.now() + '-' + i;
     billingRows.push([
-      id,
+      'BILL-' + Date.now() + '-' + i,
       r.deliveryDate || r.soaRow.date,
       r.soaRow.shipNum,
       r.soaNum,
       r.soaRow.truck,
       r.soaRow.rate || (r.matchedTrip ? r.matchedTrip.rate : ''),
-      'Yes'  // Valid
+      'Yes'
     ]);
-
-    // Mark trip as billed
     if (r.matchedTrip) {
-      tripUpdates.push({
-        rowIndex:    r.matchedTrip.rowIndex,
-        tripData:    r.matchedTrip,
-        shipmentNum: r.soaRow.shipNum
-      });
+      tripUpdates.push({ rowIndex: r.matchedTrip.rowIndex, tripData: r.matchedTrip, shipmentNum: r.soaRow.shipNum });
     }
-
-    // Collect SOA data
     if (!soaMap[r.soaNum]) {
       var pf = parsedFiles.find(function(p){ return p.soaNum === r.soaNum; });
       if (pf) soaMap[r.soaNum] = pf;
     }
   });
 
-  // Build SOA_Master rows (one per SOA file)
   var soaRows = Object.values(soaMap).map(function(pf) {
-    return [
-      pf.soaNum,
-      pf.period,
-      pf.totalTripsCount,
-      pf.grandTotal,
-      pf.vatAmt,
-      pf.grandTotal - pf.vatAmt,
-      '',   // Date Sent
-      '',   // Amount Received
-      '',   // Date Received
-      'Pending',  // Status
-      '',   // Deductions
-      '',   // OR Number
-      ''    // Notes
-    ];
+    return [pf.soaNum, pf.period, pf.totalTripsCount, pf.grandTotal, pf.vatAmt,
+            pf.grandTotal - pf.vatAmt, '', '', '', 'Pending', '', '', ''];
   });
 
-  // Execute in sequence
-  var ops = [];
-
-  // 1. Append to Billing Statement
-  if (billingRows.length) {
-    ops.push(apiAppend(TAB_BILLING_STMT+'!A:G', billingRows).then(function() {
-      document.getElementById('saving-text').textContent = 'Updating trip statuses...';
-    }));
-  }
-
-  // 2. Update each matched trip (mark Billed=Yes + set Shipment Number if blank)
+  // ── Update local state immediately ──
   tripUpdates.forEach(function(u) {
     var t = u.tripData;
-    var newShipNum = (t.shipmentNumber && t.shipmentNumber.trim()) ? t.shipmentNumber : u.shipmentNum;
-    var row = [t.id, t.deliveryDate, t.truck, t.shipmentDate, t.type, newShipNum, 'Yes', t.route, t.rate];
-    ops.push(apiUpdate(TAB_TRIPS+'!A'+u.rowIndex+':I'+u.rowIndex, [row]));
-    // Update local state
     t.billed = 'Yes';
-    if (!t.shipmentNumber) t.shipmentNumber = u.shipmentNum;
+    if (!t.shipmentNumber || !t.shipmentNumber.trim()) t.shipmentNumber = u.shipmentNum;
   });
 
-  // 3. Append SOA Master rows
-  if (soaRows.length) {
-    ops.push(apiAppend(TAB_SOA+'!A:M', soaRows));
+  // ── Step 1: Append to Billing Statement (single call) ──
+  var step1 = billingRows.length
+    ? apiAppend(TAB_BILLING_STMT+'!A:G', billingRows)
+    : Promise.resolve();
+
+  // ── Step 2: Batch update all Trips rows in ONE call using batchUpdate ──
+  // Instead of N individual PUT calls, send one batchUpdate with N valueRanges
+  // Google Sheets batchUpdate allows up to 1000 ranges per call — well within limits
+  function batchUpdateTrips(updates) {
+    if (!updates.length) return Promise.resolve();
+
+    var valueRanges = updates.map(function(u) {
+      var t = u.tripData;
+      var newShipNum = (t.shipmentNumber && t.shipmentNumber.trim()) ? t.shipmentNumber : u.shipmentNum;
+      return {
+        range:  TAB_TRIPS + '!A' + u.rowIndex + ':I' + u.rowIndex,
+        values: [[t.id, t.deliveryDate, t.truck, t.shipmentDate,
+                  t.type, newShipNum, 'Yes', t.route, t.rate]]
+      };
+    });
+
+    // Sheets batchUpdate endpoint — single API call for all rows
+    return fetch(
+      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
+      '/values:batchUpdate',
+      {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valueInputOption: 'USER_ENTERED', data: valueRanges })
+      }
+    ).then(function(r) {
+      if (!r.ok) return r.json().then(function(e) {
+        throw new Error((e.error && e.error.message) || 'batchUpdate failed');
+      });
+      return r.json();
+    });
   }
 
-  Promise.all(ops).then(function() {
-    hideSaving();
-    showToast('✅ Saved! ' + billingRows.length + ' billing rows, ' + tripUpdates.length + ' trips updated');
-    parsedFiles = []; matchResults = []; queuedFiles = [];
-    renderFileQueue();
-    document.getElementById('match-results-section').style.display = 'none';
-    document.getElementById('commit-section').style.display = 'none';
-    // Reload trips to reflect billed status
-    loadTrips();
-  }).catch(function(err) {
-    hideSaving();
-    showToast('❌ Save failed: ' + err.message);
-    console.error(err);
-  });
+  // ── Step 3: Append SOA Master rows (single call) ──
+  function appendSOAMaster() {
+    return soaRows.length ? apiAppend(TAB_SOA+'!A:M', soaRows) : Promise.resolve();
+  }
+
+  // ── Execute steps sequentially to avoid quota issues ──
+  document.getElementById('saving-text').textContent = 'Step 1/3: Saving billing rows...';
+  step1
+    .then(function() {
+      document.getElementById('saving-text').textContent =
+        'Step 2/3: Updating ' + tripUpdates.length + ' trips (1 batch call)...';
+      return batchUpdateTrips(tripUpdates);
+    })
+    .then(function() {
+      document.getElementById('saving-text').textContent = 'Step 3/3: Saving SOA records...';
+      return appendSOAMaster();
+    })
+    .then(function() {
+      hideSaving();
+      showToast('✅ Saved! ' + billingRows.length + ' billing rows · ' + tripUpdates.length + ' trips updated');
+      parsedFiles = []; matchResults = []; queuedFiles = [];
+      renderFileQueue();
+      document.getElementById('soa-preview-section').style.display = 'none';
+      document.getElementById('match-results-section').style.display = 'none';
+      document.getElementById('commit-section').style.display = 'none';
+      loadTrips();
+    })
+    .catch(function(err) {
+      hideSaving();
+      showToast('❌ Save failed: ' + err.message);
+      console.error('doCommit error:', err);
+    });
 }
 
 // ═══ BILLING CALENDAR ════════════════════════════════
