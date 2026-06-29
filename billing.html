@@ -515,7 +515,7 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
 const SHEET_ID          = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const TAB_TRIPS         = 'Trips';
 const TAB_BILLING_STMT  = 'Billing Statement';
-const TAB_SOA           = "'SOA Masters'";
+const TAB_SOA           = 'SOA Masters';
 const ADMIN_EMAIL       = 'nicolobalonzo@gmail.com';
 const VAT_RATE          = 0.12;
 
@@ -1843,7 +1843,6 @@ function renderSOACalendar() {
 
     html += '<div class="'+cls+'" onclick="selectSoaCalDay(\''+dateStr+'\')" style="min-height:52px;height:auto;max-height:none">'
       + inner + '</div>';
-      + inner + '</div>';
   }
   document.getElementById('soa-cal-grid').innerHTML = html;
 }
@@ -2240,9 +2239,17 @@ function saveSOAEdit() {
 function closeSOASheet() { document.getElementById('soa-sheet').classList.remove('open'); }
 
 // ═══ API ══════════════════════════════════════════════
+// Quote sheet names that contain spaces for the Sheets API
+// e.g. "SOA Masters!A2:M" → "'SOA Masters'!A2:M"
+function quoteRange(range) {
+  return range.replace(/^([^!]+)(!.*)$/, function(_, sheet, rest) {
+    return (sheet.indexOf(' ') >= 0 ? "'" + sheet + "'" : sheet) + rest;
+  });
+}
+
 function apiGet(range) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
-    '/values/'+encodeURIComponent(range),
+    '/values/'+encodeURIComponent(quoteRange(range)),
     { headers:{ Authorization:'Bearer '+token } })
     .then(function(r){
       if(r.status===401){location.href='index.html';throw new Error('Auth');}
@@ -2251,7 +2258,7 @@ function apiGet(range) {
 }
 function apiAppend(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
-    '/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
+    '/values/'+encodeURIComponent(quoteRange(range))+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
     { method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
       body:JSON.stringify({values:values}) })
     .then(function(r){
@@ -2261,7 +2268,7 @@ function apiAppend(range, values) {
 }
 function apiUpdate(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+
-    '/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
+    '/values/'+encodeURIComponent(quoteRange(range))+'?valueInputOption=USER_ENTERED',
     { method:'PUT', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
       body:JSON.stringify({values:values}) })
     .then(function(r){
