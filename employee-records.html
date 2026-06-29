@@ -1324,16 +1324,16 @@ function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.c
 =======================================================
 RECORDS.HTML PATCH — Shipment Date sa My Tasks
 =======================================================
-PAANO I-APPLY:
+HOW TO APPLY:
 
-Hanapin ang </body> tag sa dulo ng records.html
-at i-paste ang buong block na ito BAGO ang </body>:
+Find the </body> tag at the bottom of records.html
+and paste this entire block BEFORE </body>:
 =======================================================
 -->
 <script>
 // ═══ PATCH: SHIPMENT DATE IN MY TASKS ════════════════════════════════════
-// This patch overrides key functions from records.html to add Shipment Date
-// tracking alongside Shipment Number in the "My Tasks" view.
+// Overrides key functions in records.html to add Shipment Date
+// tracking alongside Shipment Number in the My Tasks view.
 
 // ── Override: isRecordSubmitted (ShipmentNum needs both) ──
 var _orig_isRecordSubmitted = window.isRecordSubmitted || null;
@@ -1360,12 +1360,12 @@ window.getStatus = function(task, today) {
 var _origDueLabel = window.dueLabel;
 window.dueLabel = function(t) {
   if (t.type === 'ShipmentNum') {
-    if (t.status === 'submitted') return '✓ Shipment # at Date na-file';
+    if (t.status === 'submitted') return '✓ Shipment # and Date filed';
     var hasN = !!(t.shipmentNum  && t.shipmentNum.trim());
     var hasD = !!(t.shipmentDate && t.shipmentDate.trim());
-    if (hasN && !hasD) return '📅 May Shipment # — kulang ang Shipment Date!';
-    if (hasD && !hasN) return '🔢 May Shipment Date — kulang ang Shipment #!';
-    return '📋 Wala pang Shipment # at Date';
+    if (hasN && !hasD) return '📅 Has Shipment # — Shipment Date missing!';
+    if (hasD && !hasN) return '🔢 Has Shipment Date — Shipment # missing!';
+    return '📋 No Shipment # or Date yet';
   }
   return _origDueLabel ? _origDueLabel(t) : '';
 };
@@ -1398,7 +1398,7 @@ window.buildShipmentForm = function(t) {
   }
   return '<div style="background:rgba(124,58,237,0.07);border-left:3px solid var(--purple);'
     + 'border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:var(--purple);font-weight:600">'
-    + '📋 Kailangan: Shipment Number AT Shipment Date</div>'
+    + '📋 Required: Shipment Number AND Shipment Date</div>'
 
     // Shipment Number
     + '<div class="fg"><label class="fl">Shipment Number'
@@ -1415,18 +1415,18 @@ window.buildShipmentForm = function(t) {
     + '<input class="fi" id="sf-shipdate" type="date" '
     + 'value="' + (t.shipmentDate||suggested) + '" onchange="onSfShipDateChange(this)">'
     + '<div style="font-size:10px;color:var(--blue);margin-top:5px">'
-    + '💡 Date na irerehistro ng San Miguel — usually 1-2 working days matapos ng delivery (' + t.date + ')'
+    + '💡 Date recorded by San Miguel — usually 1-2 working days after delivery (' + t.date + ')'
     + '</div></div>'
 
     // Partial warning
     + '<div id="sf-partial-warn" style="display:' + ((hasN&&!hasD)||(!hasN&&hasD)?'block':'none')
     + ';background:rgba(179,37,51,0.08);border-left:3px solid var(--red);'
     + 'border-radius:10px;padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--red);font-weight:600">'
-    + (hasN&&!hasD ? '⚠️ May Shipment # — ilagay din ang Shipment Date!'
-                   : '⚠️ May Shipment Date — ilagay din ang Shipment Number!') + '</div>'
+    + (hasN&&!hasD ? '⚠️ Has Shipment # — Shipment Date also required!'
+                   : '⚠️ Has Shipment Date — Shipment Number also required!') + '</div>'
 
     + '<button class="btn btn-purple" onclick="saveShipmentNum()">💾 '
-    + (t.status==='submitted' ? 'I-update' : 'I-file') + ' ang Shipment # at Date</button>';
+    + (t.status==='submitted' ? 'Update' : 'File') + ' Shipment # and Date</button>';
 };
 
 window.onSfShipNumChange = function(input) {
@@ -1436,7 +1436,7 @@ window.onSfShipNumChange = function(input) {
   var hasNum=input.value.trim().length>0, hasDate=dateEl.value.trim().length>0;
   if (hasNum&&!hasDate) {
     warn.style.display='block';
-    warn.textContent='⚠️ May Shipment # ka — ilagay din ang Shipment Date!';
+    warn.textContent='⚠️ Shipment # entered — please also add Shipment Date!';
     dateEl.style.boxShadow='var(--neu-in), 0 0 0 2px rgba(179,37,51,0.4)';
   } else { warn.style.display='none'; dateEl.style.boxShadow=''; }
 };
@@ -1448,7 +1448,7 @@ window.onSfShipDateChange = function(el) {
   var hasDate=el.value.trim().length>0, hasNum=numEl.value.trim().length>0;
   if (hasDate&&!hasNum) {
     warn.style.display='block';
-    warn.textContent='⚠️ May Shipment Date ka — ilagay din ang Shipment Number!';
+    warn.textContent='⚠️ Shipment Date entered — please also add Shipment Number!';
     numEl.style.boxShadow='var(--neu-in), 0 0 0 2px rgba(179,37,51,0.4)';
   } else { warn.style.display='none'; numEl.style.boxShadow=''; }
 };
@@ -1459,26 +1459,26 @@ window.saveShipmentNum = function() {
   var numVal =(document.getElementById('sf-shipnum') ||{}).value||'';
   var dateVal=(document.getElementById('sf-shipdate')||{}).value||'';
   if (!numVal.trim()) {
-    showToast('❌ Ilagay ang Shipment Number!');
+    showToast('❌ Please enter the Shipment Number!');
     var el=document.getElementById('sf-shipnum');
     if(el){el.style.boxShadow='var(--neu-in), 0 0 0 3px rgba(179,37,51,0.5)';el.focus();}
     setTimeout(function(){var e=document.getElementById('sf-shipnum');if(e)e.style.boxShadow='';},3000);
     return;
   }
   if (!dateVal.trim()) {
-    showToast('❌ Ilagay ang Shipment Date!');
+    showToast('❌ Please enter the Shipment Date!');
     var el=document.getElementById('sf-shipdate');
     if(el){el.style.boxShadow='var(--neu-in), 0 0 0 3px rgba(179,37,51,0.5)';el.focus();}
     setTimeout(function(){var e=document.getElementById('sf-shipdate');if(e)e.style.boxShadow='';},3000);
     return;
   }
-  showSaving('Filing Shipment # at Date...');
+  showSaving('Filing Shipment # and Date...');
   // Save D=ShipmentDate, E=Type, F=ShipmentNum in one range update
   apiUpdate(TAB_TRIPS+'!D'+t.tripRowIndex+':F'+t.tripRowIndex,
             [[dateVal.trim(), t.tripType||'', numVal.trim()]])
     .then(function(){
       hideSaving();
-      showToast('✅ Shipment # at Date na-file!');
+      showToast('✅ Shipment # and Date filed!');
       closeSheet('task-sheet');
       loadAll();
     })
