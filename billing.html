@@ -1740,7 +1740,11 @@ function loadSOAData() {
   document.getElementById('soa-list').innerHTML =
     '<div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading SOAs...</div>';
 
-  apiGet("'" + TAB_SOA + "'!A2:M").then(function(res) {
+  // NOTE: TAB_SOA ("SOA Masters") already gets single-quoted automatically by
+  // quoteRange() inside apiGet(), since it contains a space. Do NOT manually
+  // wrap it in quotes here — doing so double-quotes the range and Sheets
+  // rejects it, which is why loading/saving SOA data used to silently fail.
+  apiGet(TAB_SOA + '!A2:M').then(function(res) {
     var rows = res.values || [];
     allSOAs = rows.map(function(r, i) {
       return {
@@ -2267,7 +2271,12 @@ function saveSOAEdit() {
   var row = [r.soaNum, r.period, r.totalTrips, r.grandTotal, r.vatAmt, r.netAmount,
              dateSent, amtReceived, dateReceived, status, deductions, orNumber, notes];
   showSaving('Updating SOA...');
-  apiUpdate("'" + TAB_SOA + "'!A"+r.rowIndex+':M'+r.rowIndex, [row]).then(function() {
+  // FIX: TAB_SOA ("SOA Masters") must be passed WITHOUT manual quotes — quoteRange()
+  // inside apiUpdate() already wraps sheet names that contain a space in single quotes.
+  // The old code did apiUpdate("'" + TAB_SOA + "'!A..."), which got double-quoted
+  // by quoteRange() into ''SOA Masters''!A2:M2 — an invalid range that Google Sheets
+  // rejected, which is why Save silently failed.
+  apiUpdate(TAB_SOA + '!A'+r.rowIndex+':M'+r.rowIndex, [row]).then(function() {
     hideSaving();
     Object.assign(r, {status:status, dateSent:dateSent, amtReceived:amtReceived,
                       dateReceived:dateReceived, deductions:deductions, orNumber:orNumber, notes:notes});
@@ -2278,7 +2287,7 @@ function saveSOAEdit() {
     renderSOAReport();
     renderSOACalendar();
     showToast('✅ SOA updated!');
-  }).catch(function(err){ hideSaving(); showToast('❌ Save failed'); console.error(err); });
+  }).catch(function(err){ hideSaving(); showToast('❌ Save failed: ' + err.message); console.error(err); });
 }
 
 function closeSOASheet() { document.getElementById('soa-sheet').classList.remove('open'); }
