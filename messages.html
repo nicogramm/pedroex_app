@@ -567,6 +567,7 @@ function apiAppend(range, values) {
       return r.json();
     });
 }
+  
 function apiUpdate(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(quoteRange(range)) + '?valueInputOption=USER_ENTERED',
     { method: 'PUT', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ values: values }) })
