@@ -31,14 +31,14 @@ body.dark {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
-.screen{display:flex;flex-direction:column;height:100dvh;width:100%}
+.screen{display:flex;flex-direction:column;height:100dvh;width:100%;position:relative}
 
-.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px)+14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07)}
+.topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px)+14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07);z-index:10}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
-.tb-left{display:flex;align-items:center;gap:10px}
+.tb-left{display:flex;align-items:center;gap:10px;min-width:0}
 .tb-back{width:32px;height:32px;border-radius:10px;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--text2);font-size:16px;display:none;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .tb-back.show{display:flex}
-.tb-title-txt{font-size:16px;font-weight:700;color:var(--text)}
+.tb-title-txt{font-size:16px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
 .tb-sub{font-size:11px;color:var(--text2)}
 .tb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--red);object-fit:cover;box-shadow:var(--neu-xs)}
 .tb-new{width:34px;height:34px;border-radius:12px;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--red);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -48,7 +48,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .thread-list-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 90px}
 .thread-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:16px;cursor:pointer;transition:background 0.15s}
 .thread-item:active{background:var(--bg2)}
-.thread-avatar{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;box-shadow:var(--neu-xs)}
+.thread-avatar{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;box-shadow:var(--neu-xs)}
 .thread-body{flex:1;min-width:0}
 .thread-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .thread-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -56,49 +56,170 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .thread-preview{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .thread-preview.unread{color:var(--text);font-weight:600}
 .thread-unread-badge{min-width:18px;height:18px;border-radius:9px;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px;flex-shrink:0}
+.thread-mem{font-size:10px;color:var(--text3);flex-shrink:0;white-space:nowrap}
 
 .empty-hint{text-align:center;padding:60px 24px;color:var(--text3);font-size:13px;line-height:1.7}
 
 /* ═══ CHAT VIEW ═══ */
-.chat-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 10px;display:flex;flex-direction:column;gap:4px}
+.chat-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 10px;display:flex;flex-direction:column;gap:3px}
 .day-sep{text-align:center;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;margin:14px 0 8px}
+.sys-msg{align-self:center;font-size:11px;color:var(--text3);background:var(--bg2);box-shadow:var(--neu-xs);padding:5px 14px;border-radius:12px;margin:6px 0;text-align:center;max-width:88%}
 
-.msg-row{display:flex;align-items:flex-end;gap:8px;max-width:82%}
+.msg-row{display:flex;align-items:flex-end;gap:8px;max-width:84%}
 .msg-row.mine{align-self:flex-end;flex-direction:row-reverse}
 .msg-row.theirs{align-self:flex-start}
-.msg-av{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;margin-bottom:2px}
-.msg-bubble{padding:9px 13px;border-radius:16px;font-size:13.5px;line-height:1.45;word-wrap:break-word;white-space:pre-wrap}
+.msg-av{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;margin-bottom:2px}
+.msg-col{display:flex;flex-direction:column;min-width:0}
+.msg-row.mine .msg-col{align-items:flex-end}
+.msg-sender{font-size:10.5px;font-weight:700;color:var(--text2);margin:0 4px 2px}
+.bubble-wrap{cursor:pointer}
+.msg-bubble{padding:9px 13px;border-radius:16px;font-size:13.5px;line-height:1.45;word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap}
 .msg-row.mine .msg-bubble{background:var(--red);color:#fff;border-bottom-right-radius:4px}
 .msg-row.theirs .msg-bubble{background:var(--bg2);color:var(--text);box-shadow:var(--neu-xs);border-bottom-left-radius:4px}
 .msg-meta{font-size:9px;color:var(--text3);margin-top:3px;padding:0 4px}
 .msg-row.mine .msg-meta{text-align:right}
 .msg-seen{color:var(--blue);font-weight:600}
+.mention{font-weight:700;color:var(--blue)}
+.msg-row.mine .mention{color:#ffe08a}
+
+/* ═══ IMAGE BUBBLE ═══ */
+.img-bubble{padding:4px;overflow:hidden}
+.img-holder{position:relative;border-radius:12px;overflow:hidden}
+.chat-img{display:block;max-width:220px;width:100%;border-radius:12px;cursor:pointer}
+.img-err{min-width:140px;height:120px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);background:var(--bg);border-radius:12px}
+.img-uploading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);color:#fff;font-size:12px;font-weight:600}
+.img-cap{padding:6px 8px 2px;font-size:13px;line-height:1.4}
+.msg-row.mine .img-cap{color:#fff}
+
+/* ═══ POLL CARD ═══ */
+.poll-card{min-width:220px;max-width:260px}
+.poll-q{font-size:14px;font-weight:700;margin:2px 2px 8px}
+.msg-row.mine .poll-q{color:#fff}
+.poll-opt{position:relative;border-radius:11px;margin-bottom:6px;overflow:hidden;cursor:pointer;background:var(--bg);box-shadow:var(--neu-xs)}
+.msg-row.mine .poll-opt{background:rgba(255,255,255,0.16);box-shadow:none}
+.poll-bar{position:absolute;left:0;top:0;bottom:0;background:rgba(37,99,235,0.18);transition:width 0.4s ease}
+.msg-row.mine .poll-bar{background:rgba(255,255,255,0.28)}
+.poll-opt.voted .poll-bar{background:rgba(22,163,74,0.24)}
+.poll-opt-row{position:relative;display:flex;justify-content:space-between;align-items:center;padding:9px 11px;font-size:12.5px}
+.poll-opt-txt{font-weight:500}
+.poll-opt-pct{font-weight:700;font-size:11px;opacity:0.85}
+.poll-foot{font-size:10.5px;color:var(--text3);margin:2px 2px 0}
+.msg-row.mine .poll-foot{color:rgba(255,255,255,0.7)}
+
+/* ═══ ATTENDANCE CARD ═══ */
+.att-card{min-width:230px;max-width:270px}
+.att-title{font-size:14px;font-weight:700;margin:2px 2px 9px}
+.msg-row.mine .att-title{color:#fff}
+.att-btns{display:flex;gap:6px;margin-bottom:8px}
+.att-btn{flex:1;border:none;border-radius:11px;background:var(--bg);box-shadow:var(--neu-xs);padding:8px 4px;font-size:11px;font-weight:600;color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'Inter',sans-serif}
+.msg-row.mine .att-btn{background:rgba(255,255,255,0.16);box-shadow:none;color:#fff}
+.att-btn:active{box-shadow:var(--neu-in)}
+.att-btn.active.present{background:rgba(22,163,74,0.9);color:#fff}
+.att-btn.active.late{background:rgba(245,158,11,0.9);color:#fff}
+.att-btn.active.absent{background:rgba(179,37,51,0.9);color:#fff}
+.att-count{font-size:13px;font-weight:800}
+.att-list{font-size:11px;color:var(--text2);margin:3px 2px;line-height:1.4}
+.msg-row.mine .att-list{color:rgba(255,255,255,0.85)}
+.att-list-k{opacity:0.9}
+.att-foot{font-size:10.5px;color:var(--text3);margin-top:5px}
+.msg-row.mine .att-foot{color:rgba(255,255,255,0.7)}
+
+/* ═══ REACTIONS ═══ */
+.react-chips{display:flex;gap:4px;flex-wrap:wrap;margin:3px 2px 0}
+.react-chips.mine{justify-content:flex-end}
+.react-chip{font-size:11px;background:var(--bg);box-shadow:var(--neu-xs);border-radius:11px;padding:2px 8px;cursor:pointer;line-height:1.5}
+.react-chip.mine{box-shadow:var(--neu-in);color:var(--blue);font-weight:700}
+.react-bar{position:fixed;z-index:350;display:none;gap:4px;background:var(--bg);box-shadow:var(--neu-out);border-radius:22px;padding:6px 10px}
+.react-bar.show{display:flex;animation:popIn 0.18s ease}
+@keyframes popIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+.react-pick{font-size:22px;cursor:pointer;transition:transform 0.12s}
+.react-pick:active{transform:scale(1.3)}
 
 /* ═══ COMPOSER ═══ */
-.composer{flex-shrink:0;display:flex;align-items:flex-end;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);box-shadow:0 -3px 14px rgba(0,0,0,0.07)}
+.composer-region{flex-shrink:0;position:relative}
+.composer{display:flex;align-items:flex-end;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);box-shadow:0 -3px 14px rgba(0,0,0,0.07)}
 body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
-.composer-input{flex:1;background:var(--bg);border:none;border-radius:20px;box-shadow:var(--neu-in);padding:11px 16px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;resize:none;max-height:100px;line-height:1.4}
+.comp-btn{width:38px;height:38px;border-radius:50%;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--red);font-size:19px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.comp-btn:active{box-shadow:var(--neu-in)}
+.comp-btn.emoji{color:var(--orange);font-size:17px}
+.composer-input{flex:1;background:var(--bg);border:none;border-radius:20px;box-shadow:var(--neu-in);padding:11px 16px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;resize:none;max-height:110px;line-height:1.4}
 .composer-send{width:40px;height:40px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:4px 4px 12px rgba(179,37,51,0.35)}
 .composer-send:active{transform:scale(0.94)}
-.composer-send:disabled{opacity:0.4}
 
-/* ═══ SHEET (new conversation picker) ═══ */
+/* image preview strip above composer */
+.img-preview{display:none;align-items:center;gap:10px;padding:8px 14px;background:var(--bg);border-top:1px solid rgba(0,0,0,0.05)}
+.img-preview.show{display:flex}
+.img-preview img{width:52px;height:52px;object-fit:cover;border-radius:10px;box-shadow:var(--neu-xs)}
+.img-preview-txt{flex:1;font-size:12px;color:var(--text2)}
+.img-preview-x{width:26px;height:26px;border-radius:50%;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--red);font-size:13px;cursor:pointer}
+
+/* attach menu popup */
+.attach-menu{display:none;position:absolute;bottom:100%;left:12px;margin-bottom:8px;background:var(--bg);box-shadow:var(--neu-out);border-radius:18px;padding:8px;z-index:120;min-width:180px}
+.attach-menu.show{display:block;animation:popUp 0.2s ease}
+@keyframes popUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.attach-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:500;color:var(--text)}
+.attach-item:active{background:var(--bg2)}
+.attach-ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0}
+
+/* emoji panel */
+.emoji-panel{display:none;max-height:220px;overflow-y:auto;padding:12px 14px;background:var(--bg);border-top:1px solid rgba(0,0,0,0.05);grid-template-columns:repeat(8,1fr);gap:4px}
+.emoji-panel.show{display:grid}
+.emoji-cell{font-size:22px;text-align:center;padding:5px 0;cursor:pointer;border-radius:8px}
+.emoji-cell:active{background:var(--bg2)}
+
+/* mention picker */
+.mention-picker{display:none;position:absolute;bottom:100%;left:12px;right:12px;margin-bottom:8px;background:var(--bg);box-shadow:var(--neu-out);border-radius:16px;padding:6px;z-index:130;max-height:220px;overflow-y:auto}
+.mention-picker.show{display:block}
+.mention-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:11px;cursor:pointer}
+.mention-item:active{background:var(--bg2)}
+.mention-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.mention-name{font-size:13px;font-weight:600;color:var(--text)}
+.mention-role{font-size:10px;color:var(--text3)}
+
+/* ═══ SHEETS & MODALS ═══ */
 .sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end}
 .sheet-overlay.open{display:flex}
-.sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(28px + env(safe-area-inset-bottom,0px));width:100%;max-height:80dvh;overflow-y:auto;animation:slideUp 0.28s cubic-bezier(0.16,1,0.3,1)}
+.sheet{background:var(--bg);border-radius:28px 28px 0 0;padding:8px 22px calc(24px + env(safe-area-inset-bottom,0px));width:100%;max-height:82dvh;overflow-y:auto;animation:slideUp 0.28s cubic-bezier(0.16,1,0.3,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet-handle{width:40px;height:4px;background:var(--text3);border-radius:2px;margin:0 auto 16px;opacity:0.3}
-.sheet-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:14px}
+.sheet-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px}
+.sheet-note{font-size:12px;color:var(--text3);margin-bottom:14px}
+
+.modal-input{width:100%;background:var(--bg);border:none;border-radius:14px;box-shadow:var(--neu-in);padding:12px 16px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px}
+.modal-label{font-size:12px;font-weight:700;color:var(--text2);margin:6px 2px 8px;text-transform:uppercase;letter-spacing:0.4px}
+.poll-opt-input-row{display:flex;gap:8px;align-items:center}
+.poll-opt-input{margin-bottom:8px}
+.poll-opt-del{width:34px;height:44px;border:none;background:transparent;color:var(--text3);font-size:14px;cursor:pointer;flex-shrink:0}
+.add-opt-btn{background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;cursor:pointer;padding:4px 2px;margin-bottom:12px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 14px}
+.toggle-row label{font-size:14px;color:var(--text)}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch .slider{position:absolute;inset:0;background:var(--bg);box-shadow:var(--neu-in);border-radius:13px;transition:0.2s}
+.switch .slider::before{content:'';position:absolute;width:18px;height:18px;left:4px;top:4px;background:var(--bg);box-shadow:var(--neu-sm);border-radius:50%;transition:0.2s}
+.switch input:checked + .slider::before{transform:translateX(20px);background:var(--red)}
+
+.member-list{max-height:44dvh;overflow-y:auto;margin:4px 0 16px}
 .contact-item{display:flex;align-items:center;gap:12px;padding:10px 6px;cursor:pointer;border-radius:14px}
 .contact-item:active{background:var(--bg2)}
+.contact-item.sel{background:var(--bg2)}
 .contact-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.contact-info{flex:1;min-width:0}
 .contact-name{font-size:14px;font-weight:600;color:var(--text)}
 .contact-role{font-size:11px;color:var(--text3)}
+.member-check{font-size:18px;color:var(--red);flex-shrink:0}
+
+.sheet-actions{display:flex;gap:10px;margin-top:6px}
+.btn{flex:1;border:none;border-radius:14px;padding:13px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
+.btn-primary{background:var(--red);color:#fff;box-shadow:4px 4px 12px rgba(179,37,51,0.35)}
+.btn-primary:active{transform:scale(0.98)}
+.btn-ghost{background:var(--bg);box-shadow:var(--neu-sm);color:var(--text2)}
+.btn-ghost:active{box-shadow:var(--neu-in)}
 
 .loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:56px;color:var(--text3);font-size:13px}
 .spinner{width:20px;height:20px;border:2px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 20px;font-size:12.5px;font-weight:500;color:var(--text);z-index:400;max-width:88vw;text-align:center;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .toast.show{opacity:1}
 </style>
 </head>
@@ -108,7 +229,7 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
   <div class="topbar">
     <div class="tb-left">
       <button class="tb-back" id="tb-back" onclick="closeChat()">‹</button>
-      <div>
+      <div style="min-width:0">
         <div class="tb-title-txt" id="tb-title">Messages</div>
         <div class="tb-sub" id="tb-sub" style="display:none"></div>
       </div>
@@ -124,83 +245,252 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
     <div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading messages...</div>
   </div>
 
-  <!-- CHAT VIEW (hidden until a thread is opened) -->
+  <!-- CHAT VIEW -->
   <div class="chat-wrap" id="chat-wrap" style="display:none"></div>
-  <div class="composer" id="composer" style="display:none">
-    <textarea class="composer-input" id="composer-input" rows="1" placeholder="Type a message…" onkeydown="handleComposerKey(event)" oninput="autoGrow(this)"></textarea>
-    <button class="composer-send" id="composer-send" onclick="sendMessage()">➤</button>
+
+  <!-- COMPOSER REGION -->
+  <div class="composer-region" id="composer" style="display:none">
+
+    <!-- attach menu -->
+    <div class="attach-menu" id="attach-menu">
+      <div class="attach-item" onclick="pickPhoto()"><div class="attach-ic" style="background:var(--blue)">📷</div>Photo</div>
+      <div class="attach-item" onclick="openPollModal()"><div class="attach-ic" style="background:var(--green)">📊</div>Poll</div>
+      <div class="attach-item" onclick="openAttModal()"><div class="attach-ic" style="background:var(--orange)">📋</div>Attendance</div>
+    </div>
+
+    <!-- mention picker -->
+    <div class="mention-picker" id="mention-picker"></div>
+
+    <!-- image preview -->
+    <div class="img-preview" id="img-preview">
+      <img src="" alt="">
+      <div class="img-preview-txt">Photo ready — add a caption or send.</div>
+      <button class="img-preview-x" onclick="cancelImage()">✕</button>
+    </div>
+
+    <!-- emoji panel -->
+    <div class="emoji-panel" id="emoji-panel"></div>
+
+    <div class="composer">
+      <button class="comp-btn" id="attach-btn" onclick="toggleAttach()">＋</button>
+      <button class="comp-btn emoji" id="emoji-btn" onclick="toggleEmoji()">☺</button>
+      <textarea class="composer-input" id="composer-input" rows="1" placeholder="Type a message…"
+        onkeydown="handleComposerKey(event)" oninput="onComposerInput(this)"></textarea>
+      <button class="composer-send" id="composer-send" onclick="sendMessage()">➤</button>
+    </div>
   </div>
 </div>
 
-<!-- NEW CONVERSATION SHEET -->
-<div class="sheet-overlay" id="convo-sheet">
+<!-- react bar -->
+<div class="react-bar" id="react-bar"></div>
+
+<!-- hidden photo input -->
+<input type="file" id="photo-input" accept="image/*" style="display:none" onchange="onPhotoChosen(this)">
+
+<!-- NEW GROUP SHEET -->
+<div class="sheet-overlay" id="group-sheet" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">New Message</div>
-    <div id="contact-list"><div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading contacts...</div></div>
+    <div class="sheet-title">New Group</div>
+    <div class="sheet-note">Pick members and give the group a name.</div>
+    <input class="modal-input" id="group-name-input" placeholder="Group name (e.g. Truck CAH Crew)" maxlength="50">
+    <div class="modal-label">Members</div>
+    <div class="member-list" id="member-list"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeGroupSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="createGroup()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- POLL MODAL -->
+<div class="sheet-overlay" id="poll-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Create Poll</div>
+    <input class="modal-input" id="poll-q-input" placeholder="Ask a question…" maxlength="120">
+    <div class="modal-label">Options</div>
+    <div id="poll-opts"></div>
+    <button class="add-opt-btn" onclick="addPollOption()">＋ Add option</button>
+    <div class="toggle-row">
+      <label for="poll-multi">Allow multiple answers</label>
+      <label class="switch"><input type="checkbox" id="poll-multi"><span class="slider"></span></label>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closePollModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitPoll()">Post Poll</button>
+    </div>
+  </div>
+</div>
+
+<!-- ATTENDANCE MODAL -->
+<div class="sheet-overlay" id="att-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Attendance Roll Call</div>
+    <div class="sheet-note">Members tap Present / Late / Absent to check in.</div>
+    <input class="modal-input" id="att-title-input" placeholder="Title" maxlength="80">
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeAttModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAtt()">Post Roll Call</button>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════════════
+// PedroEX — Messages (Group Chat) v2
+// Messenger-style: groups, mentions, emoji, polls, attendance,
+// photos (Drive), reactions, seen-by. Google Sheets backend.
+// ═══════════════════════════════════════════════════════
+
 // ═══ CONFIG ═══════════════════════════════════════════
-const SHEET_ID       = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-const TAB_MESSAGES   = 'Messages';
-const TAB_EMPLOYEES  = 'Employees';
-const BROADCAST_ID   = 'broadcast';
-const POLL_LIST_MS   = 10000;   // thread list refresh
-const POLL_CHAT_MS   = 4000;    // open-thread refresh
+var SHEET_ID      = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+var TAB_MESSAGES  = 'Messages';
+var TAB_GROUPS    = 'Groups';
+var TAB_EMPLOYEES = 'Employees';
+var POLL_LIST_MS  = 10000;   // thread-list refresh
+var POLL_CHAT_MS  = 4000;    // open-thread refresh
+var IMG_MAX_DIM   = 1280;    // client-side image resize before Drive upload
+var IMG_QUALITY   = 0.82;
+
+// Message types
+var T_TEXT = 'text', T_IMAGE = 'image', T_POLL = 'poll', T_ATT = 'attendance',
+    T_VOTE = 'vote', T_CHECKIN = 'checkin', T_REACT = 'reaction', T_SYS = 'system';
+var DISPLAY_TYPES = [T_TEXT, T_IMAGE, T_POLL, T_ATT, T_SYS];
 
 // ═══ STATE ════════════════════════════════════════════
-var token       = '';
-var myEmail     = '';
-var myName      = '';
-var isAdmin     = false;
-var allMessages = [];   // raw rows from Messages sheet, each: {rowIndex,id,ts,threadId,senderEmail,senderName,text,readBy:[]}
-var contacts    = [];   // [{email,name,role}]
-var currentThreadId = null;
-var currentThreadLabel = '';
+var token = '', myEmail = '', myName = '', isAdmin = false;
+var allRows = [];              // parsed Messages rows
+var contacts = [];             // [{email,name,role}] excluding me
+var contactsByEmail = {};      // email -> {email,name,role}
+var groups = [];               // [{id,name,members,color,createdBy,createdAt}]
+var currentGroup = null;       // active group object
 var listPollTimer, chatPollTimer;
-var lastRenderedMsgCount = 0;
+var lastRenderSig = '';        // signature to skip redundant chat re-renders
+var pendingImage = null;       // {dataUrl} preview before caption/send
+var reactTargetId = null;      // message id being reacted to
 
 // ═══ INIT ═════════════════════════════════════════════
 (function init() {
   document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
   token = localStorage.getItem('pedroex-token') || '';
-  var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+  var expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0', 10);
   if (!token || Date.now() >= expiry) { location.href = 'index.html'; return; }
 
   myEmail = (localStorage.getItem('pedroex-email') || '').toLowerCase();
-  myName  = localStorage.getItem('pedroex-firstname') || (localStorage.getItem('pedroex-name') || 'Me');
+  myName  = localStorage.getItem('pedroex-firstname') || localStorage.getItem('pedroex-name') || 'Me';
   isAdmin = (localStorage.getItem('pedroex-role') || '').toLowerCase() === 'admin';
 
   var pic = localStorage.getItem('pedroex-picture') || '';
   if (pic) document.getElementById('user-avatar').src = pic;
 
-  loadContacts();
-  loadMessages(true);
+  loadContacts()
+    .then(loadGroups)
+    .then(function () { return loadMessages(true); })
+    .catch(function (e) { console.error('Init error:', e); });
 
-  listPollTimer = setInterval(function() {
-    if (!currentThreadId) loadMessages(false);
+  listPollTimer = setInterval(function () {
+    if (!currentGroup) loadMessages(false);
   }, POLL_LIST_MS);
 })();
 
-window.addEventListener('beforeunload', function() {
+window.addEventListener('beforeunload', function () {
   clearInterval(listPollTimer);
   clearInterval(chatPollTimer);
 });
 
-// ═══ LOAD CONTACTS (Employees sheet) ═══════════════════
+// ═══ LOAD CONTACTS (Employees) ═════════════════════════
 function loadContacts() {
-  apiGet(TAB_EMPLOYEES + '!A2:D').then(function(res) {
+  return apiGet(TAB_EMPLOYEES + '!A2:D').then(function (res) {
     var rows = res.values || [];
-    contacts = rows
-      .filter(function(r) { return r[0] && (r[0] || '').toLowerCase() !== myEmail; })
-      .map(function(r) {
-        return { email: (r[0] || '').toLowerCase(), name: r[1] || r[0], role: r[3] || 'Employee' };
-      });
-  }).catch(function(e) { console.error('Load contacts error:', e); });
+    contacts = [];
+    contactsByEmail = {};
+    rows.forEach(function (r) {
+      var email = (r[0] || '').toLowerCase();
+      if (!email) return;
+      var c = { email: email, name: r[1] || email, role: r[3] || 'Employee' };
+      contactsByEmail[email] = c;
+      if (email !== myEmail) contacts.push(c);
+    });
+    // Make sure I'm resolvable too
+    if (!contactsByEmail[myEmail]) contactsByEmail[myEmail] = { email: myEmail, name: myName, role: 'Me' };
+  }).catch(function (e) { console.error('Load contacts error:', e); });
+}
+
+function nameOf(email) {
+  email = (email || '').toLowerCase();
+  if (email === myEmail) return myName;
+  var c = contactsByEmail[email];
+  return c ? c.name : email;
+}
+
+// ═══ LOAD GROUPS ═══════════════════════════════════════
+function loadGroups() {
+  return apiGet(TAB_GROUPS + '!A2:F').then(function (res) {
+    parseGroups(res.values || []);
+    if (!groups.length) return seedGeneralGroup();
+  }).catch(function (err) {
+    var m = String(err.message || '').toLowerCase();
+    if (m.indexOf('unable to parse range') > -1 || m.indexOf('not found') > -1) {
+      return createGroupsSheet().then(seedGeneralGroup);
+    }
+    console.error('Load groups error:', err);
+  });
+}
+
+function parseGroups(rows) {
+  groups = rows.map(function (r) {
+    return {
+      id: r[0] || '',
+      name: r[1] || 'Group',
+      members: r[2] || '*',          // '*' means everyone, else comma-emails
+      color: r[3] || '',
+      createdBy: (r[4] || '').toLowerCase(),
+      createdAt: r[5] || ''
+    };
+  }).filter(function (g) { return g.id; });
+}
+
+function memberEmailsOf(group) {
+  if (!group) return [];
+  if ((group.members || '*').trim() === '*') {
+    var all = Object.keys(contactsByEmail);
+    if (all.indexOf(myEmail) === -1) all.push(myEmail);
+    return all;
+  }
+  var list = group.members.split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean);
+  if (list.indexOf(myEmail) === -1) list.push(myEmail); // always include self for visibility
+  return list;
+}
+
+function iAmMember(group) {
+  if ((group.members || '*').trim() === '*') return true;
+  return memberEmailsOf(group).indexOf(myEmail) > -1;
+}
+
+function seedGeneralGroup() {
+  var g = {
+    id: 'grp-general',
+    name: 'General',
+    members: '*',
+    color: '#B32533',
+    createdBy: myEmail,
+    createdAt: new Date().toISOString()
+  };
+  return apiAppend(TAB_GROUPS + '!A:F',
+    [[g.id, g.name, g.members, g.color, g.createdBy, g.createdAt]])
+    .then(function () { groups = [g]; })
+    .catch(function (e) { console.error('Seed General failed:', e); groups = [g]; });
+}
+
+function createGroupsSheet() {
+  return addSheet(TAB_GROUPS, 500, 6).then(function () {
+    return apiUpdate(TAB_GROUPS + '!A1:F1',
+      [['GroupID', 'Name', 'Members', 'Color', 'CreatedBy', 'CreatedAt']]);
+  });
 }
 
 // ═══ LOAD MESSAGES ══════════════════════════════════════
@@ -209,137 +499,147 @@ function loadMessages(showLoader) {
     document.getElementById('thread-list-wrap').innerHTML =
       '<div class="loading-wrap"><div class="spinner"></div>&nbsp;Loading messages...</div>';
   }
-  apiGet(TAB_MESSAGES + '!A2:G').then(function(res) {
-    var rows = res.values || [];
-    allMessages = rows.map(function(r, i) {
-      return {
-        rowIndex:    i + 2,
-        id:          r[0] || '',
-        ts:          r[1] || '',
-        threadId:    r[2] || '',
-        senderEmail: (r[3] || '').toLowerCase(),
-        senderName:  r[4] || '',
-        text:        r[5] || '',
-        readBy:      (r[6] || '').split(',').map(function(s){ return s.trim().toLowerCase(); }).filter(Boolean)
-      };
-    }).filter(function(m){ return m.id && m.threadId; });
-
+  return apiGet(TAB_MESSAGES + '!A2:I').then(function (res) {
+    parseMessages(res.values || []);
     renderThreadList();
-
-    if (currentThreadId) renderChat(currentThreadId, currentThreadLabel);
-  }).catch(function(err) {
-    console.error('Load messages error:', err);
-    if (String(err.message || '').toLowerCase().indexOf('unable to parse range') > -1 ||
-        String(err.message || '').toLowerCase().indexOf('not found') > -1) {
-      // Messages sheet doesn't exist yet — that's fine, just show empty state
-      allMessages = [];
+    if (currentGroup) renderChat();
+  }).catch(function (err) {
+    var m = String(err.message || '').toLowerCase();
+    if (m.indexOf('unable to parse range') > -1 || m.indexOf('not found') > -1) {
+      allRows = [];
       renderThreadList();
     } else if (showLoader) {
       document.getElementById('thread-list-wrap').innerHTML =
-        '<div class="empty-hint">Couldn\'t load messages.<br>Pull down or reopen the page to retry.</div>';
-    }
-  });
-}
-
-// ═══ THREAD LIST RENDER ═════════════════════════════════
-function threadsFromMessages() {
-  var map = {}; // threadId -> {lastMsg, unread, otherEmail, otherName}
-  allMessages.forEach(function(m) {
-    if (!map[m.threadId]) map[m.threadId] = { threadId: m.threadId, lastMsg: null, unread: 0 };
-    var t = map[m.threadId];
-    if (!t.lastMsg || m.ts > t.lastMsg.ts) t.lastMsg = m;
-    var isMine = m.senderEmail === myEmail;
-    if (!isMine && m.readBy.indexOf(myEmail) === -1) t.unread++;
-  });
-
-  var threads = Object.values(map).map(function(t) {
-    if (t.threadId === BROADCAST_ID) {
-      t.label = '📢 Announcements';
-      t.isBroadcast = true;
+        '<div class="empty-hint">Couldn\'t load messages.<br>Reopen the page to retry.</div>';
+      console.error('Load messages error:', err);
     } else {
-      var parts = t.threadId.split('|');
-      var otherEmail = parts.find(function(p){ return p !== myEmail; }) || parts[0];
-      var contact = contacts.find(function(c){ return c.email === otherEmail; });
-      t.label = contact ? contact.name : (otherEmail || 'Unknown');
-      t.otherEmail = otherEmail;
+      console.error('Load messages error:', err);
     }
-    return t;
   });
-
-  threads.sort(function(a, b) {
-    var ta = a.lastMsg ? a.lastMsg.ts : '';
-    var tb = b.lastMsg ? b.lastMsg.ts : '';
-    return tb.localeCompare(ta);
-  });
-
-  return threads;
 }
 
-function avatarColor(seed) {
-  var colors = ['#B32533','#2563eb','#16a34a','#f59e0b','#7c3aed','#0891b2','#db2777'];
-  var h = 0;
-  for (var i = 0; i < (seed || '').length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
-  return colors[h % colors.length];
-}
-function initials(name) {
-  if (!name) return '?';
-  var parts = name.trim().split(/\s+/);
-  return ((parts[0] || '')[0] || '') + ((parts[1] || '')[0] || '');
+function parseMessages(rows) {
+  allRows = rows.map(function (r, i) {
+    // New schema: A..I = ID,TS,Thread,SenderEmail,SenderName,Type,Message,Meta,ReadBy
+    // Legacy 7-col: ...,Message(F),ReadBy(G). If col F isn't a known type -> legacy text.
+    var type = (r[5] || '').toLowerCase();
+    var isKnown = [T_TEXT, T_IMAGE, T_POLL, T_ATT, T_VOTE, T_CHECKIN, T_REACT, T_SYS].indexOf(type) > -1;
+    var message, meta, readByRaw;
+    if (isKnown) {
+      message = r[6] || '';
+      meta = safeJson(r[7]);
+      readByRaw = r[8] || '';
+    } else {
+      // legacy row
+      type = T_TEXT;
+      message = r[5] || '';
+      meta = {};
+      readByRaw = r[6] || '';
+    }
+    return {
+      rowIndex: i + 2,
+      id: r[0] || '',
+      ts: r[1] || '',
+      threadId: r[2] || '',
+      senderEmail: (r[3] || '').toLowerCase(),
+      senderName: r[4] || '',
+      type: type,
+      text: message,
+      meta: meta,
+      readBy: readByRaw.split(',').map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean)
+    };
+  }).filter(function (m) { return m.id && m.threadId; });
 }
 
+function rowsForThread(threadId) {
+  return allRows.filter(function (m) { return m.threadId === threadId; });
+}
+function displayMsgs(threadId) {
+  return rowsForThread(threadId)
+    .filter(function (m) { return DISPLAY_TYPES.indexOf(m.type) > -1; })
+    .sort(function (a, b) { return a.ts.localeCompare(b.ts); });
+}
+
+// ═══ THREAD LIST ════════════════════════════════════════
 function renderThreadList() {
-  var threads = threadsFromMessages();
   var wrap = document.getElementById('thread-list-wrap');
+  var myGroups = groups.filter(iAmMember);
 
-  if (!threads.length) {
-    wrap.innerHTML = '<div class="empty-hint">No conversations yet.<br>Tap ✎ above to start messaging someone.</div>';
+  if (!myGroups.length) {
+    wrap.innerHTML = '<div class="empty-hint">No groups yet.<br>Tap ✎ to create one.</div>';
     return;
   }
 
-  wrap.innerHTML = threads.map(function(t) {
-    var preview = t.lastMsg ? (t.lastMsg.senderEmail === myEmail ? 'You: ' : '') + t.lastMsg.text : '';
-    var time = t.lastMsg ? fmtTimeShort(t.lastMsg.ts) : '';
-    var av = t.isBroadcast
-      ? '<div class="thread-avatar" style="background:var(--orange)">📢</div>'
-      : '<div class="thread-avatar" style="background:' + avatarColor(t.label) + '">' + initials(t.label) + '</div>';
+  // last activity + unread per group
+  var items = myGroups.map(function (g) {
+    var msgs = displayMsgs(g.id);
+    var last = msgs.length ? msgs[msgs.length - 1] : null;
+    var unread = rowsForThread(g.id).filter(function (m) {
+      return DISPLAY_TYPES.indexOf(m.type) > -1 &&
+             m.senderEmail !== myEmail && m.readBy.indexOf(myEmail) === -1;
+    }).length;
+    return { g: g, last: last, unread: unread, ts: last ? last.ts : '' };
+  });
 
-    return '<div class="thread-item" onclick="openChat(\'' + t.threadId.replace(/'/g,"\\'") + '\',\'' + t.label.replace(/'/g,"\\'") + '\')">'
+  items.sort(function (a, b) { return (b.ts || '').localeCompare(a.ts || ''); });
+
+  wrap.innerHTML = items.map(function (it) {
+    var g = it.g;
+    var color = g.color || avatarColor(g.name);
+    var preview = it.last ? previewOf(it.last) : 'No messages yet';
+    var time = it.last ? fmtTimeShort(it.last.ts) : '';
+    var memCount = memberEmailsOf(g).length;
+    var av = '<div class="thread-avatar" style="background:' + color + '">' + escapeHtml(initials(g.name)) + '</div>';
+    return '<div class="thread-item" onclick="openGroup(\'' + esc(g.id) + '\')">'
       + av
       + '<div class="thread-body">'
-      + '<div class="thread-top"><div class="thread-name">' + escapeHtml(t.label) + '</div>'
+      + '<div class="thread-top"><div class="thread-name">' + escapeHtml(g.name) + '</div>'
       + '<div class="thread-time">' + time + '</div></div>'
-      + '<div class="thread-preview' + (t.unread ? ' unread' : '') + '">' + escapeHtml(preview || 'No messages yet') + '</div>'
+      + '<div class="thread-preview' + (it.unread ? ' unread' : '') + '">' + escapeHtml(preview) + '</div>'
       + '</div>'
-      + (t.unread ? '<div class="thread-unread-badge">' + t.unread + '</div>' : '')
+      + (it.unread ? '<div class="thread-unread-badge">' + it.unread + '</div>'
+                   : '<div class="thread-mem">' + memCount + ' 👤</div>')
       + '</div>';
   }).join('');
 }
 
-// ═══ OPEN / CLOSE CHAT ══════════════════════════════════
-function openChat(threadId, label) {
-  currentThreadId = threadId;
-  currentThreadLabel = label;
-  lastRenderedMsgCount = 0;
+function previewOf(m) {
+  var who = m.senderEmail === myEmail ? 'You: ' : (firstName(m.senderName) + ': ');
+  if (m.type === T_IMAGE) return who + '📷 Photo';
+  if (m.type === T_POLL) return who + '📊 ' + (m.meta.q || 'Poll');
+  if (m.type === T_ATT) return who + '📋 ' + (m.meta.title || 'Attendance');
+  if (m.type === T_SYS) return m.text;
+  return who + m.text;
+}
+
+// ═══ OPEN / CLOSE GROUP ═════════════════════════════════
+function openGroup(groupId) {
+  var g = groups.find(function (x) { return x.id === groupId; });
+  if (!g) return;
+  currentGroup = g;
+  lastRenderSig = '';
 
   document.getElementById('thread-list-wrap').style.display = 'none';
   document.getElementById('tb-new-btn').style.display = 'none';
   document.getElementById('chat-wrap').style.display = 'flex';
   document.getElementById('composer').style.display = 'flex';
   document.getElementById('tb-back').classList.add('show');
-  document.getElementById('tb-title').textContent = label;
-  document.getElementById('tb-sub').style.display = '';
-  document.getElementById('tb-sub').textContent = threadId === BROADCAST_ID ? 'All employees' : '';
+  document.getElementById('tb-title').textContent = g.name;
+  var sub = document.getElementById('tb-sub');
+  sub.style.display = '';
+  sub.textContent = memberEmailsOf(g).length + ' members';
 
-  renderChat(threadId, label);
-  markThreadRead(threadId);
+  renderChat();
+  markThreadRead(g.id);
 
   clearInterval(chatPollTimer);
-  chatPollTimer = setInterval(function() { loadMessages(false); }, POLL_CHAT_MS);
+  chatPollTimer = setInterval(function () { loadMessages(false); }, POLL_CHAT_MS);
 }
 
 function closeChat() {
-  currentThreadId = null;
+  currentGroup = null;
   clearInterval(chatPollTimer);
+  closeAllPanels();
   document.getElementById('thread-list-wrap').style.display = '';
   document.getElementById('tb-new-btn').style.display = '';
   document.getElementById('chat-wrap').style.display = 'none';
@@ -350,263 +650,844 @@ function closeChat() {
   loadMessages(false);
 }
 
-// ═══ RENDER CHAT BUBBLES ════════════════════════════════
-function renderChat(threadId, label) {
-  var msgs = allMessages.filter(function(m){ return m.threadId === threadId; })
-    .sort(function(a,b){ return a.ts.localeCompare(b.ts); });
+// ═══ RENDER CHAT ════════════════════════════════════════
+function renderChat() {
+  if (!currentGroup) return;
+  var threadId = currentGroup.id;
+  var msgs = displayMsgs(threadId);
 
-  if (msgs.length === lastRenderedMsgCount) return; // nothing new — skip re-render/scroll jump
-  lastRenderedMsgCount = msgs.length;
+  // signature: include all thread rows (votes/reactions/checkins) so live updates show
+  var sig = rowsForThread(threadId).map(function (m) { return m.id; }).join(',') + '|' + rowsForThread(threadId).length;
+  if (sig === lastRenderSig) return;
+  lastRenderSig = sig;
 
   var wrap = document.getElementById('chat-wrap');
-  var wasNearBottom = (wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight) < 120;
+  var wasNearBottom = (wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight) < 140;
 
   if (!msgs.length) {
-    wrap.innerHTML = '<div class="empty-hint">Say hi! 👋</div>';
+    wrap.innerHTML = '<div class="empty-hint">Say hi! 👋<br>Start the conversation.</div>';
     return;
   }
 
+  // index reactions by target id
+  var reactionsByTarget = buildReactions(threadId);
+
   var html = '';
   var lastDay = '';
-  msgs.forEach(function(m, idx) {
+  var lastSenderMineIdx = -1;
+  for (var j = msgs.length - 1; j >= 0; j--) { if (msgs[j].senderEmail === myEmail) { lastSenderMineIdx = j; break; } }
+
+  msgs.forEach(function (m, idx) {
     var day = (m.ts || '').substring(0, 10);
-    if (day !== lastDay) {
-      html += '<div class="day-sep">' + fmtDayLabel(day) + '</div>';
-      lastDay = day;
-    }
+    if (day !== lastDay) { html += '<div class="day-sep">' + fmtDayLabel(day) + '</div>'; lastDay = day; }
+
+    if (m.type === T_SYS) { html += '<div class="sys-msg">' + escapeHtml(m.text) + '</div>'; return; }
+
     var isMine = m.senderEmail === myEmail;
-    var showAvatar = !isMine && (idx === msgs.length - 1 || msgs[idx+1].senderEmail !== m.senderEmail);
-    var isLastMine = isMine && idx === (function(){
-      for (var j = msgs.length - 1; j >= 0; j--) if (msgs[j].senderEmail === myEmail) return j;
-      return -1;
-    })();
+    var prev = msgs[idx - 1];
+    var showName = !isMine && (!prev || prev.senderEmail !== m.senderEmail || prev.type === T_SYS);
+    var showAvatar = !isMine && (idx === msgs.length - 1 || msgs[idx + 1].senderEmail !== m.senderEmail || msgs[idx + 1].type === T_SYS);
 
     html += '<div class="msg-row ' + (isMine ? 'mine' : 'theirs') + '">';
     if (!isMine) {
       html += showAvatar
-        ? '<div class="msg-av" style="background:' + avatarColor(m.senderName) + '">' + initials(m.senderName) + '</div>'
-        : '<div style="width:22px;flex-shrink:0"></div>';
+        ? '<div class="msg-av" style="background:' + avatarColor(m.senderName) + '">' + escapeHtml(initials(m.senderName)) + '</div>'
+        : '<div style="width:26px;flex-shrink:0"></div>';
     }
-    html += '<div>';
-    html += '<div class="msg-bubble">' + escapeHtml(m.text) + '</div>';
-    if (isLastMine) {
-      var seen = threadId !== BROADCAST_ID
-        ? m.readBy.indexOf(otherEmailOf(threadId)) > -1
-        : false;
-      html += '<div class="msg-meta">' + fmtTimeShort(m.ts) + (seen ? ' · <span class="msg-seen">Seen</span>' : '') + '</div>';
+    html += '<div class="msg-col">';
+    if (showName) html += '<div class="msg-sender">' + escapeHtml(m.senderName) + '</div>';
+
+    html += '<div class="bubble-wrap" onclick="openReactBar(event,\'' + esc(m.id) + '\')">';
+    html += renderBubbleBody(m);
+    html += '</div>';
+
+    // reactions
+    var rx = reactionsByTarget[m.id];
+    if (rx && rx.order.length) {
+      html += '<div class="react-chips ' + (isMine ? 'mine' : '') + '">';
+      rx.order.forEach(function (emo) {
+        var users = rx.map[emo];
+        var mine = users.indexOf(myEmail) > -1;
+        html += '<span class="react-chip' + (mine ? ' mine' : '') + '" onclick="toggleReaction(event,\'' + esc(m.id) + '\',\'' + esc(emo) + '\')">'
+          + emo + ' ' + users.length + '</span>';
+      });
+      html += '</div>';
     }
+
+    // meta line (time + seen) only for last of a run
+    var isRunEnd = (idx === msgs.length - 1) || msgs[idx + 1].senderEmail !== m.senderEmail;
+    if (isRunEnd) {
+      var metaTxt = fmtTimeShort(m.ts);
+      if (isMine && idx === lastSenderMineIdx) {
+        var seenBy = m.readBy.filter(function (e) { return e !== myEmail; }).length;
+        if (seenBy > 0) metaTxt += ' · <span class="msg-seen">Seen by ' + seenBy + '</span>';
+      }
+      html += '<div class="msg-meta">' + metaTxt + '</div>';
+    }
+
     html += '</div></div>';
   });
 
   wrap.innerHTML = html;
-  if (wasNearBottom || lastRenderedMsgCount <= msgs.length) {
-    wrap.scrollTop = wrap.scrollHeight;
+  if (wasNearBottom) wrap.scrollTop = wrap.scrollHeight;
+}
+
+function renderBubbleBody(m) {
+  if (m.type === T_IMAGE) {
+    var fid = m.meta.fileId;
+    var thumb = m.meta.localPreview
+      || (fid ? ('https://drive.google.com/thumbnail?id=' + encodeURIComponent(fid) + '&sz=w600') : '');
+    var full = fid ? ('https://drive.google.com/file/d/' + encodeURIComponent(fid) + '/view') : '';
+    var cap = m.text ? '<div class="img-cap">' + renderText(m) + '</div>' : '';
+    var openAttr = full ? ('onclick="event.stopPropagation();window.open(\'' + full + '\',\'_blank\')"') : 'onclick="event.stopPropagation()"';
+    var uploading = m.meta.uploading ? '<div class="img-uploading">Uploading…</div>' : '';
+    return '<div class="msg-bubble img-bubble">'
+      + (thumb ? '<div class="img-holder">'
+                   + '<img class="chat-img" src="' + thumb + '" loading="lazy" ' + openAttr
+                   + ' onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.img-err\').style.display=\'flex\'">'
+                   + '<div class="img-err" style="display:none">📷 Photo unavailable</div>'
+                   + uploading + '</div>'
+               : '<div class="img-err">📷 Photo</div>')
+      + cap + '</div>';
+  }
+  if (m.type === T_POLL) return renderPollCard(m);
+  if (m.type === T_ATT) return renderAttCard(m);
+  return '<div class="msg-bubble">' + renderText(m) + '</div>';
+}
+
+// render text with @mentions highlighted
+function renderText(m) {
+  var safe = escapeHtml(m.text);
+  var mentions = (m.meta && m.meta.mentions) || [];
+  mentions.forEach(function (mn) {
+    var label = '@' + (mn.name || '');
+    var safeLabel = escapeHtml(label);
+    safe = safe.split(safeLabel).join('<span class="mention">' + safeLabel + '</span>');
+  });
+  // also highlight @all generically
+  safe = safe.replace(/(^|\s)(@all)\b/gi, '$1<span class="mention">$2</span>');
+  return safe;
+}
+
+// ═══ POLLS ══════════════════════════════════════════════
+function renderPollCard(m) {
+  var q = m.meta.q || 'Poll';
+  var opts = m.meta.options || [];
+  var multi = !!m.meta.multi;
+  var tally = tallyPoll(m.id, opts.length, multi); // {counts:[], mine:Set, voters:total}
+  var total = tally.voters || 0;
+
+  var body = '<div class="poll-card">'
+    + '<div class="poll-q">📊 ' + escapeHtml(q) + '</div>';
+  opts.forEach(function (opt, i) {
+    var c = tally.counts[i] || 0;
+    var pct = total ? Math.round((c / total) * 100) : 0;
+    var mine = tally.mine.indexOf(i) > -1;
+    body += '<div class="poll-opt' + (mine ? ' voted' : '') + '" onclick="event.stopPropagation();votePoll(\'' + esc(m.id) + '\',' + i + ',' + multi + ',' + opts.length + ')">'
+      + '<div class="poll-bar" style="width:' + pct + '%"></div>'
+      + '<div class="poll-opt-row"><span class="poll-opt-txt">' + (mine ? '✓ ' : '') + escapeHtml(opt) + '</span>'
+      + '<span class="poll-opt-pct">' + pct + '%</span></div>'
+      + '</div>';
+  });
+  body += '<div class="poll-foot">' + total + (total === 1 ? ' vote' : ' votes') + (multi ? ' · multiple choice' : '') + '</div>';
+  body += '</div>';
+  return body;
+}
+
+function tallyPoll(pollId, nOpts, multi) {
+  var votes = rowsForThread(currentGroup.id).filter(function (r) {
+    return r.type === T_VOTE && r.meta && r.meta.pollId === pollId;
+  }).sort(function (a, b) { return a.ts.localeCompare(b.ts); });
+
+  var counts = [];
+  for (var i = 0; i < nOpts; i++) counts[i] = 0;
+  var myOpts = [];
+
+  if (multi) {
+    // per (user,opt) latest on/off
+    var state = {}; // user -> {opt -> bool}
+    votes.forEach(function (v) {
+      var u = v.senderEmail, o = v.meta.opt, on = !!v.meta.on;
+      if (!state[u]) state[u] = {};
+      state[u][o] = on;
+    });
+    var voters = {};
+    Object.keys(state).forEach(function (u) {
+      var any = false;
+      Object.keys(state[u]).forEach(function (o) {
+        if (state[u][o]) { counts[o] = (counts[o] || 0) + 1; any = true; if (u === myEmail) myOpts.push(parseInt(o, 10)); }
+      });
+      if (any) voters[u] = true;
+    });
+    return { counts: counts, mine: myOpts, voters: Object.keys(voters).length };
+  } else {
+    // single: latest vote per user
+    var lastByUser = {};
+    votes.forEach(function (v) { lastByUser[v.senderEmail] = v.meta.opt; });
+    Object.keys(lastByUser).forEach(function (u) {
+      var o = lastByUser[u];
+      if (o != null && o >= 0) { counts[o] = (counts[o] || 0) + 1; if (u === myEmail) myOpts = [o]; }
+    });
+    return { counts: counts, mine: myOpts, voters: Object.keys(lastByUser).length };
   }
 }
 
-function otherEmailOf(threadId) {
-  if (threadId === BROADCAST_ID) return null;
-  var parts = threadId.split('|');
-  return parts.find(function(p){ return p !== myEmail; }) || parts[0];
+function votePoll(pollId, optIndex, multi, nOpts) {
+  if (!currentGroup) return;
+  var meta;
+  if (multi) {
+    // toggle current state
+    var t = tallyPoll(pollId, nOpts, true);
+    var on = t.mine.indexOf(optIndex) === -1;
+    meta = { pollId: pollId, opt: optIndex, on: on };
+  } else {
+    meta = { pollId: pollId, opt: optIndex };
+  }
+  sendTyped(T_VOTE, 'vote', meta).catch(function (e) {
+    console.error('Vote failed:', e); showToast('❌ Vote not saved.');
+  });
 }
 
-// ═══ SEND MESSAGE ═══════════════════════════════════════
+// ═══ ATTENDANCE ═════════════════════════════════════════
+var ATT_STATUSES = [
+  { key: 'present', label: 'Present', icon: '✅' },
+  { key: 'late',    label: 'Late',    icon: '🕒' },
+  { key: 'absent',  label: 'Absent',  icon: '❌' }
+];
+
+function renderAttCard(m) {
+  var title = m.meta.title || 'Attendance';
+  var tally = tallyAtt(m.id); // {byStatus:{status:[emails]}, mine:status}
+  var body = '<div class="att-card">'
+    + '<div class="att-title">📋 ' + escapeHtml(title) + '</div>'
+    + '<div class="att-btns">';
+  ATT_STATUSES.forEach(function (s) {
+    var count = (tally.byStatus[s.key] || []).length;
+    var mine = tally.mine === s.key;
+    body += '<button class="att-btn' + (mine ? ' active ' + s.key : '') + '" onclick="event.stopPropagation();checkIn(\'' + esc(m.id) + '\',\'' + s.key + '\')">'
+      + s.icon + ' ' + s.label + '<span class="att-count">' + count + '</span></button>';
+  });
+  body += '</div>';
+  // responders list
+  ATT_STATUSES.forEach(function (s) {
+    var names = (tally.byStatus[s.key] || []).map(function (e) { return firstName(nameOf(e)); });
+    if (names.length) {
+      body += '<div class="att-list"><span class="att-list-k">' + s.icon + '</span> ' + escapeHtml(names.join(', ')) + '</div>';
+    }
+  });
+  var total = memberEmailsOf(currentGroup).length;
+  var responded = Object.keys(tally.respondedBy).length;
+  body += '<div class="att-foot">' + responded + ' of ' + total + ' responded</div>';
+  body += '</div>';
+  return body;
+}
+
+function tallyAtt(attId) {
+  var checks = rowsForThread(currentGroup.id).filter(function (r) {
+    return r.type === T_CHECKIN && r.meta && r.meta.attId === attId;
+  }).sort(function (a, b) { return a.ts.localeCompare(b.ts); });
+  var lastByUser = {};
+  checks.forEach(function (c) { lastByUser[c.senderEmail] = c.meta.status; });
+  var byStatus = {}; var mine = null;
+  Object.keys(lastByUser).forEach(function (u) {
+    var st = lastByUser[u];
+    if (!byStatus[st]) byStatus[st] = [];
+    byStatus[st].push(u);
+    if (u === myEmail) mine = st;
+  });
+  return { byStatus: byStatus, mine: mine, respondedBy: lastByUser };
+}
+
+function checkIn(attId, status) {
+  if (!currentGroup) return;
+  var meta = { attId: attId, status: status };
+  sendTyped(T_CHECKIN, status, meta).catch(function (e) {
+    console.error('Check-in failed:', e); showToast('❌ Check-in not saved.');
+  });
+}
+
+// ═══ REACTIONS ══════════════════════════════════════════
+function buildReactions(threadId) {
+  var reacts = rowsForThread(threadId).filter(function (r) { return r.type === T_REACT; })
+    .sort(function (a, b) { return a.ts.localeCompare(b.ts); });
+  // latest per (user,target)
+  var latest = {}; // target -> user -> emoji
+  reacts.forEach(function (r) {
+    var t = r.meta.targetId, u = r.senderEmail, e = r.meta.emoji || '';
+    if (!latest[t]) latest[t] = {};
+    latest[t][u] = e;
+  });
+  var out = {};
+  Object.keys(latest).forEach(function (t) {
+    var map = {}, order = [];
+    Object.keys(latest[t]).forEach(function (u) {
+      var e = latest[t][u];
+      if (!e) return;
+      if (!map[e]) { map[e] = []; order.push(e); }
+      map[e].push(u);
+    });
+    out[t] = { map: map, order: order };
+  });
+  return out;
+}
+
+var REACT_SET = ['❤️', '😂', '👍', '😮', '😢', '🙏', '🔥'];
+
+function openReactBar(ev, msgId) {
+  ev.stopPropagation();
+  closeReactBar();
+  reactTargetId = msgId;
+  var bar = document.getElementById('react-bar');
+  bar.innerHTML = REACT_SET.map(function (e) {
+    return '<span class="react-pick" onclick="toggleReaction(event,\'' + esc(msgId) + '\',\'' + esc(e) + '\')">' + e + '</span>';
+  }).join('');
+  // position near tap
+  var y = (ev.touches && ev.touches[0] ? ev.touches[0].clientY : ev.clientY) || 200;
+  var x = (ev.touches && ev.touches[0] ? ev.touches[0].clientX : ev.clientX) || 100;
+  bar.style.top = Math.max(60, y - 56) + 'px';
+  bar.style.left = Math.min(Math.max(12, x - 120), window.innerWidth - 250) + 'px';
+  bar.classList.add('show');
+}
+function closeReactBar() {
+  var bar = document.getElementById('react-bar');
+  if (bar) bar.classList.remove('show');
+  reactTargetId = null;
+}
+function toggleReaction(ev, msgId, emoji) {
+  ev.stopPropagation();
+  closeReactBar();
+  if (!currentGroup) return;
+  var rx = buildReactions(currentGroup.id)[msgId];
+  var mineNow = rx && rx.map[emoji] && rx.map[emoji].indexOf(myEmail) > -1;
+  var meta = { targetId: msgId, emoji: mineNow ? '' : emoji };
+  sendTyped(T_REACT, 'reaction', meta).catch(function (e) {
+    console.error('Reaction failed:', e); showToast('❌ Reaction not saved.');
+  });
+}
+
+// ═══ SEND TEXT ══════════════════════════════════════════
 function sendMessage() {
   var input = document.getElementById('composer-input');
   var text = input.value.trim();
-  if (!text || !currentThreadId) return;
+  if (!currentGroup) return;
 
-  var id = 'MSG-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
-  var ts = new Date().toISOString();
-  var row = [id, ts, currentThreadId, myEmail, myName, text, myEmail];
+  if (pendingImage) { sendPendingImage(text); return; }
+  if (!text) return;
 
-  // Optimistic local append so it feels instant
-  allMessages.push({
-    rowIndex: -1, id: id, ts: ts, threadId: currentThreadId,
-    senderEmail: myEmail, senderName: myName, text: text, readBy: [myEmail]
-  });
-  lastRenderedMsgCount = -1; // force re-render
-  renderChat(currentThreadId, currentThreadLabel);
+  var mentions = extractMentions(text);
+  var meta = mentions.length ? { mentions: mentions } : {};
   input.value = '';
   autoGrow(input);
+  closeEmoji();
+  closeMentionPicker();
 
-  appendMessageRow(row).catch(function(err) {
-    console.error('Send failed:', err);
-    showToast('❌ Failed to send. Will retry on refresh.');
+  sendTyped(T_TEXT, text, meta).catch(function (err) {
+    console.error('Send failed:', err); showToast('❌ Failed to send. Will retry on refresh.');
   });
 }
 
+function extractMentions(text) {
+  var members = memberEmailsOf(currentGroup).map(function (e) {
+    return { email: e, name: nameOf(e) };
+  });
+  var found = [];
+  members.forEach(function (mem) {
+    var tag = '@' + mem.name;
+    if (text.indexOf(tag) > -1) found.push({ email: mem.email, name: mem.name });
+  });
+  return found;
+}
+
+// ═══ OPTIMISTIC APPEND + PERSIST ════════════════════════
+function genId() { return 'MSG-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6); }
+
+// Push a local row immediately AND persist with the SAME id (so votes/reactions
+// that reference it stay consistent once the server row loads). Returns promise.
+function sendTyped(type, message, meta, presetId, extraLocalMeta) {
+  var id = presetId || genId();
+  var ts = new Date().toISOString();
+  var localMeta = Object.assign({}, meta || {}, extraLocalMeta || {});
+  allRows.push({
+    rowIndex: -1, id: id, ts: ts, threadId: currentGroup.id,
+    senderEmail: myEmail, senderName: myName, type: type,
+    text: message, meta: localMeta, readBy: [myEmail]
+  });
+  lastRenderSig = '';
+  renderChat();
+  renderThreadList();
+  var row = [id, ts, currentGroup.id, myEmail, myName, type, message, JSON.stringify(meta || {}), myEmail];
+  return appendMessageRow(row).then(function () { return id; });
+}
+
+// Local-only optimistic row (not persisted yet). Used for images so the chosen
+// photo shows instantly while the Drive upload runs in the background.
+function pushLocal(type, message, localMeta, id) {
+  allRows.push({
+    rowIndex: -1, id: id, ts: new Date().toISOString(), threadId: currentGroup.id,
+    senderEmail: myEmail, senderName: myName, type: type,
+    text: message || '', meta: localMeta || {}, readBy: [myEmail]
+  });
+  lastRenderSig = ''; renderChat(); renderThreadList();
+  return id;
+}
+
 function appendMessageRow(row, isRetry) {
-  return apiAppend(TAB_MESSAGES + '!A:G', [row]).catch(function(err) {
+  return apiAppend(TAB_MESSAGES + '!A:I', [row]).catch(function (err) {
     var msg = String(err.message || '').toLowerCase();
     if (!isRetry && (msg.indexOf('unable to parse range') > -1 || msg.indexOf('not found') > -1)) {
-      return createMessagesSheet().then(function() { return appendMessageRow(row, true); });
+      return createMessagesSheet().then(function () { return appendMessageRow(row, true); });
     }
     throw err;
   });
 }
 
 function createMessagesSheet() {
-  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + ':batchUpdate', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      requests: [{ addSheet: { properties: { title: TAB_MESSAGES, gridProperties: { rowCount: 2000, columnCount: 7 } } } }]
-    })
-  }).then(function(r) {
-    return r.json().then(function(data) {
-      if (!r.ok) {
-        var m = (data.error && data.error.message) || '';
-        if (m.toLowerCase().indexOf('already exists') === -1) throw new Error('Create Messages sheet failed: ' + m);
-      }
-      return data;
-    });
-  }).then(function() {
-    return apiUpdate(TAB_MESSAGES + '!A1:G1', [['ID','Timestamp','ThreadID','SenderEmail','SenderName','Message','ReadBy']]);
+  return addSheet(TAB_MESSAGES, 5000, 9).then(function () {
+    return apiUpdate(TAB_MESSAGES + '!A1:I1',
+      [['ID', 'Timestamp', 'ThreadID', 'SenderEmail', 'SenderName', 'Type', 'Message', 'Meta', 'ReadBy']]);
   });
 }
 
+// ═══ COMPOSER: keys, autogrow, mentions ═════════════════
 function handleComposerKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function onComposerInput(el) {
+  autoGrow(el);
+  detectMention(el);
 }
 function autoGrow(el) {
   el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+  el.style.height = Math.min(el.scrollHeight, 110) + 'px';
 }
 
-// ═══ MARK THREAD AS READ ════════════════════════════════
+function detectMention(el) {
+  var pos = el.selectionStart;
+  var before = el.value.slice(0, pos);
+  var match = before.match(/@([\p{L}\p{N} ]{0,20})$/u);
+  if (!match) { closeMentionPicker(); return; }
+  var q = (match[1] || '').toLowerCase().trim();
+  var members = memberEmailsOf(currentGroup).map(function (e) { return { email: e, name: nameOf(e) }; });
+  var results = members.filter(function (mem) {
+    return mem.email !== myEmail && (!q || mem.name.toLowerCase().indexOf(q) > -1);
+  }).slice(0, 6);
+
+  var picker = document.getElementById('mention-picker');
+  var html = '';
+  // @all option
+  if (!q || 'all'.indexOf(q) > -1) {
+    html += '<div class="mention-item" onclick="pickMention(\'all\',\'all\')">'
+      + '<div class="mention-av" style="background:var(--orange)">@</div>'
+      + '<div><div class="mention-name">Everyone</div><div class="mention-role">Notify all members</div></div></div>';
+  }
+  results.forEach(function (mem) {
+    html += '<div class="mention-item" onclick="pickMention(\'' + esc(mem.email) + '\',\'' + esc(mem.name) + '\')">'
+      + '<div class="mention-av" style="background:' + avatarColor(mem.name) + '">' + escapeHtml(initials(mem.name)) + '</div>'
+      + '<div><div class="mention-name">' + escapeHtml(mem.name) + '</div></div></div>';
+  });
+  if (!html) { closeMentionPicker(); return; }
+  picker.innerHTML = html;
+  picker.classList.add('show');
+}
+function pickMention(email, name) {
+  var el = document.getElementById('composer-input');
+  var pos = el.selectionStart;
+  var before = el.value.slice(0, pos).replace(/@([\p{L}\p{N} ]{0,20})$/u, '');
+  var after = el.value.slice(pos);
+  var label = (email === 'all') ? '@all ' : ('@' + name + ' ');
+  el.value = before + label + after;
+  el.focus();
+  var newPos = (before + label).length;
+  el.setSelectionRange(newPos, newPos);
+  closeMentionPicker();
+  autoGrow(el);
+}
+function closeMentionPicker() {
+  var p = document.getElementById('mention-picker');
+  if (p) p.classList.remove('show');
+}
+
+// ═══ EMOJI ══════════════════════════════════════════════
+var EMOJIS = ('😀 😁 😂 🤣 😊 😍 😘 😎 🤩 🥳 😜 🤔 😴 😭 😅 😳 🥺 😤 😡 👍 👎 👏 🙏 💪 🙌 👋 🤝 ✌️ 🔥 ✨ 🎉 ❤️ 🧡 💛 💚 💙 💜 💯 ✅ ❌ ⚠️ ❓ ❗ 💰 📦 🚚 🚛 ⛽ 🛠️ 📋 📊 📸 📷 ☀️ 🌧️ ⏰ 📍 🏠 👀 😇 🤗 🫡 🫶').split(' ');
+
+function toggleEmoji() {
+  var panel = document.getElementById('emoji-panel');
+  if (panel.classList.contains('show')) { closeEmoji(); return; }
+  closeMentionPicker();
+  if (!panel.dataset.built) {
+    panel.innerHTML = EMOJIS.map(function (e) {
+      return '<span class="emoji-cell" onclick="insertEmoji(\'' + esc(e) + '\')">' + e + '</span>';
+    }).join('');
+    panel.dataset.built = '1';
+  }
+  panel.classList.add('show');
+}
+function insertEmoji(e) {
+  var el = document.getElementById('composer-input');
+  var pos = el.selectionStart || el.value.length;
+  el.value = el.value.slice(0, pos) + e + el.value.slice(pos);
+  el.focus();
+  el.setSelectionRange(pos + e.length, pos + e.length);
+  autoGrow(el);
+}
+function closeEmoji() {
+  var p = document.getElementById('emoji-panel');
+  if (p) p.classList.remove('show');
+}
+
+// ═══ ATTACH MENU ════════════════════════════════════════
+function toggleAttach() {
+  var menu = document.getElementById('attach-menu');
+  menu.classList.toggle('show');
+}
+function closeAttach() {
+  var m = document.getElementById('attach-menu');
+  if (m) m.classList.remove('show');
+}
+
+// ═══ PHOTO (Google Drive) ═══════════════════════════════
+function pickPhoto() {
+  closeAttach();
+  document.getElementById('photo-input').click();
+}
+function onPhotoChosen(inp) {
+  var file = inp.files && inp.files[0];
+  inp.value = '';
+  if (!file) return;
+  compressImage(file).then(function (dataUrl) {
+    pendingImage = { dataUrl: dataUrl };
+    showImagePreview(dataUrl);
+  }).catch(function (e) { console.error('Image process failed:', e); showToast('❌ Couldn\'t read that image.'); });
+}
+function showImagePreview(dataUrl) {
+  var prev = document.getElementById('img-preview');
+  prev.querySelector('img').src = dataUrl;
+  prev.classList.add('show');
+  document.getElementById('composer-input').placeholder = 'Add a caption…';
+}
+function cancelImage() {
+  pendingImage = null;
+  document.getElementById('img-preview').classList.remove('show');
+  document.getElementById('composer-input').placeholder = 'Type a message…';
+}
+function sendPendingImage(caption) {
+  var dataUrl = pendingImage.dataUrl;
+  cancelImage();
+  var input = document.getElementById('composer-input');
+  input.value = ''; autoGrow(input);
+
+  var id = genId();
+  var thisGroup = currentGroup;
+  pushLocal(T_IMAGE, caption, { localPreview: dataUrl, uploading: true }, id);
+
+  showToast('⏳ Uploading photo…');
+  uploadToDrive(dataUrl).then(function (fileId) {
+    var meta = { fileId: fileId };
+    var mentions = extractMentions(caption || '');
+    if (mentions.length) meta.mentions = mentions;
+    var row = [id, new Date().toISOString(), thisGroup.id, myEmail, myName, T_IMAGE, caption || '', JSON.stringify(meta), myEmail];
+    // reflect fileId locally so the real thumbnail can load immediately
+    var local = allRows.filter(function (r) { return r.id === id; })[0];
+    if (local) { local.meta.fileId = fileId; local.meta.uploading = false; }
+    return appendMessageRow(row);
+  }).then(function () {
+    showToast('✅ Photo sent');
+  }).catch(function (err) {
+    console.error('Photo upload failed:', err);
+    var m = String(err.message || '').toLowerCase();
+    if (m.indexOf('insufficient') > -1 || m.indexOf('scope') > -1 || m.indexOf('403') > -1 || m.indexOf('permission') > -1) {
+      showToast('❌ Photo needs Drive access. Add drive.file scope in index.html, then re-login.');
+    } else {
+      showToast('❌ Photo upload failed.');
+    }
+    allRows = allRows.filter(function (r) { return r.id !== id; });
+    lastRenderSig = ''; renderChat();
+  });
+}
+
+function compressImage(file) {
+  return new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var w = img.width, h = img.height;
+        var scale = Math.min(1, IMG_MAX_DIM / Math.max(w, h));
+        var cw = Math.round(w * scale), ch = Math.round(h * scale);
+        var canvas = document.createElement('canvas');
+        canvas.width = cw; canvas.height = ch;
+        canvas.getContext('2d').drawImage(img, 0, 0, cw, ch);
+        resolve(canvas.toDataURL('image/jpeg', IMG_QUALITY));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// upload dataURL (jpeg) to Drive, make link-readable, return fileId
+function uploadToDrive(dataUrl) {
+  var base64 = dataUrl.split(',')[1];
+  var boundary = 'pexbnd' + Math.random().toString(36).slice(2);
+  var metadata = { name: 'pedroex-chat-' + Date.now() + '.jpg' };
+  var body =
+    '--' + boundary + '\r\n' +
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+    JSON.stringify(metadata) + '\r\n' +
+    '--' + boundary + '\r\n' +
+    'Content-Type: image/jpeg\r\n' +
+    'Content-Transfer-Encoding: base64\r\n\r\n' +
+    base64 + '\r\n' +
+    '--' + boundary + '--';
+
+  return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'multipart/related; boundary=' + boundary },
+    body: body
+  }).then(function (r) {
+    return r.json().then(function (data) {
+      if (!r.ok) throw new Error((data.error && data.error.message) || ('Drive upload failed ' + r.status));
+      return data.id;
+    });
+  }).then(function (fileId) {
+    // make readable by anyone with link so other members can view
+    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: 'reader', type: 'anyone' })
+    }).then(function () { return fileId; })
+      .catch(function () { return fileId; }); // even if perm fails, keep id
+  });
+}
+
+// ═══ POLL MODAL ═════════════════════════════════════════
+function openPollModal() {
+  closeAttach();
+  document.getElementById('poll-opts').innerHTML = '';
+  document.getElementById('poll-q-input').value = '';
+  document.getElementById('poll-multi').checked = false;
+  addPollOption(); addPollOption();
+  document.getElementById('poll-modal').classList.add('open');
+}
+function addPollOption() {
+  var wrap = document.getElementById('poll-opts');
+  if (wrap.children.length >= 8) return;
+  var div = document.createElement('div');
+  div.className = 'poll-opt-input-row';
+  div.innerHTML = '<input class="modal-input poll-opt-input" placeholder="Option ' + (wrap.children.length + 1) + '" maxlength="60">'
+    + '<button class="poll-opt-del" onclick="this.parentNode.remove()">✕</button>';
+  wrap.appendChild(div);
+}
+function closePollModal() { document.getElementById('poll-modal').classList.remove('open'); }
+function submitPoll() {
+  var q = document.getElementById('poll-q-input').value.trim();
+  var opts = Array.prototype.map.call(document.querySelectorAll('.poll-opt-input'), function (i) { return i.value.trim(); })
+    .filter(Boolean);
+  if (!q) { showToast('Add a question first.'); return; }
+  if (opts.length < 2) { showToast('Add at least 2 options.'); return; }
+  var multi = document.getElementById('poll-multi').checked;
+  var meta = { q: q, options: opts, multi: multi };
+  closePollModal();
+  sendTyped(T_POLL, q, meta).catch(function (e) { console.error('Poll failed:', e); showToast('❌ Poll not saved.'); });
+}
+
+// ═══ ATTENDANCE MODAL ═══════════════════════════════════
+function openAttModal() {
+  closeAttach();
+  var d = new Date();
+  var def = 'Attendance — ' + d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+  document.getElementById('att-title-input').value = def;
+  document.getElementById('att-modal').classList.add('open');
+}
+function closeAttModal() { document.getElementById('att-modal').classList.remove('open'); }
+function submitAtt() {
+  var title = document.getElementById('att-title-input').value.trim() || 'Attendance';
+  var meta = { title: title };
+  closeAttModal();
+  sendTyped(T_ATT, title, meta).catch(function (e) { console.error('Attendance failed:', e); showToast('❌ Attendance not saved.'); });
+}
+
+// ═══ NEW / MANAGE GROUP ═════════════════════════════════
+var newGroupMembers = {}; // email -> true
+function openNewConvo() {
+  newGroupMembers = {};
+  document.getElementById('group-name-input').value = '';
+  var list = document.getElementById('member-list');
+  if (!contacts.length) {
+    list.innerHTML = '<div class="empty-hint">No other employees found.</div>';
+  } else {
+    list.innerHTML = contacts.map(function (c) {
+      return '<div class="contact-item" onclick="toggleMember(this,\'' + esc(c.email) + '\')">'
+        + '<div class="contact-avatar" style="background:' + avatarColor(c.name) + '">' + escapeHtml(initials(c.name)) + '</div>'
+        + '<div class="contact-info"><div class="contact-name">' + escapeHtml(c.name) + '</div>'
+        + '<div class="contact-role">' + escapeHtml(c.role) + '</div></div>'
+        + '<div class="member-check">○</div>'
+        + '</div>';
+    }).join('');
+  }
+  document.getElementById('group-sheet').classList.add('open');
+}
+function toggleMember(el, email) {
+  if (newGroupMembers[email]) { delete newGroupMembers[email]; el.querySelector('.member-check').textContent = '○'; el.classList.remove('sel'); }
+  else { newGroupMembers[email] = true; el.querySelector('.member-check').textContent = '●'; el.classList.add('sel'); }
+}
+function closeGroupSheet() { document.getElementById('group-sheet').classList.remove('open'); }
+function createGroup() {
+  var name = document.getElementById('group-name-input').value.trim();
+  if (!name) { showToast('Name your group first.'); return; }
+  var members = Object.keys(newGroupMembers);
+  if (members.indexOf(myEmail) === -1) members.push(myEmail);
+  if (members.length < 2) { showToast('Pick at least one member.'); return; }
+
+  var g = {
+    id: 'grp-' + Date.now(),
+    name: name,
+    members: members.join(','),
+    color: avatarColor(name),
+    createdBy: myEmail,
+    createdAt: new Date().toISOString()
+  };
+  groups.push(g);
+  closeGroupSheet();
+  renderThreadList();
+
+  apiAppend(TAB_GROUPS + '!A:F', [[g.id, g.name, g.members, g.color, g.createdBy, g.createdAt]])
+    .then(function () {
+      // system message so the group has content
+      currentGroup = g;
+      return sendTyped(T_SYS, nameOf(myEmail) + ' created the group \u201C' + name + '\u201D', {});
+    })
+    .then(function () { currentGroup = null; openGroup(g.id); })
+    .catch(function (e) { console.error('Create group failed:', e); showToast('❌ Group not saved to server.'); });
+}
+
+// ═══ MARK READ ══════════════════════════════════════════
 function markThreadRead(threadId) {
-  var toMark = allMessages.filter(function(m) {
-    return m.threadId === threadId && m.senderEmail !== myEmail && m.readBy.indexOf(myEmail) === -1 && m.rowIndex > 0;
+  var toMark = rowsForThread(threadId).filter(function (m) {
+    return DISPLAY_TYPES.indexOf(m.type) > -1 &&
+           m.senderEmail !== myEmail && m.readBy.indexOf(myEmail) === -1 && m.rowIndex > 0;
   });
   if (!toMark.length) return;
 
-  var valueRanges = toMark.map(function(m) {
+  var data = toMark.map(function (m) {
     var newReadBy = m.readBy.concat([myEmail]).join(',');
-    m.readBy.push(myEmail); // update local state immediately
-    return {
-      range: TAB_MESSAGES + '!G' + m.rowIndex,
-      values: [[newReadBy]]
-    };
+    m.readBy.push(myEmail);
+    return { range: TAB_MESSAGES + '!I' + m.rowIndex, values: [[newReadBy]] };
   });
 
   fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values:batchUpdate', {
     method: 'POST',
     headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ valueInputOption: 'USER_ENTERED', data: valueRanges })
-  }).then(function() {
-    renderThreadList();
-  }).catch(function(err) { console.error('Mark read failed:', err); });
+    body: JSON.stringify({ valueInputOption: 'USER_ENTERED', data: data })
+  }).then(function () { renderThreadList(); })
+    .catch(function (err) { console.error('Mark read failed:', err); });
 }
 
-// ═══ NEW CONVERSATION SHEET ═════════════════════════════
-function openNewConvo() {
-  var list = document.getElementById('contact-list');
-  var items = [];
-
-  if (isAdmin) {
-    items.push('<div class="contact-item" onclick="startBroadcast()">'
-      + '<div class="contact-avatar" style="background:var(--orange)">📢</div>'
-      + '<div><div class="contact-name">Announcements</div><div class="contact-role">Broadcast to all employees</div></div>'
-      + '</div>');
-  }
-
-  if (!contacts.length) {
-    items.push('<div class="empty-hint">No other employees found.</div>');
-  } else {
-    contacts.forEach(function(c) {
-      items.push('<div class="contact-item" onclick="startDM(\'' + c.email.replace(/'/g,"\\'") + '\',\'' + c.name.replace(/'/g,"\\'") + '\')">'
-        + '<div class="contact-avatar" style="background:' + avatarColor(c.name) + '">' + initials(c.name) + '</div>'
-        + '<div><div class="contact-name">' + escapeHtml(c.name) + '</div><div class="contact-role">' + escapeHtml(c.role) + '</div></div>'
-        + '</div>');
-    });
-  }
-
-  list.innerHTML = items.join('');
-  document.getElementById('convo-sheet').classList.add('open');
+// ═══ GLOBAL TAP-TO-CLOSE PANELS ═════════════════════════
+function closeAllPanels() {
+  closeEmoji(); closeAttach(); closeMentionPicker(); closeReactBar();
 }
-
-function startDM(email, name) {
-  var threadId = [myEmail, email].sort().join('|');
-  document.getElementById('convo-sheet').classList.remove('open');
-  openChat(threadId, name);
-}
-
-function startBroadcast() {
-  document.getElementById('convo-sheet').classList.remove('open');
-  openChat(BROADCAST_ID, '📢 Announcements');
-}
-
-document.getElementById('convo-sheet').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('open');
+document.addEventListener('click', function (e) {
+  var t = e.target;
+  if (!t.closest('#emoji-panel') && !t.closest('#emoji-btn')) closeEmoji();
+  if (!t.closest('#attach-menu') && !t.closest('#attach-btn')) closeAttach();
+  if (!t.closest('#react-bar') && !t.closest('.bubble-wrap')) closeReactBar();
 });
 
-// ═══ API ══════════════════════════════════════════════
+// ═══ SHEET / API HELPERS ════════════════════════════════
+function addSheet(title, rows, cols) {
+  return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + ':batchUpdate', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requests: [{ addSheet: { properties: { title: title, gridProperties: { rowCount: rows, columnCount: cols } } } }] })
+  }).then(function (r) {
+    return r.json().then(function (data) {
+      if (!r.ok) {
+        var m = (data.error && data.error.message) || '';
+        if (m.toLowerCase().indexOf('already exists') === -1) throw new Error('Create ' + title + ' failed: ' + m);
+      }
+      return data;
+    });
+  });
+}
 function quoteRange(range) {
-  return range.replace(/^([^!]+)(!.*)$/, function(_, sheet, rest) {
+  return range.replace(/^([^!]+)(!.*)$/, function (_, sheet, rest) {
     return (sheet.indexOf(' ') >= 0 ? "'" + sheet + "'" : sheet) + rest;
   });
 }
 function apiGet(range) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(quoteRange(range)),
     { headers: { Authorization: 'Bearer ' + token } })
-    .then(function(r) {
+    .then(function (r) {
       if (r.status === 401) { location.href = 'index.html'; throw new Error('Auth'); }
-      if (!r.ok) return r.json().then(function(e){ throw new Error((e.error && e.error.message) || 'Get failed'); });
+      if (!r.ok) return r.json().then(function (e) { throw new Error((e.error && e.error.message) || 'Get failed'); });
       return r.json();
     });
 }
 function apiAppend(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(quoteRange(range)) + ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
     { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ values: values }) })
-    .then(function(r) {
-      if (!r.ok) return r.json().then(function(e){ throw new Error((e.error && e.error.message) || 'Append failed'); });
+    .then(function (r) {
+      if (!r.ok) return r.json().then(function (e) { throw new Error((e.error && e.error.message) || 'Append failed'); });
       return r.json();
     });
 }
-  
 function apiUpdate(range, values) {
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + encodeURIComponent(quoteRange(range)) + '?valueInputOption=USER_ENTERED',
     { method: 'PUT', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ values: values }) })
-    .then(function(r) {
-      if (!r.ok) return r.json().then(function(e){ throw new Error((e.error && e.error.message) || 'Update failed'); });
+    .then(function (r) {
+      if (!r.ok) return r.json().then(function (e) { throw new Error((e.error && e.error.message) || 'Update failed'); });
       return r.json();
     });
 }
 
-// ═══ HELPERS ══════════════════════════════════════════
+// ═══ UTILITIES ══════════════════════════════════════════
+function safeJson(s) { try { return s ? JSON.parse(s) : {}; } catch (e) { return {}; } }
+function esc(s) { return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
 function escapeHtml(s) {
-  return String(s || '').replace(/[&<>"']/g, function(c) {
-    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
   });
+}
+function initials(name) {
+  if (!name) return '?';
+  var parts = String(name).trim().split(/\s+/);
+  return (((parts[0] || '')[0] || '') + ((parts[1] || '')[0] || '')).toUpperCase();
+}
+function firstName(name) { return String(name || '').trim().split(/\s+/)[0] || name || ''; }
+function avatarColor(seed) {
+  var colors = ['#B32533', '#2563eb', '#16a34a', '#f59e0b', '#7c3aed', '#0891b2', '#db2777', '#0d9488'];
+  var h = 0;
+  seed = seed || '';
+  for (var i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return colors[h % colors.length];
 }
 function fmtTimeShort(iso) {
   if (!iso) return '';
   var d = new Date(iso);
   if (isNaN(d.getTime())) return '';
   var today = new Date();
-  var isToday = d.toDateString() === today.toDateString();
-  if (isToday) return d.toLocaleTimeString('en-PH', { hour:'numeric', minute:'2-digit' });
-  return d.toLocaleDateString('en-PH', { month:'short', day:'numeric' });
+  if (d.toDateString() === today.toDateString()) return d.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
+  return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
 }
 function fmtDayLabel(dayStr) {
   if (!dayStr) return '';
   var d = new Date(dayStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return '';
   var today = new Date();
   var yest = new Date(today); yest.setDate(yest.getDate() - 1);
   if (d.toDateString() === today.toDateString()) return 'Today';
   if (d.toDateString() === yest.toDateString()) return 'Yesterday';
-  return d.toLocaleDateString('en-PH', { weekday:'short', month:'short', day:'numeric', year: d.getFullYear() !== today.getFullYear() ? 'numeric' : undefined });
+  return d.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: d.getFullYear() !== today.getFullYear() ? 'numeric' : undefined });
 }
-
 var _tt;
 function showToast(m) {
   var t = document.getElementById('toast'); t.textContent = m; t.classList.add('show');
-  clearTimeout(_tt); _tt = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+  clearTimeout(_tt); _tt = setTimeout(function () { t.classList.remove('show'); }, 3500);
 }
+
 </script>
 </body>
 </html>
