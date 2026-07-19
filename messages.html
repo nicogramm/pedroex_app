@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -31,7 +31,7 @@ body.dark {
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
-.screen{display:flex;flex-direction:column;height:100dvh;width:100%;position:relative}
+.screen{display:flex;flex-direction:column;height:100vh;height:100dvh;height:var(--app-h,100dvh);width:100%;position:relative;overflow:hidden}
 
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px)+14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07);z-index:10}
 body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
@@ -45,7 +45,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .tb-new:active{box-shadow:var(--neu-in)}
 
 /* ═══ THREAD LIST ═══ */
-.thread-list-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 90px}
+.thread-list-wrap{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 90px}
 .thread-item{display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:16px;cursor:pointer;transition:background 0.15s}
 .thread-item:active{background:var(--bg2)}
 .thread-avatar{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;box-shadow:var(--neu-xs)}
@@ -61,7 +61,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .empty-hint{text-align:center;padding:60px 24px;color:var(--text3);font-size:13px;line-height:1.7}
 
 /* ═══ CHAT VIEW ═══ */
-.chat-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 10px;display:flex;flex-direction:column;gap:3px}
+.chat-wrap{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 10px;display:flex;flex-direction:column;gap:3px}
 .day-sep{text-align:center;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;margin:14px 0 8px}
 .sys-msg{align-self:center;font-size:11px;color:var(--text3);background:var(--bg2);box-shadow:var(--neu-xs);padding:5px 14px;border-radius:12px;margin:6px 0;text-align:center;max-width:88%}
 
@@ -124,6 +124,49 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .att-foot{font-size:10.5px;color:var(--text3);margin-top:5px}
 .msg-row.mine .att-foot{color:rgba(255,255,255,0.7)}
 
+/* ═══ ATTENDANCE CARD v2 (truck + crew) ═══ */
+.att-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:2px 2px 8px}
+.att-badge{font-size:13px;font-weight:700}
+.msg-row.mine .att-badge{color:#fff}
+.att-cargo{font-size:10px;font-weight:700;padding:3px 8px;border-radius:9px;white-space:nowrap}
+.att-cargo.fresh{background:rgba(22,163,74,0.16);color:var(--green)}
+.att-cargo.frozen{background:rgba(37,99,235,0.16);color:var(--blue)}
+.msg-row.mine .att-cargo{background:rgba(255,255,255,0.22);color:#fff}
+.att-truck{font-size:14px;font-weight:700;margin:2px 2px 3px}
+.msg-row.mine .att-truck{color:#fff}
+.att-date{font-size:11px;color:var(--text2);margin:0 2px 9px}
+.msg-row.mine .att-date{color:rgba(255,255,255,0.8)}
+.att-crew-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin:6px 2px 6px}
+.msg-row.mine .att-crew-label{color:rgba(255,255,255,0.7)}
+.att-crew{display:flex;flex-direction:column;gap:5px}
+.att-crew-row{display:flex;align-items:center;gap:8px}
+.att-crew-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.att-crew-name{font-size:12.5px;font-weight:600;color:var(--text)}
+.msg-row.mine .att-crew-name{color:#fff}
+.att-crew-pos{font-size:10px;color:var(--text3);margin-left:auto;background:var(--bg);box-shadow:var(--neu-xs);padding:2px 8px;border-radius:8px}
+.msg-row.mine .att-crew-pos{background:rgba(255,255,255,0.18);color:rgba(255,255,255,0.9);box-shadow:none}
+.att-crew-empty{font-size:12px;color:var(--text3);padding:4px 2px}
+.att-edit{margin-top:10px;width:100%;border:none;border-radius:11px;background:var(--bg);box-shadow:var(--neu-sm);color:var(--red);font-size:12px;font-weight:700;padding:8px;cursor:pointer;font-family:'Inter',sans-serif}
+.msg-row.mine .att-edit{background:rgba(255,255,255,0.18);color:#fff;box-shadow:none}
+.att-edit:active{box-shadow:var(--neu-in)}
+
+/* edited tag */
+.edited-tag{font-size:9px;color:var(--text3);margin:2px 5px 0;font-style:italic}
+
+/* attendance modal: truck select + cargo toggle + crew */
+.att-select-wrap{position:relative;margin-bottom:12px}
+.att-select{width:100%;background:var(--bg);border:none;border-radius:14px;box-shadow:var(--neu-in);padding:13px 16px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;appearance:none;cursor:pointer}
+.att-select-wrap::after{content:'▾';position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;font-size:12px}
+.cargo-toggle{display:flex;gap:10px;margin-bottom:6px}
+.cargo-btn{flex:1;border:none;border-radius:13px;background:var(--bg);box-shadow:var(--neu-sm);padding:12px;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+.cargo-btn:active{box-shadow:var(--neu-in)}
+.cargo-btn.active.fresh{background:var(--green);color:#fff;box-shadow:4px 4px 12px rgba(22,163,74,0.3)}
+.cargo-btn.active.frozen{background:var(--blue);color:#fff;box-shadow:4px 4px 12px rgba(37,99,235,0.3)}
+.att-date-note{font-size:11px;color:var(--text3);margin:2px 2px 14px}
+.att-crew-list{max-height:38dvh;overflow-y:auto;margin:4px 0 14px}
+.contact-item.taken{opacity:0.5}
+.contact-item.taken .member-check{color:var(--text3)}
+
 /* ═══ REACTIONS ═══ */
 .react-chips{display:flex;gap:4px;flex-wrap:wrap;margin:3px 2px 0}
 .react-chips.mine{justify-content:flex-end}
@@ -134,9 +177,15 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 @keyframes popIn{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
 .react-pick{font-size:22px;cursor:pointer;transition:transform 0.12s}
 .react-pick:active{transform:scale(1.3)}
+.react-pick.react-edit{font-size:18px;color:var(--red);border-left:1px solid var(--shadow-d);padding-left:8px;margin-left:4px}
 
 /* ═══ COMPOSER ═══ */
 .composer-region{flex-shrink:0;position:relative}
+.edit-banner{display:none;align-items:center;gap:10px;padding:8px 14px;background:var(--bg);border-top:2px solid var(--red)}
+.edit-banner.show{display:flex}
+.edit-banner-txt{flex:1;font-size:12px;font-weight:600;color:var(--red)}
+.edit-banner-x{border:none;background:var(--bg);box-shadow:var(--neu-sm);color:var(--text2);border-radius:9px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+.edit-banner-x:active{box-shadow:var(--neu-in)}
 .composer{display:flex;align-items:flex-end;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);box-shadow:0 -3px 14px rgba(0,0,0,0.07)}
 body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 .comp-btn{width:38px;height:38px;border-radius:50%;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--red);font-size:19px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -271,6 +320,12 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
     <!-- emoji panel -->
     <div class="emoji-panel" id="emoji-panel"></div>
 
+    <!-- edit banner -->
+    <div class="edit-banner" id="edit-banner">
+      <div class="edit-banner-txt">✎ Editing message</div>
+      <button class="edit-banner-x" onclick="cancelEdit()">Cancel</button>
+    </div>
+
     <div class="composer">
       <button class="comp-btn" id="attach-btn" onclick="toggleAttach()">＋</button>
       <button class="comp-btn emoji" id="emoji-btn" onclick="toggleEmoji()">☺</button>
@@ -327,12 +382,26 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 <div class="sheet-overlay" id="att-modal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Attendance Roll Call</div>
-    <div class="sheet-note">Members tap Present / Late / Absent to check in.</div>
-    <input class="modal-input" id="att-title-input" placeholder="Title" maxlength="80">
+    <div class="sheet-title" id="att-modal-title">Attendance</div>
+    <div class="att-date-note">For <span id="att-date-label">today</span></div>
+
+    <div class="modal-label">Truck</div>
+    <div class="att-select-wrap">
+      <select class="att-select" id="att-truck-select"><option value="">Select truck…</option></select>
+    </div>
+
+    <div class="modal-label">Cargo</div>
+    <div class="cargo-toggle">
+      <button class="cargo-btn fresh active" id="cargo-fresh" onclick="setCargo('fresh')">🍃 Fresh</button>
+      <button class="cargo-btn frozen" id="cargo-frozen" onclick="setCargo('frozen')">❄️ Frozen</button>
+    </div>
+
+    <div class="modal-label">Crew present</div>
+    <div class="att-crew-list" id="att-crew-list"></div>
+
     <div class="sheet-actions">
       <button class="btn btn-ghost" onclick="closeAttModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitAtt()">Post Roll Call</button>
+      <button class="btn btn-primary" id="att-submit-btn" onclick="submitAtt()">Post Attendance</button>
     </div>
   </div>
 </div>
@@ -351,6 +420,7 @@ var SHEET_ID      = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 var TAB_MESSAGES  = 'Messages';
 var TAB_GROUPS    = 'Groups';
 var TAB_EMPLOYEES = 'Employees';
+var TAB_TRUCKS    = 'Truck Roster';
 var POLL_LIST_MS  = 10000;   // thread-list refresh
 var POLL_CHAT_MS  = 4000;    // open-thread refresh
 var IMG_MAX_DIM   = 1280;    // client-side image resize before Drive upload
@@ -368,10 +438,18 @@ var contacts = [];             // [{email,name,role}] excluding me
 var contactsByEmail = {};      // email -> {email,name,role}
 var groups = [];               // [{id,name,members,color,createdBy,createdAt}]
 var currentGroup = null;       // active group object
+var trucks = [];               // [{id,plate}] from Truck Roster
+var employeesAll = [];         // [{email,name,role,position}] incl. me, sheet order
 var listPollTimer, chatPollTimer;
 var lastRenderSig = '';        // signature to skip redundant chat re-renders
 var pendingImage = null;       // {dataUrl} preview before caption/send
 var reactTargetId = null;      // message id being reacted to
+var editingId = null;          // id of a TEXT message being edited in composer
+
+// notifications
+var notifyReady = false;       // baseline established (don't notify backlog)
+var notifyBaselineTs = '';     // newest ts seen so far
+var notifiedIds = {};          // id -> true (already surfaced)
 
 // ═══ INIT ═════════════════════════════════════════════
 (function init() {
@@ -387,7 +465,11 @@ var reactTargetId = null;      // message id being reacted to
   var pic = localStorage.getItem('pedroex-picture') || '';
   if (pic) document.getElementById('user-avatar').src = pic;
 
+  setAppHeight();
+  initNotifications();
+
   loadContacts()
+    .then(loadTrucks)
     .then(loadGroups)
     .then(function () { return loadMessages(true); })
     .catch(function (e) { console.error('Init error:', e); });
@@ -397,6 +479,21 @@ var reactTargetId = null;      // message id being reacted to
   }, POLL_LIST_MS);
 })();
 
+// Keep the visible height in sync with the on-screen keyboard / URL bar so the
+// composer (＋ button, text box, send) is always reachable on mobile.
+function setAppHeight() {
+  var h = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+  document.documentElement.style.setProperty('--app-h', h + 'px');
+}
+window.addEventListener('resize', setAppHeight);
+window.addEventListener('orientationchange', function () { setTimeout(setAppHeight, 250); });
+if (window.visualViewport) window.visualViewport.addEventListener('resize', setAppHeight);
+
+// Refresh when the app returns to the foreground (also re-checks notifications).
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden) loadMessages(false);
+});
+
 window.addEventListener('beforeunload', function () {
   clearInterval(listPollTimer);
   clearInterval(chatPollTimer);
@@ -404,20 +501,39 @@ window.addEventListener('beforeunload', function () {
 
 // ═══ LOAD CONTACTS (Employees) ═════════════════════════
 function loadContacts() {
-  return apiGet(TAB_EMPLOYEES + '!A2:D').then(function (res) {
+  // Employees sheet: A Email | B First Name | C Last Name | D Role | E Position
+  return apiGet(TAB_EMPLOYEES + '!A2:E').then(function (res) {
     var rows = res.values || [];
     contacts = [];
     contactsByEmail = {};
+    employeesAll = [];
     rows.forEach(function (r) {
       var email = (r[0] || '').toLowerCase();
       if (!email) return;
-      var c = { email: email, name: r[1] || email, role: r[3] || 'Employee' };
+      var full = ((r[1] || '') + ' ' + (r[2] || '')).trim() || email;
+      var c = { email: email, name: full, role: r[3] || 'Employee', position: r[4] || '' };
       contactsByEmail[email] = c;
+      employeesAll.push(c);
       if (email !== myEmail) contacts.push(c);
     });
     // Make sure I'm resolvable too
-    if (!contactsByEmail[myEmail]) contactsByEmail[myEmail] = { email: myEmail, name: myName, role: 'Me' };
+    if (!contactsByEmail[myEmail]) {
+      var me = { email: myEmail, name: myName, role: 'Me', position: '' };
+      contactsByEmail[myEmail] = me;
+      employeesAll.push(me);
+    }
   }).catch(function (e) { console.error('Load contacts error:', e); });
+}
+
+// ═══ LOAD TRUCKS (Truck Roster) ════════════════════════
+function loadTrucks() {
+  // Truck Roster: A Row ID | B Truck Plate Number | C.. (unused here)
+  return apiGet(TAB_TRUCKS + '!A2:F').then(function (res) {
+    var rows = res.values || [];
+    trucks = rows.map(function (r) {
+      return { id: (r[0] || '').trim(), plate: (r[1] || '').trim() };
+    }).filter(function (t) { return t.plate; });
+  }).catch(function (e) { console.error('Load trucks error:', e); trucks = []; });
 }
 
 function nameOf(email) {
@@ -503,6 +619,7 @@ function loadMessages(showLoader) {
     parseMessages(res.values || []);
     renderThreadList();
     if (currentGroup) renderChat();
+    processNotifications();
   }).catch(function (err) {
     var m = String(err.message || '').toLowerCase();
     if (m.indexOf('unable to parse range') > -1 || m.indexOf('not found') > -1) {
@@ -607,7 +724,7 @@ function previewOf(m) {
   var who = m.senderEmail === myEmail ? 'You: ' : (firstName(m.senderName) + ': ');
   if (m.type === T_IMAGE) return who + '📷 Photo';
   if (m.type === T_POLL) return who + '📊 ' + (m.meta.q || 'Poll');
-  if (m.type === T_ATT) return who + '📋 ' + (m.meta.title || 'Attendance');
+  if (m.type === T_ATT) return who + '📋 Attendance' + (m.meta.truck ? ' · ' + m.meta.truck : '') + (m.meta.crew ? ' (' + m.meta.crew.length + ')' : '');
   if (m.type === T_SYS) return m.text;
   return who + m.text;
 }
@@ -639,6 +756,7 @@ function openGroup(groupId) {
 function closeChat() {
   currentGroup = null;
   clearInterval(chatPollTimer);
+  cancelEdit();
   closeAllPanels();
   document.getElementById('thread-list-wrap').style.display = '';
   document.getElementById('tb-new-btn').style.display = '';
@@ -700,6 +818,7 @@ function renderChat() {
     html += '<div class="bubble-wrap" onclick="openReactBar(event,\'' + esc(m.id) + '\')">';
     html += renderBubbleBody(m);
     html += '</div>';
+    if (m.meta && m.meta.edited) html += '<span class="edited-tag">edited</span>';
 
     // reactions
     var rx = reactionsByTarget[m.id];
@@ -848,62 +967,57 @@ function votePoll(pollId, optIndex, multi, nOpts) {
   });
 }
 
-// ═══ ATTENDANCE ═════════════════════════════════════════
-var ATT_STATUSES = [
-  { key: 'present', label: 'Present', icon: '✅' },
-  { key: 'late',    label: 'Late',    icon: '🕒' },
-  { key: 'absent',  label: 'Absent',  icon: '❌' }
-];
-
+// ═══ ATTENDANCE (truck + crew present) ══════════════════
+// An attendance message stores everything in its Meta:
+//   { date:'YYYY-MM-DD', truck:'CAH 1415', truckId:'PDX-TRUCK-002',
+//     cargo:'fresh'|'frozen', crew:[{email,name,position}], edited?:true }
 function renderAttCard(m) {
-  var title = m.meta.title || 'Attendance';
-  var tally = tallyAtt(m.id); // {byStatus:{status:[emails]}, mine:status}
+  var meta = m.meta || {};
+  var cargo = (meta.cargo || '').toLowerCase();
+  var cargoBadge = cargo
+    ? '<span class="att-cargo ' + cargo + '">' + (cargo === 'frozen' ? '❄️ Frozen' : '🍃 Fresh') + '</span>'
+    : '';
+  var crew = meta.crew || [];
+  var canEdit = (m.senderEmail === myEmail || isAdmin);
+
   var body = '<div class="att-card">'
-    + '<div class="att-title">📋 ' + escapeHtml(title) + '</div>'
-    + '<div class="att-btns">';
-  ATT_STATUSES.forEach(function (s) {
-    var count = (tally.byStatus[s.key] || []).length;
-    var mine = tally.mine === s.key;
-    body += '<button class="att-btn' + (mine ? ' active ' + s.key : '') + '" onclick="event.stopPropagation();checkIn(\'' + esc(m.id) + '\',\'' + s.key + '\')">'
-      + s.icon + ' ' + s.label + '<span class="att-count">' + count + '</span></button>';
-  });
+    + '<div class="att-head"><span class="att-badge">📋 Attendance</span>' + cargoBadge + '</div>'
+    + '<div class="att-truck">🚚 ' + escapeHtml(meta.truck || 'No truck') + '</div>'
+    + (meta.date ? '<div class="att-date">📅 ' + escapeHtml(prettyDate(meta.date)) + '</div>' : '')
+    + '<div class="att-crew-label">Crew present · ' + crew.length + '</div>'
+    + '<div class="att-crew">';
+  if (crew.length) {
+    crew.forEach(function (c) {
+      body += '<div class="att-crew-row">'
+        + '<span class="att-crew-dot" style="background:' + avatarColor(c.name) + '"></span>'
+        + '<span class="att-crew-name">' + escapeHtml(c.name) + '</span>'
+        + (c.position ? '<span class="att-crew-pos">' + escapeHtml(c.position) + '</span>' : '')
+        + '</div>';
+    });
+  } else {
+    body += '<div class="att-crew-empty">No crew listed</div>';
+  }
   body += '</div>';
-  // responders list
-  ATT_STATUSES.forEach(function (s) {
-    var names = (tally.byStatus[s.key] || []).map(function (e) { return firstName(nameOf(e)); });
-    if (names.length) {
-      body += '<div class="att-list"><span class="att-list-k">' + s.icon + '</span> ' + escapeHtml(names.join(', ')) + '</div>';
-    }
-  });
-  var total = memberEmailsOf(currentGroup).length;
-  var responded = Object.keys(tally.respondedBy).length;
-  body += '<div class="att-foot">' + responded + ' of ' + total + ' responded</div>';
+  if (canEdit) {
+    body += '<button class="att-edit" onclick="event.stopPropagation();editAtt(\'' + esc(m.id) + '\')">✎ Edit</button>';
+  }
   body += '</div>';
   return body;
 }
 
-function tallyAtt(attId) {
-  var checks = rowsForThread(currentGroup.id).filter(function (r) {
-    return r.type === T_CHECKIN && r.meta && r.meta.attId === attId;
-  }).sort(function (a, b) { return a.ts.localeCompare(b.ts); });
-  var lastByUser = {};
-  checks.forEach(function (c) { lastByUser[c.senderEmail] = c.meta.status; });
-  var byStatus = {}; var mine = null;
-  Object.keys(lastByUser).forEach(function (u) {
-    var st = lastByUser[u];
-    if (!byStatus[st]) byStatus[st] = [];
-    byStatus[st].push(u);
-    if (u === myEmail) mine = st;
+// Emails already marked present on a given date across ALL attendance entries
+// (so nobody is double-booked the same day). Excludes the entry being edited.
+function crewUsedOnDate(date, exceptId) {
+  var used = {};
+  allRows.forEach(function (m) {
+    if (m.type !== T_ATT) return;
+    if (exceptId && m.id === exceptId) return;
+    if (!m.meta || m.meta.date !== date) return;
+    (m.meta.crew || []).forEach(function (c) {
+      used[(c.email || '').toLowerCase()] = true;
+    });
   });
-  return { byStatus: byStatus, mine: mine, respondedBy: lastByUser };
-}
-
-function checkIn(attId, status) {
-  if (!currentGroup) return;
-  var meta = { attId: attId, status: status };
-  sendTyped(T_CHECKIN, status, meta).catch(function (e) {
-    console.error('Check-in failed:', e); showToast('❌ Check-in not saved.');
-  });
+  return used;
 }
 
 // ═══ REACTIONS ══════════════════════════════════════════
@@ -937,10 +1051,16 @@ function openReactBar(ev, msgId) {
   ev.stopPropagation();
   closeReactBar();
   reactTargetId = msgId;
+  var m = allRows.find(function (r) { return r.id === msgId; });
   var bar = document.getElementById('react-bar');
-  bar.innerHTML = REACT_SET.map(function (e) {
+  var html = REACT_SET.map(function (e) {
     return '<span class="react-pick" onclick="toggleReaction(event,\'' + esc(msgId) + '\',\'' + esc(e) + '\')">' + e + '</span>';
   }).join('');
+  // edit action for own text/attendance messages
+  if (m && (m.senderEmail === myEmail || (isAdmin && m.type === T_ATT)) && (m.type === T_TEXT || m.type === T_ATT)) {
+    html += '<span class="react-pick react-edit" onclick="event.stopPropagation();startEdit(\'' + esc(msgId) + '\')">✎</span>';
+  }
+  bar.innerHTML = html;
   // position near tap
   var y = (ev.touches && ev.touches[0] ? ev.touches[0].clientY : ev.clientY) || 200;
   var x = (ev.touches && ev.touches[0] ? ev.touches[0].clientX : ev.clientX) || 100;
@@ -971,6 +1091,12 @@ function sendMessage() {
   var text = input.value.trim();
   if (!currentGroup) return;
 
+  if (editingId) {
+    if (!text) { cancelEdit(); return; }
+    saveTextEdit(editingId, text);
+    return;
+  }
+
   if (pendingImage) { sendPendingImage(text); return; }
   if (!text) return;
 
@@ -984,6 +1110,50 @@ function sendMessage() {
   sendTyped(T_TEXT, text, meta).catch(function (err) {
     console.error('Send failed:', err); showToast('❌ Failed to send. Will retry on refresh.');
   });
+}
+
+// ═══ EDIT PAST MESSAGES ═════════════════════════════════
+function startEdit(id) {
+  closeReactBar();
+  var m = allRows.find(function (r) { return r.id === id; });
+  if (!m) return;
+  if (m.type === T_ATT) { editAtt(id); return; }   // attendance edits reopen the modal
+  if (m.type !== T_TEXT) return;
+  if (m.senderEmail !== myEmail) return;            // text: only your own
+  editingId = id;
+  var input = document.getElementById('composer-input');
+  input.value = m.text;
+  input.focus();
+  autoGrow(input);
+  showEditBanner(true);
+}
+function cancelEdit() {
+  editingId = null;
+  var input = document.getElementById('composer-input');
+  input.value = '';
+  autoGrow(input);
+  showEditBanner(false);
+}
+function showEditBanner(on) {
+  var b = document.getElementById('edit-banner');
+  if (b) b.classList.toggle('show', !!on);
+}
+function saveTextEdit(id, text) {
+  var m = allRows.find(function (r) { return r.id === id; });
+  if (!m) { cancelEdit(); return; }
+  var mentions = extractMentions(text);
+  var meta = Object.assign({}, m.meta || {});
+  meta.mentions = mentions;
+  meta.edited = true;
+  m.text = text;
+  m.meta = meta;
+  cancelEdit();
+  lastRenderSig = ''; renderChat(); renderThreadList();
+  if (m.rowIndex > 0) {
+    apiUpdate(TAB_MESSAGES + '!G' + m.rowIndex + ':H' + m.rowIndex,
+      [[text, JSON.stringify(meta)]])
+      .catch(function (e) { console.error('Edit save failed:', e); showToast('❌ Edit not saved.'); });
+  }
 }
 
 function extractMentions(text) {
@@ -1294,19 +1464,132 @@ function submitPoll() {
 }
 
 // ═══ ATTENDANCE MODAL ═══════════════════════════════════
-function openAttModal() {
+var attEditingId = null;   // id when editing an existing attendance
+var attCargo = 'fresh';    // 'fresh' | 'frozen'
+var attCrew = {};          // email -> true (selected crew)
+var attForDate = '';       // 'YYYY-MM-DD' this entry is for (used for dedup)
+
+function openAttModal(editId) {
   closeAttach();
-  var d = new Date();
-  var def = 'Attendance — ' + d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-  document.getElementById('att-title-input').value = def;
+  attEditingId = editId || null;
+  attCargo = 'fresh';
+  attCrew = {};
+
+  var editingMeta = null;
+  if (attEditingId) {
+    var em = allRows.find(function (r) { return r.id === attEditingId; });
+    if (em && em.meta) {
+      editingMeta = em.meta;
+      attCargo = (em.meta.cargo || 'fresh').toLowerCase();
+      (em.meta.crew || []).forEach(function (c) { attCrew[(c.email || '').toLowerCase()] = true; });
+    }
+  }
+
+  // title + button label
+  document.getElementById('att-modal-title').textContent = attEditingId ? 'Edit Attendance' : 'Attendance';
+  document.getElementById('att-submit-btn').textContent = attEditingId ? 'Save Changes' : 'Post Attendance';
+
+  // truck dropdown
+  var sel = document.getElementById('att-truck-select');
+  sel.innerHTML = '<option value="">Select truck…</option>' + trucks.map(function (t) {
+    var selAttr = (editingMeta && editingMeta.truck === t.plate) ? ' selected' : '';
+    return '<option value="' + escapeHtml(t.plate) + '"' + selAttr + '>'
+      + escapeHtml(t.plate) + (t.id ? ' · ' + escapeHtml(t.id) : '') + '</option>';
+  }).join('');
+
+  // cargo toggle
+  renderCargoToggle();
+
+  // date (today for new; keep original date when editing)
+  attForDate = (editingMeta && editingMeta.date) ? editingMeta.date : todayStr();
+  document.getElementById('att-date-label').textContent = prettyDate(attForDate);
+
+  renderAttCrewList();
   document.getElementById('att-modal').classList.add('open');
 }
 function closeAttModal() { document.getElementById('att-modal').classList.remove('open'); }
+function editAtt(id) { openAttModal(id); }
+
+function setCargo(v) { attCargo = v; renderCargoToggle(); }
+function renderCargoToggle() {
+  document.getElementById('cargo-fresh').classList.toggle('active', attCargo === 'fresh');
+  document.getElementById('cargo-frozen').classList.toggle('active', attCargo === 'frozen');
+}
+
+function renderAttCrewList() {
+  var list = document.getElementById('att-crew-list');
+  if (!employeesAll.length) { list.innerHTML = '<div class="empty-hint">No employees found.</div>'; return; }
+  var used = crewUsedOnDate(attForDate, attEditingId); // already-assigned that day
+  list.innerHTML = employeesAll.map(function (c) {
+    var taken   = used[c.email] && !attCrew[c.email];
+    var checked = !!attCrew[c.email];
+    var cls = 'contact-item' + (checked ? ' sel' : '') + (taken ? ' taken' : '');
+    var onclick = taken ? '' : ('onclick="toggleAttCrew(\'' + esc(c.email) + '\')"');
+    var sub = taken ? (escapeHtml(c.position || c.role || '') + ' · assigned today')
+                    : escapeHtml(c.position || c.role || '');
+    var mark = checked ? '●' : (taken ? '🔒' : '○');
+    return '<div class="' + cls + '" ' + onclick + '>'
+      + '<div class="contact-avatar" style="background:' + avatarColor(c.name) + '">' + escapeHtml(initials(c.name)) + '</div>'
+      + '<div class="contact-info"><div class="contact-name">' + escapeHtml(c.name) + '</div>'
+      + '<div class="contact-role">' + sub + '</div></div>'
+      + '<div class="member-check">' + mark + '</div>'
+      + '</div>';
+  }).join('');
+}
+function toggleAttCrew(email) {
+  email = (email || '').toLowerCase();
+  if (attCrew[email]) delete attCrew[email];
+  else attCrew[email] = true;
+  renderAttCrewList();
+}
+
 function submitAtt() {
-  var title = document.getElementById('att-title-input').value.trim() || 'Attendance';
-  var meta = { title: title };
+  var truck = document.getElementById('att-truck-select').value;
+  if (!truck) { showToast('Select a truck first.'); return; }
+  var crewEmails = Object.keys(attCrew);
+  if (!crewEmails.length) { showToast('Select at least one crew member.'); return; }
+
+  // final dedup guard (someone may have been assigned while the modal was open)
+  var used = crewUsedOnDate(attForDate, attEditingId);
+  var clash = crewEmails.filter(function (e) { return used[e]; });
+  if (clash.length) {
+    showToast('⚠️ ' + firstName(nameOf(clash[0])) + ' is already assigned today.');
+    renderAttCrewList();
+    return;
+  }
+
+  var crew = crewEmails.map(function (e) {
+    var c = contactsByEmail[e] || {};
+    return { email: e, name: c.name || nameOf(e), position: c.position || c.role || '' };
+  });
+  var truckObj = trucks.find(function (t) { return t.plate === truck; }) || {};
+  var meta = { date: attForDate, truck: truck, truckId: truckObj.id || '', cargo: attCargo, crew: crew };
+  var summary = 'Attendance · ' + truck + ' · ' + crew.length + ' crew';
+
   closeAttModal();
-  sendTyped(T_ATT, title, meta).catch(function (e) { console.error('Attendance failed:', e); showToast('❌ Attendance not saved.'); });
+
+  if (attEditingId) {
+    updateAttendance(attEditingId, meta, summary);
+    attEditingId = null;
+  } else {
+    sendTyped(T_ATT, summary, meta).catch(function (e) {
+      console.error('Attendance failed:', e); showToast('❌ Attendance not saved.');
+    });
+  }
+}
+
+function updateAttendance(id, meta, summary) {
+  var m = allRows.find(function (r) { return r.id === id; });
+  if (!m) return;
+  meta.edited = true;
+  m.meta = meta;
+  m.text = summary;
+  lastRenderSig = ''; renderChat(); renderThreadList();
+  if (m.rowIndex > 0) {
+    apiUpdate(TAB_MESSAGES + '!G' + m.rowIndex + ':H' + m.rowIndex,
+      [[summary, JSON.stringify(meta)]])
+      .catch(function (e) { console.error('Att update failed:', e); showToast('❌ Edit not saved.'); });
+  }
 }
 
 // ═══ NEW / MANAGE GROUP ═════════════════════════════════
@@ -1361,6 +1644,92 @@ function createGroup() {
     })
     .then(function () { currentGroup = null; openGroup(g.id); })
     .catch(function (e) { console.error('Create group failed:', e); showToast('❌ Group not saved to server.'); });
+}
+
+// ═══ NOTIFICATIONS ══════════════════════════════════════
+// Real phone notifications, Messenger-style. These fire while the app is open
+// OR backgrounded/hidden (as long as the page process is still alive). A push
+// that wakes a FULLY-closed app needs a push server (FCM/Web Push) — not
+// possible from a static GitHub Pages + Sheets setup without a backend.
+function initNotifications() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    // ask shortly after load so it doesn't block first paint
+    setTimeout(function () {
+      try { Notification.requestPermission(); } catch (e) {}
+    }, 1500);
+  }
+}
+
+function processNotifications() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  var myGroupIds = {};
+  groups.filter(iAmMember).forEach(function (g) { myGroupIds[g.id] = true; });
+
+  var fresh = allRows.filter(function (m) {
+    return DISPLAY_TYPES.indexOf(m.type) > -1 && m.type !== T_SYS
+      && m.senderEmail && m.senderEmail !== myEmail
+      && myGroupIds[m.threadId]
+      && m.id && !notifiedIds[m.id];
+  });
+
+  var maxTs = notifyBaselineTs;
+  fresh.forEach(function (m) { if (m.ts > maxTs) maxTs = m.ts; });
+
+  // First pass just establishes a baseline — don't blast the whole backlog.
+  if (!notifyReady) {
+    fresh.forEach(function (m) { notifiedIds[m.id] = true; });
+    notifyBaselineTs = maxTs;
+    notifyReady = true;
+    return;
+  }
+
+  fresh.forEach(function (m) {
+    notifiedIds[m.id] = true;
+    if (m.ts <= notifyBaselineTs) return;                 // not actually new
+    var focusedHere = !document.hidden && currentGroup && currentGroup.id === m.threadId;
+    if (focusedHere) return;                              // already looking at it
+    fireNotification(m);
+  });
+  notifyBaselineTs = maxTs;
+}
+
+function notifBody(m) {
+  if (m.type === T_IMAGE) return '📷 Photo';
+  if (m.type === T_POLL)  return '📊 ' + (m.meta.q || 'Poll');
+  if (m.type === T_ATT)   return '📋 Attendance' + (m.meta.truck ? ' · ' + m.meta.truck : '');
+  return m.text || '';
+}
+
+function fireNotification(m) {
+  var g = groups.find(function (x) { return x.id === m.threadId; });
+  var groupName = g ? g.name : 'PedroEX';
+  var title = firstName(m.senderName) + ' · ' + groupName;
+  var opts = {
+    body: notifBody(m),
+    tag: 'pedroex-' + m.threadId,   // collapse multiple into one per group
+    renotify: true,
+    icon: 'logo2.png',
+    badge: 'logo2.png',
+    data: { threadId: m.threadId }
+  };
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+      navigator.serviceWorker.ready
+        .then(function (reg) { reg.showNotification(title, opts); })
+        .catch(function () { fallbackNotify(title, opts); });
+    } else {
+      fallbackNotify(title, opts);
+    }
+  } catch (e) { fallbackNotify(title, opts); }
+}
+
+function fallbackNotify(title, opts) {
+  try {
+    var n = new Notification(title, opts);
+    n.onclick = function () { try { window.focus(); } catch (e) {} n.close(); };
+  } catch (e) {}
 }
 
 // ═══ MARK READ ══════════════════════════════════════════
@@ -1471,6 +1840,16 @@ function fmtTimeShort(iso) {
   var today = new Date();
   if (d.toDateString() === today.toDateString()) return d.toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' });
   return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
+}
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function prettyDate(dayStr) {
+  if (!dayStr) return '';
+  var d = new Date(dayStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dayStr;
+  return d.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 }
 function fmtDayLabel(dayStr) {
   if (!dayStr) return '';
