@@ -30,7 +30,7 @@ body.dark {
   --neu-xs:3px 3px 7px var(--shadow-d),-2px -2px 6px var(--shadow-l);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .screen{display:flex;flex-direction:column;height:100vh;height:100dvh;height:var(--app-h,100dvh);width:100%;position:relative;overflow:hidden}
 
 .topbar{background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px)+14px);flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,0.07);z-index:10}
@@ -86,25 +86,22 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .img-bubble{padding:4px;overflow:hidden}
 .img-holder{position:relative;border-radius:12px;overflow:hidden}
 .chat-img{display:block;max-width:220px;width:100%;border-radius:12px;cursor:pointer}
+.chat-video{display:block;width:240px;max-width:72vw;height:180px;border-radius:12px;border:none;background:#000;object-fit:contain}
 .img-err{min-width:140px;height:120px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);background:var(--bg);border-radius:12px}
 .img-uploading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);color:#fff;font-size:12px;font-weight:600}
 .img-cap{padding:6px 8px 2px;font-size:13px;line-height:1.4}
 .msg-row.mine .img-cap{color:#fff}
 
-/* ═══ POLL CARD ═══ */
-.poll-card{min-width:220px;max-width:260px}
-.poll-q{font-size:14px;font-weight:700;margin:2px 2px 8px}
-.msg-row.mine .poll-q{color:#fff}
+/* ═══ POLL CARD (identical look for sender & receiver) ═══ */
+.poll-card{min-width:220px;max-width:260px;background:var(--bg2);box-shadow:var(--neu-xs);border-radius:14px;padding:11px 13px}
+.poll-q{font-size:14px;font-weight:700;margin:2px 2px 9px;color:var(--text)}
 .poll-opt{position:relative;border-radius:11px;margin-bottom:6px;overflow:hidden;cursor:pointer;background:var(--bg);box-shadow:var(--neu-xs)}
-.msg-row.mine .poll-opt{background:rgba(255,255,255,0.16);box-shadow:none}
 .poll-bar{position:absolute;left:0;top:0;bottom:0;background:rgba(37,99,235,0.18);transition:width 0.4s ease}
-.msg-row.mine .poll-bar{background:rgba(255,255,255,0.28)}
 .poll-opt.voted .poll-bar{background:rgba(22,163,74,0.24)}
-.poll-opt-row{position:relative;display:flex;justify-content:space-between;align-items:center;padding:9px 11px;font-size:12.5px}
+.poll-opt-row{position:relative;display:flex;justify-content:space-between;align-items:center;padding:9px 11px;font-size:12.5px;color:var(--text)}
 .poll-opt-txt{font-weight:500}
 .poll-opt-pct{font-weight:700;font-size:11px;opacity:0.85}
-.poll-foot{font-size:10.5px;color:var(--text3);margin:2px 2px 0}
-.msg-row.mine .poll-foot{color:rgba(255,255,255,0.7)}
+.poll-foot{font-size:10.5px;color:var(--text3);margin:4px 2px 0}
 
 /* ═══ ATTENDANCE CARD ═══ */
 .att-card{min-width:230px;max-width:270px}
@@ -198,7 +195,7 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 .comp-btn{width:38px;height:38px;border-radius:50%;background:var(--bg);box-shadow:var(--neu-sm);border:none;color:var(--red);font-size:19px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .comp-btn:active{box-shadow:var(--neu-in)}
 .comp-btn.emoji{color:var(--orange);font-size:17px}
-.composer-input{flex:1;background:var(--bg);border:none;border-radius:20px;box-shadow:var(--neu-in);padding:11px 16px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;resize:none;max-height:110px;line-height:1.4}
+.composer-input{flex:1;min-width:0;background:var(--bg);border:none;border-radius:20px;box-shadow:var(--neu-in);padding:11px 16px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;resize:none;max-height:110px;line-height:1.4}
 .composer-send{width:40px;height:40px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:4px 4px 12px rgba(179,37,51,0.35)}
 .composer-send:active{transform:scale(0.94)}
 
@@ -277,6 +274,19 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 20px;font-size:12.5px;font-weight:500;color:var(--text);z-index:400;max-width:88vw;text-align:center;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .toast.show{opacity:1}
+
+/* Poll & attendance cards read identically for sender and receiver (no white-on-gray) */
+.msg-row .poll-card,.msg-row .att-card{background:var(--bg2);box-shadow:var(--neu-xs);border-radius:14px;padding:11px 12px}
+.msg-row.mine .att-badge,.msg-row.mine .att-truck,.msg-row.mine .att-crew-name,.msg-row.mine .poll-q{color:var(--text)}
+.msg-row.mine .att-date,.msg-row.mine .poll-foot{color:var(--text2)}
+.msg-row.mine .att-crew-label{color:var(--text3)}
+.msg-row.mine .att-cargo.fresh{background:rgba(22,163,74,0.16);color:var(--green)}
+.msg-row.mine .att-cargo.frozen{background:rgba(37,99,235,0.16);color:var(--blue)}
+.msg-row.mine .att-crew-pos{background:var(--bg);color:var(--text3);box-shadow:var(--neu-xs)}
+.msg-row.mine .att-edit{background:var(--bg);color:var(--red);box-shadow:var(--neu-sm)}
+.msg-row.mine .poll-opt{background:var(--bg);box-shadow:var(--neu-xs)}
+.msg-row.mine .poll-bar{background:rgba(37,99,235,0.18)}
+.msg-row.mine .poll-opt.voted .poll-bar{background:rgba(22,163,74,0.24)}
 </style>
 </head>
 <body>
@@ -310,6 +320,7 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
     <!-- attach menu -->
     <div class="attach-menu" id="attach-menu">
       <div class="attach-item" onclick="pickPhoto()"><div class="attach-ic" style="background:var(--blue)">📷</div>Photo</div>
+      <div class="attach-item" onclick="pickVideo()"><div class="attach-ic" style="background:#7c3aed">🎬</div>Video</div>
       <div class="attach-item" onclick="openPollModal()"><div class="attach-ic" style="background:var(--green)">📊</div>Poll</div>
       <div class="attach-item" onclick="openAttModal()"><div class="attach-ic" style="background:var(--orange)">📋</div>Attendance</div>
     </div>
@@ -322,6 +333,13 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       <img src="" alt="">
       <div class="img-preview-txt">Photo ready — add a caption or send.</div>
       <button class="img-preview-x" onclick="cancelImage()">✕</button>
+    </div>
+
+    <!-- video preview -->
+    <div class="img-preview" id="video-preview">
+      <video src="" muted playsinline style="width:52px;height:52px;object-fit:cover;border-radius:10px;background:#000"></video>
+      <div class="img-preview-txt">🎬 Video ready — add a caption or send.</div>
+      <button class="img-preview-x" onclick="cancelVideo()">✕</button>
     </div>
 
     <!-- emoji panel -->
@@ -348,6 +366,8 @@ body.dark .composer{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
 <!-- hidden photo input -->
 <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="onPhotoChosen(this)">
+<!-- hidden video input -->
+<input type="file" id="video-input" accept="video/*" style="display:none" onchange="onVideoChosen(this)">
 
 <!-- NEW GROUP SHEET -->
 <div class="sheet-overlay" id="group-sheet" onclick="if(event.target===this)this.classList.remove('open')">
@@ -434,9 +454,9 @@ var IMG_MAX_DIM   = 1280;    // client-side image resize before Drive upload
 var IMG_QUALITY   = 0.82;
 
 // Message types
-var T_TEXT = 'text', T_IMAGE = 'image', T_POLL = 'poll', T_ATT = 'attendance',
+var T_TEXT = 'text', T_IMAGE = 'image', T_VIDEO = 'video', T_POLL = 'poll', T_ATT = 'attendance',
     T_VOTE = 'vote', T_CHECKIN = 'checkin', T_REACT = 'reaction', T_SYS = 'system';
-var DISPLAY_TYPES = [T_TEXT, T_IMAGE, T_POLL, T_ATT, T_SYS];
+var DISPLAY_TYPES = [T_TEXT, T_IMAGE, T_VIDEO, T_POLL, T_ATT, T_SYS];
 
 // ═══ STATE ════════════════════════════════════════════
 var token = '', myEmail = '', myName = '', isAdmin = false;
@@ -450,6 +470,7 @@ var employeesAll = [];         // [{email,name,role,position}] incl. me, sheet o
 var listPollTimer, chatPollTimer;
 var lastRenderSig = '';        // signature to skip redundant chat re-renders
 var pendingImage = null;       // {dataUrl} preview before caption/send
+var pendingVideo = null;       // {file,url,mimeType} preview before caption/send
 var reactTargetId = null;      // message id being reacted to
 var editingId = null;          // id of a TEXT message being edited in composer
 
@@ -647,7 +668,7 @@ function parseMessages(rows) {
     // New schema: A..I = ID,TS,Thread,SenderEmail,SenderName,Type,Message,Meta,ReadBy
     // Legacy 7-col: ...,Message(F),ReadBy(G). If col F isn't a known type -> legacy text.
     var type = (r[5] || '').toLowerCase();
-    var isKnown = [T_TEXT, T_IMAGE, T_POLL, T_ATT, T_VOTE, T_CHECKIN, T_REACT, T_SYS].indexOf(type) > -1;
+    var isKnown = [T_TEXT, T_IMAGE, T_VIDEO, T_POLL, T_ATT, T_VOTE, T_CHECKIN, T_REACT, T_SYS].indexOf(type) > -1;
     var message, meta, readByRaw;
     if (isKnown) {
       message = r[6] || '';
@@ -730,6 +751,7 @@ function renderThreadList() {
 function previewOf(m) {
   var who = m.senderEmail === myEmail ? 'You: ' : (firstName(m.senderName) + ': ');
   if (m.type === T_IMAGE) return who + '📷 Photo';
+  if (m.type === T_VIDEO) return who + '🎬 Video';
   if (m.type === T_POLL) return who + '📊 ' + (m.meta.q || 'Poll');
   if (m.type === T_ATT) return who + '📋 Attendance' + (m.meta.truck ? ' · ' + m.meta.truck : '') + (m.meta.crew ? ' (' + m.meta.crew.length + ')' : '');
   if (m.type === T_SYS) return m.text;
@@ -764,6 +786,8 @@ function closeChat() {
   currentGroup = null;
   clearInterval(chatPollTimer);
   cancelEdit();
+  if (pendingImage) cancelImage();
+  if (pendingVideo) cancelVideo();
   closeAllPanels();
   document.getElementById('thread-list-wrap').style.display = '';
   document.getElementById('tb-new-btn').style.display = '';
@@ -878,7 +902,28 @@ function renderBubbleBody(m) {
   }
   if (m.type === T_POLL) return renderPollCard(m);
   if (m.type === T_ATT) return renderAttCard(m);
+  if (m.type === T_VIDEO) return renderVideoBubble(m);
   return '<div class="msg-bubble">' + renderText(m) + '</div>';
+}
+
+// Video bubble: plays a local file instantly while uploading, then embeds the
+// Drive player (iframe) so every member can watch it inside the chat.
+function renderVideoBubble(m) {
+  var fid = m.meta.fileId;
+  var cap = m.text ? '<div class="img-cap">' + renderText(m) + '</div>' : '';
+  var player;
+  if (m.meta.localUrl && m.meta.uploading) {
+    player = '<div class="img-holder">'
+      + '<video class="chat-video" src="' + m.meta.localUrl + '" controls playsinline onclick="event.stopPropagation()"></video>'
+      + '<div class="img-uploading">Uploading…</div></div>';
+  } else if (fid) {
+    player = '<div class="img-holder" onclick="event.stopPropagation()">'
+      + '<iframe class="chat-video" src="https://drive.google.com/file/d/' + encodeURIComponent(fid) + '/preview" '
+      + 'allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>';
+  } else {
+    player = '<div class="img-err">🎬 Video unavailable</div>';
+  }
+  return '<div class="msg-bubble img-bubble">' + player + cap + '</div>';
 }
 
 // render text with @mentions highlighted
@@ -1104,6 +1149,7 @@ function sendMessage() {
     return;
   }
 
+  if (pendingVideo) { sendPendingVideo(text); return; }
   if (pendingImage) { sendPendingImage(text); return; }
   if (!text) return;
 
@@ -1331,6 +1377,7 @@ function onPhotoChosen(inp) {
   var file = inp.files && inp.files[0];
   inp.value = '';
   if (!file) return;
+  if (pendingVideo) cancelVideo();
   compressImage(file).then(function (dataUrl) {
     pendingImage = { dataUrl: dataUrl };
     showImagePreview(dataUrl);
@@ -1436,6 +1483,101 @@ function uploadToDrive(dataUrl) {
       body: JSON.stringify({ role: 'reader', type: 'anyone' })
     }).then(function () { return fileId; })
       .catch(function () { return fileId; }); // even if perm fails, keep id
+  });
+}
+
+// ═══ VIDEO (Google Drive) ═══════════════════════════════
+function pickVideo() {
+  closeAttach();
+  document.getElementById('video-input').click();
+}
+function onVideoChosen(inp) {
+  var file = inp.files && inp.files[0];
+  inp.value = '';
+  if (!file) return;
+  if (file.size > 100 * 1024 * 1024) {   // ~100MB guard
+    showToast('❌ Video too large (max ~100MB).');
+    return;
+  }
+  // cancel any pending photo so only one media is queued
+  if (pendingImage) cancelImage();
+  var url = URL.createObjectURL(file);
+  pendingVideo = { file: file, url: url, mimeType: file.type || 'video/mp4' };
+  showVideoPreview(url);
+}
+function showVideoPreview(url) {
+  var prev = document.getElementById('video-preview');
+  var v = prev.querySelector('video');
+  v.src = url;
+  prev.classList.add('show');
+  document.getElementById('composer-input').placeholder = 'Add a caption…';
+}
+function cancelVideo() {
+  if (pendingVideo && pendingVideo.url) { try { URL.revokeObjectURL(pendingVideo.url); } catch (e) {} }
+  pendingVideo = null;
+  var prev = document.getElementById('video-preview');
+  prev.classList.remove('show');
+  prev.querySelector('video').src = '';
+  document.getElementById('composer-input').placeholder = 'Type a message…';
+}
+function sendPendingVideo(caption) {
+  var pv = pendingVideo;
+  var localUrl = pv.url;
+  // clear preview but keep the object URL alive for optimistic playback
+  var prev = document.getElementById('video-preview');
+  prev.classList.remove('show');
+  prev.querySelector('video').src = '';
+  pendingVideo = null;
+  document.getElementById('composer-input').placeholder = 'Type a message…';
+  var input = document.getElementById('composer-input');
+  input.value = ''; autoGrow(input);
+
+  var id = genId();
+  var thisGroup = currentGroup;
+  pushLocal(T_VIDEO, caption, { localUrl: localUrl, uploading: true }, id);
+
+  showToast('⏳ Uploading video…');
+  uploadBlobToDrive(pv.file, pv.mimeType).then(function (fileId) {
+    var meta = { fileId: fileId, mimeType: pv.mimeType };
+    var mentions = extractMentions(caption || '');
+    if (mentions.length) meta.mentions = mentions;
+    var row = [id, new Date().toISOString(), thisGroup.id, myEmail, myName, T_VIDEO, caption || '', JSON.stringify(meta), myEmail];
+    var local = allRows.filter(function (r) { return r.id === id; })[0];
+    if (local) { local.meta.fileId = fileId; local.meta.uploading = false; }
+    return appendMessageRow(row);
+  }).then(function () {
+    showToast('✅ Video sent');
+  }).catch(function (err) {
+    console.error('Video upload failed:', err);
+    var m = String(err.message || '').toLowerCase();
+    if (m.indexOf('insufficient') > -1 || m.indexOf('scope') > -1 || m.indexOf('403') > -1 || m.indexOf('permission') > -1) {
+      showToast('❌ Video needs Drive access. Add drive.file scope in index.html, then re-login.');
+    } else {
+      showToast('❌ Video upload failed.');
+    }
+    allRows = allRows.filter(function (r) { return r.id !== id; });
+    lastRenderSig = ''; renderChat();
+  });
+}
+
+// Upload a raw Blob/File to Drive (no base64), make link-readable, return fileId.
+function uploadBlobToDrive(blob, mimeType) {
+  return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=media&fields=id', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': mimeType || 'application/octet-stream' },
+    body: blob
+  }).then(function (r) {
+    return r.json().then(function (data) {
+      if (!r.ok) throw new Error((data.error && data.error.message) || ('Drive upload failed ' + r.status));
+      return data.id;
+    });
+  }).then(function (fileId) {
+    return fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: 'reader', type: 'anyone' })
+    }).then(function () { return fileId; })
+      .catch(function () { return fileId; });
   });
 }
 
@@ -1704,6 +1846,7 @@ function processNotifications() {
 
 function notifBody(m) {
   if (m.type === T_IMAGE) return '📷 Photo';
+  if (m.type === T_VIDEO) return '🎬 Video';
   if (m.type === T_POLL)  return '📊 ' + (m.meta.q || 'Poll');
   if (m.type === T_ATT)   return '📋 Attendance' + (m.meta.truck ? ' · ' + m.meta.truck : '');
   return m.text || '';
