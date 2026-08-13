@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PedroEX">
+<meta name="theme-color" content="#e0e0e5">
+<link rel="manifest" href="manifest.json">
+<title>AI Advisor — PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #e0e0e5;
+  --bg2: #e8e8ed;
+  --shadow-d: #b8b9be;
+  --shadow-l: #ffffff;
+  --text: #2a2a2e;
+  --text2: #777;
+  --text3: #aaa;
+  --red: #B32533;
+  --green: #16a34a;
+  --blue: #2563eb;
+  --orange: #f59e0b;
+  --purple: #8b5cf6;
+  --neu-out: 6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in: inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm: 4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs: 3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+}
+body.dark {
+  --bg: #2a2a2f;
+  --bg2: #313137;
+  --shadow-d: #16161a;
+  --shadow-l: #3e3e46;
+  --text: #e8e8ec;
+  --text2: #888;
+  --text3: #555;
+}
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; transition: background 0.4s, color 0.4s; }
+.screen { display: flex; flex-direction: column; height: 100dvh; width: 100%; }
+.topbar { background: var(--bg); display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; padding-top: calc(env(safe-area-inset-top, 0px) + 14px); flex-shrink: 0; box-shadow: 0 3px 10px rgba(0,0,0,0.07); position: relative; z-index: 50; }
+body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+.tb-back { background: var(--bg); border: none; border-radius: 12px; box-shadow: var(--neu-sm); width: 40px; height: 40px; color: var(--red); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.tb-back:active { box-shadow: var(--neu-in); transform: scale(0.95); }
+.tb-title { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); position: absolute; left: 50%; transform: translateX(-50%); }
+.tb-action { display: flex; gap: 8px; }
+.tb-btn { background: var(--bg); border: none; border-radius: 12px; box-shadow: var(--neu-sm); width: 40px; height: 40px; color: var(--red); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.tb-btn:active { box-shadow: var(--neu-in); transform: scale(0.95); }
+.tb-btn.spinning svg { animation: spin 0.8s linear infinite; }
+
+.page-wrap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
+
+.loading-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 56px; color: var(--text3); font-size: 13px; }
+.spinner { width: 20px; height: 20px; border: 2px solid var(--text3); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 64px 24px; }
+.empty-icon { font-size: 48px; opacity: 0.25; margin-bottom: 14px; }
+.empty-text { font-size: 13px; color: var(--text3); line-height: 1.6; }
+
+/* ═══ ENTRANCE ANIMATIONS ═══ */
+@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+@keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 8px 24px rgba(179,37,51,0.25); } 50% { box-shadow: 0 8px 34px rgba(179,37,51,0.4); } }
+
+.anim-in { opacity: 0; animation: fadeSlideUp 0.55s cubic-bezier(.22,1,.36,1) forwards; }
+
+/* ═══ PERIOD SELECTOR ═══ */
+.period-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.period-btn { flex: 1; background: var(--bg); border: none; border-radius: 12px; box-shadow: var(--neu-sm); padding: 10px 0; font-size: 12px; font-weight: 700; color: var(--text2); cursor: pointer; font-family: Inter, sans-serif; transition: all 0.15s; }
+.period-btn.active { box-shadow: var(--neu-in); color: var(--red); }
+.period-btn:active { transform: scale(0.97); }
+
+/* ═══ HEALTH HERO ═══ */
+.health-hero { background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%); border-radius: 22px; padding: 24px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(179,37,51,0.3); color: #fff; position: relative; overflow: hidden; animation: fadeSlideUp 0.55s cubic-bezier(.22,1,.36,1) forwards, pulseGlow 4s ease-in-out infinite 0.6s; }
+.health-hero.healthy { background: linear-gradient(135deg, #16a34a 0%, #0d5c2c 100%); box-shadow: 0 8px 24px rgba(22,163,74,0.3); }
+.health-hero.caution { background: linear-gradient(135deg, var(--orange) 0%, #b3740b 100%); box-shadow: 0 8px 24px rgba(245,158,11,0.3); }
+.hh-top { display: flex; align-items: center; gap: 18px; }
+.hh-ring-wrap { position: relative; width: 88px; height: 88px; flex-shrink: 0; }
+.hh-ring-wrap svg { width: 88px; height: 88px; transform: rotate(-90deg); }
+.hh-ring-bg { fill: none; stroke: rgba(255,255,255,0.22); stroke-width: 8; }
+.hh-ring-fg { fill: none; stroke: #fff; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 251.2; stroke-dashoffset: 251.2; transition: stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1); }
+.hh-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hh-ring-score { font-size: 24px; font-weight: 800; line-height: 1; }
+.hh-ring-max { font-size: 9px; opacity: 0.75; font-weight: 600; letter-spacing: 0.5px; }
+.hh-info { flex: 1; min-width: 0; }
+.hh-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; margin-bottom: 6px; }
+.hh-status { font-size: 20px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+.hh-verdict { font-size: 12.5px; opacity: 0.92; line-height: 1.5; }
+.hh-verdict .typing-cursor { display: inline-block; width: 2px; height: 12px; background: #fff; margin-left: 2px; vertical-align: middle; animation: blink 0.8s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ═══ STAT GRID ═══ */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.stat-tile { background: var(--bg); border-radius: 16px; padding: 16px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
+.stat-tile-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 10px; }
+.stat-tile-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.stat-tile-value { font-size: 19px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+.stat-tile-sub { font-size: 10.5px; color: var(--text2); margin-top: 4px; font-weight: 500; }
+.stat-tile-sub.up { color: var(--green); }
+.stat-tile-sub.down { color: var(--red); }
+
+/* ═══ SAFE-TO-SPEND CARD ═══ */
+.spend-card { background: var(--bg); border-radius: 18px; padding: 18px 20px; margin-bottom: 16px; box-shadow: var(--neu-out); border-left: 4px solid var(--blue); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
+.spend-head { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
+.spend-amount { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
+.spend-note { font-size: 12px; color: var(--text2); line-height: 1.55; }
+.spend-bar-track { height: 8px; background: var(--bg2); border-radius: 8px; margin-top: 14px; overflow: hidden; box-shadow: var(--neu-in); }
+.spend-bar-fill { height: 100%; border-radius: 8px; width: 0%; background: linear-gradient(90deg, var(--blue), var(--purple)); transition: width 1.2s cubic-bezier(.22,1,.36,1); }
+
+/* ═══ SECTION HEADERS ═══ */
+.sec-header { display: flex; align-items: center; justify-content: space-between; margin: 22px 0 12px; }
+.sec-title { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; display: flex; align-items: center; gap: 7px; }
+.sec-sub { font-size: 11px; color: var(--text3); font-weight: 500; }
+
+/* ═══ CHART CARD ═══ */
+.chart-card { background: var(--bg); border-radius: 18px; padding: 18px; margin-bottom: 8px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
+.chart-legend { display: flex; gap: 16px; margin-bottom: 12px; }
+.chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); font-weight: 600; }
+.chart-legend-dot { width: 9px; height: 9px; border-radius: 3px; }
+.chart-canvas-wrap { height: 170px; position: relative; }
+
+/* ═══ COLLECTION BAR ═══ */
+.collection-card { background: var(--bg); border-radius: 18px; padding: 18px; margin-bottom: 8px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
+.collection-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.collection-pct { font-size: 22px; font-weight: 800; color: var(--text); }
+.collection-label { font-size: 11px; color: var(--text3); font-weight: 600; }
+.collection-track { height: 12px; background: var(--bg2); border-radius: 10px; overflow: hidden; box-shadow: var(--neu-in); margin-bottom: 10px; }
+.collection-fill { height: 100%; border-radius: 10px; width: 0%; background: linear-gradient(90deg, var(--green), #22c55e); transition: width 1.3s cubic-bezier(.22,1,.36,1); }
+.collection-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text2); font-weight: 500; }
+.collection-foot strong { color: var(--text); }
+
+/* ═══ RECOMMENDATION CARDS ═══ */
+.rec-list { display: flex; flex-direction: column; gap: 10px; }
+.rec-card { background: var(--bg); border-radius: 16px; padding: 16px; box-shadow: var(--neu-out); border-left: 4px solid var(--text3); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; display: flex; gap: 12px; }
+.rec-card.critical { border-left-color: var(--red); }
+.rec-card.warning { border-left-color: var(--orange); }
+.rec-card.opportunity { border-left-color: var(--blue); }
+.rec-card.good { border-left-color: var(--green); }
+.rec-icon { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--bg2); box-shadow: var(--neu-sm); }
+.rec-body { flex: 1; min-width: 0; }
+.rec-tag { display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; margin-bottom: 6px; }
+.rec-card.critical .rec-tag { background: rgba(179,37,51,0.14); color: var(--red); }
+.rec-card.warning .rec-tag { background: rgba(245,158,11,0.16); color: #b3740b; }
+.rec-card.opportunity .rec-tag { background: rgba(37,99,235,0.14); color: var(--blue); }
+.rec-card.good .rec-tag { background: rgba(22,163,74,0.14); color: var(--green); }
+.rec-title { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+.rec-desc { font-size: 12px; color: var(--text2); line-height: 1.55; margin-bottom: 6px; }
+.rec-action { font-size: 11.5px; color: var(--text); font-weight: 600; background: var(--bg2); border-radius: 8px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 5px; box-shadow: var(--neu-xs); }
+
+/* ═══ BOTTOM NAV ═══ */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; justify-content: space-around; box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.07); z-index: 40; }
+body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
+.bnav { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); cursor: pointer; border: none; background: transparent; font-family: Inter, sans-serif; }
+.bnav.active { color: var(--red); }
+.bnav-icon { width: 42px; height: 42px; border-radius: 14px; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: box-shadow 0.2s; }
+.bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm); }
+.bnav.active .bnav-icon { box-shadow: var(--neu-in); }
+
+.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 200; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="topbar">
+    <button class="tb-back" onclick="location.href='index.html'">✕</button>
+    <div class="tb-title">AI Advisor</div>
+    <div class="tb-action">
+      <button class="tb-btn" id="refresh-btn" onclick="loadAll()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 2v6h-6M3 22v-6h6M2.5 9a9.5 9.5 0 0116.4-4.8L21 8M21.5 15a9.5 9.5 0 01-16.4 4.8L3 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="loading-wrap" id="wrap-loading">
+      <div class="spinner"></div> Sinusuri ang datos...
+    </div>
+
+    <div id="wrap-content" style="display:none">
+      <div class="period-row">
+        <button class="period-btn active" id="period-month" onclick="setPeriod('month')">This Month</button>
+        <button class="period-btn" id="period-quarter" onclick="setPeriod('quarter')">This Quarter</button>
+        <button class="period-btn" id="period-year" onclick="setPeriod('year')">This Year</button>
+      </div>
+
+      <div class="health-hero" id="health-hero">
+        <div class="hh-top">
+          <div class="hh-ring-wrap">
+            <svg viewBox="0 0 96 96">
+              <circle class="hh-ring-bg" cx="48" cy="48" r="40"></circle>
+              <circle class="hh-ring-fg" id="hh-ring-fg" cx="48" cy="48" r="40"></circle>
+            </svg>
+            <div class="hh-ring-label">
+              <div class="hh-ring-score" id="hh-score">0</div>
+              <div class="hh-ring-max">/ 100</div>
+            </div>
+          </div>
+          <div class="hh-info">
+            <div class="hh-label">Financial Health Score</div>
+            <div class="hh-status" id="hh-status-text">Sinusuri...</div>
+            <div class="hh-verdict" id="hh-verdict">Kinakalkula ang kalusugan ng negosyo...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="stat-grid"></div>
+
+      <div class="spend-card" id="spend-card" style="animation-delay:.05s">
+        <div class="spend-head">💡 Safe-to-Spend Guidance</div>
+        <div class="spend-amount" id="spend-amount">₱0</div>
+        <div class="spend-note" id="spend-note">Kinakalkula...</div>
+        <div class="spend-bar-track"><div class="spend-bar-fill" id="spend-bar-fill"></div></div>
+      </div>
+
+      <div class="sec-header">
+        <div class="sec-title">📊 Cash In vs Cash Out</div>
+        <div class="sec-sub" id="cashflow-sub">Last 6 months</div>
+      </div>
+      <div class="chart-card" style="animation-delay:.1s">
+        <div class="chart-legend">
+          <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--green)"></div>Cash In</div>
+          <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--red)"></div>Cash Out</div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="cashflowChart"></canvas></div>
+      </div>
+
+      <div class="sec-header">
+        <div class="sec-title">🧾 Collection Status</div>
+      </div>
+      <div class="collection-card" style="animation-delay:.15s">
+        <div class="collection-top">
+          <div class="collection-pct" id="collection-pct">0%</div>
+          <div class="collection-label">collected this period</div>
+        </div>
+        <div class="collection-track"><div class="collection-fill" id="collection-fill"></div></div>
+        <div class="collection-foot">
+          <span>Collected: <strong id="collection-received">₱0</strong></span>
+          <span>Outstanding: <strong id="collection-outstanding">₱0</strong></span>
+        </div>
+      </div>
+
+      <div class="sec-header">
+        <div class="sec-title">🤖 AI Recommendations</div>
+        <div class="sec-sub" id="rec-count-sub">—</div>
+      </div>
+      <div class="rec-list" id="rec-list"></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="bnav" onclick="location.href='index.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
+      Home
+    </button>
+    <button class="bnav" onclick="location.href='trucks.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="currentColor" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trucks
+    </button>
+    <button class="bnav" onclick="location.href='trips.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2"/></svg></div>
+      Trips
+    </button>
+    <button class="bnav" onclick="location.href='billing.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Billing
+    </button>
+    <button class="bnav active">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
+      Advisor
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const TAB_TRIPS = 'Trips';
+const TAB_EXPENSES = 'Expenses_Master';
+const TAB_ATTENDANCE = 'Attendance';
+const TAB_EMPLOYEES = 'Employees';
+const TAB_PAYROLL = 'Payroll History';
+const TAB_SOA = 'SOA Masters';
+const SYSTEM_START_DATE = '2026-05-01';
+
+const DRIVER_DAILY_RATE = 500;
+const HELPER_DAILY_RATE = 350;
+const TWO_MAN_BONUS = 280;
+const MEAL_ALLOWANCE = 210;
+const DOCUMENTATION_DAILY_RATE = 40000 / 365;
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let token = '';
+let allTrips = [];
+let allExpenses = [];
+let allAttendance = [];
+let employeeRoles = {};
+let allSOA = [];
+let allPayroll = [];
+let currentPeriod = 'month';
+let cashflowChart = null;
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+(function init() {
+    const dark = localStorage.getItem('pedroex-theme') === 'dark';
+    document.body.classList.toggle('dark', dark);
+
+    token = localStorage.getItem('pedroex-token') || '';
+    const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    if (!token || Date.now() >= expiry) {
+        location.href = 'index.html';
+        return;
+    }
+
+    loadAll();
+})();
+
+// ═══════════════════════════════════════
+// API HELPERS
+// ═══════════════════════════════════════
+function quoteRange(range) {
+    return range.replace(/^([^!]+)(!.*)$/, function (_, sheet, rest) {
+        return (sheet.indexOf(' ') >= 0 ? "'" + sheet + "'" : sheet) + rest;
+    });
+}
+
+function apiGet(range) {
+    return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(quoteRange(range))}`, {
+        headers: { Authorization: 'Bearer ' + token }
+    }).then(r => {
+        if (r.status === 401) {
+            location.href = 'index.html';
+            throw new Error('Unauthorized');
+        }
+        if (!r.ok) throw new Error('API Error: ' + range);
+        return r.json();
+    });
+}
+
+// ═══════════════════════════════════════
+// FORMAT / DATE HELPERS
+// ═══════════════════════════════════════
+function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+function fmtDateStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+function convertExcelDate(value) {
+    if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return value;
+    const num = parseFloat(value);
+    if (!isNaN(num) && num > 1000) {
+        const excelEpoch = new Date(1899, 11, 30);
+        const date = new Date(excelEpoch.getTime() + num * 86400000);
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+    if (typeof value === 'string') {
+        const d = new Date(value);
+        if (!isNaN(d.getTime())) return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }
+    return '';
+}
+
+function formatCurrency(n) {
+    n = n || 0;
+    const sign = n < 0 ? '-' : '';
+    return sign + '₱' + Math.abs(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatCompact(n) {
+    n = n || 0;
+    const sign = n < 0 ? '-' : '';
+    const abs = Math.abs(n);
+    if (abs >= 1e6) return sign + '₱' + (abs / 1e6).toFixed(2) + 'M';
+    if (abs >= 1e3) return sign + '₱' + (abs / 1e3).toFixed(1) + 'K';
+    return sign + '₱' + abs.toFixed(0);
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ═══════════════════════════════════════
+// LOAD ALL DATA
+// ═══════════════════════════════════════
+async function loadAll() {
+    const refreshBtn = document.getElementById('refresh-btn');
+    refreshBtn.classList.add('spinning');
+    document.getElementById('wrap-loading').style.display = 'flex';
+    document.getElementById('wrap-content').style.display = 'none';
+
+    try {
+        const [tripsRes, expensesRes, attendanceRes, employeesRes, soaRes, payrollRes] = await Promise.all([
+            apiGet(TAB_TRIPS + '!A2:I'),
+            apiGet(TAB_EXPENSES + '!A2:O'),
+            apiGet(TAB_ATTENDANCE + '!A2:J'),
+            apiGet(TAB_EMPLOYEES + '!A2:E'),
+            apiGet(TAB_SOA + '!A2:M'),
+            apiGet(TAB_PAYROLL + '!A2:AF')
+        ]);
+
+        // Trips
+        allTrips = (tripsRes.values || [])
+            .map((r, i) => {
+                try {
+                    return {
+                        rowIndex: i + 2, id: r[0] || '',
+                        deliveryDate: convertExcelDate(r[1]),
+                        truck: r[2] || '', route: r[7] || '',
+                        rate: parseFloat(r[8]) || 0
+                    };
+                } catch (e) { return null; }
+            })
+            .filter(t => t && t.truck && t.deliveryDate && t.rate > 0 && t.deliveryDate >= SYSTEM_START_DATE);
+
+        // Expenses (operational — Diesel/Maintenance/Documentation-manual/Misc)
+        allExpenses = (expensesRes.values || [])
+            .map((r, i) => {
+                try {
+                    return {
+                        rowIndex: i + 2, id: r[0] || '', date: r[1] || '',
+                        truck: r[2] || '', category: r[3] || '',
+                        amount: parseFloat(r[5]) || 0,
+                        inputVAT: parseFloat(r[11]) || 0,
+                        type: r[14] || '',
+                        hasVAT: ['diesel', 'parts', 'parking'].includes((r[14] || '').toLowerCase())
+                    };
+                } catch (e) { return null; }
+            })
+            .filter(e => e && e.truck && e.date && e.amount > 0 && e.date >= SYSTEM_START_DATE);
+
+        // Attendance (drives accrued Manpower + Documentation, matching Matrix)
+        allAttendance = (attendanceRes.values || [])
+            .map(r => ({
+                date: r[1] || '', employee: r[2] || '',
+                twoManTeam: (r[3] || '').toLowerCase() === 'yes',
+                mealAllowance: ['yes', 'meals only'].includes((r[5] || '').toLowerCase()),
+                truck: r[6] || ''
+            }))
+            .filter(a => a.date && a.employee && a.truck && a.date >= SYSTEM_START_DATE);
+
+        // Employee roles (Driver/Helper)
+        employeeRoles = {};
+        (employeesRes.values || []).forEach(r => {
+            const firstName = (r[1] || '').trim();
+            const lastName = (r[2] || '').trim();
+            const position = (r[4] || '').toLowerCase().trim();
+            if (firstName && position) {
+                employeeRoles[`${firstName} ${lastName}`] = position;
+                employeeRoles[firstName] = position;
+            }
+        });
+
+        // SOA Masters (billing / collections — the real cash-in source)
+        allSOA = (soaRes.values || []).map((r, i) => ({
+            rowIndex: i + 2, soaNum: r[0] || '', period: r[1] || '',
+            grandTotal: parseFloat(r[3]) || 0,
+            dateSent: r[6] || '',
+            amtReceived: parseFloat(r[7]) || 0,
+            dateReceived: r[8] || '',
+            status: r[9] || 'Pending',
+            deductions: parseFloat(r[10]) || 0
+        })).filter(r => r.soaNum);
+
+        // Payroll History (actual cash disbursed to employees)
+        allPayroll = (payrollRes.values || []).map(r => ({
+            name: r[1] || '', period: r[2] || '',
+            netPay: parseFloat(r[27]) || 0
+        })).filter(r => r.name && r.period);
+
+        document.getElementById('wrap-loading').style.display = 'none';
+        document.getElementById('wrap-content').style.display = 'block';
+        refreshBtn.classList.remove('spinning');
+
+        await renderAll();
+    } catch (err) {
+        console.error('Load error:', err);
+        document.getElementById('wrap-loading').style.display = 'none';
+        refreshBtn.classList.remove('spinning');
+        showToast('❌ Failed to load data. Please refresh.');
+    }
+}
+
+// ═══════════════════════════════════════
+// MANPOWER (mirrors Matrix's accrual method)
+// ═══════════════════════════════════════
+function calculateManpowerCost(attendance) {
+    const role = employeeRoles[attendance.employee] || 'helper';
+    let cost = (role === 'driver') ? DRIVER_DAILY_RATE : HELPER_DAILY_RATE;
+    if (attendance.twoManTeam) cost += TWO_MAN_BONUS;
+    if (attendance.mealAllowance) cost += MEAL_ALLOWANCE;
+    return cost;
+}
+
+function getManpowerForDate(dateStr) {
+    return allAttendance.filter(a => a.date === dateStr).map(a => calculateManpowerCost(a));
+}
+
+function getDocumentationForDate(dateStr) {
+    const trucks = [...new Set(allAttendance.filter(a => a.date === dateStr).map(a => a.truck))].filter(t => t);
+    return trucks.map(() => DOCUMENTATION_DAILY_RATE);
+}
+
+// ═══════════════════════════════════════
+// VAT (mirrors Matrix's BIR computation)
+// ═══════════════════════════════════════
+async function calculateVAT(trips) {
+    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
+    const vatableSales = grossSales * 1.12;
+    const outputVAT = vatableSales * 0.12;
+    const inputVATData = await getInputVATForCurrentQuarter();
+    const inputVAT = inputVATData.total;
+    return {
+        grossSales, vatableSales, outputVAT, inputVAT,
+        netVATPayable: outputVAT - inputVAT,
+        quarter: getCurrentQuarter()
+    };
+}
+
+function getCurrentQuarter() {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    if (month <= 3) return `Purchases (Jan-Mar ${year})`;
+    if (month <= 6) return `Purchases (Apr-Jun ${year})`;
+    if (month <= 9) return `Purchases (Jul-Sep ${year})`;
+    return `Purchases (Oct-Dec ${year})`;
+}
+
+async function getInputVATForCurrentQuarter() {
+    const quarterBase = getCurrentQuarter();
+    const types = ['Diesel', 'Parts', 'Parking'];
+    let total = 0;
+    for (const type of types) {
+        const sheetName = `${quarterBase}-${type}`;
+        try {
+            const res = await apiGet(sheetName + '!A8:O1000');
+            const rows = res.values || [];
+            rows.forEach(row => {
+                if (row[0] && row[1]) {
+                    const inputVAT = parseFloat(row[11]) || 0;
+                    if (inputVAT > 0) total += inputVAT;
+                }
+            });
+        } catch (err) { /* Quarterly sheet not found — treat as 0 */ }
+    }
+    return { total };
+}
+
+// ═══════════════════════════════════════
+// PERIOD BOUNDS
+// A period always runs from its start to TODAY (never into the future,
+// since no data exists there anyway) — and the "previous period" comparison
+// uses the SAME number of elapsed days, so a half-finished month is never
+// measured against a full previous month.
+// ═══════════════════════════════════════
+function getPeriodBounds(period, refDate) {
+    const now = refDate || new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    if (period === 'month') {
+        return { start: new Date(y, m, 1), end: now, label: now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) };
+    } else if (period === 'quarter') {
+        const qStartMonth = Math.floor(m / 3) * 3;
+        return { start: new Date(y, qStartMonth, 1), end: now, label: 'Q' + (Math.floor(m / 3) + 1) + ' ' + y };
+    }
+    return { start: new Date(y, 0, 1), end: now, label: String(y) };
+}
+
+function getPreviousPeriodBounds(period, current) {
+    const daysElapsed = Math.floor((current.end - current.start) / 86400000) + 1;
+    let prevStart;
+    if (period === 'month') prevStart = new Date(current.start.getFullYear(), current.start.getMonth() - 1, 1);
+    else if (period === 'quarter') prevStart = new Date(current.start.getFullYear(), current.start.getMonth() - 3, 1);
+    else prevStart = new Date(current.start.getFullYear() - 1, 0, 1);
+    const prevEnd = new Date(prevStart.getTime() + (daysElapsed - 1) * 86400000);
+    return { start: prevStart, end: prevEnd };
+}
+
+function inRange(dateStr, bounds) {
+    if (!dateStr) return false;
+    const s = fmtDateStr(bounds.start), e = fmtDateStr(bounds.end);
+    return dateStr >= s && dateStr <= e;
+}
+
+// Buckets an SOA into a 'YYYY-MM' key the same way Billing does: parse the
+// human-readable period text first ("Jan 1-15, 2026"), falling back to the
+// date the SOA was sent. Keeps Advisor's billed/collected figures identical
+// to what the Billing page itself shows.
+function getSOAYearMonth(soa) {
+    let ym = '';
+    if (soa.period) {
+        const mm = soa.period.match(/([A-Za-z]{3})[.,\s]*\d+[^,]*,?\s*(\d{4})/);
+        if (mm) {
+            const mIdx = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 }[mm[1].substring(0, 3)];
+            if (mIdx !== undefined) ym = mm[2] + '-' + pad(mIdx + 1);
+        }
+    }
+    if (!ym && soa.dateSent) ym = soa.dateSent.substring(0, 7);
+    return ym;
+}
+
+function ymInBounds(ym, bounds) {
+    if (!ym) return false;
+    return ym >= bounds.start.getFullYear() + '-' + pad(bounds.start.getMonth() + 1) &&
+           ym <= bounds.end.getFullYear() + '-' + pad(bounds.end.getMonth() + 1);
+}
+
+// ═══════════════════════════════════════
+// CORE FINANCIAL COMPUTATION
+// ═══════════════════════════════════════
+async function computeFinancials(period) {
+    const bounds = getPeriodBounds(period);
+    const prevBounds = getPreviousPeriodBounds(period, bounds);
+
+    const compute = async (b) => {
+        const trips = allTrips.filter(t => inRange(t.deliveryDate, b));
+        const expenses = allExpenses.filter(e => inRange(e.date, b));
+        const dates = [...new Set(trips.map(t => t.deliveryDate))];
+
+        let manpowerAccrued = 0, docAccrued = 0;
+        dates.forEach(d => {
+            manpowerAccrued += getManpowerForDate(d).reduce((s, v) => s + v, 0);
+            docAccrued += getDocumentationForDate(d).reduce((s, v) => s + v, 0);
+        });
+
+        const revenue = trips.reduce((s, t) => s + t.rate, 0);
+        const opExpenses = expenses.reduce((s, e) => s + e.amount, 0);
+        const accruedExpenses = opExpenses + manpowerAccrued + docAccrued;
+        const accruedProfit = revenue - accruedExpenses;
+        const margin = revenue > 0 ? (accruedProfit / revenue * 100) : 0;
+
+        // Category breakdown (for the truck/category outlier recommendations)
+        const categoryTotals = {
+            Diesel: expenses.filter(e => e.category === 'Diesel').reduce((s, e) => s + e.amount, 0),
+            Maintenance: expenses.filter(e => e.category === 'Maintenance').reduce((s, e) => s + e.amount, 0),
+            Manpower: manpowerAccrued,
+            Documentation: docAccrued,
+            Other: expenses.filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance').reduce((s, e) => s + e.amount, 0)
+        };
+
+        const truckTotals = {};
+        trips.forEach(t => {
+            if (!truckTotals[t.truck]) truckTotals[t.truck] = { revenue: 0, expenses: 0 };
+            truckTotals[t.truck].revenue += t.rate;
+        });
+        expenses.forEach(e => {
+            if (truckTotals[e.truck]) truckTotals[e.truck].expenses += e.amount;
+        });
+
+        // Real cash out: operational expenses (Diesel/Maintenance/Doc-manual/Misc)
+        // + actual payroll disbursed in this window (from Payroll History, i.e.
+        // money that has really left the bank — not the accrual estimate).
+        const payrollCashOut = allPayroll
+            .filter(p => inRange((p.period.split(' to ')[0] || '').trim(), b))
+            .reduce((s, p) => s + p.netPay, 0);
+        const cashOut = opExpenses + payrollCashOut;
+
+        // Real cash in: SOA amounts actually received, bucketed the same way
+        // Billing.html buckets its own monthly chart (by SOA period, not by
+        // date-received) so the two pages always agree.
+        const soasInPeriod = allSOA.filter(s => ymInBounds(getSOAYearMonth(s), b));
+        const billed = soasInPeriod.reduce((s, r) => s + r.grandTotal, 0);
+        const cashIn = soasInPeriod.reduce((s, r) => s + r.amtReceived, 0);
+
+        return { revenue, accruedExpenses, accruedProfit, margin, categoryTotals, truckTotals, cashOut, cashIn, billed, opExpenses, manpowerAccrued, docAccrued, payrollCashOut };
+    };
+
+    const current = await compute(bounds);
+    const previous = await compute(prevBounds);
+
+    const vat = await calculateVAT(allTrips.filter(t => inRange(t.deliveryDate, bounds)));
+    const taxesDue = Math.max(0, vat.netVATPayable);
+    const netCashFlow = current.cashIn - current.cashOut - taxesDue;
+
+    // Running (all-time) receivables — a true outstanding-balance snapshot,
+    // not bounded to the selected period.
+    const outstanding = allSOA.reduce((s, r) => s + Math.max(0, r.grandTotal - r.amtReceived - r.deductions), 0);
+    const collectionRate = current.billed > 0 ? (current.cashIn / current.billed) : 1;
+
+    return { bounds, prevBounds, current, previous, vat, taxesDue, netCashFlow, outstanding, collectionRate, period };
+}
+
+// ═══════════════════════════════════════
+// HEALTH SCORE
+// ═══════════════════════════════════════
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function computeHealthScore(fin) {
+    const c = fin.current;
+    // 30% margin = full marks (matches the "healthy" bar used elsewhere in the app)
+    const marginScore = clamp((c.margin / 30) * 100, 0, 100);
+    const collectionScore = clamp(fin.collectionRate * 100, 0, 100);
+    const cashFlowScore = c.cashIn > 0
+        ? clamp(50 + (fin.netCashFlow / c.cashIn) * 100, 0, 100)
+        : (fin.netCashFlow >= 0 ? 60 : 0);
+    const taxRatio = fin.taxesDue > 0 ? (c.cashIn / fin.taxesDue) : 2;
+    const taxScore = clamp(taxRatio * 50, 0, 100);
+
+    const overall = Math.round(marginScore * 0.35 + collectionScore * 0.25 + cashFlowScore * 0.25 + taxScore * 0.15);
+
+    let bracket, label;
+    if (overall >= 80) { bracket = 'healthy'; label = 'Malusog'; }
+    else if (overall >= 55) { bracket = 'caution'; label = 'Maingat'; }
+    else { bracket = 'critical'; label = 'Kritikal'; }
+
+    return { overall, bracket, label, marginScore, collectionScore, cashFlowScore, taxScore };
+}
+
+function generateVerdict(fin, health) {
+    const p = fin.bounds.label;
+    if (health.bracket === 'healthy') {
+        return `Malakas ang financial health mo ngayong ${p} — ${fin.current.margin.toFixed(1)}% margin at positibo ang cash flow. Panatilihin ang parehong disiplina sa gastos para tumuloy ang momentum.`;
+    } else if (health.bracket === 'caution') {
+        return `May mga bagay na kailangan bantayan ngayong ${p}. Tingnan ang mga rekomendasyon sa ibaba bago pa ito lumala.`;
+    }
+    return `Nag-iingay ang mga numero ngayong ${p} — mataas ang risk sa cash flow, collections, o margin. Kailangan ng agarang aksyon.`;
+}
+
+// ═══════════════════════════════════════
+// RECOMMENDATION ENGINE
+// ═══════════════════════════════════════
+function generateRecommendations(fin) {
+    const recs = [];
+    const c = fin.current, prev = fin.previous;
+    const periodLabel = fin.bounds.label;
+
+    // 1. Cash flow
+    if (fin.netCashFlow < 0) {
+        recs.push({
+            severity: 'critical', icon: '📉', tag: 'Cash Flow',
+            title: `Negative ang net cash flow ngayong ${periodLabel}`,
+            desc: `Mas malaki ang lumabas na pera (${formatCurrency(c.cashOut + fin.taxesDue)}) kumpara sa pumasok (${formatCurrency(c.cashIn)}) — kulang ng ${formatCurrency(Math.abs(fin.netCashFlow))}.`,
+            action: 'Bawasan muna ang discretionary spending o pabilisin ang collections'
+        });
+    }
+
+    // 2. Collections risk
+    if (fin.outstanding > 0 && fin.collectionRate < 0.6) {
+        recs.push({
+            severity: 'critical', icon: '🧾', tag: 'Collections',
+            title: `Mababa ang collection rate (${(fin.collectionRate * 100).toFixed(0)}%) ngayong ${periodLabel}`,
+            desc: `${formatCurrency(fin.outstanding)} ang kabuuang outstanding receivables sa lahat ng SOA — malaking bahagi dito ay hindi pa nako-collect.`,
+            action: 'I-follow up ang mga overdue SOA bago mag-due ang mga bill'
+        });
+    } else if (fin.outstanding > 0 && fin.collectionRate < 0.85) {
+        recs.push({
+            severity: 'warning', icon: '🧾', tag: 'Collections',
+            title: `${formatCurrency(fin.outstanding)} outstanding pa sa mga SOA`,
+            desc: `${(fin.collectionRate * 100).toFixed(0)}% lang ang na-collect ngayong ${periodLabel}. Manageable pa pero bantayan.`,
+            action: 'Suriin ang mga pending SOA sa Billing'
+        });
+    }
+
+    // 3. Tax readiness
+    if (fin.taxesDue > 0) {
+        if (c.cashIn < fin.taxesDue) {
+            recs.push({
+                severity: 'warning', icon: '📋', tag: 'Tax Readiness',
+                title: `Maaaring hindi sapat ang cash para sa VAT`,
+                desc: `${formatCurrency(fin.taxesDue)} ang Net VAT Payable ngayong ${fin.vat.quarter}, pero ${formatCurrency(c.cashIn)} lang ang na-collect na cash ngayong ${periodLabel}.`,
+                action: 'Maglaan ng cash bago ang BIR deadline ng quarter'
+            });
+        } else {
+            recs.push({
+                severity: 'good', icon: '📋', tag: 'Tax Readiness',
+                title: `Sapat ang cash para sa VAT na babayaran`,
+                desc: `${formatCurrency(fin.taxesDue)} ang Net VAT Payable ngayong ${fin.vat.quarter} — kaya ng kasalukuyang cash-in.`,
+                action: 'Ilaan na ang halaga para sa BIR filing'
+            });
+        }
+    }
+
+    // 4. Margin level
+    if (c.revenue > 0 && c.margin < 15) {
+        recs.push({
+            severity: 'critical', icon: '⚠️', tag: 'Margin',
+            title: `Mababa ang profit margin (${c.margin.toFixed(1)}%) ngayong ${periodLabel}`,
+            desc: `Malapit na o negatibo na ang margin. Ang pinakamalaking gastos ay ${topCategory(c.categoryTotals)}.`,
+            action: 'I-audit ang top expense category at hanapin ang mapuputulan'
+        });
+    } else if (c.revenue > 0 && c.margin < 25) {
+        recs.push({
+            severity: 'warning', icon: '⚠️', tag: 'Margin',
+            title: `Margin ay ${c.margin.toFixed(1)}% — sa ibaba ng 25% healthy target`,
+            desc: `Ang pinakamalaking gastos ay ${topCategory(c.categoryTotals)}.`,
+            action: 'Tingnan kung may mapapaliit na gastos dito'
+        });
+    }
+
+    // 5. Margin trend vs previous period (same elapsed-days comparison)
+    if (prev.revenue > 0 && c.revenue > 0) {
+        const marginChange = c.margin - prev.margin;
+        if (marginChange <= -5) {
+            recs.push({
+                severity: 'warning', icon: '📉', tag: 'Trend',
+                title: `Bumaba ang margin ng ${Math.abs(marginChange).toFixed(1)}pp kumpara sa nakaraang ${fin.period === 'month' ? 'buwan' : fin.period === 'quarter' ? 'quarter' : 'taon'} (parehong bilang ng araw)`,
+                desc: `Dati ${prev.margin.toFixed(1)}%, ngayon ${c.margin.toFixed(1)}%.`,
+                action: 'Alamin kung dahil sa gastos o bumabang revenue'
+            });
+        } else if (marginChange >= 5) {
+            recs.push({
+                severity: 'good', icon: '📈', tag: 'Trend',
+                title: `Tumaas ang margin ng ${marginChange.toFixed(1)}pp kumpara sa nakaraang ${fin.period === 'month' ? 'buwan' : fin.period === 'quarter' ? 'quarter' : 'taon'}`,
+                desc: `Dati ${prev.margin.toFixed(1)}%, ngayon ${c.margin.toFixed(1)}%. Panatilihin ang ginagawa.`,
+                action: 'Ipagpatuloy ang kasalukuyang estratehiya'
+            });
+        }
+    }
+
+    // 6. Truck outlier (worst cost-to-revenue ratio)
+    const truckEntries = Object.entries(c.truckTotals).filter(([, v]) => v.revenue > 0);
+    if (truckEntries.length > 1) {
+        const withRatio = truckEntries.map(([truck, v]) => ({ truck, ratio: v.expenses / v.revenue, ...v }));
+        withRatio.sort((a, b) => b.ratio - a.ratio);
+        const worst = withRatio[0];
+        if (worst.ratio > 0.5) {
+            recs.push({
+                severity: 'warning', icon: '🚛', tag: 'Fleet',
+                title: `Truck ${worst.truck} ang may pinakamataas na cost ratio (${(worst.ratio * 100).toFixed(0)}%)`,
+                desc: `${formatCurrency(worst.expenses)} na gastos laban sa ${formatCurrency(worst.revenue)} na revenue ngayong ${periodLabel}.`,
+                action: 'Suriin ang maintenance o route efficiency ng truck na ito'
+            });
+        }
+    }
+
+    // 7. Expense concentration
+    const catEntries = Object.entries(c.categoryTotals).filter(([, v]) => v > 0);
+    const totalExp = catEntries.reduce((s, [, v]) => s + v, 0);
+    if (totalExp > 0) {
+        const [topCat, topAmt] = catEntries.sort((a, b) => b[1] - a[1])[0];
+        const pct = topAmt / totalExp * 100;
+        if (pct > 45) {
+            recs.push({
+                severity: 'opportunity', icon: '💡', tag: 'Cost Structure',
+                title: `${topCat} ang bumubuo ng ${pct.toFixed(0)}% ng lahat ng gastos`,
+                desc: `${formatCurrency(topAmt)} ang total na gastos sa ${topCat} ngayong ${periodLabel}.`,
+                action: 'Posibleng lugar para mag-negotiate o mag-optimize'
+            });
+        }
+    }
+
+    // 8. Fallback "all clear"
+    const hasCriticalOrWarning = recs.some(r => r.severity === 'critical' || r.severity === 'warning');
+    if (!hasCriticalOrWarning) {
+        recs.push({
+            severity: 'good', icon: '✅', tag: 'Overall',
+            title: `Balanse ang financial health ngayong ${periodLabel}`,
+            desc: `Walang kagyat na isyu sa margin, collections, o cash flow base sa kasalukuyang datos.`,
+            action: 'Ipagpatuloy ang monitoring linggo-linggo'
+        });
+    }
+
+    const order = { critical: 0, warning: 1, opportunity: 2, good: 3 };
+    recs.sort((a, b) => order[a.severity] - order[b.severity]);
+    return recs;
+}
+
+function topCategory(categoryTotals) {
+    const entries = Object.entries(categoryTotals).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+    return entries.length ? `${entries[0][0]} (${formatCurrency(entries[0][1])})` : 'wala pang datos';
+}
+
+// ═══════════════════════════════════════
+// SAFE-TO-SPEND GUIDANCE
+// Target: keep at least a 25% margin. Given current revenue and expenses
+// already booked this period, this is how much MORE can go out the door
+// (on top of what's already spent) without dropping below that target.
+// ═══════════════════════════════════════
+function computeSafeToSpend(fin) {
+    const TARGET_MARGIN = 0.25;
+    const c = fin.current;
+    if (c.revenue <= 0) {
+        return { amount: 0, pct: 0, note: 'Wala pang revenue ngayong period na ito para makagawa ng budget guidance.' };
+    }
+    const maxAllowedExpense = c.revenue * (1 - TARGET_MARGIN);
+    const headroom = Math.max(0, maxAllowedExpense - c.accruedExpenses);
+    const pctUsed = clamp((c.accruedExpenses / maxAllowedExpense) * 100, 0, 100);
+    let note;
+    if (headroom <= 0) {
+        note = `Naabot na o lumagpas na sa ${(TARGET_MARGIN * 100).toFixed(0)}% target margin ang kasalukuyang gastos. Iwasan munang magdagdag ng discretionary spending.`;
+    } else {
+        note = `Batay sa kasalukuyang revenue (${formatCompact(c.revenue)}) at gastos (${formatCompact(c.accruedExpenses)}), ito pa ang puwedeng gastusin nang hindi bumabagsak sa ${(TARGET_MARGIN * 100).toFixed(0)}% target margin.`;
+    }
+    return { amount: headroom, pct: pctUsed, note };
+}
+
+// ═══════════════════════════════════════
+// ANIMATION HELPERS
+// ═══════════════════════════════════════
+function animateCountUp(el, to, duration, formatFn) {
+    const startTime = performance.now();
+    function tick(now) {
+        const t = clamp((now - startTime) / duration, 0, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = formatFn(to * eased);
+        if (t < 1) requestAnimationFrame(tick);
+        else el.textContent = formatFn(to);
+    }
+    requestAnimationFrame(tick);
+}
+
+function animateRing(score) {
+    const circumference = 251.2;
+    const offset = circumference - clamp(score / 100, 0, 1) * circumference;
+    const ring = document.getElementById('hh-ring-fg');
+    requestAnimationFrame(() => requestAnimationFrame(() => { ring.style.strokeDashoffset = offset; }));
+    animateCountUp(document.getElementById('hh-score'), score, 1200, v => Math.round(v));
+}
+
+function typewriteText(el, text, speed) {
+    el.innerHTML = '<span class="typing-cursor"></span>';
+    let i = 0;
+    function step() {
+        if (i <= text.length) {
+            el.innerHTML = text.slice(0, i) + '<span class="typing-cursor"></span>';
+            i++;
+            setTimeout(step, speed || 12);
+        } else {
+            el.textContent = text;
+        }
+    }
+    step();
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+async function renderAll() {
+    const fin = await computeFinancials(currentPeriod);
+    const health = computeHealthScore(fin);
+    const spend = computeSafeToSpend(fin);
+    const recs = generateRecommendations(fin);
+
+    renderHero(fin, health);
+    renderStatGrid(fin);
+    renderSpendCard(spend);
+    renderCollectionCard(fin);
+    renderRecommendations(recs);
+    await renderCashflowChart();
+}
+
+function renderHero(fin, health) {
+    const hero = document.getElementById('health-hero');
+    hero.classList.remove('healthy', 'caution', 'critical');
+    if (health.bracket !== 'critical') hero.classList.add(health.bracket);
+
+    animateRing(health.overall);
+    document.getElementById('hh-status-text').textContent = health.label;
+    typewriteText(document.getElementById('hh-verdict'), generateVerdict(fin, health), 10);
+}
+
+function renderStatGrid(fin) {
+    const c = fin.current;
+    const tiles = [
+        { icon: '💵', bg: 'rgba(22,163,74,0.14)', color: 'var(--green)', label: 'Cash In (Received)', value: c.cashIn, sub: `${fin.bounds.label}` },
+        { icon: '💸', bg: 'rgba(179,37,51,0.14)', color: 'var(--red)', label: 'Cash Out (Ops + Payroll)', value: c.cashOut, sub: `${fin.bounds.label}` },
+        { icon: '📋', bg: 'rgba(245,158,11,0.16)', color: '#b3740b', label: 'Taxes Due (Net VAT)', value: fin.taxesDue, sub: fin.vat.quarter },
+        { icon: fin.netCashFlow >= 0 ? '📈' : '📉', bg: fin.netCashFlow >= 0 ? 'rgba(22,163,74,0.14)' : 'rgba(179,37,51,0.14)', color: fin.netCashFlow >= 0 ? 'var(--green)' : 'var(--red)', label: 'Net Cash Flow', value: fin.netCashFlow, sub: fin.netCashFlow >= 0 ? 'Positibo' : 'Negatibo' }
+    ];
+
+    const grid = document.getElementById('stat-grid');
+    grid.innerHTML = tiles.map((t, i) => `
+        <div class="stat-tile" style="animation-delay:${i * 0.06}s">
+            <div class="stat-tile-icon" style="background:${t.bg};color:${t.color}">${t.icon}</div>
+            <div class="stat-tile-label">${t.label}</div>
+            <div class="stat-tile-value" id="tile-val-${i}">₱0</div>
+            <div class="stat-tile-sub">${t.sub}</div>
+        </div>
+    `).join('');
+
+    tiles.forEach((t, i) => {
+        const el = document.getElementById(`tile-val-${i}`);
+        animateCountUp(el, t.value, 1100, formatCompact);
+    });
+}
+
+function renderSpendCard(spend) {
+    document.getElementById('spend-note').textContent = spend.note;
+    animateCountUp(document.getElementById('spend-amount'), spend.amount, 1100, formatCompact);
+    setTimeout(() => {
+        document.getElementById('spend-bar-fill').style.width = spend.pct + '%';
+    }, 100);
+}
+
+function renderCollectionCard(fin) {
+    const pct = Math.round(fin.collectionRate * 100);
+    document.getElementById('collection-pct').textContent = pct + '%';
+    document.getElementById('collection-received').textContent = formatCompact(fin.current.cashIn);
+    document.getElementById('collection-outstanding').textContent = formatCompact(fin.outstanding);
+    setTimeout(() => {
+        document.getElementById('collection-fill').style.width = clamp(pct, 0, 100) + '%';
+    }, 100);
+}
+
+function renderRecommendations(recs) {
+    document.getElementById('rec-count-sub').textContent = recs.length + (recs.length === 1 ? ' insight' : ' insights');
+    const list = document.getElementById('rec-list');
+    list.innerHTML = recs.map((r, i) => `
+        <div class="rec-card ${r.severity}" style="animation-delay:${i * 0.08}s">
+            <div class="rec-icon">${r.icon}</div>
+            <div class="rec-body">
+                <div class="rec-tag">${r.tag}</div>
+                <div class="rec-title">${r.title}</div>
+                <div class="rec-desc">${r.desc}</div>
+                <div class="rec-action">➜ ${r.action}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function renderCashflowChart() {
+    const months = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({ key: d.getFullYear() + '-' + pad(d.getMonth() + 1), label: d.toLocaleDateString('en-US', { month: 'short' }) });
+    }
+
+    const cashIn = months.map(m => allSOA.filter(s => getSOAYearMonth(s) === m.key).reduce((s, r) => s + r.amtReceived, 0));
+    const cashOut = months.map(m => {
+        const opEx = allExpenses.filter(e => e.date.startsWith(m.key)).reduce((s, e) => s + e.amount, 0);
+        const payroll = allPayroll.filter(p => (p.period.split(' to ')[0] || '').trim().startsWith(m.key)).reduce((s, p) => s + p.netPay, 0);
+        return opEx + payroll;
+    });
+
+    const ctx = document.getElementById('cashflowChart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    if (cashflowChart) cashflowChart.destroy();
+    cashflowChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months.map(m => m.label),
+            datasets: [
+                { label: 'Cash In', data: cashIn, backgroundColor: '#16a34a', borderRadius: 4 },
+                { label: 'Cash Out', data: cashOut, backgroundColor: '#B32533', borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 900, easing: 'easeOutQuart' },
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + formatCurrency(ctx.parsed.y) } } },
+            scales: {
+                y: { ticks: { callback: (v) => formatCompact(v), font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+            }
+        }
+    });
+}
+
+// ═══════════════════════════════════════
+// PERIOD SWITCH
+// ═══════════════════════════════════════
+function setPeriod(period) {
+    currentPeriod = period;
+    ['month', 'quarter', 'year'].forEach(p => {
+        document.getElementById('period-' + p).classList.toggle('active', p === period);
+    });
+    renderAll();
+}
+</script>
+</body>
+</html>
