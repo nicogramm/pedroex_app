@@ -2,417 +2,332 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PedroEX">
 <meta name="theme-color" content="#e0e0e5">
 <link rel="manifest" href="manifest.json">
-<title>AI Advisor — PedroEX</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>PedroEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
+/* ═══════════════════════════════════════
+   NEUMORPHIC THEME VARIABLES
+═══════════════════════════════════════ */
 :root {
-  --bg: #e0e0e5;
-  --bg2: #e8e8ed;
+  --bg:       #e0e0e5;
+  --bg2:      #e8e8ed;
   --shadow-d: #b8b9be;
   --shadow-l: #ffffff;
-  --text: #2a2a2e;
-  --text2: #777;
-  --text3: #aaa;
-  --red: #B32533;
-  --green: #16a34a;
-  --blue: #2563eb;
-  --orange: #f59e0b;
-  --purple: #8b5cf6;
-  --neu-out: 6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
-  --neu-in: inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
-  --neu-sm: 4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
-  --neu-xs: 3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
+  --text:     #2a2a2e;
+  --text2:    #777;
+  --text3:    #aaa;
+  --red:      #B32533;
+  --red-d:    #8f1e29;
+  --card:     #e0e0e5;
+
+  --neu-out:  6px 6px 14px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 6px var(--shadow-d), -2px -2px 5px var(--shadow-l);
 }
+
 body.dark {
-  --bg: #2a2a2f;
-  --bg2: #313137;
+  --bg:       #2a2a2f;
+  --bg2:      #313137;
   --shadow-d: #16161a;
   --shadow-l: #3e3e46;
-  --text: #e8e8ec;
-  --text2: #888;
-  --text3: #555;
+  --text:     #e8e8ec;
+  --text2:    #888;
+  --text3:    #555;
+  --card:     #2a2a2f;
+
+  --neu-out:  5px 5px 12px var(--shadow-d), -3px -3px 9px var(--shadow-l);
+  --neu-in:   inset 4px 4px 8px var(--shadow-d), inset -3px -3px 7px var(--shadow-l);
+  --neu-sm:   4px 4px 8px var(--shadow-d), -3px -3px 7px var(--shadow-l);
+  --neu-xs:   3px 3px 7px var(--shadow-d), -2px -2px 6px var(--shadow-l);
 }
-*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: Inter, sans-serif; -webkit-font-smoothing: antialiased; transition: background 0.4s, color 0.4s; }
-.screen { display: flex; flex-direction: column; height: 100dvh; width: 100%; }
-.topbar { background: var(--bg); display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; padding-top: calc(env(safe-area-inset-top, 0px) + 14px); flex-shrink: 0; box-shadow: 0 3px 10px rgba(0,0,0,0.07); position: relative; z-index: 50; }
-body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
-.tb-back { background: var(--bg); border: none; border-radius: 12px; box-shadow: var(--neu-sm); width: 40px; height: 40px; color: var(--red); font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.tb-back:active { box-shadow: var(--neu-in); transform: scale(0.95); }
-.tb-title { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); position: absolute; left: 50%; transform: translateX(-50%); }
-.tb-action { display: flex; gap: 8px; }
-.tb-btn { background: var(--bg); border: none; border-radius: 12px; box-shadow: var(--neu-sm); width: 40px; height: 40px; color: var(--red); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-.tb-btn:active { box-shadow: var(--neu-in); transform: scale(0.95); }
-.tb-btn.spinning svg { animation: spin 0.8s linear infinite; }
 
-.page-wrap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
+/* ═══════════════════════════════════════
+   BASE
+═══════════════════════════════════════ */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent }
+html,body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; transition:background 0.4s,color 0.4s }
 
-.loading-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 56px; color: var(--text3); font-size: 13px; }
-.spinner { width: 20px; height: 20px; border: 2px solid var(--text3); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.screen { display:none; flex-direction:column; height:100dvh; width:100%; position:absolute; top:0; left:0 }
+.screen.active { display:flex }
 
-.empty-state { text-align: center; padding: 64px 24px; }
-.empty-icon { font-size: 48px; opacity: 0.25; margin-bottom: 14px; }
-.empty-text { font-size: 13px; color: var(--text3); line-height: 1.6; }
+/* ═══════════════════════════════════════
+   LOGIN / WELCOME
+═══════════════════════════════════════ */
+#s-login {
+  background: #B32533;
+  overflow: hidden;
+  justify-content: flex-end;
+}
+#s-login::before {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(-55deg,transparent 0,transparent 38px,rgba(0,0,0,0.05) 38px,rgba(0,0,0,0.05) 40px);
+  z-index:0; pointer-events:none;
+}
 
-/* ═══ ENTRANCE ANIMATIONS ═══ */
-@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
-@keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
-@keyframes pulseGlow { 0%, 100% { box-shadow: 0 8px 24px rgba(179,37,51,0.25); } 50% { box-shadow: 0 8px 34px rgba(179,37,51,0.4); } }
+.truck-stage { position:absolute; top:0; left:0; right:0; height:48%; overflow:hidden; z-index:1 }
+.road-base { position:absolute; bottom:0; left:0; right:0; height:6px; background:rgba(0,0,0,0.2) }
+.road-marks { position:absolute; bottom:6px; left:0; right:0; height:3px; background:repeating-linear-gradient(90deg,rgba(255,255,255,0.3) 0,rgba(255,255,255,0.3) 30px,transparent 30px,transparent 60px); animation:roadScroll 0.35s linear infinite }
+@keyframes roadScroll { to { background-position:-60px 0 } }
 
-.anim-in { opacity: 0; animation: fadeSlideUp 0.55s cubic-bezier(.22,1,.36,1) forwards; }
+.truck-wrap { position:absolute; bottom:9px; left:-350px; animation:truckIn 2.2s cubic-bezier(0.16,1,0.3,1) forwards; animation-delay:0.3s; width:210px }
+@keyframes truckIn { 0%{left:-350px} 70%{left:calc(50% - 105px)} 80%{left:calc(50% - 100px)} 90%{left:calc(50% - 103px)} 100%{left:calc(50% - 102px)} }
+.truck-wrap img { width:100%; height:auto; display:block }
 
-/* ═══ PERIOD SELECTOR ═══ */
-.period-row { display: flex; gap: 8px; margin-bottom: 16px; }
-.period-btn { flex: 1; background: var(--bg); border: none; border-radius: 12px; box-shadow: var(--neu-sm); padding: 10px 0; font-size: 12px; font-weight: 700; color: var(--text2); cursor: pointer; font-family: Inter, sans-serif; transition: all 0.15s; }
-.period-btn.active { box-shadow: var(--neu-in); color: var(--red); }
-.period-btn:active { transform: scale(0.97); }
+.login-card {
+  position:relative; z-index:3; width:100%;
+  background: #e0e0e5;
+  border-radius: 28px 28px 0 0;
+  padding: 32px 28px calc(44px + env(safe-area-inset-bottom,0px));
+  opacity:0; transform:translateY(50px);
+  animation:cardUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  animation-delay:2.5s;
+  margin-bottom: 60px;
+}
+@keyframes cardUp { to { opacity:1; transform:translateY(0) } }
 
-/* ═══ HEALTH HERO ═══ */
-.health-hero { background: linear-gradient(135deg, var(--red) 0%, #8f1e29 100%); border-radius: 22px; padding: 24px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(179,37,51,0.3); color: #fff; position: relative; overflow: hidden; animation: fadeSlideUp 0.55s cubic-bezier(.22,1,.36,1) forwards, pulseGlow 4s ease-in-out infinite 0.6s; }
-.health-hero.healthy { background: linear-gradient(135deg, #16a34a 0%, #0d5c2c 100%); box-shadow: 0 8px 24px rgba(22,163,74,0.3); }
-.health-hero.caution { background: linear-gradient(135deg, var(--orange) 0%, #b3740b 100%); box-shadow: 0 8px 24px rgba(245,158,11,0.3); }
-.hh-top { display: flex; align-items: center; gap: 18px; }
-.hh-ring-wrap { position: relative; width: 88px; height: 88px; flex-shrink: 0; }
-.hh-ring-wrap svg { width: 88px; height: 88px; transform: rotate(-90deg); }
-.hh-ring-bg { fill: none; stroke: rgba(255,255,255,0.22); stroke-width: 8; }
-.hh-ring-fg { fill: none; stroke: #fff; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 251.2; stroke-dashoffset: 251.2; transition: stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1); }
-.hh-ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.hh-ring-score { font-size: 24px; font-weight: 800; line-height: 1; }
-.hh-ring-max { font-size: 9px; opacity: 0.75; font-weight: 600; letter-spacing: 0.5px; }
-.hh-info { flex: 1; min-width: 0; }
-.hh-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; margin-bottom: 6px; }
-.hh-status { font-size: 20px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
-.hh-verdict { font-size: 12.5px; opacity: 0.92; line-height: 1.5; }
-.hh-verdict .typing-cursor { display: inline-block; width: 2px; height: 12px; background: #fff; margin-left: 2px; vertical-align: middle; animation: blink 0.8s step-end infinite; }
-@keyframes blink { 50% { opacity: 0; } }
+.login-card h2 { font-size:24px; font-weight:700; color:#2a2a2e; letter-spacing:-0.5px; margin-bottom:6px }
+.login-card p  { font-size:14px; color:#777; line-height:1.65; margin-bottom:28px }
 
-/* ═══ HOW-TO-IMPROVE CTA ═══ */
-.hh-improve-btn { margin-top: 18px; width: 100%; background: rgba(255,255,255,0.16); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.35); border-radius: 12px; padding: 11px 0; color: #fff; font-size: 12.5px; font-weight: 700; font-family: Inter, sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: all 0.15s; }
-.hh-improve-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.28); }
-.hh-improve-icon { font-size: 9px; }
+.google-btn {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  width:100%; padding:15px 20px;
+  background: #e0e0e5;
+  color: #2a2a2e;
+  border: none; border-radius:16px;
+  font-size:15px; font-weight:600; font-family:'Inter',sans-serif;
+  cursor:pointer;
+  box-shadow: var(--neu-out);
+  transition: box-shadow 0.15s;
+}
+.google-btn:active { box-shadow: var(--neu-in) }
+.google-btn svg { width:20px; height:20px; flex-shrink:0 }
+.google-btn:disabled { opacity:0.6; cursor:default }
 
-/* ═══ IMPROVEMENT ROADMAP MODAL (animated "video" walkthrough) ═══ */
-.roadmap-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; display: none; align-items: center; justify-content: center; padding: 16px; }
-.roadmap-overlay.show { display: flex; animation: fadeIn 0.25s ease; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.roadmap-card { background: var(--bg); border-radius: 22px; width: 100%; max-width: 400px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: popIn 0.3s cubic-bezier(.22,1,.36,1); }
-.roadmap-stories { display: flex; gap: 5px; padding: 14px 16px 0; }
-.roadmap-story-seg { flex: 1; height: 3px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden; }
-body.dark .roadmap-story-seg { background: rgba(255,255,255,0.12); }
-.roadmap-story-fill { height: 100%; width: 0%; background: var(--red); border-radius: 3px; }
-.roadmap-story-fill.filled { width: 100% !important; }
-.roadmap-story-fill.animating { animation: storyFill linear forwards; }
-@keyframes storyFill { from { width: 0%; } to { width: 100%; } }
+/* Silent-check status line under the button */
+.login-status {
+  text-align:center; font-size:11px; color:#999; margin-top:14px;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  opacity:0; transition:opacity 0.2s;
+}
+.login-status.show { opacity:1 }
+.login-status .mini-spin {
+  width:12px; height:12px; border:2px solid #ccc; border-top-color:#B32533;
+  border-radius:50%; animation:spin 0.7s linear infinite;
+}
 
-.roadmap-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
-.roadmap-head-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
-.roadmap-close { background: var(--bg2); border: none; width: 30px; height: 30px; border-radius: 10px; color: var(--text2); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+/* ═══════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════ */
+#s-app { background:var(--bg); flex-direction:column }
 
-.roadmap-body { flex: 1; overflow-y: auto; padding: 4px 22px 22px; }
-.roadmap-slide { display: none; }
-.roadmap-slide.active { display: block; animation: fadeSlideUp 0.4s cubic-bezier(.22,1,.36,1); }
-.roadmap-slide-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 14px; background: var(--bg2); box-shadow: var(--neu-sm); }
-.roadmap-slide-title { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.3px; }
-.roadmap-slide-sub { font-size: 12.5px; color: var(--text2); line-height: 1.55; margin-bottom: 18px; }
+/* TOPBAR */
+.topbar {
+  background: var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  padding-top: calc(env(safe-area-inset-top,0px) + 14px);
+  flex-shrink:0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3) }
 
-.roadmap-gauge-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.roadmap-gauge-box { flex: 1; background: var(--bg2); border-radius: 14px; padding: 12px 14px; box-shadow: var(--neu-in); }
-.roadmap-gauge-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
-.roadmap-gauge-val { font-size: 17px; font-weight: 800; color: var(--text); }
-.roadmap-gauge-val.target { color: var(--green); }
-.roadmap-gauge-arrow { font-size: 18px; color: var(--text3); }
-.roadmap-track { height: 8px; background: var(--bg2); border-radius: 8px; overflow: hidden; box-shadow: var(--neu-in); margin-bottom: 20px; }
-.roadmap-track-fill { height: 100%; border-radius: 8px; width: 0%; background: linear-gradient(90deg, var(--red), var(--orange), var(--green)); transition: width 1.1s cubic-bezier(.22,1,.36,1); }
+.tb-brand { display:flex; align-items:center; gap:2px }
+.tb-brand-text { font-size:16px; font-weight:700; letter-spacing:0.5px; color:var(--text) }
+.tb-brand-red { color:var(--red) }
 
-.roadmap-steps { display: flex; flex-direction: column; gap: 10px; }
-.roadmap-step { display: flex; gap: 10px; align-items: flex-start; opacity: 0; transform: translateX(-10px); animation: stepIn 0.45s cubic-bezier(.22,1,.36,1) forwards; }
-@keyframes stepIn { to { opacity: 1; transform: translateX(0); } }
-.roadmap-step-num { width: 22px; height: 22px; border-radius: 7px; background: var(--red); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.roadmap-step-text { font-size: 12.5px; color: var(--text); line-height: 1.5; font-weight: 500; }
+.tb-right { display:flex; align-items:center; gap:12px }
+.tb-title { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--text3) }
+.tb-avatar {
+  width:32px; height:32px; border-radius:50%;
+  border:2px solid var(--red); object-fit:cover;
+  box-shadow: var(--neu-xs);
+}
 
-.roadmap-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 16px; gap: 10px; }
-.roadmap-nav-btn { background: var(--bg2); border: none; width: 38px; height: 38px; border-radius: 12px; color: var(--text); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--neu-sm); }
-.roadmap-nav-btn:active { box-shadow: var(--neu-in); }
-.roadmap-nav-btn:disabled { opacity: 0.35; }
-.roadmap-play-btn { background: var(--bg2); border: none; width: 38px; height: 38px; border-radius: 12px; color: var(--red); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: var(--neu-sm); }
-.roadmap-dots { display: flex; gap: 6px; }
-.roadmap-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); cursor: pointer; transition: all 0.2s; }
-.roadmap-dot.active { background: var(--red); width: 16px; border-radius: 4px; }
+/* PAGE WRAP */
+.page-wrap { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px; padding-bottom:90px }
 
-/* ═══ FINANCIAL JOURNEY (continuous auto-playing recap) ═══ */
-.journey-card { background: linear-gradient(135deg, #1f2937 0%, #111827 100%); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(17,24,39,0.35); color: #fff; opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; position: relative; overflow: hidden; }
-.journey-stories { display: flex; gap: 5px; margin-bottom: 14px; }
-.journey-story-seg { flex: 1; height: 3px; background: rgba(255,255,255,0.16); border-radius: 3px; overflow: hidden; }
-.journey-story-fill { height: 100%; width: 0%; background: #fff; border-radius: 3px; }
-.journey-story-fill.filled { width: 100% !important; }
-.journey-story-fill.animating { animation: storyFill linear forwards; }
-.journey-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-.journey-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.6; }
-.journey-play { background: rgba(255,255,255,0.12); border: none; width: 26px; height: 26px; border-radius: 8px; color: #fff; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.journey-period-label { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 14px; min-height: 28px; }
-.journey-period-label.swap { animation: journeySwap 0.5s cubic-bezier(.22,1,.36,1); }
-@keyframes journeySwap { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
-.journey-metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.journey-metric { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 10px 12px; }
-.journey-metric-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.55; margin-bottom: 3px; }
-.journey-metric-val { font-size: 16px; font-weight: 800; }
-.journey-metric-val.neg { color: #fca5a5; }
-.journey-metric-val.pos { color: #86efac; }
-.journey-bar-row { display: flex; align-items: center; gap: 8px; }
-.journey-bar-track { flex: 1; height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; display: flex; }
-.journey-bar-rev { height: 100%; background: #22c55e; width: 50%; transition: width 1s cubic-bezier(.22,1,.36,1); }
-.journey-bar-exp { height: 100%; background: #ef4444; width: 50%; transition: width 1s cubic-bezier(.22,1,.36,1); }
-.journey-bar-legend { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.65; margin-top: 6px; font-weight: 600; }
+/* ═══════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════ */
+.dash-header { margin-bottom:22px; padding: 0 2px }
+.dash-eyebrow { font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--text3); margin-bottom:5px }
+.dash-name { font-size:24px; font-weight:700; color:var(--text); letter-spacing:-0.5px; line-height:1.2 }
+.dash-date { font-size:12px; color:var(--text2); margin-top:4px }
 
-/* ═══ STAT GRID ═══ */
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-.stat-tile { background: var(--bg); border-radius: 16px; padding: 16px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
-.stat-tile-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 10px; }
-.stat-tile-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
-.stat-tile-value { font-size: 19px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
-.stat-tile-sub { font-size: 10.5px; color: var(--text2); margin-top: 4px; font-weight: 500; }
-.stat-tile-sub.up { color: var(--green); }
-.stat-tile-sub.down { color: var(--red); }
+/* MODULE GRID */
+.mod-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
 
-/* ═══ SAFE-TO-SPEND CARD ═══ */
-.spend-card { background: var(--bg); border-radius: 18px; padding: 18px 20px; margin-bottom: 16px; box-shadow: var(--neu-out); border-left: 4px solid var(--blue); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
-.spend-head { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--blue); margin-bottom: 10px; }
-.spend-amount { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
-.spend-note { font-size: 12px; color: var(--text2); line-height: 1.55; }
-.spend-bar-track { height: 8px; background: var(--bg2); border-radius: 8px; margin-top: 14px; overflow: hidden; box-shadow: var(--neu-in); }
-.spend-bar-fill { height: 100%; border-radius: 8px; width: 0%; background: linear-gradient(90deg, var(--blue), var(--purple)); transition: width 1.2s cubic-bezier(.22,1,.36,1); }
+.mod-card {
+  background: var(--bg);
+  border-radius: 18px;
+  box-shadow: var(--neu-out);
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+.mod-card:active {
+  box-shadow: var(--neu-in);
+  transform: scale(0.98);
+}
+.mod-card.wide { grid-column:span 2; display:flex; align-items:center; gap:16px; padding:16px 18px }
+.mod-card.wide .mod-icon-box { margin-bottom:0; flex-shrink:0 }
+.mod-card.wide .mod-value { font-size:22px }
 
-/* ═══ SECTION HEADERS ═══ */
-.sec-header { display: flex; align-items: center; justify-content: space-between; margin: 22px 0 12px; }
-.sec-title { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; display: flex; align-items: center; gap: 7px; }
-.sec-sub { font-size: 11px; color: var(--text3); font-weight: 500; }
+.mod-icon-box {
+  width:38px; height:38px;
+  border-radius:12px;
+  background: var(--bg);
+  box-shadow: var(--neu-xs);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:12px;
+}
+.mod-icon-box svg { width:18px; height:18px }
 
-/* ═══ CHART CARD ═══ */
-.chart-card { background: var(--bg); border-radius: 18px; padding: 18px; margin-bottom: 8px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
-.chart-legend { display: flex; gap: 16px; margin-bottom: 12px; }
-.chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); font-weight: 600; }
-.chart-legend-dot { width: 9px; height: 9px; border-radius: 3px; }
-.chart-canvas-wrap { height: 170px; position: relative; }
+.mod-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:5px }
+.mod-value { font-size:28px; font-weight:700; color:var(--red); line-height:1; letter-spacing:-1px }
+.mod-card.wide .mod-value.currency { font-size:20px }
+.mod-sub { font-size:10px; color:var(--text3); margin-top:2px }
 
-/* ═══ COLLECTION BAR ═══ */
-.collection-card { background: var(--bg); border-radius: 18px; padding: 18px; margin-bottom: 8px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
-.collection-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-.collection-pct { font-size: 22px; font-weight: 800; color: var(--text); }
-.collection-label { font-size: 11px; color: var(--text3); font-weight: 600; }
-.collection-track { height: 12px; background: var(--bg2); border-radius: 10px; overflow: hidden; box-shadow: var(--neu-in); margin-bottom: 10px; }
-.collection-fill { height: 100%; border-radius: 10px; width: 0%; background: linear-gradient(90deg, var(--green), #22c55e); transition: width 1.3s cubic-bezier(.22,1,.36,1); }
-.collection-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text2); font-weight: 500; }
-.collection-foot strong { color: var(--text); }
+/* ═══════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════ */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0;
+  background:var(--bg);
+  padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));
+  display:flex; align-items:center; justify-content:space-around;
+  box-shadow: 0 -3px 14px rgba(0,0,0,0.07);
+  z-index:40;
+}
+body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0,0,0,0.4) }
 
-/* ═══ BILLING & COLLECTIONS (elaborate) ═══ */
-.billing-status-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
-.billing-status-chip { background: var(--bg2); border-radius: 12px; padding: 10px 8px; text-align: center; box-shadow: var(--neu-sm); }
-.billing-status-chip .n { font-size: 17px; font-weight: 800; color: var(--text); }
-.billing-status-chip.paid .n { color: var(--green); }
-.billing-status-chip.partial .n { color: var(--orange); }
-.billing-status-chip.pending .n { color: var(--red); }
-.billing-status-chip .l { font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); margin-top: 2px; }
+.bnav {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  font-size:9px; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+  color:var(--text3); cursor:pointer; border:none; background:none;
+  font-family:'Inter',sans-serif;
+}
+.bnav.active { color:var(--red) }
 
-.alltime-card { background: var(--bg2); border-radius: 14px; padding: 14px 16px; margin-top: 14px; box-shadow: var(--neu-in); }
-.alltime-head { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
-.alltime-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; padding: 5px 0; color: var(--text2); font-weight: 500; }
-.alltime-row strong { color: var(--text); font-weight: 700; }
-.alltime-row.hl strong { color: var(--green); }
+.bnav-icon {
+  width:42px; height:42px;
+  border-radius:14px;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  transition: box-shadow 0.2s;
+}
+.bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm) }
+.bnav.active .bnav-icon { box-shadow: var(--neu-in) }
 
-/* ═══ TAXATION ═══ */
-.tax-card { background: var(--bg); border-radius: 18px; padding: 18px; margin-bottom: 8px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
-.tax-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--bg2); font-size: 12.5px; }
-.tax-row:last-of-type { border-bottom: none; }
-.tax-row-label { color: var(--text2); font-weight: 500; }
-.tax-row-val { color: var(--text); font-weight: 700; }
-.tax-savings-box { background: linear-gradient(135deg, rgba(22,163,74,0.12), rgba(22,163,74,0.04)); border: 1px solid rgba(22,163,74,0.25); border-radius: 14px; padding: 14px 16px; margin-top: 12px; }
-.tax-savings-head { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
-.tax-savings-amount { font-size: 22px; font-weight: 800; color: var(--green); margin-bottom: 4px; }
-.tax-savings-note { font-size: 11.5px; color: var(--text2); line-height: 1.5; }
-.tax-savings-breakdown { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
-.tax-savings-item { font-size: 11px; color: var(--text2); font-weight: 600; }
-.tax-savings-item strong { color: var(--text); }
+/* ═══════════════════════════════════════
+   STATES
+═══════════════════════════════════════ */
+.toast {
+  position:fixed;
+  bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  left:50%; transform:translateX(-50%);
+  background:var(--bg); border-radius:14px;
+  box-shadow: var(--neu-out);
+  border-left:3px solid var(--red);
+  padding:13px 22px; font-size:13px; font-weight:500; color:var(--text);
+  z-index:300; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity 0.25s;
+}
+.toast.show { opacity:1 }
 
-/* ═══ RECOMMENDATION CARDS ═══ */
-/* ═══ RECOMMENDATION CARDS ═══ */
-.rec-list { display: flex; flex-direction: column; gap: 10px; }
-.rec-card { background: var(--bg); border-radius: 16px; padding: 16px; box-shadow: var(--neu-out); border-left: 4px solid var(--text3); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; display: flex; gap: 12px; }
-.rec-card.critical { border-left-color: var(--red); }
-.rec-card.warning { border-left-color: var(--orange); }
-.rec-card.opportunity { border-left-color: var(--blue); }
-.rec-card.good { border-left-color: var(--green); }
-.rec-icon { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--bg2); box-shadow: var(--neu-sm); }
-.rec-body { flex: 1; min-width: 0; }
-.rec-tag { display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; margin-bottom: 6px; }
-.rec-card.critical .rec-tag { background: rgba(179,37,51,0.14); color: var(--red); }
-.rec-card.warning .rec-tag { background: rgba(245,158,11,0.16); color: #b3740b; }
-.rec-card.opportunity .rec-tag { background: rgba(37,99,235,0.14); color: var(--blue); }
-.rec-card.good .rec-tag { background: rgba(22,163,74,0.14); color: var(--green); }
-.rec-title { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
-.rec-desc { font-size: 12px; color: var(--text2); line-height: 1.55; margin-bottom: 6px; }
-.rec-action { font-size: 11.5px; color: var(--text); font-weight: 600; background: var(--bg2); border-radius: 8px; padding: 6px 10px; display: inline-flex; align-items: center; gap: 5px; box-shadow: var(--neu-xs); }
-
-/* ═══ BOTTOM NAV ═══ */
-.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; justify-content: space-around; box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.07); z-index: 40; }
-body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
-.bnav { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); cursor: pointer; border: none; background: transparent; font-family: Inter, sans-serif; }
-.bnav.active { color: var(--red); }
-.bnav-icon { width: 42px; height: 42px; border-radius: 14px; background: var(--bg); display: flex; align-items: center; justify-content: center; transition: box-shadow 0.2s; }
-.bnav:not(.active) .bnav-icon { box-shadow: var(--neu-sm); }
-.bnav.active .bnav-icon { box-shadow: var(--neu-in); }
-
-.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 200; }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* PULL TO REFRESH */
+.ptr-indicator {
+  position: fixed;
+  top: calc(env(safe-area-inset-top,0px) + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  background: var(--bg);
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  box-shadow: var(--neu-out);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+.ptr-indicator.visible {
+  transform: translateX(-50%) translateY(0px);
+}
+.ptr-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--text3);
+  border-top-color: var(--red);
+  border-radius: 50%;
+}
+.ptr-spinner.spinning {
+  animation: spin 0.7s linear infinite;
+}
+.ptr-arrow {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--red);
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+@keyframes spin { to { transform: rotate(360deg) } }
 </style>
 </head>
 <body>
-<div class="screen">
+
+<!-- ═══ LOGIN ═══ -->
+<div class="screen active" id="s-login">
+  <div class="truck-stage">
+    <div class="road-base"></div>
+    <div class="road-marks"></div>
+    <div class="truck-wrap"><img src="truck.jpg" alt="PedroEX Truck"></div>
+  </div>
+  <div class="login-card">
+    <h2>Fleet Management</h2>
+    <p>Sign in with your Google account to access the PedroEX operations dashboard.</p>
+    <button class="google-btn" id="google-btn" onclick="signIn()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+    <div class="login-status" id="login-status">
+      <div class="mini-spin"></div>
+      <span id="login-status-text">Checking your session…</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="screen" id="s-app">
   <div class="topbar">
-    <button class="tb-back" onclick="location.href='index.html'">✕</button>
-    <div class="tb-title">AI Advisor</div>
-    <div class="tb-action">
-      <button class="tb-btn" id="refresh-btn" onclick="loadAll()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 2v6h-6M3 22v-6h6M2.5 9a9.5 9.5 0 0116.4-4.8L21 8M21.5 15a9.5 9.5 0 01-16.4 4.8L3 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+    <div class="tb-brand">
+      <img src="logo2.png" alt="PedroEX" style="height:22px;width:auto;object-fit:contain">
+    </div>
+    <div class="tb-right">
+      <span class="tb-title">Dashboard</span>
+      <img class="tb-avatar" id="user-avatar" src="" alt="">
     </div>
   </div>
 
   <div class="page-wrap">
-    <div class="loading-wrap" id="wrap-loading">
-      <div class="spinner"></div> Analyzing your data...
+    <div class="dash-header">
+      <div class="dash-eyebrow">PedroEX Operations</div>
+      <div class="dash-name" id="dash-name">Good day!</div>
+      <div class="dash-date" id="dash-date"></div>
     </div>
-
-    <div id="wrap-content" style="display:none">
-      <div class="period-row">
-        <button class="period-btn active" id="period-month" onclick="setPeriod('month')">This Month</button>
-        <button class="period-btn" id="period-quarter" onclick="setPeriod('quarter')">This Quarter</button>
-        <button class="period-btn" id="period-year" onclick="setPeriod('year')">This Year</button>
-      </div>
-
-      <div class="journey-card">
-        <div class="journey-stories" id="journey-stories"></div>
-        <div class="journey-top">
-          <div class="journey-eyebrow">🎥 Your Financial Journey</div>
-          <button class="journey-play" id="journey-play" onclick="toggleJourneyAutoplay()">⏸</button>
-        </div>
-        <div class="journey-period-label" id="journey-period-label">This Month</div>
-        <div class="journey-metric-grid" id="journey-metric-grid"></div>
-        <div class="journey-bar-row">
-          <div class="journey-bar-track"><div class="journey-bar-rev" id="journey-bar-rev"></div><div class="journey-bar-exp" id="journey-bar-exp"></div></div>
-        </div>
-        <div class="journey-bar-legend"><span>Revenue</span><span>Expenses</span></div>
-      </div>
-
-      <div class="health-hero" id="health-hero">
-        <div class="hh-top">
-          <div class="hh-ring-wrap">
-            <svg viewBox="0 0 96 96">
-              <circle class="hh-ring-bg" cx="48" cy="48" r="40"></circle>
-              <circle class="hh-ring-fg" id="hh-ring-fg" cx="48" cy="48" r="40"></circle>
-            </svg>
-            <div class="hh-ring-label">
-              <div class="hh-ring-score" id="hh-score">0</div>
-              <div class="hh-ring-max">/ 100</div>
-            </div>
-          </div>
-          <div class="hh-info">
-            <div class="hh-label">Financial Health Score</div>
-            <div class="hh-status" id="hh-status-text">Analyzing...</div>
-            <div class="hh-verdict" id="hh-verdict">Calculating business health...</div>
-          </div>
-        </div>
-        <button class="hh-improve-btn" id="improve-btn" onclick="openImprovementModal()">
-          <span class="hh-improve-icon">▶</span> How to Improve My Score
-        </button>
-      </div>
-
-      <div class="stat-grid" id="stat-grid"></div>
-
-      <div class="spend-card" id="spend-card" style="animation-delay:.05s">
-        <div class="spend-head">💡 Safe-to-Spend Guidance</div>
-        <div class="spend-amount" id="spend-amount">₱0</div>
-        <div class="spend-note" id="spend-note">Calculating...</div>
-        <div class="spend-bar-track"><div class="spend-bar-fill" id="spend-bar-fill"></div></div>
-      </div>
-
-      <div class="sec-header">
-        <div class="sec-title">📊 Cash In vs Cash Out</div>
-        <div class="sec-sub" id="cashflow-sub">Last 6 months</div>
-      </div>
-      <div class="chart-card" style="animation-delay:.1s">
-        <div class="chart-legend">
-          <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--green)"></div>Cash In</div>
-          <div class="chart-legend-item"><div class="chart-legend-dot" style="background:var(--red)"></div>Cash Out</div>
-        </div>
-        <div class="chart-canvas-wrap"><canvas id="cashflowChart"></canvas></div>
-      </div>
-
-      <div class="sec-header">
-        <div class="sec-title">🧾 Billing &amp; Collections</div>
-        <div class="sec-sub" id="billing-period-sub">—</div>
-      </div>
-      <div class="collection-card" style="animation-delay:.15s">
-        <div class="collection-top">
-          <div class="collection-pct" id="collection-pct">0%</div>
-          <div class="collection-label">of billed amount collected this period</div>
-        </div>
-        <div class="collection-track"><div class="collection-fill" id="collection-fill"></div></div>
-        <div class="collection-foot">
-          <span>Billed: <strong id="collection-billed">₱0</strong></span>
-          <span>Collected: <strong id="collection-received">₱0</strong></span>
-        </div>
-
-        <div class="billing-status-row" id="billing-status-row"></div>
-
-        <div class="alltime-card">
-          <div class="alltime-head">📋 All-Time Snapshot — matches your Billing page</div>
-          <div class="alltime-row"><span>Total Billed (all-time)</span><strong id="alltime-billed">₱0</strong></div>
-          <div class="alltime-row hl"><span>Total Collected (all-time)</span><strong id="alltime-received">₱0</strong></div>
-          <div class="alltime-row"><span>Outstanding Receivables</span><strong id="alltime-outstanding">₱0</strong></div>
-          <div class="alltime-row"><span>SOAs — Paid / Partial / Pending</span><strong id="alltime-counts">0 / 0 / 0</strong></div>
-        </div>
-      </div>
-
-      <div class="sec-header">
-        <div class="sec-title">📋 Taxation</div>
-        <div class="sec-sub" id="tax-quarter-sub">—</div>
-      </div>
-      <div class="tax-card" style="animation-delay:.18s">
-        <div class="tax-row"><div class="tax-row-label">Output VAT (Sales Tax)</div><div class="tax-row-val" id="tax-output">₱0</div></div>
-        <div class="tax-row"><div class="tax-row-label">Input VAT (Purchases — Recoverable)</div><div class="tax-row-val" id="tax-input">₱0</div></div>
-        <div class="tax-row"><div class="tax-row-label"><strong>Net VAT Payable to BIR</strong></div><div class="tax-row-val" id="tax-net" style="color:var(--red)">₱0</div></div>
-
-        <div class="tax-savings-box">
-          <div class="tax-savings-head">💚 VAT Savings from Input VAT</div>
-          <div class="tax-savings-amount" id="tax-savings-amount">₱0</div>
-          <div class="tax-savings-note">This is how much you save by claiming Input VAT on Diesel, Parts, and Parking expenses — it directly reduces what you owe the BIR.</div>
-          <div class="tax-savings-breakdown">
-            <div class="tax-savings-item">⛽ Diesel: <strong id="tax-save-diesel">₱0</strong></div>
-            <div class="tax-savings-item">🔧 Parts: <strong id="tax-save-parts">₱0</strong></div>
-            <div class="tax-savings-item">🅿️ Parking: <strong id="tax-save-parking">₱0</strong></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sec-header">
-        <div class="sec-title">🤖 AI Recommendations</div>
-        <div class="sec-sub" id="rec-count-sub">—</div>
-      </div>
-      <div class="rec-list" id="rec-list"></div>
-    </div>
+    <div class="mod-grid" id="mod-grid"></div>
   </div>
 
+  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
-    <button class="bnav" onclick="location.href='index.html'">
+    <button class="bnav active">
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="2"/><path d="M9 22V12h6v10" stroke="currentColor" stroke-width="2"/></svg></div>
       Home
     </button>
@@ -428,1210 +343,669 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
       <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
       Billing
     </button>
-    <button class="bnav active">
-      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></div>
-      Advisor
+    <button class="bnav" onclick="location.href='settings.html'">
+      <div class="bnav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+      Settings
     </button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- IMPROVEMENT ROADMAP MODAL — animated, story-style "how to improve" walkthrough -->
-<div class="roadmap-overlay" id="roadmap-overlay">
-  <div class="roadmap-card">
-    <div class="roadmap-stories" id="roadmap-stories"></div>
-    <div class="roadmap-head">
-      <div class="roadmap-head-title">🎬 Improvement Roadmap</div>
-      <button class="roadmap-close" onclick="closeImprovementModal()">✕</button>
-    </div>
-    <div class="roadmap-body" id="roadmap-body"></div>
-    <div class="roadmap-nav">
-      <button class="roadmap-nav-btn" id="roadmap-prev" onclick="roadmapPrev()">‹</button>
-      <button class="roadmap-play-btn" id="roadmap-play" onclick="toggleRoadmapAutoplay()">⏸</button>
-      <div class="roadmap-dots" id="roadmap-dots"></div>
-      <button class="roadmap-nav-btn" id="roadmap-next" onclick="roadmapNext()">›</button>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// ═══════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════
-const SHEET_ID = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
-const TAB_TRIPS = 'Trips';
-const TAB_EXPENSES = 'Expenses_Master';
-const TAB_ATTENDANCE = 'Attendance';
-const TAB_EMPLOYEES = 'Employees';
-const TAB_PAYROLL = 'Payroll History';
-const TAB_SOA = 'SOA Masters';
-const SYSTEM_START_DATE = '2026-05-01';
+const CLIENT_ID  = '1028149041464-hpb4dhisjl1o4fgluiqthi4m89ri3o8m.apps.googleusercontent.com';
+const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
+const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file openid email profile';
 
-const DRIVER_DAILY_RATE = 500;
-const HELPER_DAILY_RATE = 350;
-const TWO_MAN_BONUS = 280;
-const MEAL_ALLOWANCE = 210;
-const DOCUMENTATION_DAILY_RATE = 40000 / 365;
+const ALL_MODULES = [
+  {id:'advisor',        icon:'bulb',     label:'AI Advisor',  stat:'sv-advisor',   sub:'of this year\'s billings collected', wide:true, link:'advisor.html'},
+  {id:'trucks',         icon:'truck',    label:'Trucks',      stat:'sv-trucks',    sub:'Fleet roster',        link:'trucks.html'},
+  {id:'trips',          icon:'location', label:'Trips',       stat:'sv-trips',     sub:'On the road',         link:'trips.html'},
+  {id:'manpower',       icon:'roster',   label:'Manpower',    stat:'sv-manpower',  sub:'Duty roster',         link:'manpower-roster.html'},
+  {id:'employees',      icon:'users',    label:'Employees',   stat:'sv-emp',       sub:'Total staff',         link:'employees.html'},
+  {id:'attendance',     icon:'calendar', label:'Attendance',  stat:'sv-attend',    sub:'Daily logs',          link:'attendance.html'},
+  {id:'messages',       icon:'chat',     label:'Messages',    stat:'sv-msg',       sub:'Team chat',           link:'messages.html'},
+  {id:'emp-records',    icon:'folder',   label:'Emp Records', stat:'sv-records',   sub:'201 files',           link:'employee-records.html'},
+  {id:'matrix',         icon:'chart',    label:'Matrix',      stat:'sv-matrix',    sub:'Performance',         link:'matrix.html'},
+  {id:'expenses-admin', icon:'chart',    label:'Expenses',    stat:'sv-exp-admin', sub:'Reports & Analytics', wide:true, link:'expenses.html',     adminOnly:true},
+  {id:'expenses-emp',   icon:'card',     label:'Expenses',    stat:'sv-exp-emp',   sub:'Submit expense',      wide:true, link:'expenses-emp.html'},
+  {id:'billing',        icon:'doc',      label:'Billing',     stat:'sv-billing',   sub:'Collected (' + new Date().getFullYear() + ')', wide:true, link:'billing.html', currency:true},
+  {id:'settings',       icon:'settings', label:'Settings',    stat:'sv-set',       sub:'App settings',        wide:true, link:'settings.html'},
+];
 
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-let token = '';
-let allTrips = [];
-let allExpenses = [];
-let allAttendance = [];
-let employeeRoles = {};
-let allSOA = [];
-let allPayroll = [];
-let currentPeriod = 'month';
-let cashflowChart = null;
-let currentFinancials = null;
-let currentHealth = null;
-let roadmapSlides = [];
-let roadmapIndex = 0;
-let roadmapPlaying = true;
-let roadmapTimer = null;
-const ROADMAP_SLIDE_MS = 6000;
+const ICONS = {
+  bulb:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 22h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><path d="M12 2a7 7 0 00-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0012 2z" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6a4 4 0 00-3 6.6" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  truck:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="var(--red)" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="var(--red)" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="var(--red)" stroke-width="2"/></svg>',
+  calendar: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><path d="M7 14l2 2 4-4" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  location: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="var(--red)" stroke-width="2"/></svg>',
+  users:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="var(--red)" stroke-width="2"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" stroke="var(--red)" stroke-width="2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87" stroke="var(--red)" stroke-width="2"/></svg>',
+  folder:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 7v11a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-7l-2-2H5a2 2 0 00-2 2z" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 13h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  card:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M2 10h20" stroke="var(--red)" stroke-width="2"/><path d="M6 15h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  doc:      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 7h8M8 11h8M8 15h5" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  chart:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  roster:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="4" rx="1" stroke="var(--red)" stroke-width="2"/><path d="M6 4h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="var(--red)" stroke-width="2"/><path d="M9 12l2 2 4-4M9 17h6" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  settings: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/></svg>',
+  chat:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
 
-// Financial Journey (continuous auto-playing recap)
-let journeyData = [];
-let journeyIndex = 0;
-let journeyPlaying = true;
-let journeyTimer = null;
-const JOURNEY_PERIODS = ['month', 'quarter', 'year'];
-const JOURNEY_LABELS = { month: 'This Month', quarter: 'This Quarter', year: 'This Year' };
-const JOURNEY_SLIDE_MS = 5000;
+let token = null;
 
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
+// ═══ THEME ═══
+function applyTheme(dark) {
+  document.body.classList.toggle('dark', dark);
+  localStorage.setItem('pedroex-theme', dark ? 'dark' : 'light');
+}
+applyTheme(localStorage.getItem('pedroex-theme') === 'dark');
+
+// ═══ INIT ═══
+// Login persistence strategy:
+// Google's GIS access tokens are only valid for ~1 hour — that lifetime is set
+// by Google and cannot be extended from client-side code. What we CAN do is
+// avoid showing the full "Continue with Google" screen every time that token
+// expires: if the user previously granted access (pedroex-scope-granted) we
+// attempt a SILENT re-auth (prompt:'') on cold start before ever showing the
+// login screen. A silent re-auth shows no popup/account-picker and succeeds
+// automatically as long as the user is still signed into Google in this
+// browser and hasn't revoked access. The user will only see the login screen
+// again if: they explicitly log out, they clear browser data/cookies, they
+// revoke PedroEX's access from their Google account, or silent re-auth is
+// blocked (e.g. some in-app browsers / strict privacy settings).
 (function init() {
-    const dark = localStorage.getItem('pedroex-theme') === 'dark';
-    document.body.classList.toggle('dark', dark);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
 
-    token = localStorage.getItem('pedroex-token') || '';
-    const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    if (!token || Date.now() >= expiry) {
-        location.href = 'index.html';
-        return;
-    }
+  const savedToken = localStorage.getItem('pedroex-token');
+  const expiry     = localStorage.getItem('pedroex-token-expiry');
+  const bufferMs   = 5 * 60 * 1000;
 
-    loadAll();
+  if (savedToken && expiry && Date.now() < (parseInt(expiry) - bufferMs)) {
+    token = savedToken;
+    sessionStorage.removeItem('pedroex-login-retry');
+    loadUser();
+  } else if (localStorage.getItem('pedroex-scope-granted') === 'true') {
+    // Token missing/expired, but user has signed in before — try to renew
+    // silently in the background instead of forcing them through the full
+    // Google sign-in screen again.
+    trySilentSignIn();
+  } else {
+    // Never granted access before — real first-time login needed.
+    localStorage.removeItem('pedroex-token');
+    localStorage.removeItem('pedroex-token-expiry');
+    sessionStorage.removeItem('pedroex-login-retry');
+    showLogin();
+  }
 })();
 
-// ═══════════════════════════════════════
-// API HELPERS
-// ═══════════════════════════════════════
-function quoteRange(range) {
-    return range.replace(/^([^!]+)(!.*)$/, function (_, sheet, rest) {
-        return (sheet.indexOf(' ') >= 0 ? "'" + sheet + "'" : sheet) + rest;
-    });
-}
+// ═══ SILENT RE-AUTH (no popup) ═══
+function trySilentSignIn(attempt) {
+  attempt = attempt || 0;
+  setLoginStatus(true, 'Checking your session…');
 
-function apiGet(range) {
-    return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(quoteRange(range))}`, {
-        headers: { Authorization: 'Bearer ' + token }
-    }).then(r => {
-        if (r.status === 401) {
-            location.href = 'index.html';
-            throw new Error('Unauthorized');
-        }
-        if (!r.ok) throw new Error('API Error: ' + range);
-        return r.json();
-    });
-}
-
-// ═══════════════════════════════════════
-// FORMAT / DATE HELPERS
-// ═══════════════════════════════════════
-function pad(n) { return n < 10 ? '0' + n : String(n); }
-
-function fmtDateStr(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
-
-function convertExcelDate(value) {
-    if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}$/)) return value;
-    const num = parseFloat(value);
-    if (!isNaN(num) && num > 1000) {
-        const excelEpoch = new Date(1899, 11, 30);
-        const date = new Date(excelEpoch.getTime() + num * 86400000);
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-    }
-    if (typeof value === 'string') {
-        const d = new Date(value);
-        if (!isNaN(d.getTime())) return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    }
-    return '';
-}
-
-function formatCurrency(n) {
-    n = n || 0;
-    const sign = n < 0 ? '-' : '';
-    return sign + '₱' + Math.abs(n).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function formatCompact(n) {
-    n = n || 0;
-    const sign = n < 0 ? '-' : '';
-    const abs = Math.abs(n);
-    if (abs >= 1e6) return sign + '₱' + (abs / 1e6).toFixed(2) + 'M';
-    if (abs >= 1e3) return sign + '₱' + (abs / 1e3).toFixed(1) + 'K';
-    return sign + '₱' + abs.toFixed(0);
-}
-
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
-}
-
-// ═══════════════════════════════════════
-// LOAD ALL DATA
-// ═══════════════════════════════════════
-async function loadAll() {
-    _inputVATCache = null;
-    const refreshBtn = document.getElementById('refresh-btn');
-    refreshBtn.classList.add('spinning');
-    document.getElementById('wrap-loading').style.display = 'flex';
-    document.getElementById('wrap-content').style.display = 'none';
-
-    try {
-        const [tripsRes, expensesRes, attendanceRes, employeesRes, soaRes, payrollRes] = await Promise.all([
-            apiGet(TAB_TRIPS + '!A2:I'),
-            apiGet(TAB_EXPENSES + '!A2:O'),
-            apiGet(TAB_ATTENDANCE + '!A2:J'),
-            apiGet(TAB_EMPLOYEES + '!A2:E'),
-            apiGet(TAB_SOA + '!A2:M'),
-            apiGet(TAB_PAYROLL + '!A2:AF')
-        ]);
-
-        // Trips
-        allTrips = (tripsRes.values || [])
-            .map((r, i) => {
-                try {
-                    return {
-                        rowIndex: i + 2, id: r[0] || '',
-                        deliveryDate: convertExcelDate(r[1]),
-                        truck: r[2] || '', route: r[7] || '',
-                        rate: parseFloat(r[8]) || 0
-                    };
-                } catch (e) { return null; }
-            })
-            .filter(t => t && t.truck && t.deliveryDate && t.rate > 0 && t.deliveryDate >= SYSTEM_START_DATE);
-
-        // Expenses (operational — Diesel/Maintenance/Documentation-manual/Misc)
-        allExpenses = (expensesRes.values || [])
-            .map((r, i) => {
-                try {
-                    return {
-                        rowIndex: i + 2, id: r[0] || '', date: r[1] || '',
-                        truck: r[2] || '', category: r[3] || '',
-                        amount: parseFloat(r[5]) || 0,
-                        inputVAT: parseFloat(r[11]) || 0,
-                        type: r[14] || '',
-                        hasVAT: ['diesel', 'parts', 'parking'].includes((r[14] || '').toLowerCase())
-                    };
-                } catch (e) { return null; }
-            })
-            .filter(e => e && e.truck && e.date && e.amount > 0 && e.date >= SYSTEM_START_DATE);
-
-        // Attendance (drives accrued Manpower + Documentation, matching Matrix)
-        allAttendance = (attendanceRes.values || [])
-            .map(r => ({
-                date: r[1] || '', employee: r[2] || '',
-                twoManTeam: (r[3] || '').toLowerCase() === 'yes',
-                mealAllowance: ['yes', 'meals only'].includes((r[5] || '').toLowerCase()),
-                truck: r[6] || ''
-            }))
-            .filter(a => a.date && a.employee && a.truck && a.date >= SYSTEM_START_DATE);
-
-        // Employee roles (Driver/Helper)
-        employeeRoles = {};
-        (employeesRes.values || []).forEach(r => {
-            const firstName = (r[1] || '').trim();
-            const lastName = (r[2] || '').trim();
-            const position = (r[4] || '').toLowerCase().trim();
-            if (firstName && position) {
-                employeeRoles[`${firstName} ${lastName}`] = position;
-                employeeRoles[firstName] = position;
-            }
-        });
-
-        // SOA Masters (billing / collections — the real cash-in source)
-        allSOA = (soaRes.values || []).map((r, i) => ({
-            rowIndex: i + 2, soaNum: r[0] || '', period: r[1] || '',
-            grandTotal: parseFloat(r[3]) || 0,
-            dateSent: r[6] || '',
-            amtReceived: parseFloat(r[7]) || 0,
-            dateReceived: r[8] || '',
-            status: r[9] || 'Pending',
-            deductions: parseFloat(r[10]) || 0
-        })).filter(r => r.soaNum);
-
-        // Payroll History (actual cash disbursed to employees)
-        allPayroll = (payrollRes.values || []).map(r => ({
-            name: r[1] || '', period: r[2] || '',
-            netPay: parseFloat(r[27]) || 0
-        })).filter(r => r.name && r.period);
-
-        document.getElementById('wrap-loading').style.display = 'none';
-        document.getElementById('wrap-content').style.display = 'block';
-        refreshBtn.classList.remove('spinning');
-
-        await renderAll();
-        await initJourney();
-    } catch (err) {
-        console.error('Load error:', err);
-        document.getElementById('wrap-loading').style.display = 'none';
-        refreshBtn.classList.remove('spinning');
-        showToast('❌ Failed to load data. Please refresh.');
-    }
-}
-
-// ═══════════════════════════════════════
-// MANPOWER (mirrors Matrix's accrual method)
-// ═══════════════════════════════════════
-function calculateManpowerCost(attendance) {
-    const role = employeeRoles[attendance.employee] || 'helper';
-    let cost = (role === 'driver') ? DRIVER_DAILY_RATE : HELPER_DAILY_RATE;
-    if (attendance.twoManTeam) cost += TWO_MAN_BONUS;
-    if (attendance.mealAllowance) cost += MEAL_ALLOWANCE;
-    return cost;
-}
-
-function getManpowerForDate(dateStr) {
-    return allAttendance.filter(a => a.date === dateStr).map(a => calculateManpowerCost(a));
-}
-
-function getDocumentationForDate(dateStr) {
-    const trucks = [...new Set(allAttendance.filter(a => a.date === dateStr).map(a => a.truck))].filter(t => t);
-    return trucks.map(() => DOCUMENTATION_DAILY_RATE);
-}
-
-// ═══════════════════════════════════════
-// VAT (mirrors Matrix's BIR computation)
-// ═══════════════════════════════════════
-async function calculateVAT(trips) {
-    const grossSales = trips.reduce((sum, t) => sum + t.rate, 0);
-    const vatableSales = grossSales * 1.12;
-    const outputVAT = vatableSales * 0.12;
-    const inputVATData = await getInputVATForCurrentQuarter();
-    const inputVAT = inputVATData.total;
-    return {
-        grossSales, vatableSales, outputVAT, inputVAT,
-        inputVATBreakdown: inputVATData.breakdown,
-        netVATPayable: outputVAT - inputVAT,
-        // What you save in real cash by claiming Input VAT on Diesel/Parts/
-        // Parking expenses — it directly offsets what you'd otherwise owe.
-        vatSavings: inputVAT,
-        quarter: getCurrentQuarter()
-    };
-}
-
-function getCurrentQuarter() {
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-    if (month <= 3) return `Purchases (Jan-Mar ${year})`;
-    if (month <= 6) return `Purchases (Apr-Jun ${year})`;
-    if (month <= 9) return `Purchases (Jul-Sep ${year})`;
-    return `Purchases (Oct-Dec ${year})`;
-}
-
-let _inputVATCache = null;
-async function getInputVATForCurrentQuarter() {
-    if (_inputVATCache) return _inputVATCache;
-    const quarterBase = getCurrentQuarter();
-    const types = ['Diesel', 'Parts', 'Parking'];
-    let total = 0;
-    const breakdown = { diesel: 0, parts: 0, parking: 0 };
-    for (const type of types) {
-        const sheetName = `${quarterBase}-${type}`;
-        try {
-            const res = await apiGet(sheetName + '!A8:O1000');
-            const rows = res.values || [];
-            rows.forEach(row => {
-                if (row[0] && row[1]) {
-                    const inputVAT = parseFloat(row[11]) || 0;
-                    if (inputVAT > 0) {
-                        total += inputVAT;
-                        breakdown[type.toLowerCase()] += inputVAT;
-                    }
-                }
-            });
-        } catch (err) { /* Quarterly sheet not found — treat as 0 */ }
-    }
-    _inputVATCache = { total, breakdown };
-    return _inputVATCache;
-}
-
-// ═══════════════════════════════════════
-// PERIOD BOUNDS
-// A period always runs from its start to TODAY (never into the future,
-// since no data exists there anyway) — and the "previous period" comparison
-// uses the SAME number of elapsed days, so a half-finished month is never
-// measured against a full previous month.
-// ═══════════════════════════════════════
-function getPeriodBounds(period, refDate) {
-    const now = refDate || new Date();
-    const y = now.getFullYear(), m = now.getMonth();
-    if (period === 'month') {
-        return { start: new Date(y, m, 1), end: now, label: now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) };
-    } else if (period === 'quarter') {
-        const qStartMonth = Math.floor(m / 3) * 3;
-        return { start: new Date(y, qStartMonth, 1), end: now, label: 'Q' + (Math.floor(m / 3) + 1) + ' ' + y };
-    }
-    return { start: new Date(y, 0, 1), end: now, label: String(y) };
-}
-
-function getPreviousPeriodBounds(period, current) {
-    const daysElapsed = Math.floor((current.end - current.start) / 86400000) + 1;
-    let prevStart;
-    if (period === 'month') prevStart = new Date(current.start.getFullYear(), current.start.getMonth() - 1, 1);
-    else if (period === 'quarter') prevStart = new Date(current.start.getFullYear(), current.start.getMonth() - 3, 1);
-    else prevStart = new Date(current.start.getFullYear() - 1, 0, 1);
-    const prevEnd = new Date(prevStart.getTime() + (daysElapsed - 1) * 86400000);
-    return { start: prevStart, end: prevEnd };
-}
-
-function inRange(dateStr, bounds) {
-    if (!dateStr) return false;
-    const s = fmtDateStr(bounds.start), e = fmtDateStr(bounds.end);
-    return dateStr >= s && dateStr <= e;
-}
-
-// ═══════════════════════════════════════
-// CORE FINANCIAL COMPUTATION
-// ═══════════════════════════════════════
-async function computeFinancials(period) {
-    const bounds = getPeriodBounds(period);
-    const prevBounds = getPreviousPeriodBounds(period, bounds);
-
-    const compute = async (b) => {
-        const trips = allTrips.filter(t => inRange(t.deliveryDate, b));
-        const expenses = allExpenses.filter(e => inRange(e.date, b));
-        const dates = [...new Set(trips.map(t => t.deliveryDate))];
-
-        let manpowerAccrued = 0, docAccrued = 0;
-        dates.forEach(d => {
-            manpowerAccrued += getManpowerForDate(d).reduce((s, v) => s + v, 0);
-            docAccrued += getDocumentationForDate(d).reduce((s, v) => s + v, 0);
-        });
-
-        const revenue = trips.reduce((s, t) => s + t.rate, 0);
-        const opExpenses = expenses.reduce((s, e) => s + e.amount, 0);
-        const accruedExpenses = opExpenses + manpowerAccrued + docAccrued;
-        const accruedProfit = revenue - accruedExpenses;
-        const margin = revenue > 0 ? (accruedProfit / revenue * 100) : 0;
-
-        // Category breakdown (for the truck/category outlier recommendations)
-        const categoryTotals = {
-            Diesel: expenses.filter(e => e.category === 'Diesel').reduce((s, e) => s + e.amount, 0),
-            Maintenance: expenses.filter(e => e.category === 'Maintenance').reduce((s, e) => s + e.amount, 0),
-            Manpower: manpowerAccrued,
-            Documentation: docAccrued,
-            Other: expenses.filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance').reduce((s, e) => s + e.amount, 0)
-        };
-
-        const truckTotals = {};
-        trips.forEach(t => {
-            if (!truckTotals[t.truck]) truckTotals[t.truck] = { revenue: 0, expenses: 0 };
-            truckTotals[t.truck].revenue += t.rate;
-        });
-        expenses.forEach(e => {
-            if (truckTotals[e.truck]) truckTotals[e.truck].expenses += e.amount;
-        });
-
-        // Real cash out: operational expenses (Diesel/Maintenance/Doc-manual/Misc)
-        // + actual payroll disbursed in this window (from Payroll History, i.e.
-        // money that has really left the bank — not the accrual estimate).
-        const payrollCashOut = allPayroll
-            .filter(p => inRange((p.period.split(' to ')[0] || '').trim(), b))
-            .reduce((s, p) => s + p.netPay, 0);
-        const cashOut = opExpenses + payrollCashOut;
-
-        // Billed vs Collected are tracked on their OWN real dates, not
-        // lumped together — an SOA billed in one month is often received in
-        // a later one. dateSent decides when it counts as "billed"; the
-        // separate dateReceived decides when it counts as real cash in.
-        // (Bucketing both by the SOA's free-text "period" label, like an
-        // earlier version of this page did, silently dropped rows whose
-        // period text didn't parse — this direct date match is what
-        // Billing's own per-SOA records actually use.)
-        const billedSOAs = allSOA.filter(s => inRange(s.dateSent, b));
-        const billed = billedSOAs.reduce((s, r) => s + r.grandTotal, 0);
-
-        const receivedSOAs = allSOA.filter(s => inRange(s.dateReceived, b));
-        const cashIn = receivedSOAs.reduce((s, r) => s + r.amtReceived, 0);
-
-        const soaPaidCount = billedSOAs.filter(r => r.status === 'Paid').length;
-        const soaPartialCount = billedSOAs.filter(r => r.status === 'Partial').length;
-        const soaPendingCount = billedSOAs.filter(r => r.status === 'Pending').length;
-
-        return { revenue, accruedExpenses, accruedProfit, margin, categoryTotals, truckTotals, cashOut, cashIn, billed, opExpenses, manpowerAccrued, docAccrued, payrollCashOut, soaCount: billedSOAs.length, soaPaidCount, soaPartialCount, soaPendingCount };
-    };
-
-    const current = await compute(bounds);
-    const previous = await compute(prevBounds);
-
-    const vat = await calculateVAT(allTrips.filter(t => inRange(t.deliveryDate, bounds)));
-    const taxesDue = Math.max(0, vat.netVATPayable);
-    const netCashFlow = current.cashIn - current.cashOut - taxesDue;
-
-    // Running (all-time) receivables — a true outstanding-balance snapshot,
-    // not bounded to the selected period.
-    const outstanding = allSOA.reduce((s, r) => s + Math.max(0, r.grandTotal - r.amtReceived - r.deductions), 0);
-    const collectionRate = current.billed > 0 ? (current.cashIn / current.billed) : 1;
-
-    // All-time Billing snapshot — computed exactly the way the Billing page's
-    // own SOA summary card computes it (no date filter at all), so this
-    // block is directly cross-checkable against what's shown there.
-    const allTimeBilled = allSOA.reduce((s, r) => s + r.grandTotal, 0);
-    const allTimeReceived = allSOA.reduce((s, r) => s + r.amtReceived, 0);
-    const allTime = {
-        billed: allTimeBilled,
-        received: allTimeReceived,
-        outstanding,
-        collectionRate: allTimeBilled > 0 ? (allTimeReceived / allTimeBilled) : 1,
-        soaCount: allSOA.length,
-        paidCount: allSOA.filter(r => r.status === 'Paid').length,
-        partialCount: allSOA.filter(r => r.status === 'Partial').length,
-        pendingCount: allSOA.filter(r => r.status === 'Pending').length
-    };
-
-    return { bounds, prevBounds, current, previous, vat, taxesDue, netCashFlow, outstanding, collectionRate, allTime, period };
-}
-
-// ═══════════════════════════════════════
-// HEALTH SCORE
-// ═══════════════════════════════════════
-function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-
-function computeHealthScore(fin) {
-    const c = fin.current;
-    // 30% margin = full marks (matches the "healthy" bar used elsewhere in the app)
-    const marginScore = clamp((c.margin / 30) * 100, 0, 100);
-    const collectionScore = clamp(fin.collectionRate * 100, 0, 100);
-    const cashFlowScore = c.cashIn > 0
-        ? clamp(50 + (fin.netCashFlow / c.cashIn) * 100, 0, 100)
-        : (fin.netCashFlow >= 0 ? 60 : 0);
-    const taxRatio = fin.taxesDue > 0 ? (c.cashIn / fin.taxesDue) : 2;
-    const taxScore = clamp(taxRatio * 50, 0, 100);
-
-    const overall = Math.round(marginScore * 0.35 + collectionScore * 0.25 + cashFlowScore * 0.25 + taxScore * 0.15);
-
-    let bracket, label;
-    if (overall >= 80) { bracket = 'healthy'; label = 'Healthy'; }
-    else if (overall >= 55) { bracket = 'caution'; label = 'Caution'; }
-    else { bracket = 'critical'; label = 'Critical'; }
-
-    return { overall, bracket, label, marginScore, collectionScore, cashFlowScore, taxScore };
-}
-
-function generateVerdict(fin, health) {
-    const p = fin.bounds.label;
-    if (health.bracket === 'healthy') {
-        return `Your financial health is strong this ${p} — a ${fin.current.margin.toFixed(1)}% margin with positive cash flow. Keep the same spending discipline to sustain the momentum.`;
-    } else if (health.bracket === 'caution') {
-        return `There are a few things to watch this ${p}. Review the recommendations below before they escalate.`;
-    }
-    return `The numbers are flashing warnings this ${p} — elevated risk in cash flow, collections, or margin. Immediate action is needed.`;
-}
-
-// ═══════════════════════════════════════
-// RECOMMENDATION ENGINE
-// ═══════════════════════════════════════
-function generateRecommendations(fin) {
-    const recs = [];
-    const c = fin.current, prev = fin.previous;
-    const periodLabel = fin.bounds.label;
-
-    // 1. Cash flow
-    if (fin.netCashFlow < 0) {
-        recs.push({
-            severity: 'critical', icon: '📉', tag: 'Cash Flow',
-            title: `Net cash flow is negative this ${periodLabel}`,
-            desc: `More cash went out (${formatCurrency(c.cashOut + fin.taxesDue)}) than came in (${formatCurrency(c.cashIn)}) — a shortfall of ${formatCurrency(Math.abs(fin.netCashFlow))}.`,
-            action: 'Cut discretionary spending for now or speed up collections'
-        });
-    }
-
-    // 2. Collections risk
-    if (fin.outstanding > 0 && fin.collectionRate < 0.6) {
-        recs.push({
-            severity: 'critical', icon: '🧾', tag: 'Collections',
-            title: `Collection rate is low (${(fin.collectionRate * 100).toFixed(0)}%) this ${periodLabel}`,
-            desc: `${formatCurrency(fin.outstanding)} in total outstanding receivables across all SOAs — a large share of this hasn't been collected yet.`,
-            action: 'Follow up on overdue SOAs before they become past-due'
-        });
-    } else if (fin.outstanding > 0 && fin.collectionRate < 0.85) {
-        recs.push({
-            severity: 'warning', icon: '🧾', tag: 'Collections',
-            title: `${formatCurrency(fin.outstanding)} still outstanding across SOAs`,
-            desc: `Only ${(fin.collectionRate * 100).toFixed(0)}% collected this ${periodLabel}. Manageable for now, but worth watching.`,
-            action: 'Review pending SOAs in Billing'
-        });
-    }
-
-    // 3. Tax readiness
-    if (fin.taxesDue > 0) {
-        if (c.cashIn < fin.taxesDue) {
-            recs.push({
-                severity: 'warning', icon: '📋', tag: 'Tax Readiness',
-                title: `Cash on hand may not be enough for VAT`,
-                desc: `Net VAT Payable is ${formatCurrency(fin.taxesDue)} for ${fin.vat.quarter}, but only ${formatCurrency(c.cashIn)} in cash has been collected this ${periodLabel}.`,
-                action: 'Set aside cash before the quarter\'s BIR deadline'
-            });
-        } else {
-            recs.push({
-                severity: 'good', icon: '📋', tag: 'Tax Readiness',
-                title: `Cash on hand covers the VAT due`,
-                desc: `Net VAT Payable is ${formatCurrency(fin.taxesDue)} for ${fin.vat.quarter} — current cash-in covers it.`,
-                action: 'Set the amount aside for BIR filing'
-            });
-        }
-    }
-
-    // 4. Margin level
-    if (c.revenue > 0 && c.margin < 15) {
-        recs.push({
-            severity: 'critical', icon: '⚠️', tag: 'Margin',
-            title: `Profit margin is low (${c.margin.toFixed(1)}%) this ${periodLabel}`,
-            desc: `Margin is close to zero or negative. The largest expense category is ${topCategory(c.categoryTotals)}.`,
-            action: 'Audit the top expense category and look for cuts'
-        });
-    } else if (c.revenue > 0 && c.margin < 25) {
-        recs.push({
-            severity: 'warning', icon: '⚠️', tag: 'Margin',
-            title: `Margin is ${c.margin.toFixed(1)}% — below the 25% healthy target`,
-            desc: `The largest expense category is ${topCategory(c.categoryTotals)}.`,
-            action: 'Check if this category can be trimmed'
-        });
-    }
-
-    // 5. Margin trend vs previous period (same elapsed-days comparison)
-    if (prev.revenue > 0 && c.revenue > 0) {
-        const marginChange = c.margin - prev.margin;
-        if (marginChange <= -5) {
-            recs.push({
-                severity: 'warning', icon: '📉', tag: 'Trend',
-                title: `Margin dropped ${Math.abs(marginChange).toFixed(1)}pp vs. last ${fin.period} (same number of days)`,
-                desc: `Previously ${prev.margin.toFixed(1)}%, now ${c.margin.toFixed(1)}%.`,
-                action: 'Find out if it\'s driven by rising costs or falling revenue'
-            });
-        } else if (marginChange >= 5) {
-            recs.push({
-                severity: 'good', icon: '📈', tag: 'Trend',
-                title: `Margin improved ${marginChange.toFixed(1)}pp vs. last ${fin.period}`,
-                desc: `Previously ${prev.margin.toFixed(1)}%, now ${c.margin.toFixed(1)}%. Keep doing what's working.`,
-                action: 'Continue the current strategy'
-            });
-        }
-    }
-
-    // 6. Truck outlier (worst cost-to-revenue ratio)
-    const truckEntries = Object.entries(c.truckTotals).filter(([, v]) => v.revenue > 0);
-    if (truckEntries.length > 1) {
-        const withRatio = truckEntries.map(([truck, v]) => ({ truck, ratio: v.expenses / v.revenue, ...v }));
-        withRatio.sort((a, b) => b.ratio - a.ratio);
-        const worst = withRatio[0];
-        if (worst.ratio > 0.5) {
-            recs.push({
-                severity: 'warning', icon: '🚛', tag: 'Fleet',
-                title: `Truck ${worst.truck} has the highest cost ratio (${(worst.ratio * 100).toFixed(0)}%)`,
-                desc: `${formatCurrency(worst.expenses)} in expenses against ${formatCurrency(worst.revenue)} in revenue this ${periodLabel}.`,
-                action: 'Review this truck\'s maintenance history or route efficiency'
-            });
-        }
-    }
-
-    // 7. Expense concentration
-    const catEntries = Object.entries(c.categoryTotals).filter(([, v]) => v > 0);
-    const totalExp = catEntries.reduce((s, [, v]) => s + v, 0);
-    if (totalExp > 0) {
-        const [topCat, topAmt] = catEntries.sort((a, b) => b[1] - a[1])[0];
-        const pct = topAmt / totalExp * 100;
-        if (pct > 45) {
-            recs.push({
-                severity: 'opportunity', icon: '💡', tag: 'Cost Structure',
-                title: `${topCat} makes up ${pct.toFixed(0)}% of total expenses`,
-                desc: `${formatCurrency(topAmt)} total spent on ${topCat} this ${periodLabel}.`,
-                action: 'A possible area to negotiate or optimize'
-            });
-        }
-    }
-
-    // 8. Fallback "all clear"
-    const hasCriticalOrWarning = recs.some(r => r.severity === 'critical' || r.severity === 'warning');
-    if (!hasCriticalOrWarning) {
-        recs.push({
-            severity: 'good', icon: '✅', tag: 'Overall',
-            title: `Financial health is balanced this ${periodLabel}`,
-            desc: `No urgent issues in margin, collections, or cash flow based on current data.`,
-            action: 'Keep monitoring weekly'
-        });
-    }
-
-    const order = { critical: 0, warning: 1, opportunity: 2, good: 3 };
-    recs.sort((a, b) => order[a.severity] - order[b.severity]);
-    return recs;
-}
-
-function topCategory(categoryTotals) {
-    const entries = Object.entries(categoryTotals).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
-    return entries.length ? `${entries[0][0]} (${formatCurrency(entries[0][1])})` : 'wala pang datos';
-}
-
-// ═══════════════════════════════════════
-// SAFE-TO-SPEND GUIDANCE
-// Target: keep at least a 25% margin. Given current revenue and expenses
-// already booked this period, this is how much MORE can go out the door
-// (on top of what's already spent) without dropping below that target.
-// ═══════════════════════════════════════
-function computeSafeToSpend(fin) {
-    const TARGET_MARGIN = 0.25;
-    const c = fin.current;
-    if (c.revenue <= 0) {
-        return { amount: 0, pct: 0, note: 'No revenue yet this period to base budget guidance on.' };
-    }
-    const maxAllowedExpense = c.revenue * (1 - TARGET_MARGIN);
-    const headroom = Math.max(0, maxAllowedExpense - c.accruedExpenses);
-    const pctUsed = clamp((c.accruedExpenses / maxAllowedExpense) * 100, 0, 100);
-    let note;
-    if (headroom <= 0) {
-        note = `Current spending has already reached or exceeded the ${(TARGET_MARGIN * 100).toFixed(0)}% target margin. Avoid adding discretionary spending for now.`;
+  if (typeof google === 'undefined' || !google.accounts) {
+    if (attempt < 10) {
+      setTimeout(function() { trySilentSignIn(attempt + 1); }, 300);
     } else {
-        note = `Based on current revenue (${formatCompact(c.revenue)}) and expenses (${formatCompact(c.accruedExpenses)}), this is how much more can be spent without dropping below the ${(TARGET_MARGIN * 100).toFixed(0)}% target margin.`;
+      setLoginStatus(false);
+      showLogin();
     }
-    return { amount: headroom, pct: pctUsed, note };
-}
+    return;
+  }
 
-// ═══════════════════════════════════════
-// ANIMATION HELPERS
-// ═══════════════════════════════════════
-function animateCountUp(el, to, duration, formatFn) {
-    const startTime = performance.now();
-    function tick(now) {
-        const t = clamp((now - startTime) / duration, 0, 1);
-        const eased = 1 - Math.pow(1 - t, 3);
-        el.textContent = formatFn(to * eased);
-        if (t < 1) requestAnimationFrame(tick);
-        else el.textContent = formatFn(to);
-    }
-    requestAnimationFrame(tick);
-}
-
-// Like animateCountUp, but morphs FROM an arbitrary current value instead of
-// always starting at 0 — used by the Financial Journey recap so numbers
-// visibly transition between Month/Quarter/Year instead of re-counting from
-// zero every few seconds.
-function animateNumberTransition(el, from, to, duration, formatFn) {
-    const startTime = performance.now();
-    function tick(now) {
-        const t = clamp((now - startTime) / duration, 0, 1);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const val = from + (to - from) * eased;
-        el.textContent = formatFn(val);
-        if (t < 1) requestAnimationFrame(tick);
-        else el.textContent = formatFn(to);
-    }
-    requestAnimationFrame(tick);
-}
-
-function animateRing(score) {
-    const circumference = 251.2;
-    const offset = circumference - clamp(score / 100, 0, 1) * circumference;
-    const ring = document.getElementById('hh-ring-fg');
-    requestAnimationFrame(() => requestAnimationFrame(() => { ring.style.strokeDashoffset = offset; }));
-    animateCountUp(document.getElementById('hh-score'), score, 1200, v => Math.round(v));
-}
-
-function typewriteText(el, text, speed) {
-    el.innerHTML = '<span class="typing-cursor"></span>';
-    let i = 0;
-    function step() {
-        if (i <= text.length) {
-            el.innerHTML = text.slice(0, i) + '<span class="typing-cursor"></span>';
-            i++;
-            setTimeout(step, speed || 12);
-        } else {
-            el.textContent = text;
+  try {
+    google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: function(res) {
+        if (res.error) {
+          console.warn('🔒 Silent re-auth failed:', res.error);
+          localStorage.removeItem('pedroex-token');
+          localStorage.removeItem('pedroex-token-expiry');
+          setLoginStatus(false);
+          showLogin();
+          return;
         }
-    }
-    step();
+        token = res.access_token;
+        const expiresAt = Date.now() + (res.expires_in * 1000);
+        localStorage.setItem('pedroex-token', token);
+        localStorage.setItem('pedroex-token-expiry', expiresAt);
+        sessionStorage.removeItem('pedroex-login-retry');
+        setLoginStatus(false);
+        loadUser();
+      },
+      error_callback: function(err) {
+        console.warn('🔒 Silent re-auth error_callback:', err);
+        setLoginStatus(false);
+        showLogin();
+      }
+    }).requestAccessToken({ prompt: '' });
+  } catch (e) {
+    console.warn('🔒 Silent re-auth threw:', e);
+    setLoginStatus(false);
+    showLogin();
+  }
 }
 
-// ═══════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════
-async function renderAll() {
-    const fin = await computeFinancials(currentPeriod);
-    const health = computeHealthScore(fin);
-    const spend = computeSafeToSpend(fin);
-    const recs = generateRecommendations(fin);
-
-    currentFinancials = fin;
-    currentHealth = health;
-
-    renderHero(fin, health);
-    renderStatGrid(fin);
-    renderSpendCard(spend);
-    renderCollectionCard(fin);
-    renderTaxCard(fin);
-    renderRecommendations(recs);
-    await renderCashflowChart();
+function setLoginStatus(show, text) {
+  const el = document.getElementById('login-status');
+  const btn = document.getElementById('google-btn');
+  if (!el) return;
+  if (text) document.getElementById('login-status-text').textContent = text;
+  el.classList.toggle('show', !!show);
+  if (btn) btn.disabled = !!show;
 }
 
-function renderHero(fin, health) {
-    const hero = document.getElementById('health-hero');
-    hero.classList.remove('healthy', 'caution', 'critical');
-    if (health.bracket !== 'critical') hero.classList.add(health.bracket);
-
-    animateRing(health.overall);
-    document.getElementById('hh-status-text').textContent = health.label;
-    typewriteText(document.getElementById('hh-verdict'), generateVerdict(fin, health), 10);
+// ═══ SHOW / HIDE SCREENS ═══
+function showLogin() {
+  document.getElementById('s-login').classList.add('active');
+  document.getElementById('s-app').classList.remove('active');
+}
+function showApp() {
+  document.getElementById('s-login').classList.remove('active');
+  document.getElementById('s-app').classList.add('active');
 }
 
-function renderStatGrid(fin) {
-    const c = fin.current;
-    const tiles = [
-        { icon: '💵', bg: 'rgba(22,163,74,0.14)', color: 'var(--green)', label: 'Cash In (Received)', value: c.cashIn, sub: `${fin.bounds.label}` },
-        { icon: '💸', bg: 'rgba(179,37,51,0.14)', color: 'var(--red)', label: 'Cash Out (Ops + Payroll)', value: c.cashOut, sub: `${fin.bounds.label}` },
-        { icon: '📋', bg: 'rgba(245,158,11,0.16)', color: '#b3740b', label: 'Taxes Due (Net VAT)', value: fin.taxesDue, sub: fin.vat.quarter },
-        { icon: fin.netCashFlow >= 0 ? '📈' : '📉', bg: fin.netCashFlow >= 0 ? 'rgba(22,163,74,0.14)' : 'rgba(179,37,51,0.14)', color: fin.netCashFlow >= 0 ? 'var(--green)' : 'var(--red)', label: 'Net Cash Flow', value: fin.netCashFlow, sub: fin.netCashFlow >= 0 ? 'Positibo' : 'Negatibo' }
-    ];
+// ═══ SIGN IN (explicit / manual button tap) ═══
+function signIn() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    showToast('Loading Google Sign-In...');
+    setTimeout(signIn, 800);
+    return;
+  }
 
-    const grid = document.getElementById('stat-grid');
-    grid.innerHTML = tiles.map((t, i) => `
-        <div class="stat-tile" style="animation-delay:${i * 0.06}s">
-            <div class="stat-tile-icon" style="background:${t.bg};color:${t.color}">${t.icon}</div>
-            <div class="stat-tile-label">${t.label}</div>
-            <div class="stat-tile-value" id="tile-val-${i}">₱0</div>
-            <div class="stat-tile-sub">${t.sub}</div>
-        </div>
-    `).join('');
+  const hasGranted = localStorage.getItem('pedroex-scope-granted');
 
-    tiles.forEach((t, i) => {
-        const el = document.getElementById(`tile-val-${i}`);
-        animateCountUp(el, t.value, 1100, formatCompact);
-    });
-}
-
-function renderSpendCard(spend) {
-    document.getElementById('spend-note').textContent = spend.note;
-    animateCountUp(document.getElementById('spend-amount'), spend.amount, 1100, formatCompact);
-    setTimeout(() => {
-        document.getElementById('spend-bar-fill').style.width = spend.pct + '%';
-    }, 100);
-}
-
-function renderCollectionCard(fin) {
-    const pct = Math.round(fin.collectionRate * 100);
-    document.getElementById('billing-period-sub').textContent = fin.bounds.label;
-    document.getElementById('collection-pct').textContent = pct + '%';
-    document.getElementById('collection-billed').textContent = formatCompact(fin.current.billed);
-    document.getElementById('collection-received').textContent = formatCompact(fin.current.cashIn);
-    setTimeout(() => {
-        document.getElementById('collection-fill').style.width = clamp(pct, 0, 100) + '%';
-    }, 100);
-
-    const c = fin.current;
-    document.getElementById('billing-status-row').innerHTML = `
-        <div class="billing-status-chip paid"><div class="n">${c.soaPaidCount}</div><div class="l">Paid</div></div>
-        <div class="billing-status-chip partial"><div class="n">${c.soaPartialCount}</div><div class="l">Partial</div></div>
-        <div class="billing-status-chip pending"><div class="n">${c.soaPendingCount}</div><div class="l">Pending</div></div>
-    `;
-
-    // All-time snapshot — same numbers Billing's own SOA summary shows,
-    // unfiltered by period, so this block is directly cross-checkable.
-    const at = fin.allTime;
-    document.getElementById('alltime-billed').textContent = formatCurrency(at.billed);
-    document.getElementById('alltime-received').textContent = formatCurrency(at.received);
-    document.getElementById('alltime-outstanding').textContent = formatCurrency(at.outstanding);
-    document.getElementById('alltime-counts').textContent = `${at.paidCount} / ${at.partialCount} / ${at.pendingCount}`;
-}
-
-function renderTaxCard(fin) {
-    const v = fin.vat;
-    document.getElementById('tax-quarter-sub').textContent = v.quarter;
-    document.getElementById('tax-output').textContent = formatCurrency(v.outputVAT);
-    document.getElementById('tax-input').textContent = formatCurrency(v.inputVAT);
-    document.getElementById('tax-net').textContent = formatCurrency(v.netVATPayable);
-    document.getElementById('tax-net').style.color = v.netVATPayable > 0 ? 'var(--red)' : 'var(--green)';
-    document.getElementById('tax-savings-amount').textContent = formatCurrency(v.vatSavings);
-    const bd = v.inputVATBreakdown || { diesel: 0, parts: 0, parking: 0 };
-    document.getElementById('tax-save-diesel').textContent = formatCurrency(bd.diesel);
-    document.getElementById('tax-save-parts').textContent = formatCurrency(bd.parts);
-    document.getElementById('tax-save-parking').textContent = formatCurrency(bd.parking);
-}
-
-function renderRecommendations(recs) {
-    document.getElementById('rec-count-sub').textContent = recs.length + (recs.length === 1 ? ' insight' : ' insights');
-    const list = document.getElementById('rec-list');
-    list.innerHTML = recs.map((r, i) => `
-        <div class="rec-card ${r.severity}" style="animation-delay:${i * 0.08}s">
-            <div class="rec-icon">${r.icon}</div>
-            <div class="rec-body">
-                <div class="rec-tag">${r.tag}</div>
-                <div class="rec-title">${r.title}</div>
-                <div class="rec-desc">${r.desc}</div>
-                <div class="rec-action">➜ ${r.action}</div>
-            </div>
-        </div>
-    `).join('');
-}
-
-async function renderCashflowChart() {
-    const months = [];
-    const now = new Date();
-    for (let i = 5; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        months.push({ key: d.getFullYear() + '-' + pad(d.getMonth() + 1), label: d.toLocaleDateString('en-US', { month: 'short' }) });
-    }
-
-    const cashIn = months.map(m => allSOA.filter(s => (s.dateReceived || '').startsWith(m.key)).reduce((s, r) => s + r.amtReceived, 0));
-    const cashOut = months.map(m => {
-        const opEx = allExpenses.filter(e => e.date.startsWith(m.key)).reduce((s, e) => s + e.amount, 0);
-        const payroll = allPayroll.filter(p => (p.period.split(' to ')[0] || '').trim().startsWith(m.key)).reduce((s, p) => s + p.netPay, 0);
-        return opEx + payroll;
-    });
-
-    const ctx = document.getElementById('cashflowChart');
-    if (!ctx || typeof Chart === 'undefined') return;
-    if (cashflowChart) cashflowChart.destroy();
-    cashflowChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: months.map(m => m.label),
-            datasets: [
-                { label: 'Cash In', data: cashIn, backgroundColor: '#16a34a', borderRadius: 4 },
-                { label: 'Cash Out', data: cashOut, backgroundColor: '#B32533', borderRadius: 4 }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            animation: { duration: 900, easing: 'easeOutQuart' },
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ' + formatCurrency(ctx.parsed.y) } } },
-            scales: {
-                y: { ticks: { callback: (v) => formatCompact(v), font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { ticks: { font: { size: 10 } }, grid: { display: false } }
-            }
-        }
-    });
-}
-
-// ═══════════════════════════════════════
-// PERIOD SWITCH
-// ═══════════════════════════════════════
-// ═══════════════════════════════════════
-// FINANCIAL JOURNEY — continuous, always-playing recap that cycles through
-// Month → Quarter → Year on a loop, morphing the key numbers between each
-// (never resetting to zero), so the page tells the story of "what happened"
-// across every timeframe without the user having to click anything.
-// ═══════════════════════════════════════
-async function initJourney() {
-    journeyData = [];
-    for (const p of JOURNEY_PERIODS) {
-        journeyData.push(await computeFinancials(p));
-    }
-
-    document.getElementById('journey-stories').innerHTML = JOURNEY_PERIODS.map((_, i) =>
-        `<div class="journey-story-seg"><div class="journey-story-fill" id="journey-fill-${i}"></div></div>`
-    ).join('');
-
-    journeyIndex = 0;
-    journeyPlaying = true;
-    document.getElementById('journey-play').textContent = '⏸';
-    renderJourneySlide(0, null);
-}
-
-function journeyMetrics(fin) {
-    return {
-        revenue: fin.current.revenue,
-        expenses: fin.current.accruedExpenses,
-        profit: fin.current.accruedProfit,
-        cashFlow: fin.netCashFlow
-    };
-}
-
-function renderJourneySlide(i, prevFin) {
-    clearJourneyTimer();
-    const fin = journeyData[i];
-    const m = journeyMetrics(fin);
-    const pm = prevFin ? journeyMetrics(prevFin) : { revenue: 0, expenses: 0, profit: 0, cashFlow: 0 };
-
-    const label = document.getElementById('journey-period-label');
-    label.textContent = JOURNEY_LABELS[JOURNEY_PERIODS[i]];
-    label.classList.remove('swap');
-    void label.offsetWidth; // restart the CSS animation
-    label.classList.add('swap');
-
-    const grid = document.getElementById('journey-metric-grid');
-    if (!grid.dataset.built) {
-        grid.innerHTML = `
-            <div class="journey-metric"><div class="journey-metric-label">Revenue</div><div class="journey-metric-val" id="journey-m-revenue">₱0</div></div>
-            <div class="journey-metric"><div class="journey-metric-label">Expenses</div><div class="journey-metric-val" id="journey-m-expenses">₱0</div></div>
-            <div class="journey-metric"><div class="journey-metric-label">Net Profit</div><div class="journey-metric-val" id="journey-m-profit">₱0</div></div>
-            <div class="journey-metric"><div class="journey-metric-label">Net Cash Flow</div><div class="journey-metric-val" id="journey-m-cashflow">₱0</div></div>
-        `;
-        grid.dataset.built = '1';
-    }
-
-    animateNumberTransition(document.getElementById('journey-m-revenue'), pm.revenue, m.revenue, 900, formatCompact);
-    animateNumberTransition(document.getElementById('journey-m-expenses'), pm.expenses, m.expenses, 900, formatCompact);
-    const profitEl = document.getElementById('journey-m-profit');
-    profitEl.classList.toggle('pos', m.profit >= 0);
-    profitEl.classList.toggle('neg', m.profit < 0);
-    animateNumberTransition(profitEl, pm.profit, m.profit, 900, formatCompact);
-    const cashEl = document.getElementById('journey-m-cashflow');
-    cashEl.classList.toggle('pos', m.cashFlow >= 0);
-    cashEl.classList.toggle('neg', m.cashFlow < 0);
-    animateNumberTransition(cashEl, pm.cashFlow, m.cashFlow, 900, formatCompact);
-
-    const total = m.revenue + m.expenses;
-    const revPct = total > 0 ? (m.revenue / total * 100) : 50;
-    setTimeout(() => {
-        document.getElementById('journey-bar-rev').style.width = revPct + '%';
-        document.getElementById('journey-bar-exp').style.width = (100 - revPct) + '%';
-    }, 50);
-
-    journeyData.forEach((_, idx) => {
-        const seg = document.getElementById('journey-fill-' + idx);
-        if (!seg) return;
-        seg.classList.remove('animating', 'filled');
-        seg.style.animationDuration = '';
-        seg.style.width = '';
-        if (idx < i) seg.classList.add('filled');
-    });
-
-    if (journeyPlaying) startJourneyFill(i);
-}
-
-function startJourneyFill(i) {
-    const seg = document.getElementById('journey-fill-' + i);
-    if (!seg) return;
-    seg.style.animationDuration = JOURNEY_SLIDE_MS + 'ms';
-    seg.classList.add('animating');
-    journeyTimer = setTimeout(() => {
-        const nextIndex = (i + 1) % journeyData.length;
-        const prevFin = journeyData[i];
-        journeyIndex = nextIndex;
-        renderJourneySlide(nextIndex, prevFin);
-    }, JOURNEY_SLIDE_MS);
-}
-
-function clearJourneyTimer() {
-    if (journeyTimer) { clearTimeout(journeyTimer); journeyTimer = null; }
-}
-
-function toggleJourneyAutoplay() {
-    journeyPlaying = !journeyPlaying;
-    document.getElementById('journey-play').textContent = journeyPlaying ? '⏸' : '▶';
-    if (journeyPlaying) startJourneyFill(journeyIndex);
-    else clearJourneyTimer();
-}
-
-function setPeriod(period) {
-    currentPeriod = period;
-    ['month', 'quarter', 'year'].forEach(p => {
-        document.getElementById('period-' + p).classList.toggle('active', p === period);
-    });
-    renderAll();
-}
-
-// ═══════════════════════════════════════
-// IMPROVEMENT ROADMAP — animated, story-style "how to improve" walkthrough.
-// Builds one slide per Health Score dimension (margin, collections, cash
-// flow, tax readiness) from the same numbers already computed for the
-// dashboard, each with a current→target gauge and staggered action steps.
-// Auto-advances like a stories UI, with manual prev/next/pause controls.
-// ═══════════════════════════════════════
-function buildRoadmapSlides(fin, health) {
-    const c = fin.current;
-    const slides = [];
-
-    slides.push({
-        icon: '📊', title: 'Improve Your Profit Margin',
-        sub: 'Margin is 35% of your Health Score — the single biggest lever. Every point closer to 30% moves the needle.',
-        current: c.margin.toFixed(1) + '%', target: '30%+',
-        progressPct: clamp((c.margin / 30) * 100, 3, 100),
-        steps: [
-            `Review your ${topCategory(c.categoryTotals)} — it's your largest expense category right now`,
-            'Renegotiate diesel/parts supplier rates or consolidate purchases across trucks',
-            'Track cost-per-trip by truck every month to catch outliers early'
-        ]
-    });
-
-    const collectionPct = fin.collectionRate * 100;
-    slides.push({
-        icon: '🧾', title: 'Speed Up Collections',
-        sub: 'Collection rate is 25% of your Health Score. Faster collections mean more usable cash — not just paper profit.',
-        current: collectionPct.toFixed(0) + '%', target: '90%+',
-        progressPct: clamp(collectionPct / 90 * 100, 3, 100),
-        steps: [
-            'Send the SOA immediately after delivery, not at month-end',
-            'Follow up on any SOA still unpaid after 15 days',
-            'Offer a small early-payment incentive to your top clients'
-        ]
-    });
-
-    slides.push({
-        icon: fin.netCashFlow >= 0 ? '📈' : '📉', title: 'Strengthen Cash Flow',
-        sub: 'Net Cash Flow is 25% of your Health Score. Positive cash flow means the business can fund itself without strain.',
-        current: formatCompact(fin.netCashFlow), target: 'Positive',
-        progressPct: fin.netCashFlow >= 0 ? 100 : clamp(50 + (fin.netCashFlow / Math.max(c.cashIn, 1)) * 100, 3, 49),
-        steps: [
-            'Time large purchases around when collections actually come in',
-            'Keep a cash buffer equal to at least 2 weeks of operating expenses',
-            'Delay non-critical purchases whenever cash flow is tight'
-        ]
-    });
-
-    slides.push({
-        icon: '📋', title: 'Stay Ahead of Tax Obligations',
-        sub: 'Tax readiness is 15% of your Health Score. Being prepared avoids scrambling at the BIR deadline.',
-        current: formatCompact(fin.taxesDue), target: 'Fully covered',
-        progressPct: fin.taxesDue > 0 ? clamp((c.cashIn / fin.taxesDue) * 50, 3, 100) : 100,
-        steps: [
-            "Set aside VAT as soon as revenue comes in — don't wait for quarter-end",
-            'Keep all input VAT receipts (diesel, parts, parking) organized to maximize deductions',
-            'Reconcile VAT payable monthly instead of only once per quarter'
-        ]
-    });
-
-    return slides;
-}
-
-function openImprovementModal() {
-    if (!currentFinancials || !currentHealth) { showToast('Still loading data — try again in a moment.'); return; }
-    roadmapSlides = buildRoadmapSlides(currentFinancials, currentHealth);
-    roadmapIndex = 0;
-    roadmapPlaying = true;
-
-    document.getElementById('roadmap-stories').innerHTML = roadmapSlides.map((_, i) =>
-        `<div class="roadmap-story-seg"><div class="roadmap-story-fill" id="story-fill-${i}"></div></div>`
-    ).join('');
-    document.getElementById('roadmap-dots').innerHTML = roadmapSlides.map((_, i) =>
-        `<div class="roadmap-dot" id="roadmap-dot-${i}" onclick="goToRoadmapSlide(${i})"></div>`
-    ).join('');
-    document.getElementById('roadmap-play').textContent = '⏸';
-
-    document.getElementById('roadmap-overlay').classList.add('show');
-    renderRoadmapSlide(0);
-}
-
-function closeImprovementModal() {
-    document.getElementById('roadmap-overlay').classList.remove('show');
-    clearRoadmapTimer();
-}
-
-function clearRoadmapTimer() {
-    if (roadmapTimer) { clearTimeout(roadmapTimer); roadmapTimer = null; }
-}
-
-function renderRoadmapSlide(i) {
-    clearRoadmapTimer();
-    const s = roadmapSlides[i];
-    const body = document.getElementById('roadmap-body');
-    body.innerHTML = `
-        <div class="roadmap-slide active">
-            <div class="roadmap-slide-icon">${s.icon}</div>
-            <div class="roadmap-slide-title">${s.title}</div>
-            <div class="roadmap-slide-sub">${s.sub}</div>
-            <div class="roadmap-gauge-row">
-                <div class="roadmap-gauge-box">
-                    <div class="roadmap-gauge-label">Current</div>
-                    <div class="roadmap-gauge-val">${s.current}</div>
-                </div>
-                <div class="roadmap-gauge-arrow">➜</div>
-                <div class="roadmap-gauge-box">
-                    <div class="roadmap-gauge-label">Target</div>
-                    <div class="roadmap-gauge-val target">${s.target}</div>
-                </div>
-            </div>
-            <div class="roadmap-track"><div class="roadmap-track-fill" id="roadmap-track-fill"></div></div>
-            <div class="roadmap-steps">
-                ${s.steps.map((step, idx) => `
-                    <div class="roadmap-step" style="animation-delay:${0.3 + idx * 0.35}s">
-                        <div class="roadmap-step-num">${idx + 1}</div>
-                        <div class="roadmap-step-text">${step}</div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-    setTimeout(() => {
-        const fill = document.getElementById('roadmap-track-fill');
-        if (fill) fill.style.width = s.progressPct + '%';
-    }, 50);
-
-    roadmapSlides.forEach((_, idx) => {
-        const seg = document.getElementById('story-fill-' + idx);
-        if (!seg) return;
-        seg.classList.remove('animating', 'filled');
-        seg.style.animationDuration = '';
-        seg.style.width = '';
-        if (idx < i) seg.classList.add('filled');
-    });
-    roadmapSlides.forEach((_, idx) => {
-        const dot = document.getElementById('roadmap-dot-' + idx);
-        if (dot) dot.classList.toggle('active', idx === i);
-    });
-
-    document.getElementById('roadmap-prev').disabled = (i === 0);
-
-    if (roadmapPlaying) startStoryFill(i);
-}
-
-function startStoryFill(i) {
-    const seg = document.getElementById('story-fill-' + i);
-    if (!seg) return;
-    seg.style.animationDuration = ROADMAP_SLIDE_MS + 'ms';
-    seg.classList.add('animating');
-    roadmapTimer = setTimeout(() => {
-        if (i < roadmapSlides.length - 1) {
-            roadmapIndex = i + 1;
-            renderRoadmapSlide(roadmapIndex);
-        } else {
-            roadmapPlaying = false;
-            document.getElementById('roadmap-play').textContent = '↻';
-        }
-    }, ROADMAP_SLIDE_MS);
-}
-
-function roadmapNext() {
-    if (roadmapIndex < roadmapSlides.length - 1) {
-        roadmapIndex++;
-        renderRoadmapSlide(roadmapIndex);
-    }
-}
-
-function roadmapPrev() {
-    if (roadmapIndex > 0) {
-        roadmapIndex--;
-        renderRoadmapSlide(roadmapIndex);
-    }
-}
-
-function goToRoadmapSlide(i) {
-    roadmapIndex = i;
-    renderRoadmapSlide(i);
-}
-
-function toggleRoadmapAutoplay() {
-    if (roadmapIndex === roadmapSlides.length - 1 && !roadmapPlaying) {
-        roadmapPlaying = true;
-        document.getElementById('roadmap-play').textContent = '⏸';
-        roadmapIndex = 0;
-        renderRoadmapSlide(0);
+  google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: function(res) {
+      if (res.error) {
+        showToast('❌ Login error: ' + res.error);
         return;
+      }
+
+      token = res.access_token;
+      const expiresAt = Date.now() + (res.expires_in * 1000);
+      localStorage.setItem('pedroex-token', token);
+      localStorage.setItem('pedroex-token-expiry', expiresAt);
+      localStorage.setItem('pedroex-scope-granted', 'true');
+
+      // ✅ Clear retry counter on fresh successful sign-in
+      sessionStorage.removeItem('pedroex-login-retry');
+
+      loadUser();
     }
-    roadmapPlaying = !roadmapPlaying;
-    document.getElementById('roadmap-play').textContent = roadmapPlaying ? '⏸' : '▶';
-    if (roadmapPlaying) startStoryFill(roadmapIndex);
-    else clearRoadmapTimer();
+  }).requestAccessToken({
+    prompt: hasGranted ? '' : 'consent'
+  });
+}
+
+// ═══ EXPLICIT LOGOUT (only way the session should truly end) ═══
+function signOut() {
+  if (token && typeof google !== 'undefined' && google.accounts) {
+    try { google.accounts.oauth2.revoke(token, function(){}); } catch(e) {}
+  }
+  localStorage.removeItem('pedroex-token');
+  localStorage.removeItem('pedroex-token-expiry');
+  localStorage.removeItem('pedroex-scope-granted');
+  sessionStorage.removeItem('pedroex-login-retry');
+  token = null;
+  showLogin();
+}
+
+// ═══ LOAD USER ═══
+function loadUser() {
+  fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(function(r) {
+    if (r.status === 401) throw new Error('UNAUTHORIZED');
+    if (!r.ok) throw new Error('HTTP_' + r.status);
+    return r.json();
+  })
+  .then(function(u) {
+    // Save basic info
+    localStorage.setItem('pedroex-name',    u.name    || '');
+    localStorage.setItem('pedroex-email',   u.email   || '');
+    localStorage.setItem('pedroex-picture', u.picture || '');
+    localStorage.setItem('pedroex-scope-granted', 'true');
+    document.getElementById('user-avatar').src = u.picture || '';
+
+    const email = (u.email || '').toLowerCase();
+    console.log('🔍 Looking for email:', email);
+
+    // Fetch employee row
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:D', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(function(r) {
+      if (r.status === 401) throw new Error('UNAUTHORIZED');
+      if (!r.ok) throw new Error('SHEETS_HTTP_' + r.status);
+      return r.json();
+    })
+    .then(function(res) {
+      const rows   = res.values || [];
+      const empRow = rows.find(function(r) {
+        return (r[0] || '').toLowerCase() === email;
+      });
+
+      const firstName = empRow ? (empRow[1] || u.given_name || 'team') : (u.given_name || 'team');
+      const role      = empRow ? (empRow[3] || 'Employee') : 'Employee';
+
+      console.log('🎭 Role:', role, '| Name:', firstName);
+
+      localStorage.setItem('pedroex-role',      role);
+      localStorage.setItem('pedroex-firstname', firstName);
+
+      // ✅ Clear retry counter — we made it through successfully
+      sessionStorage.removeItem('pedroex-login-retry');
+
+      showApp();
+      updateGreeting(firstName);
+      buildDashboard();
+      loadDashboardStats();
+
+      initPullToRefresh(
+        document.querySelector('.page-wrap'),
+        function(done) { loadDashboardStats(); setTimeout(done, 1000); }
+      );
+
+      initAutoRefresh();
+    });
+  })
+  .catch(function(err) {
+    console.error('❌ loadUser error:', err);
+
+    const isUnauthorized = err.message === 'UNAUTHORIZED';
+
+    if (isUnauthorized) {
+      // Token is dead — try one silent re-auth before giving up. This covers
+      // cases where the access token was revoked server-side mid-session but
+      // the browser's Google session is still perfectly valid.
+      console.warn('🔒 Token expired/invalid — attempting silent re-auth');
+      localStorage.removeItem('pedroex-token');
+      localStorage.removeItem('pedroex-token-expiry');
+      const alreadyTriedSilent = sessionStorage.getItem('pedroex-silent-tried');
+      if (!alreadyTriedSilent && localStorage.getItem('pedroex-scope-granted') === 'true') {
+        sessionStorage.setItem('pedroex-silent-tried', '1');
+        trySilentSignIn();
+      } else {
+        sessionStorage.removeItem('pedroex-silent-tried');
+        showLogin();
+        showToast('Session expired. Please sign in again.');
+      }
+      return;
+    }
+
+    // ✅ For network/transient errors: retry up to 2x before giving up
+    const retryCount = parseInt(sessionStorage.getItem('pedroex-login-retry') || '0');
+    console.log('🔄 Retry attempt:', retryCount + 1);
+
+    if (retryCount < 2) {
+      sessionStorage.setItem('pedroex-login-retry', retryCount + 1);
+      setTimeout(loadUser, 1200 + retryCount * 800); // 1.2s, then 2.0s
+    } else {
+      // Exhausted retries — fallback: use cached data if available
+      const cachedName = localStorage.getItem('pedroex-firstname');
+      const cachedRole = localStorage.getItem('pedroex-role');
+
+      sessionStorage.removeItem('pedroex-login-retry');
+
+      if (cachedName && cachedRole) {
+        console.warn('⚠️ Using cached user data after failed retries');
+        showApp();
+        updateGreeting(cachedName);
+        buildDashboard();
+        // Don't load stats if network is down — would just show errors
+        showToast('⚠️ Using cached data. Check connection.');
+      } else {
+        // No cached data at all — force login
+        localStorage.removeItem('pedroex-token');
+        localStorage.removeItem('pedroex-token-expiry');
+        showLogin();
+        showToast('❌ Could not connect. Please sign in again.');
+      }
+    }
+  });
+}
+
+// ═══ UPDATE GREETING ═══
+function updateGreeting(firstName) {
+  const now = new Date();
+  const h   = now.getHours();
+  const gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+
+  document.getElementById('dash-name').textContent = gr + ', ' + firstName + '!';
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('en-PH', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric'
+  });
+}
+
+// ═══ BUILD DASHBOARD ═══
+function buildDashboard() {
+  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+  const isAdmin  = userRole === 'admin';
+
+  console.log('🏗️ Building dashboard — role:', userRole);
+
+  const visibleModules = ALL_MODULES.filter(function(m) {
+    if (m.adminOnly && !isAdmin) return false;
+    return true;
+  });
+
+  document.getElementById('mod-grid').innerHTML = visibleModules.map(function(m) {
+    const icon    = ICONS[m.icon] || '';
+    const onclick = m.link ? "location.href='" + m.link + "'" : '';
+    const valCls  = 'mod-value' + (m.currency ? ' currency' : '');
+
+    if (m.wide) {
+      return '<div class="mod-card wide" onclick="' + onclick + '">' +
+        '<div class="mod-icon-box">' + icon + '</div>' +
+        '<div>' +
+          '<div class="mod-label">' + m.label + '</div>' +
+          '<div class="' + valCls + '" id="' + m.stat + '">—</div>' +
+          '<div class="mod-sub">' + m.sub + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    return '<div class="mod-card" onclick="' + onclick + '">' +
+      '<div class="mod-icon-box">' + icon + '</div>' +
+      '<div class="mod-label">' + m.label + '</div>' +
+      '<div class="' + valCls + '" id="' + m.stat + '">—</div>' +
+      '<div class="mod-sub">' + m.sub + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ═══ CURRENCY FORMAT (short form for dashboard tiles) ═══
+function formatPesoShort(n) {
+  const v = parseFloat(n) || 0;
+  if (v >= 1000000) return '₱' + (v/1000000).toFixed(2) + 'M';
+  if (v >= 1000)    return '₱' + (v/1000).toFixed(1) + 'K';
+  return '₱' + v.toFixed(0);
+}
+
+// ═══ LOAD DASHBOARD STATS ═══
+function loadDashboardStats() {
+  if (!token) return;
+
+  const userRole = (localStorage.getItem('pedroex-role') || 'Employee').toLowerCase();
+  const isAdmin  = userRole === 'admin';
+
+  function setStat(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = (value !== null && value !== undefined && value !== 0) ? value : '—';
+  }
+  function clearStat(id) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '—';
+  }
+
+  // 1️⃣ Trucks
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Truck%20Roster!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => setStat('sv-trucks', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-trucks'));
+
+  // 2️⃣ Trips (today)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Trips!A2:B', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    setStat('sv-trips', (res.values || []).filter(r => r[1] === today).length);
+  })
+  .catch(() => clearStat('sv-trips'));
+
+  // 3️⃣ Manpower (today)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Manpower%20Roster!A2:D', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    setStat('sv-manpower', (res.values || []).filter(r => r[0] === today).length);
+  })
+  .catch(() => clearStat('sv-manpower'));
+
+  // 4️⃣ Employees
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Employees!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => setStat('sv-emp', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-emp'));
+
+  // 5️⃣ Attendance (today)
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Attendance!A2:K', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => {
+    const today = new Date().toISOString().split('T')[0];
+    const count = (res.values || []).filter(function(row) {
+      if (!row[1]) return false;
+      let d = row[1];
+      if (!isNaN(d) && d > 1000) {
+        const epoch = new Date(1899, 11, 30);
+        const dt    = new Date(epoch.getTime() + parseFloat(d) * 86400000);
+        d = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+      }
+      return d === today;
+    }).length;
+    setStat('sv-attend', count);
+  })
+  .catch(() => clearStat('sv-attend'));
+
+  // 6️⃣ Emp Records
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Records!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => setStat('sv-records', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-records'));
+
+  // 7️⃣ Matrix
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Matrix!A2:A', {
+    headers: {'Authorization': 'Bearer ' + token}
+  })
+  .then(r => r.json())
+  .then(res => setStat('sv-matrix', (res.values || []).filter(r => r[0]).length))
+  .catch(() => clearStat('sv-matrix'));
+
+  // 8️⃣ Expenses
+  if (isAdmin) {
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const pending = (res.values || []).filter(r => (r[4] || '').toLowerCase() === 'pending').length;
+      setStat('sv-exp-admin', pending);
+    })
+    .catch(() => clearStat('sv-exp-admin'));
+  } else {
+    const userEmail = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/Expenses!A2:E', {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const mine = (res.values || []).filter(r => (r[1] || '').toLowerCase() === userEmail).length;
+      setStat('sv-exp-emp', mine);
+    })
+    .catch(() => clearStat('sv-exp-emp'));
+  }
+
+  // 9️⃣ Billing — ACTUAL amount collected so far this year.
+  // Pulled from SOA Masters: col H (index 7) = Amount Received,
+  // col I (index 8) = Date Received. Only SOAs actually received/paid
+  // within the current calendar year are summed — this reflects real
+  // cash collected, not just billed or unpaid trip counts.
+  (function loadBillingCollected() {
+    const soaRange = encodeURIComponent("'SOA Masters'!A2:M");
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + soaRange, {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const rows = res.values || [];
+      const currentYear = new Date().getFullYear();
+      let totalCollected = 0;
+
+      rows.forEach(function(r) {
+        const amtReceived  = parseFloat(r[7]) || 0;  // col H
+        const dateReceived = (r[8] || '').trim();     // col I
+        if (!amtReceived || !dateReceived) return;
+        const yr = parseInt(dateReceived.substring(0, 4));
+        if (yr === currentYear) totalCollected += amtReceived;
+      });
+
+      setStat('sv-billing', formatPesoShort(totalCollected));
+
+      // AI Advisor tile teaser — a quick this-year collection rate using the
+      // same SOA rows already fetched above (no extra API call). The full
+      // Health Score with margin/cash-flow/tax analysis lives in advisor.html.
+      const totalBilledYTD = rows.reduce(function(s, r) {
+        const dateSent = (r[6] || '').trim();
+        const grand     = parseFloat(r[3]) || 0;
+        if (!dateSent || parseInt(dateSent.substring(0,4)) !== currentYear) return s;
+        return s + grand;
+      }, 0);
+      if (totalBilledYTD > 0) {
+        setStat('sv-advisor', Math.round(totalCollected / totalBilledYTD * 100) + '%');
+      } else {
+        clearStat('sv-advisor');
+      }
+    })
+    .catch(() => { clearStat('sv-billing'); clearStat('sv-advisor'); });
+  })();
+
+  // 🔟 Messages — unread count across all threads (DMs + Announcements)
+  (function loadUnreadMessages() {
+    const myEmail = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+    const msgRange = encodeURIComponent('Messages!A2:G');
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values/' + msgRange, {
+      headers: {'Authorization': 'Bearer ' + token}
+    })
+    .then(r => r.json())
+    .then(res => {
+      const rows = res.values || [];
+      const unread = rows.filter(function(r) {
+        const senderEmail = (r[3] || '').toLowerCase();
+        const readBy = (r[6] || '').toLowerCase().split(',').map(s => s.trim());
+        return senderEmail && senderEmail !== myEmail && readBy.indexOf(myEmail) === -1;
+      }).length;
+      setStat('sv-msg', unread);
+    })
+    .catch(() => clearStat('sv-msg'));
+  })();
+
+  // 🔟 Settings
+  setStat('sv-set', '⚙️');
+}
+
+// ═══ AUTO REFRESH WITH TOKEN RENEWAL ═══
+function initAutoRefresh() {
+  setInterval(function() {
+    const expiry    = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    const bufferMs  = 10 * 60 * 1000;
+
+    // Renew if expiring soon
+    if (token && Date.now() >= (expiry - bufferMs)) {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: function(res) {
+            if (!res.error) {
+              token = res.access_token;
+              const newExpiry = Date.now() + (res.expires_in * 1000);
+              localStorage.setItem('pedroex-token', token);
+              localStorage.setItem('pedroex-token-expiry', newExpiry);
+              console.log('🔄 Token renewed silently');
+            } else {
+              console.warn('🔄 Background silent renew failed:', res.error);
+            }
+          },
+          error_callback: function(err) {
+            console.warn('🔄 Background silent renew error_callback:', err);
+          }
+        }).requestAccessToken({ prompt: '' });
+      }
+      return;
+    }
+
+    // Refresh stats if token is still valid
+    if (token && Date.now() < expiry) {
+      console.log('🔄 Auto-refresh stats');
+      loadDashboardStats();
+    }
+  }, 5 * 60 * 1000);
+}
+
+// ═══ PULL TO REFRESH ═══
+function initPullToRefresh(scrollEl, onRefresh) {
+  let startY   = 0;
+  let pulling  = false;
+  const threshold = 70;
+
+  const indicator = document.createElement('div');
+  indicator.className = 'ptr-indicator';
+  indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+  document.body.appendChild(indicator);
+
+  scrollEl.addEventListener('touchstart', function(e) {
+    if (scrollEl.scrollTop === 0) {
+      startY  = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchmove', function(e) {
+    if (!pulling) return;
+    const dist = e.touches[0].clientY - startY;
+    if (dist < 0) { pulling = false; return; }
+
+    const progress = Math.min(dist / threshold, 1);
+    indicator.classList.add('visible');
+
+    const arrow = document.getElementById('ptr-arrow');
+    if (arrow) {
+      arrow.style.transform = 'rotate(' + (progress * 180) + 'deg)';
+      arrow.style.color = progress >= 1 ? 'var(--red)' : 'var(--text3)';
+    }
+  }, { passive: true });
+
+  scrollEl.addEventListener('touchend', function(e) {
+    if (!pulling) return;
+    pulling = false;
+
+    const dist = e.changedTouches[0].clientY - startY;
+    if (dist >= threshold) {
+      indicator.innerHTML = '<div class="ptr-spinner spinning"></div>';
+      onRefresh(function() {
+        indicator.innerHTML = '<div class="ptr-arrow" id="ptr-arrow">↓</div>';
+        indicator.classList.remove('visible');
+      });
+    } else {
+      indicator.classList.remove('visible');
+    }
+  });
+}
+
+// ═══ TOAST ═══
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
 </script>
 </body>
