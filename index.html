@@ -358,6 +358,7 @@ const SHEET_ID   = '174cZS7GPowtmwykUd3JccGqxdGSApUKwNLTDPeulb2U';
 const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file openid email profile';
 
 const ALL_MODULES = [
+  {id:'advisor',        icon:'bulb',     label:'AI Advisor',  stat:'sv-advisor',   sub:'Smart financial insights', wide:true, link:'advisor.html'},
   {id:'trucks',         icon:'truck',    label:'Trucks',      stat:'sv-trucks',    sub:'Fleet roster',        link:'trucks.html'},
   {id:'trips',          icon:'location', label:'Trips',       stat:'sv-trips',     sub:'On the road',         link:'trips.html'},
   {id:'manpower',       icon:'roster',   label:'Manpower',    stat:'sv-manpower',  sub:'Duty roster',         link:'manpower-roster.html'},
@@ -373,6 +374,7 @@ const ALL_MODULES = [
 ];
 
 const ICONS = {
+  bulb:     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 22h4" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><path d="M12 2a7 7 0 00-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0012 2z" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6a4 4 0 00-3 6.6" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round"/></svg>',
   truck:    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="1" y="8" width="14" height="10" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M15 11h4l3 4v3h-7" stroke="var(--red)" stroke-width="2"/><circle cx="5" cy="19" r="2" stroke="var(--red)" stroke-width="2"/><circle cx="18" cy="19" r="2" stroke="var(--red)" stroke-width="2"/></svg>',
   calendar: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--red)" stroke-width="2"/><path d="M8 2v4M16 2v4M3 10h18" stroke="var(--red)" stroke-width="2" stroke-linecap="round"/><path d="M7 14l2 2 4-4" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   location: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="var(--red)" stroke-width="2"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="var(--red)" stroke-width="2"/></svg>',
@@ -864,8 +866,23 @@ function loadDashboardStats() {
       });
 
       setStat('sv-billing', formatPesoShort(totalCollected));
+
+      // AI Advisor tile teaser — a quick this-year collection rate using the
+      // same SOA rows already fetched above (no extra API call). The full
+      // Health Score with margin/cash-flow/tax analysis lives in advisor.html.
+      const totalBilledYTD = rows.reduce(function(s, r) {
+        const dateSent = (r[6] || '').trim();
+        const grand     = parseFloat(r[3]) || 0;
+        if (!dateSent || parseInt(dateSent.substring(0,4)) !== currentYear) return s;
+        return s + grand;
+      }, 0);
+      if (totalBilledYTD > 0) {
+        setStat('sv-advisor', Math.round(totalCollected / totalBilledYTD * 100) + '% collected');
+      } else {
+        clearStat('sv-advisor');
+      }
     })
-    .catch(() => clearStat('sv-billing'));
+    .catch(() => { clearStat('sv-billing'); clearStat('sv-advisor'); });
   })();
 
   // 🔟 Messages — unread count across all threads (DMs + Announcements)
