@@ -1791,6 +1791,18 @@
             return n < 10 ? '0' + n : String(n);
         }
 
+        // Given a 'YYYY-MM' month key and a day-of-month, returns the 'YYYY-MM-DD'
+        // date for that day in that month, capped to the last valid day of that
+        // month (e.g. day 31 in a 30-day month becomes that month's 30th).
+        // Used to build fair "same date last month" comparisons so a partial
+        // current month is never compared against a full previous month.
+        function getSameDateCutoff(monthKey, day) {
+            const [y, m] = monthKey.split('-').map(Number);
+            const lastDay = new Date(y, m, 0).getDate();
+            const cappedDay = Math.min(day, lastDay);
+            return `${monthKey}-${pad(cappedDay)}`;
+        }
+
         // ═══════════════════════════════════════
         // MANPOWER COST CALCULATION
         // ═══════════════════════════════════════
@@ -3175,13 +3187,16 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 </div>
             `;
 
-            // Get last month data for comparison
+            // Get last month data for comparison — restricted to the same
+            // day-of-month as today, so a partial current month is compared
+            // against an equally partial previous month (apples to apples).
             const now = new Date();
             const thisMonth = now.toISOString().slice(0, 7);
             const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 7);
+            const lastMonthCutoff = getSameDateCutoff(lastMonth, now.getDate());
             
-            const lastMonthExpenses = allExpenses.filter(e => e.date.startsWith(lastMonth));
-            const lastMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(lastMonth));
+            const lastMonthExpenses = allExpenses.filter(e => e.date.startsWith(lastMonth) && e.date <= lastMonthCutoff);
+            const lastMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(lastMonth) && t.deliveryDate <= lastMonthCutoff);
             const lastMonthDates = [...new Set(lastMonthTrips.map(t => t.deliveryDate))];
             
             let lastMonthManpower = 0;
@@ -3263,7 +3278,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                                 </div>
                                 <div>
                                     <strong style="color:${changeColor}">${changeIcon} ${Math.abs(change).toFixed(1)}%</strong><br>
-                                    vs Last Month
+                                    vs Last Month (same date)
                                 </div>
                             </div>
                         </div>
@@ -4232,9 +4247,43 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             });
         }
 
+        // Computes revenue/expenses/profit/margin for a given 'YYYY-MM' month,
+        // optionally restricted to dates <= cutoffDate ('YYYY-MM-DD'). Passing a
+        // cutoff lets us build a fair "same date" comparison for an in-progress
+        // month instead of measuring it against a previous month's full total.
+        function computeMonthFinancials(monthKey, cutoffDate) {
+            let monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(monthKey));
+            let monthExpenses = allExpenses.filter(e => e.date.startsWith(monthKey));
+            if (cutoffDate) {
+                monthTrips = monthTrips.filter(t => t.deliveryDate <= cutoffDate);
+                monthExpenses = monthExpenses.filter(e => e.date <= cutoffDate);
+            }
+
+            const revenue = monthTrips.reduce((sum, t) => sum + t.rate, 0);
+
+            const dates = [...new Set(monthTrips.map(t => t.deliveryDate))];
+            let manpowerTotal = 0;
+            let documentationTotal = 0;
+
+            dates.forEach(date => {
+                const manpower = getManpowerExpensesForDate(date);
+                const documentation = getDocumentationExpensesForDate(date);
+                manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
+                documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
+            });
+
+            const operationalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const expenses = operationalExpenses + manpowerTotal + documentationTotal;
+            const profit = revenue - expenses;
+            const margin = revenue > 0 ? (profit / revenue * 100) : 0;
+
+            return { revenue, expenses, profit, margin };
+        }
+
         function renderMonthlyBreakdown() {
             const months = [];
             const now = new Date();
+            const currentMonthKey = `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
             for (let i = 5; i >= 0; i--) {
                 const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
                 months.push({
@@ -4244,28 +4293,8 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             }
 
             const monthlyData = months.map(month => {
-                const monthTrips = allTrips.filter(t => t.deliveryDate.startsWith(month.key));
-                const monthExpenses = allExpenses.filter(e => e.date.startsWith(month.key));
-
-                const revenue = monthTrips.reduce((sum, t) => sum + t.rate, 0);
-
-                const dates = [...new Set(monthTrips.map(t => t.deliveryDate))];
-                let manpowerTotal = 0;
-                let documentationTotal = 0;
-
-                dates.forEach(date => {
-                    const manpower = getManpowerExpensesForDate(date);
-                    const documentation = getDocumentationExpensesForDate(date);
-                    manpowerTotal += manpower.reduce((sum, m) => sum + m.amount, 0);
-                    documentationTotal += documentation.reduce((sum, d) => sum + d.amount, 0);
-                });
-
-                const operationalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
-                const expenses = operationalExpenses + manpowerTotal + documentationTotal;
-                const profit = revenue - expenses;
-                const margin = revenue > 0 ? (profit / revenue * 100) : 0;
-
-                return { ...month, revenue, expenses, profit, margin };
+                const financials = computeMonthFinancials(month.key, null);
+                return { ...month, ...financials };
             }).filter(m => m.revenue > 0);
 
             const container = document.getElementById('monthly-breakdown');
@@ -4277,12 +4306,24 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             container.innerHTML = monthlyData.reverse().map((m, i) => {
                 const prevMonth = monthlyData[i + 1];
                 let changeText = '';
-                if (prevMonth && prevMonth.profit > 0) {
-                    const change = ((m.profit - prevMonth.profit) / prevMonth.profit * 100);
-                    const changeClass = change > 0 ? 'up' : 'down';
-                    changeText = `<div class="breakdown-meta stat-change ${changeClass}">
-                        ${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}% vs previous month
-                    </div>`;
+                if (prevMonth) {
+                    // If m is the current, still-in-progress month, compare it
+                    // against the previous month's totals up to the SAME
+                    // day-of-month — not the previous month's full total —
+                    // so "progress" is measured against an equally partial period.
+                    const isCurrentPartialMonth = m.key === currentMonthKey;
+                    const prevComparable = isCurrentPartialMonth
+                        ? computeMonthFinancials(prevMonth.key, getSameDateCutoff(prevMonth.key, now.getDate()))
+                        : prevMonth;
+
+                    if (prevComparable.profit > 0) {
+                        const change = ((m.profit - prevComparable.profit) / prevComparable.profit * 100);
+                        const changeClass = change > 0 ? 'up' : 'down';
+                        const suffix = isCurrentPartialMonth ? ' vs previous month (same date)' : ' vs previous month';
+                        changeText = `<div class="breakdown-meta stat-change ${changeClass}">
+                            ${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}%${suffix}
+                        </div>`;
+                    }
                 }
 
                 return `<div class="breakdown-item">
@@ -4460,11 +4501,16 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             const expenses = getFilteredExpenses();
             
             const now = new Date();
+            const today = now.toISOString().split('T')[0];
             const thisMonth = now.toISOString().slice(0, 7);
             const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 7);
+            // Compare month-to-date vs the SAME day-of-month last month, not
+            // vs last month's full total — otherwise a half-finished current
+            // month always looks like it's "down" against a complete month.
+            const lastMonthCutoff = getSameDateCutoff(lastMonth, now.getDate());
             
-            const thisMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(thisMonth));
-            const lastMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(lastMonth));
+            const thisMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(thisMonth) && t.deliveryDate <= today);
+            const lastMonthTrips = allTrips.filter(t => t.deliveryDate.startsWith(lastMonth) && t.deliveryDate <= lastMonthCutoff);
             
             const thisMonthRevenue = thisMonthTrips.reduce((sum, t) => sum + t.rate, 0);
             const lastMonthRevenue = lastMonthTrips.reduce((sum, t) => sum + t.rate, 0);
@@ -4474,10 +4520,10 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 : 0;
             
             const thisMonthDiesel = allExpenses
-                .filter(e => e.date.startsWith(thisMonth) && e.category === 'Diesel')
+                .filter(e => e.date.startsWith(thisMonth) && e.date <= today && e.category === 'Diesel')
                 .reduce((sum, e) => sum + e.amount, 0);
             const lastMonthDiesel = allExpenses
-                .filter(e => e.date.startsWith(lastMonth) && e.category === 'Diesel')
+                .filter(e => e.date.startsWith(lastMonth) && e.date <= lastMonthCutoff && e.category === 'Diesel')
                 .reduce((sum, e) => sum + e.amount, 0);
             
             const dieselChange = lastMonthDiesel > 0
@@ -4494,7 +4540,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 <div class="alert-item ${revenueChange > 0 ? 'success' : 'warning'}">
                     <div class="alert-icon">${revenueChange > 0 ? '📈' : '📉'}</div>
                     <div class="alert-text">
-                        <strong>Revenue Trend:</strong> ${revenueChange > 0 ? 'Up' : 'Down'} ${Math.abs(revenueChange).toFixed(1)}% vs last month<br>
+                        <strong>Revenue Trend:</strong> ${revenueChange > 0 ? 'Up' : 'Down'} ${Math.abs(revenueChange).toFixed(1)}% vs last month (same date)<br>
                         <span style="font-size:11px;opacity:0.7">Current: ${formatCurrency(thisMonthRevenue)} | Previous: ${formatCurrency(lastMonthRevenue)}</span>
                     </div>
                 </div>
@@ -4502,7 +4548,7 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                 <div class="alert-item ${dieselChange < 0 ? 'success' : 'warning'}">
                     <div class="alert-icon">⛽</div>
                     <div class="alert-text">
-                        <strong>Diesel Costs:</strong> ${dieselChange > 0 ? 'Up' : 'Down'} ${Math.abs(dieselChange).toFixed(1)}% vs last month<br>
+                        <strong>Diesel Costs:</strong> ${dieselChange > 0 ? 'Up' : 'Down'} ${Math.abs(dieselChange).toFixed(1)}% vs last month (same date)<br>
                         <span style="font-size:11px;opacity:0.7">${dieselChange > 10 ? 'Consider fuel-saving measures or route optimization' : 'Costs are stable'}</span>
                     </div>
                 </div>
