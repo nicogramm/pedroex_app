@@ -656,16 +656,36 @@ function quoteRange(range) {
 }
 
 function apiGet(range) {
-    return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(quoteRange(range))}`, {
-        headers: { Authorization: 'Bearer ' + token }
+    const controller = new AbortController();
+    const timeoutMs = 8000;
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    const fetchPromise = fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(quoteRange(range))}`, {
+        headers: { Authorization: 'Bearer ' + token },
+        signal: controller.signal
     }).then(r => {
+        clearTimeout(timer);
         if (r.status === 401) {
             location.href = 'index.html';
             throw new Error('Unauthorized');
         }
         if (!r.ok) throw new Error('API Error: ' + range);
         return r.json();
+    }).catch(err => {
+        clearTimeout(timer);
+        if (err.name === 'AbortError') {
+            throw new Error('Request timed out: ' + range);
+        }
+        throw err;
     });
+
+    // Belt-and-suspenders: even if abort somehow doesn't unstick a hung
+    // request, race it against a hard timeout so the caller never waits forever.
+    const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timed out (race): ' + range)), timeoutMs + 2000);
+    });
+
+    return Promise.race([fetchPromise, timeoutPromise]);
 }
 
 // ═══════════════════════════════════════
