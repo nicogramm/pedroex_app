@@ -148,7 +148,31 @@ body.dark .roadmap-story-seg { background: rgba(255,255,255,0.12); }
 .roadmap-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); cursor: pointer; transition: all 0.2s; }
 .roadmap-dot.active { background: var(--red); width: 16px; border-radius: 4px; }
 
-/* ═══ STAT GRID ═══ */
+/* ═══ FINANCIAL JOURNEY (continuous auto-playing recap) ═══ */
+.journey-card { background: linear-gradient(135deg, #1f2937 0%, #111827 100%); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(17,24,39,0.35); color: #fff; opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; position: relative; overflow: hidden; }
+.journey-stories { display: flex; gap: 5px; margin-bottom: 14px; }
+.journey-story-seg { flex: 1; height: 3px; background: rgba(255,255,255,0.16); border-radius: 3px; overflow: hidden; }
+.journey-story-fill { height: 100%; width: 0%; background: #fff; border-radius: 3px; }
+.journey-story-fill.filled { width: 100% !important; }
+.journey-story-fill.animating { animation: storyFill linear forwards; }
+.journey-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.journey-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.6; }
+.journey-play { background: rgba(255,255,255,0.12); border: none; width: 26px; height: 26px; border-radius: 8px; color: #fff; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.journey-period-label { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; margin-bottom: 14px; min-height: 28px; }
+.journey-period-label.swap { animation: journeySwap 0.5s cubic-bezier(.22,1,.36,1); }
+@keyframes journeySwap { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+.journey-metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.journey-metric { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 10px 12px; }
+.journey-metric-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.55; margin-bottom: 3px; }
+.journey-metric-val { font-size: 16px; font-weight: 800; }
+.journey-metric-val.neg { color: #fca5a5; }
+.journey-metric-val.pos { color: #86efac; }
+.journey-bar-row { display: flex; align-items: center; gap: 8px; }
+.journey-bar-track { flex: 1; height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; display: flex; }
+.journey-bar-rev { height: 100%; background: #22c55e; width: 50%; transition: width 1s cubic-bezier(.22,1,.36,1); }
+.journey-bar-exp { height: 100%; background: #ef4444; width: 50%; transition: width 1s cubic-bezier(.22,1,.36,1); }
+.journey-bar-legend { display: flex; justify-content: space-between; font-size: 10px; opacity: 0.65; margin-top: 6px; font-weight: 600; }
+
 /* ═══ STAT GRID ═══ */
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
 .stat-tile { background: var(--bg); border-radius: 16px; padding: 16px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
@@ -189,6 +213,36 @@ body.dark .roadmap-story-seg { background: rgba(255,255,255,0.12); }
 .collection-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text2); font-weight: 500; }
 .collection-foot strong { color: var(--text); }
 
+/* ═══ BILLING & COLLECTIONS (elaborate) ═══ */
+.billing-status-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.billing-status-chip { background: var(--bg2); border-radius: 12px; padding: 10px 8px; text-align: center; box-shadow: var(--neu-sm); }
+.billing-status-chip .n { font-size: 17px; font-weight: 800; color: var(--text); }
+.billing-status-chip.paid .n { color: var(--green); }
+.billing-status-chip.partial .n { color: var(--orange); }
+.billing-status-chip.pending .n { color: var(--red); }
+.billing-status-chip .l { font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); margin-top: 2px; }
+
+.alltime-card { background: var(--bg2); border-radius: 14px; padding: 14px 16px; margin-top: 14px; box-shadow: var(--neu-in); }
+.alltime-head { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+.alltime-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; padding: 5px 0; color: var(--text2); font-weight: 500; }
+.alltime-row strong { color: var(--text); font-weight: 700; }
+.alltime-row.hl strong { color: var(--green); }
+
+/* ═══ TAXATION ═══ */
+.tax-card { background: var(--bg); border-radius: 18px; padding: 18px; margin-bottom: 8px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
+.tax-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--bg2); font-size: 12.5px; }
+.tax-row:last-of-type { border-bottom: none; }
+.tax-row-label { color: var(--text2); font-weight: 500; }
+.tax-row-val { color: var(--text); font-weight: 700; }
+.tax-savings-box { background: linear-gradient(135deg, rgba(22,163,74,0.12), rgba(22,163,74,0.04)); border: 1px solid rgba(22,163,74,0.25); border-radius: 14px; padding: 14px 16px; margin-top: 12px; }
+.tax-savings-head { display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+.tax-savings-amount { font-size: 22px; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+.tax-savings-note { font-size: 11.5px; color: var(--text2); line-height: 1.5; }
+.tax-savings-breakdown { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+.tax-savings-item { font-size: 11px; color: var(--text2); font-weight: 600; }
+.tax-savings-item strong { color: var(--text); }
+
+/* ═══ RECOMMENDATION CARDS ═══ */
 /* ═══ RECOMMENDATION CARDS ═══ */
 .rec-list { display: flex; flex-direction: column; gap: 10px; }
 .rec-card { background: var(--bg); border-radius: 16px; padding: 16px; box-shadow: var(--neu-out); border-left: 4px solid var(--text3); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; display: flex; gap: 12px; }
@@ -244,6 +298,20 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
         <button class="period-btn" id="period-year" onclick="setPeriod('year')">This Year</button>
       </div>
 
+      <div class="journey-card">
+        <div class="journey-stories" id="journey-stories"></div>
+        <div class="journey-top">
+          <div class="journey-eyebrow">🎥 Your Financial Journey</div>
+          <button class="journey-play" id="journey-play" onclick="toggleJourneyAutoplay()">⏸</button>
+        </div>
+        <div class="journey-period-label" id="journey-period-label">This Month</div>
+        <div class="journey-metric-grid" id="journey-metric-grid"></div>
+        <div class="journey-bar-row">
+          <div class="journey-bar-track"><div class="journey-bar-rev" id="journey-bar-rev"></div><div class="journey-bar-exp" id="journey-bar-exp"></div></div>
+        </div>
+        <div class="journey-bar-legend"><span>Revenue</span><span>Expenses</span></div>
+      </div>
+
       <div class="health-hero" id="health-hero">
         <div class="hh-top">
           <div class="hh-ring-wrap">
@@ -289,7 +357,8 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
       </div>
 
       <div class="sec-header">
-        <div class="sec-title">🧾 Collection Status</div>
+        <div class="sec-title">🧾 Billing &amp; Collections</div>
+        <div class="sec-sub" id="billing-period-sub">—</div>
       </div>
       <div class="collection-card" style="animation-delay:.15s">
         <div class="collection-top">
@@ -298,8 +367,39 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
         </div>
         <div class="collection-track"><div class="collection-fill" id="collection-fill"></div></div>
         <div class="collection-foot">
+          <span>Billed: <strong id="collection-billed">₱0</strong></span>
           <span>Collected: <strong id="collection-received">₱0</strong></span>
-          <span>Outstanding: <strong id="collection-outstanding">₱0</strong></span>
+        </div>
+
+        <div class="billing-status-row" id="billing-status-row"></div>
+
+        <div class="alltime-card">
+          <div class="alltime-head">📋 All-Time Snapshot — matches your Billing page</div>
+          <div class="alltime-row"><span>Total Billed (all-time)</span><strong id="alltime-billed">₱0</strong></div>
+          <div class="alltime-row hl"><span>Total Collected (all-time)</span><strong id="alltime-received">₱0</strong></div>
+          <div class="alltime-row"><span>Outstanding Receivables</span><strong id="alltime-outstanding">₱0</strong></div>
+          <div class="alltime-row"><span>SOAs — Paid / Partial / Pending</span><strong id="alltime-counts">0 / 0 / 0</strong></div>
+        </div>
+      </div>
+
+      <div class="sec-header">
+        <div class="sec-title">📋 Taxation</div>
+        <div class="sec-sub" id="tax-quarter-sub">—</div>
+      </div>
+      <div class="tax-card" style="animation-delay:.18s">
+        <div class="tax-row"><div class="tax-row-label">Output VAT (Sales Tax)</div><div class="tax-row-val" id="tax-output">₱0</div></div>
+        <div class="tax-row"><div class="tax-row-label">Input VAT (Purchases — Recoverable)</div><div class="tax-row-val" id="tax-input">₱0</div></div>
+        <div class="tax-row"><div class="tax-row-label"><strong>Net VAT Payable to BIR</strong></div><div class="tax-row-val" id="tax-net" style="color:var(--red)">₱0</div></div>
+
+        <div class="tax-savings-box">
+          <div class="tax-savings-head">💚 VAT Savings from Input VAT</div>
+          <div class="tax-savings-amount" id="tax-savings-amount">₱0</div>
+          <div class="tax-savings-note">This is how much you save by claiming Input VAT on Diesel, Parts, and Parking expenses — it directly reduces what you owe the BIR.</div>
+          <div class="tax-savings-breakdown">
+            <div class="tax-savings-item">⛽ Diesel: <strong id="tax-save-diesel">₱0</strong></div>
+            <div class="tax-savings-item">🔧 Parts: <strong id="tax-save-parts">₱0</strong></div>
+            <div class="tax-savings-item">🅿️ Parking: <strong id="tax-save-parking">₱0</strong></div>
+          </div>
         </div>
       </div>
 
@@ -395,6 +495,15 @@ let roadmapPlaying = true;
 let roadmapTimer = null;
 const ROADMAP_SLIDE_MS = 6000;
 
+// Financial Journey (continuous auto-playing recap)
+let journeyData = [];
+let journeyIndex = 0;
+let journeyPlaying = true;
+let journeyTimer = null;
+const JOURNEY_PERIODS = ['month', 'quarter', 'year'];
+const JOURNEY_LABELS = { month: 'This Month', quarter: 'This Quarter', year: 'This Year' };
+const JOURNEY_SLIDE_MS = 5000;
+
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
@@ -482,6 +591,7 @@ function showToast(msg) {
 // LOAD ALL DATA
 // ═══════════════════════════════════════
 async function loadAll() {
+    _inputVATCache = null;
     const refreshBtn = document.getElementById('refresh-btn');
     refreshBtn.classList.add('spinning');
     document.getElementById('wrap-loading').style.display = 'flex';
@@ -571,6 +681,7 @@ async function loadAll() {
         refreshBtn.classList.remove('spinning');
 
         await renderAll();
+        await initJourney();
     } catch (err) {
         console.error('Load error:', err);
         document.getElementById('wrap-loading').style.display = 'none';
@@ -610,7 +721,11 @@ async function calculateVAT(trips) {
     const inputVAT = inputVATData.total;
     return {
         grossSales, vatableSales, outputVAT, inputVAT,
+        inputVATBreakdown: inputVATData.breakdown,
         netVATPayable: outputVAT - inputVAT,
+        // What you save in real cash by claiming Input VAT on Diesel/Parts/
+        // Parking expenses — it directly offsets what you'd otherwise owe.
+        vatSavings: inputVAT,
         quarter: getCurrentQuarter()
     };
 }
@@ -625,10 +740,13 @@ function getCurrentQuarter() {
     return `Purchases (Oct-Dec ${year})`;
 }
 
+let _inputVATCache = null;
 async function getInputVATForCurrentQuarter() {
+    if (_inputVATCache) return _inputVATCache;
     const quarterBase = getCurrentQuarter();
     const types = ['Diesel', 'Parts', 'Parking'];
     let total = 0;
+    const breakdown = { diesel: 0, parts: 0, parking: 0 };
     for (const type of types) {
         const sheetName = `${quarterBase}-${type}`;
         try {
@@ -637,12 +755,16 @@ async function getInputVATForCurrentQuarter() {
             rows.forEach(row => {
                 if (row[0] && row[1]) {
                     const inputVAT = parseFloat(row[11]) || 0;
-                    if (inputVAT > 0) total += inputVAT;
+                    if (inputVAT > 0) {
+                        total += inputVAT;
+                        breakdown[type.toLowerCase()] += inputVAT;
+                    }
                 }
             });
         } catch (err) { /* Quarterly sheet not found — treat as 0 */ }
     }
-    return { total };
+    _inputVATCache = { total, breakdown };
+    return _inputVATCache;
 }
 
 // ═══════════════════════════════════════
@@ -678,29 +800,6 @@ function inRange(dateStr, bounds) {
     if (!dateStr) return false;
     const s = fmtDateStr(bounds.start), e = fmtDateStr(bounds.end);
     return dateStr >= s && dateStr <= e;
-}
-
-// Buckets an SOA into a 'YYYY-MM' key the same way Billing does: parse the
-// human-readable period text first ("Jan 1-15, 2026"), falling back to the
-// date the SOA was sent. Keeps Advisor's billed/collected figures identical
-// to what the Billing page itself shows.
-function getSOAYearMonth(soa) {
-    let ym = '';
-    if (soa.period) {
-        const mm = soa.period.match(/([A-Za-z]{3})[.,\s]*\d+[^,]*,?\s*(\d{4})/);
-        if (mm) {
-            const mIdx = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 }[mm[1].substring(0, 3)];
-            if (mIdx !== undefined) ym = mm[2] + '-' + pad(mIdx + 1);
-        }
-    }
-    if (!ym && soa.dateSent) ym = soa.dateSent.substring(0, 7);
-    return ym;
-}
-
-function ymInBounds(ym, bounds) {
-    if (!ym) return false;
-    return ym >= bounds.start.getFullYear() + '-' + pad(bounds.start.getMonth() + 1) &&
-           ym <= bounds.end.getFullYear() + '-' + pad(bounds.end.getMonth() + 1);
 }
 
 // ═══════════════════════════════════════
@@ -753,14 +852,25 @@ async function computeFinancials(period) {
             .reduce((s, p) => s + p.netPay, 0);
         const cashOut = opExpenses + payrollCashOut;
 
-        // Real cash in: SOA amounts actually received, bucketed the same way
-        // Billing.html buckets its own monthly chart (by SOA period, not by
-        // date-received) so the two pages always agree.
-        const soasInPeriod = allSOA.filter(s => ymInBounds(getSOAYearMonth(s), b));
-        const billed = soasInPeriod.reduce((s, r) => s + r.grandTotal, 0);
-        const cashIn = soasInPeriod.reduce((s, r) => s + r.amtReceived, 0);
+        // Billed vs Collected are tracked on their OWN real dates, not
+        // lumped together — an SOA billed in one month is often received in
+        // a later one. dateSent decides when it counts as "billed"; the
+        // separate dateReceived decides when it counts as real cash in.
+        // (Bucketing both by the SOA's free-text "period" label, like an
+        // earlier version of this page did, silently dropped rows whose
+        // period text didn't parse — this direct date match is what
+        // Billing's own per-SOA records actually use.)
+        const billedSOAs = allSOA.filter(s => inRange(s.dateSent, b));
+        const billed = billedSOAs.reduce((s, r) => s + r.grandTotal, 0);
 
-        return { revenue, accruedExpenses, accruedProfit, margin, categoryTotals, truckTotals, cashOut, cashIn, billed, opExpenses, manpowerAccrued, docAccrued, payrollCashOut };
+        const receivedSOAs = allSOA.filter(s => inRange(s.dateReceived, b));
+        const cashIn = receivedSOAs.reduce((s, r) => s + r.amtReceived, 0);
+
+        const soaPaidCount = billedSOAs.filter(r => r.status === 'Paid').length;
+        const soaPartialCount = billedSOAs.filter(r => r.status === 'Partial').length;
+        const soaPendingCount = billedSOAs.filter(r => r.status === 'Pending').length;
+
+        return { revenue, accruedExpenses, accruedProfit, margin, categoryTotals, truckTotals, cashOut, cashIn, billed, opExpenses, manpowerAccrued, docAccrued, payrollCashOut, soaCount: billedSOAs.length, soaPaidCount, soaPartialCount, soaPendingCount };
     };
 
     const current = await compute(bounds);
@@ -775,7 +885,23 @@ async function computeFinancials(period) {
     const outstanding = allSOA.reduce((s, r) => s + Math.max(0, r.grandTotal - r.amtReceived - r.deductions), 0);
     const collectionRate = current.billed > 0 ? (current.cashIn / current.billed) : 1;
 
-    return { bounds, prevBounds, current, previous, vat, taxesDue, netCashFlow, outstanding, collectionRate, period };
+    // All-time Billing snapshot — computed exactly the way the Billing page's
+    // own SOA summary card computes it (no date filter at all), so this
+    // block is directly cross-checkable against what's shown there.
+    const allTimeBilled = allSOA.reduce((s, r) => s + r.grandTotal, 0);
+    const allTimeReceived = allSOA.reduce((s, r) => s + r.amtReceived, 0);
+    const allTime = {
+        billed: allTimeBilled,
+        received: allTimeReceived,
+        outstanding,
+        collectionRate: allTimeBilled > 0 ? (allTimeReceived / allTimeBilled) : 1,
+        soaCount: allSOA.length,
+        paidCount: allSOA.filter(r => r.status === 'Paid').length,
+        partialCount: allSOA.filter(r => r.status === 'Partial').length,
+        pendingCount: allSOA.filter(r => r.status === 'Pending').length
+    };
+
+    return { bounds, prevBounds, current, previous, vat, taxesDue, netCashFlow, outstanding, collectionRate, allTime, period };
 }
 
 // ═══════════════════════════════════════
@@ -997,6 +1123,23 @@ function animateCountUp(el, to, duration, formatFn) {
     requestAnimationFrame(tick);
 }
 
+// Like animateCountUp, but morphs FROM an arbitrary current value instead of
+// always starting at 0 — used by the Financial Journey recap so numbers
+// visibly transition between Month/Quarter/Year instead of re-counting from
+// zero every few seconds.
+function animateNumberTransition(el, from, to, duration, formatFn) {
+    const startTime = performance.now();
+    function tick(now) {
+        const t = clamp((now - startTime) / duration, 0, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const val = from + (to - from) * eased;
+        el.textContent = formatFn(val);
+        if (t < 1) requestAnimationFrame(tick);
+        else el.textContent = formatFn(to);
+    }
+    requestAnimationFrame(tick);
+}
+
 function animateRing(score) {
     const circumference = 251.2;
     const offset = circumference - clamp(score / 100, 0, 1) * circumference;
@@ -1036,6 +1179,7 @@ async function renderAll() {
     renderStatGrid(fin);
     renderSpendCard(spend);
     renderCollectionCard(fin);
+    renderTaxCard(fin);
     renderRecommendations(recs);
     await renderCashflowChart();
 }
@@ -1085,12 +1229,42 @@ function renderSpendCard(spend) {
 
 function renderCollectionCard(fin) {
     const pct = Math.round(fin.collectionRate * 100);
+    document.getElementById('billing-period-sub').textContent = fin.bounds.label;
     document.getElementById('collection-pct').textContent = pct + '%';
+    document.getElementById('collection-billed').textContent = formatCompact(fin.current.billed);
     document.getElementById('collection-received').textContent = formatCompact(fin.current.cashIn);
-    document.getElementById('collection-outstanding').textContent = formatCompact(fin.outstanding);
     setTimeout(() => {
         document.getElementById('collection-fill').style.width = clamp(pct, 0, 100) + '%';
     }, 100);
+
+    const c = fin.current;
+    document.getElementById('billing-status-row').innerHTML = `
+        <div class="billing-status-chip paid"><div class="n">${c.soaPaidCount}</div><div class="l">Paid</div></div>
+        <div class="billing-status-chip partial"><div class="n">${c.soaPartialCount}</div><div class="l">Partial</div></div>
+        <div class="billing-status-chip pending"><div class="n">${c.soaPendingCount}</div><div class="l">Pending</div></div>
+    `;
+
+    // All-time snapshot — same numbers Billing's own SOA summary shows,
+    // unfiltered by period, so this block is directly cross-checkable.
+    const at = fin.allTime;
+    document.getElementById('alltime-billed').textContent = formatCurrency(at.billed);
+    document.getElementById('alltime-received').textContent = formatCurrency(at.received);
+    document.getElementById('alltime-outstanding').textContent = formatCurrency(at.outstanding);
+    document.getElementById('alltime-counts').textContent = `${at.paidCount} / ${at.partialCount} / ${at.pendingCount}`;
+}
+
+function renderTaxCard(fin) {
+    const v = fin.vat;
+    document.getElementById('tax-quarter-sub').textContent = v.quarter;
+    document.getElementById('tax-output').textContent = formatCurrency(v.outputVAT);
+    document.getElementById('tax-input').textContent = formatCurrency(v.inputVAT);
+    document.getElementById('tax-net').textContent = formatCurrency(v.netVATPayable);
+    document.getElementById('tax-net').style.color = v.netVATPayable > 0 ? 'var(--red)' : 'var(--green)';
+    document.getElementById('tax-savings-amount').textContent = formatCurrency(v.vatSavings);
+    const bd = v.inputVATBreakdown || { diesel: 0, parts: 0, parking: 0 };
+    document.getElementById('tax-save-diesel').textContent = formatCurrency(bd.diesel);
+    document.getElementById('tax-save-parts').textContent = formatCurrency(bd.parts);
+    document.getElementById('tax-save-parking').textContent = formatCurrency(bd.parking);
 }
 
 function renderRecommendations(recs) {
@@ -1117,7 +1291,7 @@ async function renderCashflowChart() {
         months.push({ key: d.getFullYear() + '-' + pad(d.getMonth() + 1), label: d.toLocaleDateString('en-US', { month: 'short' }) });
     }
 
-    const cashIn = months.map(m => allSOA.filter(s => getSOAYearMonth(s) === m.key).reduce((s, r) => s + r.amtReceived, 0));
+    const cashIn = months.map(m => allSOA.filter(s => (s.dateReceived || '').startsWith(m.key)).reduce((s, r) => s + r.amtReceived, 0));
     const cashOut = months.map(m => {
         const opEx = allExpenses.filter(e => e.date.startsWith(m.key)).reduce((s, e) => s + e.amount, 0);
         const payroll = allPayroll.filter(p => (p.period.split(' to ')[0] || '').trim().startsWith(m.key)).reduce((s, p) => s + p.netPay, 0);
@@ -1151,6 +1325,114 @@ async function renderCashflowChart() {
 // ═══════════════════════════════════════
 // PERIOD SWITCH
 // ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// FINANCIAL JOURNEY — continuous, always-playing recap that cycles through
+// Month → Quarter → Year on a loop, morphing the key numbers between each
+// (never resetting to zero), so the page tells the story of "what happened"
+// across every timeframe without the user having to click anything.
+// ═══════════════════════════════════════
+async function initJourney() {
+    journeyData = [];
+    for (const p of JOURNEY_PERIODS) {
+        journeyData.push(await computeFinancials(p));
+    }
+
+    document.getElementById('journey-stories').innerHTML = JOURNEY_PERIODS.map((_, i) =>
+        `<div class="journey-story-seg"><div class="journey-story-fill" id="journey-fill-${i}"></div></div>`
+    ).join('');
+
+    journeyIndex = 0;
+    journeyPlaying = true;
+    document.getElementById('journey-play').textContent = '⏸';
+    renderJourneySlide(0, null);
+}
+
+function journeyMetrics(fin) {
+    return {
+        revenue: fin.current.revenue,
+        expenses: fin.current.accruedExpenses,
+        profit: fin.current.accruedProfit,
+        cashFlow: fin.netCashFlow
+    };
+}
+
+function renderJourneySlide(i, prevFin) {
+    clearJourneyTimer();
+    const fin = journeyData[i];
+    const m = journeyMetrics(fin);
+    const pm = prevFin ? journeyMetrics(prevFin) : { revenue: 0, expenses: 0, profit: 0, cashFlow: 0 };
+
+    const label = document.getElementById('journey-period-label');
+    label.textContent = JOURNEY_LABELS[JOURNEY_PERIODS[i]];
+    label.classList.remove('swap');
+    void label.offsetWidth; // restart the CSS animation
+    label.classList.add('swap');
+
+    const grid = document.getElementById('journey-metric-grid');
+    if (!grid.dataset.built) {
+        grid.innerHTML = `
+            <div class="journey-metric"><div class="journey-metric-label">Revenue</div><div class="journey-metric-val" id="journey-m-revenue">₱0</div></div>
+            <div class="journey-metric"><div class="journey-metric-label">Expenses</div><div class="journey-metric-val" id="journey-m-expenses">₱0</div></div>
+            <div class="journey-metric"><div class="journey-metric-label">Net Profit</div><div class="journey-metric-val" id="journey-m-profit">₱0</div></div>
+            <div class="journey-metric"><div class="journey-metric-label">Net Cash Flow</div><div class="journey-metric-val" id="journey-m-cashflow">₱0</div></div>
+        `;
+        grid.dataset.built = '1';
+    }
+
+    animateNumberTransition(document.getElementById('journey-m-revenue'), pm.revenue, m.revenue, 900, formatCompact);
+    animateNumberTransition(document.getElementById('journey-m-expenses'), pm.expenses, m.expenses, 900, formatCompact);
+    const profitEl = document.getElementById('journey-m-profit');
+    profitEl.classList.toggle('pos', m.profit >= 0);
+    profitEl.classList.toggle('neg', m.profit < 0);
+    animateNumberTransition(profitEl, pm.profit, m.profit, 900, formatCompact);
+    const cashEl = document.getElementById('journey-m-cashflow');
+    cashEl.classList.toggle('pos', m.cashFlow >= 0);
+    cashEl.classList.toggle('neg', m.cashFlow < 0);
+    animateNumberTransition(cashEl, pm.cashFlow, m.cashFlow, 900, formatCompact);
+
+    const total = m.revenue + m.expenses;
+    const revPct = total > 0 ? (m.revenue / total * 100) : 50;
+    setTimeout(() => {
+        document.getElementById('journey-bar-rev').style.width = revPct + '%';
+        document.getElementById('journey-bar-exp').style.width = (100 - revPct) + '%';
+    }, 50);
+
+    journeyData.forEach((_, idx) => {
+        const seg = document.getElementById('journey-fill-' + idx);
+        if (!seg) return;
+        seg.classList.remove('animating', 'filled');
+        seg.style.animationDuration = '';
+        seg.style.width = '';
+        if (idx < i) seg.classList.add('filled');
+    });
+
+    if (journeyPlaying) startJourneyFill(i);
+}
+
+function startJourneyFill(i) {
+    const seg = document.getElementById('journey-fill-' + i);
+    if (!seg) return;
+    seg.style.animationDuration = JOURNEY_SLIDE_MS + 'ms';
+    seg.classList.add('animating');
+    journeyTimer = setTimeout(() => {
+        const nextIndex = (i + 1) % journeyData.length;
+        const prevFin = journeyData[i];
+        journeyIndex = nextIndex;
+        renderJourneySlide(nextIndex, prevFin);
+    }, JOURNEY_SLIDE_MS);
+}
+
+function clearJourneyTimer() {
+    if (journeyTimer) { clearTimeout(journeyTimer); journeyTimer = null; }
+}
+
+function toggleJourneyAutoplay() {
+    journeyPlaying = !journeyPlaying;
+    document.getElementById('journey-play').textContent = journeyPlaying ? '⏸' : '▶';
+    if (journeyPlaying) startJourneyFill(journeyIndex);
+    else clearJourneyTimer();
+}
+
 function setPeriod(period) {
     currentPeriod = period;
     ['month', 'quarter', 'year'].forEach(p => {
