@@ -607,6 +607,7 @@ let currentPeriod = 'month';
 let cashflowChart = null;
 let currentFinancials = null;
 let currentHealth = null;
+let _inputVATCache = null;
 let roadmapSlides = [];
 let roadmapChart = null;
 let roadmapIndex = 0;
@@ -917,7 +918,6 @@ function getCurrentQuarter() {
     return `Purchases (Oct-Dec ${year})`;
 }
 
-let _inputVATCache = null;
 async function getInputVATForCurrentQuarter() {
     if (_inputVATCache) return _inputVATCache;
     const quarterBase = getCurrentQuarter();
