@@ -614,6 +614,19 @@ let trendChart = null;
 let categoryChart = null;
 let truckChart = null;
 
+// The fleet has exactly 5 trucks. Historical records may have been saved with
+// the full plate number ("CAH 1415"), lowercase, extra spaces, etc. This maps
+// any raw truck value to one of the 5 canonical codes so filters, charts, and
+// the "By Truck" report never fragment into duplicate/near-duplicate trucks.
+const CANONICAL_TRUCKS = ['CAH', 'CBJ', 'CBQ', 'NHE', 'CAN'];
+
+function normalizeTruck(raw) {
+  if (!raw) return '';
+  const clean = String(raw).trim().toUpperCase();
+  const match = CANONICAL_TRUCKS.find(code => clean.startsWith(code));
+  return match || clean;
+}
+
 const CATEGORY_ICONS = {
   'Diesel': '⛽', 'Maintenance': '🔧', 'Documentation': '📄',
   'Miscellaneous': '📦', 'Manpower': '👷'
@@ -793,7 +806,7 @@ function loadAttendance() {
       twoManTeam: (r[3]||'').toLowerCase() === 'yes',
       crates: parseInt(r[4])||0,
       mealAllowance: ['yes','meals only'].includes((r[5]||'').toLowerCase()),
-      truck: r[6]||'', location: r[7]||'', latitude: r[8]||'', longitude: r[9]||''
+      truck: normalizeTruck(r[6]), location: r[7]||'', latitude: r[8]||'', longitude: r[9]||''
     })).filter(a => a.date && a.employee);
   }).catch(() => { allAttendance = []; });
 }
@@ -831,7 +844,7 @@ function loadExpenses() {
   document.getElementById('expenses-empty').style.display = 'none';
   apiGet(EXPENSES_SHEET + '!A2:M').then(res => {
     allExpenses = (res.values || []).map((r, i) => ({
-      rowIndex: i + 2, id: r[0]||'', date: r[1]||'', truck: r[2]||'',
+      rowIndex: i + 2, id: r[0]||'', date: r[1]||'', truck: normalizeTruck(r[2]),
       category: r[3]||'', subcategory: r[4]||'', amount: parseFloat(r[5])||0,
       receipt: r[6]||'', notes: r[7]||'', addedBy: r[8]||'',
       timestamp: r[9]||'', weekNumber: r[10]||'', month: r[11]||'', photo: r[12]||''
