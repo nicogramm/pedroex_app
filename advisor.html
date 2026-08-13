@@ -631,22 +631,7 @@ let simDemoStart = 0;
 let simPrevValues = { expenses: null, profit: null, margin: null };
 const SIM_DEMO_CYCLE_MS = 6000;
 
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
-(function init() {
-    const dark = localStorage.getItem('pedroex-theme') === 'dark';
-    document.body.classList.toggle('dark', dark);
 
-    token = localStorage.getItem('pedroex-token') || '';
-    const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
-    if (!token || Date.now() >= expiry) {
-        location.href = 'index.html';
-        return;
-    }
-
-    loadAll();
-})();
 
 // ═══════════════════════════════════════
 // API HELPERS
@@ -2075,6 +2060,26 @@ function toggleRoadmapAutoplay() {
    if (roadmapPlaying) startStoryFill(roadmapIndex);
     else clearRoadmapTimer();
 }
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+(function init() {
+    const dark = localStorage.getItem('pedroex-theme') === 'dark';
+    document.body.classList.toggle('dark', dark);
+
+    token = localStorage.getItem('pedroex-token') || '';
+    const expiry = parseInt(localStorage.getItem('pedroex-token-expiry') || '0');
+    if (!token || Date.now() >= expiry) {
+        location.href = 'index.html';
+        return;
+    }
+
+    loadAll();
+})();
+
+
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 </body>
