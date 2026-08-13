@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PedroEX">
 <meta name="theme-color" content="#e0e0e5">
+<link rel="preconnect" href="https://sheets.googleapis.com" crossorigin>
+<link rel="dns-prefetch" href="https://sheets.googleapis.com">
 <link rel="manifest" href="manifest.json">
 <title>AI Advisor — PedroEX</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -657,7 +659,7 @@ function quoteRange(range) {
 
 function apiGet(range) {
     const controller = new AbortController();
-    const timeoutMs = 8000;
+    const timeoutMs = 15000;
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
     const fetchPromise = fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(quoteRange(range))}`, {
