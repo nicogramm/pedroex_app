@@ -574,7 +574,6 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 <script defer>
 // ═══════════════════════════════════════
 // CONFIG
@@ -2073,9 +2072,10 @@ function toggleRoadmapAutoplay() {
     }
     roadmapPlaying = !roadmapPlaying;
     document.getElementById('roadmap-play').textContent = roadmapPlaying ? '⏸' : '▶';
-    if (roadmapPlaying) startStoryFill(roadmapIndex);
+   if (roadmapPlaying) startStoryFill(roadmapIndex);
     else clearRoadmapTimer();
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
 </body>
 </html>
