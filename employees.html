@@ -137,6 +137,12 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .summary-item{display:flex;flex-direction:column;gap:4px}
 .summary-item span{font-size:12px;color:var(--text2)}
 .summary-item strong{font-size:14px;color:var(--text)}
+.att-override-toggle{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);padding:6px 12px;font-size:11px;font-weight:700;color:var(--red);cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap}
+.att-override-toggle:active{box-shadow:var(--neu-in);transform:scale(0.97)}
+.att-stat-input{font-size:14px;font-weight:700;color:var(--text);font-family:Inter,sans-serif;background:transparent;border:none;outline:none;width:100%;padding:0;-moz-appearance:textfield}
+.att-stat-input::-webkit-outer-spin-button,.att-stat-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.att-stat-input.editing{background:var(--bg);border-radius:8px;box-shadow:var(--neu-in);padding:6px 10px;color:var(--red)}
+.att-reset-link{font-size:11px;color:var(--text2);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:Inter,sans-serif;padding:0;margin-top:8px;display:inline-block}
 .summary-net{display:flex;justify-content:space-between;align-items:center;padding:20px;background:var(--red);color:white;border-radius:14px;margin-top:20px}
 .summary-net span{font-size:14px;font-weight:600;letter-spacing:1px}
 .summary-net strong{font-size:24px;font-weight:700}
@@ -527,13 +533,18 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
         <span id="summary-period">—</span>
       </div>
       <div class="summary-section">
-        <div class="summary-label">ATTENDANCE</div>
-        <div class="summary-grid">
-          <div class="summary-item"><span>With Meal Allowance (Yes)</span><strong id="summary-att-yes">0</strong></div>
-          <div class="summary-item"><span>Meals Only</span><strong id="summary-att-meals">0</strong></div>
-          <div class="summary-item"><span>No Meal (Base Pay Only)</span><strong id="summary-att-no">0</strong></div>
-          <div class="summary-item"><span>2-Man Team Days</span><strong id="summary-2man">0</strong></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="summary-label" style="margin-bottom:0">ATTENDANCE</div>
+          <button type="button" id="att-override-toggle" class="att-override-toggle" onclick="toggleAttendanceOverride()">✏️ Override</button>
         </div>
+        <div class="summary-grid">
+          <div class="summary-item"><span>With Meal Allowance (Yes)</span><input type="number" min="0" step="1" class="att-stat-input" id="summary-att-yes" value="0" readonly oninput="onAttendanceOverrideInput()"></div>
+          <div class="summary-item"><span>Meals Only</span><input type="number" min="0" step="1" class="att-stat-input" id="summary-att-meals" value="0" readonly oninput="onAttendanceOverrideInput()"></div>
+          <div class="summary-item"><span>No Meal (Base Pay Only)</span><input type="number" min="0" step="1" class="att-stat-input" id="summary-att-no" value="0" readonly oninput="onAttendanceOverrideInput()"></div>
+          <div class="summary-item"><span>2-Man Team Days</span><input type="number" min="0" step="1" class="att-stat-input" id="summary-2man" value="0" readonly oninput="onAttendanceOverrideInput()"></div>
+        </div>
+        <div id="att-override-note" style="display:none;font-size:11px;color:var(--orange);font-weight:600;margin-top:10px">⚠️ Manually overridden — payroll will not match the Attendance sheet for this period.</div>
+        <button type="button" id="att-reset-link" class="att-reset-link" style="display:none" onclick="resetAttendanceToAuto()">↩️ Reset to auto-calculated values</button>
       </div>
       <div class="summary-section">
         <div class="summary-label">ADVANCES</div>
@@ -721,6 +732,7 @@ let empAdvances = [];
 
 let selectedPeriod     = '1st';
 let currentPayrollData = null;
+let attendanceOverridden = false;
 
 // Savings state
 let savingsData             = [];
@@ -1112,7 +1124,7 @@ async function calculatePayroll() {
     const periodAdv   = (advRes.values||[]).filter(r=>(r[2]||'')===empName&&(r[1]||'')>=startDate&&(r[1]||'')<=endDate).reduce((s,r)=>s+(parseFloat(r[3])||0),0);
     const totalAdv    = existingAdv+periodAdv;
 
-    currentPayrollData = { name:empName, period:`${startDate} to ${endDate}`, position, attYes, attMeals, attNo, twoManDays:twoMan, twoManDates:twoManComment, periodAdv, existingAdv, totalAdv, empSSS, empPagibig, empPhilHealth, totalContrib, pedroexSSS, pedroexPagibig, pedroexPhilHealth, basePay, twoManPay, mealPay, grossPay, savingsPlan };
+    currentPayrollData = { name:empName, period:`${startDate} to ${endDate}`, position, attYes, attMeals, attNo, twoManDays:twoMan, twoManDates:twoManComment, periodAdv, existingAdv, totalAdv, empSSS, empPagibig, empPhilHealth, totalContrib, pedroexSSS, pedroexPagibig, pedroexPhilHealth, basePay, twoManPay, mealPay, grossPay, savingsPlan, isOverridden:false, autoAtt:{ attYes, attMeals, attNo, twoManDays:twoMan } };
     showPayrollResult();
   } catch(err) { console.error(err); showToast('❌ Error: '+err.message); }
 }
@@ -1135,14 +1147,105 @@ function recalcNetPay() {
   currentPayrollData.netPay       = netPay;
 }
 
+// ═══════════════════════════════════════════════════════
+// ATTENDANCE OVERRIDE — lets the admin manually correct the
+// With Meals / Meals Only / No Meal / 2-Man Team Days counts used to
+// generate a payroll (instead of the values pulled from the Attendance
+// sheet), and cascades that change through every downstream calculation:
+// Base Pay → 2-Man Team Bonus → Meal Allowance → Gross Pay → Savings →
+// Net Pay.
+// ═══════════════════════════════════════════════════════
+function resetAttendanceOverrideUI() {
+  const ids = ['summary-att-yes','summary-att-meals','summary-att-no','summary-2man'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.readOnly = !attendanceOverridden;
+    el.classList.toggle('editing', attendanceOverridden);
+  });
+  document.getElementById('att-override-toggle').textContent = attendanceOverridden ? '🔒 Lock Values' : '✏️ Override';
+  const isOverridden = !!(currentPayrollData && currentPayrollData.isOverridden);
+  document.getElementById('att-override-note').style.display = isOverridden ? 'block' : 'none';
+  const canReset = attendanceOverridden && currentPayrollData && currentPayrollData.autoAtt;
+  document.getElementById('att-reset-link').style.display = canReset ? 'inline-block' : 'none';
+}
+
+function toggleAttendanceOverride() {
+  attendanceOverridden = !attendanceOverridden;
+  resetAttendanceOverrideUI();
+  if (attendanceOverridden) {
+    document.getElementById('summary-att-yes').focus();
+  } else {
+    // Locking back — keep whatever is in the fields and make sure every
+    // downstream number reflects it.
+    recalcFromAttendance();
+  }
+}
+
+function resetAttendanceToAuto() {
+  if (!currentPayrollData || !currentPayrollData.autoAtt) return;
+  const a = currentPayrollData.autoAtt;
+  document.getElementById('summary-att-yes').value   = a.attYes;
+  document.getElementById('summary-att-meals').value = a.attMeals;
+  document.getElementById('summary-att-no').value    = a.attNo;
+  document.getElementById('summary-2man').value      = a.twoManDays;
+  recalcFromAttendance();
+}
+
+function onAttendanceOverrideInput() {
+  if (!attendanceOverridden) return;
+  recalcFromAttendance();
+}
+
+function syncAttendanceOverrideFlag() {
+  const d = currentPayrollData;
+  if (!d) return;
+  if (d.autoAtt) {
+    d.isOverridden = (d.attYes !== d.autoAtt.attYes || d.attMeals !== d.autoAtt.attMeals || d.attNo !== d.autoAtt.attNo || d.twoManDays !== d.autoAtt.twoManDays);
+  } else {
+    d.isOverridden = d.isOverridden || attendanceOverridden;
+  }
+}
+
+function recalcFromAttendance() {
+  if (!currentPayrollData) return;
+  const d = currentPayrollData;
+  const attYes     = parseInt(document.getElementById('summary-att-yes').value)   || 0;
+  const attMeals   = parseInt(document.getElementById('summary-att-meals').value) || 0;
+  const attNo      = parseInt(document.getElementById('summary-att-no').value)    || 0;
+  const twoManDays = parseInt(document.getElementById('summary-2man').value)      || 0;
+
+  const baseRate    = d.position === 'Driver' ? 500 : 350;
+  const basePay     = (attYes + attNo) * baseRate;
+  const twoManPay   = twoManDays * 280;
+  const mealPay     = (attYes + attMeals) * 210;
+  const grossPay    = basePay + twoManPay + mealPay;
+  const savingsPlan = grossPay * 0.05;
+
+  Object.assign(d, { attYes, attMeals, attNo, twoManDays, basePay, twoManPay, mealPay, grossPay, savingsPlan });
+  syncAttendanceOverrideFlag();
+
+  const baseDays = attYes + attNo;
+  const mealDays = attYes + attMeals;
+  document.getElementById('summary-base').innerHTML     = '₱'+basePay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${baseDays} days × ₱${baseRate})</div>`;
+  document.getElementById('summary-2man-pay').innerHTML = '₱'+twoManPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${twoManDays} days × ₱280)</div>`;
+  document.getElementById('summary-meal').innerHTML     = '₱'+mealPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${mealDays} days × ₱210)</div>`;
+  document.getElementById('summary-gross').textContent  = '₱'+grossPay.toFixed(2);
+  document.getElementById('summary-savings').innerHTML  = '₱'+savingsPlan.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(5% of Gross Pay)</div>`;
+
+  resetAttendanceOverrideUI();
+  recalcNetPay();
+}
+
 function showPayrollResult() {
   const d = currentPayrollData;
+  attendanceOverridden = !!d.isOverridden;
+  resetAttendanceOverrideUI();
   document.getElementById('summary-name').textContent   = d.name+' ('+d.position+')';
   document.getElementById('summary-period').textContent = d.period;
-  document.getElementById('summary-att-yes').textContent   = d.attYes;
-  document.getElementById('summary-att-meals').textContent = d.attMeals;
-  document.getElementById('summary-att-no').textContent    = d.attNo;
-  document.getElementById('summary-2man').textContent      = d.twoManDays;
+  document.getElementById('summary-att-yes').value   = d.attYes;
+  document.getElementById('summary-att-meals').value = d.attMeals;
+  document.getElementById('summary-att-no').value    = d.attNo;
+  document.getElementById('summary-2man').value      = d.twoManDays;
   document.getElementById('summary-adv1').textContent      = '₱'+d.periodAdv.toFixed(2);
   document.getElementById('summary-adv2').textContent      = '—';
   document.getElementById('summary-existing').textContent  = '₱'+d.existingAdv.toFixed(2);
@@ -1170,7 +1273,8 @@ function closePayrollResultModal() { document.getElementById('payroll-result-mod
 async function savePayrollToHistory() {
   if (!currentPayrollData) return;
   const data     = currentPayrollData;
-  const comments = document.getElementById('payroll-comments').value.trim();
+  const rawComments = document.getElementById('payroll-comments').value.trim().replace(/^\[Manual Attendance Override\]\s*/, '');
+  const comments = (data.isOverridden ? '[Manual Attendance Override] ' : '') + rawComments;
   if (!data.deductedAdv && data.deductedAdv!==0) { showToast('Please enter advance deduction first.'); return; }
   try {
     const row = ['PAY-'+Date.now(), data.name, data.period, data.attYes+data.attMeals+data.attNo, data.periodAdv, 0, data.existingAdv, data.totalAdv, data.pedroexSSS||0, data.empSSS, data.pedroexPagibig||0, data.empPagibig, data.pedroexPhilHealth||0, data.empPhilHealth, data.deductedAdv, data.totalDed, data.remainingAdv, data.twoManDays, data.twoManPay, selectedPeriod==='1st'?data.savingsPlan:0, selectedPeriod==='2nd'?data.savingsPlan:0, data.savingsPlan, '', '', '', data.grossPay, data.mealPay, data.netPay, comments, data.attYes, data.attMeals, data.attNo];
@@ -1310,17 +1414,19 @@ function showHistoryDetail(r) {
 
 function editPayrollHistory() {
   const r = window.currentHistoryRow; if (!r) return;
-  currentPayrollData = { name:r[1], period:r[2], attYes:parseInt(r[29]||0), attMeals:parseInt(r[30]||0), attNo:parseInt(r[31]||0), twoManDays:r[17]||0, periodAdv:parseFloat(r[4]||0), existingAdv:parseFloat(r[6]||0), totalAdv:parseFloat(r[7]||0), empSSS:parseFloat(r[9]||0), empPagibig:parseFloat(r[11]||0), empPhilHealth:parseFloat(r[13]||0), totalContrib:parseFloat(r[9]||0)+parseFloat(r[11]||0)+parseFloat(r[13]||0), pedroexSSS:parseFloat(r[8]||0), pedroexPagibig:parseFloat(r[10]||0), pedroexPhilHealth:parseFloat(r[12]||0), basePay:parseFloat(r[25]||0)-parseFloat(r[18]||0)-parseFloat(r[26]||0), twoManPay:parseFloat(r[18]||0), mealPay:parseFloat(r[26]||0), grossPay:parseFloat(r[25]||0), savingsPlan:parseFloat(r[21]||0), deductedAdv:parseFloat(r[14]||0), remainingAdv:parseFloat(r[16]||0), totalDed:parseFloat(r[15]||0), netPay:parseFloat(r[27]||0), twoManDates:r[28]||'', payrollId:r[0] };
+  currentPayrollData = { name:r[1], period:r[2], attYes:parseInt(r[29]||0), attMeals:parseInt(r[30]||0), attNo:parseInt(r[31]||0), twoManDays:r[17]||0, periodAdv:parseFloat(r[4]||0), existingAdv:parseFloat(r[6]||0), totalAdv:parseFloat(r[7]||0), empSSS:parseFloat(r[9]||0), empPagibig:parseFloat(r[11]||0), empPhilHealth:parseFloat(r[13]||0), totalContrib:parseFloat(r[9]||0)+parseFloat(r[11]||0)+parseFloat(r[13]||0), pedroexSSS:parseFloat(r[8]||0), pedroexPagibig:parseFloat(r[10]||0), pedroexPhilHealth:parseFloat(r[12]||0), basePay:parseFloat(r[25]||0)-parseFloat(r[18]||0)-parseFloat(r[26]||0), twoManPay:parseFloat(r[18]||0), mealPay:parseFloat(r[26]||0), grossPay:parseFloat(r[25]||0), savingsPlan:parseFloat(r[21]||0), deductedAdv:parseFloat(r[14]||0), remainingAdv:parseFloat(r[16]||0), totalDed:parseFloat(r[15]||0), netPay:parseFloat(r[27]||0), twoManDates:r[28]||'', payrollId:r[0], isOverridden:/^\[Manual Attendance Override\]/.test(r[28]||''), autoAtt:null };
   showPayrollResult();
   document.getElementById('manual-deduction').value = currentPayrollData.deductedAdv;
-  document.getElementById('payroll-comments').value  = currentPayrollData.twoManDates;
+  document.getElementById('payroll-comments').value  = (currentPayrollData.twoManDates||'').replace(/^\[Manual Attendance Override\]\s*/, '');
   document.querySelector('#payroll-result-modal .modal-actions').innerHTML = `<button class="btn btn-secondary" onclick="closePayrollResultModal()">Cancel</button><button class="btn btn-primary" onclick="updatePayrollHistory()">💾 Update</button>`;
   document.getElementById('history-detail-modal').classList.remove('active');
 }
 
 async function updatePayrollHistory() {
   if (!currentPayrollData||!currentPayrollData.payrollId) return;
-  const data=currentPayrollData; const comments=document.getElementById('payroll-comments').value.trim();
+  const data=currentPayrollData;
+  const rawComments = document.getElementById('payroll-comments').value.trim().replace(/^\[Manual Attendance Override\]\s*/, '');
+  const comments = (data.isOverridden ? '[Manual Attendance Override] ' : '') + rawComments;
   try {
     const res    = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:A`, {headers:{'Authorization':'Bearer '+token}});
     const idData = await res.json();
