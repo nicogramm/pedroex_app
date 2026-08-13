@@ -54,7 +54,9 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
 
 .page-wrap { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
 
-.loading-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 56px; color: var(--text3); font-size: 13px; }
+.loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 56px 24px; color: var(--text3); font-size: 13px; text-align: center; }
+.loading-retry-btn { display: none; align-items: center; gap: 6px; background: var(--bg); border: none; border-radius: 12px; box-shadow: var(--neu-sm); padding: 10px 18px; color: var(--red); font-size: 12.5px; font-weight: 700; font-family: Inter, sans-serif; cursor: pointer; }
+.loading-retry-btn:active { box-shadow: var(--neu-in); transform: scale(0.97); }
 .spinner { width: 20px; height: 20px; border: 2px solid var(--text3); border-top-color: var(--red); border-radius: 50%; animation: spin 0.7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -101,11 +103,11 @@ body.dark .topbar { box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
 .hh-improve-icon { font-size: 9px; }
 
 /* ═══ IMPROVEMENT ROADMAP MODAL (animated "video" walkthrough) ═══ */
-.roadmap-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; display: none; align-items: center; justify-content: center; padding: 16px; }
-.roadmap-overlay.show { display: flex; animation: fadeIn 0.25s ease; }
+.roadmap-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 300; display: none; }
+.roadmap-overlay.show { display: block; animation: fadeIn 0.2s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.roadmap-card { background: var(--bg); border-radius: 22px; width: 100%; max-width: 400px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: popIn 0.3s cubic-bezier(.22,1,.36,1); }
-.roadmap-stories { display: flex; gap: 5px; padding: 14px 16px 0; }
+.roadmap-card { background: var(--bg); width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.roadmap-stories { display: flex; gap: 5px; padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 0; }
 .roadmap-story-seg { flex: 1; height: 3px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden; }
 body.dark .roadmap-story-seg { background: rgba(255,255,255,0.12); }
 .roadmap-story-fill { height: 100%; width: 0%; background: var(--red); border-radius: 3px; }
@@ -115,23 +117,34 @@ body.dark .roadmap-story-seg { background: rgba(255,255,255,0.12); }
 
 .roadmap-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; }
 .roadmap-head-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
-.roadmap-close { background: var(--bg2); border: none; width: 30px; height: 30px; border-radius: 10px; color: var(--text2); font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.roadmap-close { background: var(--bg2); border: none; width: 34px; height: 34px; border-radius: 10px; color: var(--text2); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-.roadmap-body { flex: 1; overflow-y: auto; padding: 4px 22px 22px; }
+.roadmap-body { flex: 1; overflow-y: auto; padding: 4px 20px 22px; max-width: 480px; margin: 0 auto; width: 100%; }
 .roadmap-slide { display: none; }
 .roadmap-slide.active { display: block; animation: fadeSlideUp 0.4s cubic-bezier(.22,1,.36,1); }
 .roadmap-slide-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 14px; background: var(--bg2); box-shadow: var(--neu-sm); }
-.roadmap-slide-title { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.3px; }
-.roadmap-slide-sub { font-size: 12.5px; color: var(--text2); line-height: 1.55; margin-bottom: 18px; }
+.roadmap-slide-title { font-size: 19px; font-weight: 800; color: var(--text); margin-bottom: 6px; letter-spacing: -0.3px; }
+.roadmap-slide-sub { font-size: 12.5px; color: var(--text2); line-height: 1.55; margin-bottom: 16px; }
 
-.roadmap-gauge-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.roadmap-chart-card { background: var(--bg2); border-radius: 16px; padding: 14px 16px; box-shadow: var(--neu-in); margin-bottom: 18px; }
+.roadmap-chart-wrap { height: 180px; position: relative; }
+.roadmap-chart-caption { text-align: center; font-size: 11px; color: var(--text2); font-weight: 600; margin-top: 8px; }
+.roadmap-chart-caption strong { color: var(--green); }
+
+.roadmap-sliders { display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px; }
+.roadmap-slider-row { display: flex; flex-direction: column; gap: 6px; }
+.roadmap-slider-label { font-size: 12.5px; font-weight: 700; color: var(--text); display: flex; justify-content: space-between; }
+.roadmap-slider-label span { color: var(--red); font-weight: 800; }
+.roadmap-slider { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 6px; background: var(--bg2); box-shadow: var(--neu-in); outline: none; }
+.roadmap-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--red); box-shadow: 0 2px 6px rgba(179,37,51,0.4); cursor: pointer; }
+.roadmap-slider::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--red); border: none; box-shadow: 0 2px 6px rgba(179,37,51,0.4); cursor: pointer; }
+
+.roadmap-gauge-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .roadmap-gauge-box { flex: 1; background: var(--bg2); border-radius: 14px; padding: 12px 14px; box-shadow: var(--neu-in); }
 .roadmap-gauge-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
 .roadmap-gauge-val { font-size: 17px; font-weight: 800; color: var(--text); }
 .roadmap-gauge-val.target { color: var(--green); }
 .roadmap-gauge-arrow { font-size: 18px; color: var(--text3); }
-.roadmap-track { height: 8px; background: var(--bg2); border-radius: 8px; overflow: hidden; box-shadow: var(--neu-in); margin-bottom: 20px; }
-.roadmap-track-fill { height: 100%; border-radius: 8px; width: 0%; background: linear-gradient(90deg, var(--red), var(--orange), var(--green)); transition: width 1.1s cubic-bezier(.22,1,.36,1); }
 
 .roadmap-steps { display: flex; flex-direction: column; gap: 10px; }
 .roadmap-step { display: flex; gap: 10px; align-items: flex-start; opacity: 0; transform: translateX(-10px); animation: stepIn 0.45s cubic-bezier(.22,1,.36,1) forwards; }
@@ -205,11 +218,14 @@ body.dark .roadmap-story-seg { background: rgba(255,255,255,0.12); }
 
 /* ═══ COLLECTION BAR ═══ */
 .collection-card { background: var(--bg); border-radius: 18px; padding: 18px; margin-bottom: 8px; box-shadow: var(--neu-out); opacity: 0; animation: fadeSlideUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
-.collection-sentence { font-size: 14px; color: var(--text); line-height: 1.5; margin-bottom: 12px; font-weight: 500; }
-.collection-sentence strong { font-weight: 800; }
-.collection-sentence .cs-received { color: var(--green); }
-.collection-sentence .cs-billed { color: var(--text); }
-.collection-pct-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.period-fact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.period-fact-box { background: var(--bg2); border-radius: 12px; padding: 12px 14px; box-shadow: var(--neu-sm); }
+.period-fact-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
+.period-fact-val { font-size: 17px; font-weight: 800; color: var(--text); }
+.period-fact-val.received { color: var(--green); }
+.period-fact-sub { font-size: 10px; color: var(--text2); margin-top: 3px; font-weight: 500; }
+.period-fact-note { font-size: 11px; color: var(--text2); line-height: 1.5; background: var(--bg2); border-radius: 10px; padding: 9px 11px; margin-bottom: 14px; }
+.collection-pct-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; margin-top: 2px; }
 .collection-pct { font-size: 26px; font-weight: 800; color: var(--text); }
 .collection-label { font-size: 11px; color: var(--text3); font-weight: 600; }
 .collection-track { height: 12px; background: var(--bg2); border-radius: 10px; overflow: hidden; box-shadow: var(--neu-in); margin-bottom: 10px; }
@@ -325,7 +341,9 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
 
   <div class="page-wrap">
     <div class="loading-wrap" id="wrap-loading">
-      <div class="spinner"></div> Analyzing your data...
+      <div class="spinner"></div>
+      <span id="loading-status-text">Analyzing your data...</span>
+      <button class="loading-retry-btn" id="loading-retry-btn" onclick="loadAll()">↻ Try Again</button>
     </div>
 
     <div id="wrap-content" style="display:none">
@@ -398,19 +416,29 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
         <div class="sec-sub" id="billing-period-sub">—</div>
       </div>
       <div class="collection-card" style="animation-delay:.15s">
-        <div class="collection-sentence">
-          <strong class="cs-received" id="collection-received">₱0</strong> collected out of <strong class="cs-billed" id="collection-billed">₱0</strong> billed this period
+        <div class="period-fact-row">
+          <div class="period-fact-box">
+            <div class="period-fact-label">New Billings</div>
+            <div class="period-fact-val" id="collection-billed">₱0</div>
+            <div class="period-fact-sub">SOAs billed this period</div>
+          </div>
+          <div class="period-fact-box">
+            <div class="period-fact-label">Cash Collected</div>
+            <div class="period-fact-val received" id="collection-received">₱0</div>
+            <div class="period-fact-sub">Received this period</div>
+          </div>
         </div>
-        <div class="collection-pct-row">
-          <div class="collection-pct" id="collection-pct">0%</div>
-          <div class="collection-label">collection rate<br>(collected ÷ billed)</div>
-        </div>
-        <div class="collection-track"><div class="collection-fill" id="collection-fill"></div></div>
+        <div class="period-fact-note">💡 These two are independent — cash collected this period is usually payment for SOAs billed in <em>earlier</em> periods, not these new ones. That's normal, not a shortfall.</div>
 
         <div class="billing-status-row" id="billing-status-row"></div>
 
         <div class="alltime-card">
-          <div class="alltime-head">📋 All-Time Snapshot — matches your Billing page</div>
+          <div class="alltime-head">📋 All-Time Collection Rate — matches your Billing page</div>
+          <div class="collection-pct-row">
+            <div class="collection-pct" id="collection-pct">0%</div>
+            <div class="collection-label">of everything ever billed<br>has been collected</div>
+          </div>
+          <div class="collection-track"><div class="collection-fill" id="collection-fill"></div></div>
           <div class="alltime-row"><span>Total Billed (all-time)</span><strong id="alltime-billed">₱0</strong></div>
           <div class="alltime-row hl"><span>Total Collected (all-time)</span><strong id="alltime-received">₱0</strong></div>
           <div class="alltime-row"><span>Outstanding Receivables</span><strong id="alltime-outstanding">₱0</strong></div>
@@ -579,6 +607,7 @@ let cashflowChart = null;
 let currentFinancials = null;
 let currentHealth = null;
 let roadmapSlides = [];
+let roadmapChart = null;
 let roadmapIndex = 0;
 let roadmapPlaying = true;
 let roadmapTimer = null;
@@ -686,12 +715,28 @@ function showToast(msg) {
 // ═══════════════════════════════════════
 // LOAD ALL DATA
 // ═══════════════════════════════════════
-async function loadAll() {
+let loadAttempt = 0;
+let loadTimeoutId = null;
+
+async function loadAll(isRetry) {
     _inputVATCache = null;
+    if (!isRetry) loadAttempt = 0;
+
     const refreshBtn = document.getElementById('refresh-btn');
     refreshBtn.classList.add('spinning');
     document.getElementById('wrap-loading').style.display = 'flex';
     document.getElementById('wrap-content').style.display = 'none';
+    document.getElementById('loading-retry-btn').style.display = 'none';
+    document.getElementById('loading-status-text').textContent = 'Analyzing your data...';
+
+    // If this is taking unusually long — most often a token that's still
+    // settling in localStorage right after navigating here from Home —
+    // surface a manual retry instead of leaving a spinner running forever.
+    clearTimeout(loadTimeoutId);
+    loadTimeoutId = setTimeout(() => {
+        document.getElementById('loading-status-text').textContent = 'Taking longer than expected...';
+        document.getElementById('loading-retry-btn').style.display = 'inline-flex';
+    }, 9000);
 
     try {
         const [tripsRes, expensesRes, attendanceRes, employeesRes, soaRes, payrollRes] = await Promise.all([
@@ -772,6 +817,7 @@ async function loadAll() {
             netPay: parseFloat(r[27]) || 0
         })).filter(r => r.name && r.period);
 
+        clearTimeout(loadTimeoutId);
         document.getElementById('wrap-loading').style.display = 'none';
         document.getElementById('wrap-content').style.display = 'block';
         refreshBtn.classList.remove('spinning');
@@ -780,9 +826,23 @@ async function loadAll() {
         await initJourney();
     } catch (err) {
         console.error('Load error:', err);
-        document.getElementById('wrap-loading').style.display = 'none';
+        clearTimeout(loadTimeoutId);
         refreshBtn.classList.remove('spinning');
-        showToast('❌ Failed to load data. Please refresh.');
+
+        // Auto-retry a couple of times before giving up — smooths over
+        // transient failures right after navigation (e.g. the Sheets token
+        // not being fully written to localStorage yet on a cold open).
+        if (loadAttempt < 2) {
+            loadAttempt++;
+            document.getElementById('loading-status-text').textContent = `Having trouble loading — retrying (${loadAttempt}/2)...`;
+            setTimeout(() => loadAll(true), 1000 * loadAttempt);
+            return;
+        }
+
+        document.getElementById('wrap-loading').style.display = 'flex';
+        document.getElementById('loading-status-text').textContent = 'Could not load your data.';
+        document.getElementById('loading-retry-btn').style.display = 'inline-flex';
+        showToast('❌ Failed to load data. Tap Try Again below.');
     }
 }
 
@@ -979,11 +1039,20 @@ async function computeFinancials(period) {
     // Running (all-time) receivables — a true outstanding-balance snapshot,
     // not bounded to the selected period.
     const outstanding = allSOA.reduce((s, r) => s + Math.max(0, r.grandTotal - r.amtReceived - r.deductions), 0);
-    const collectionRate = current.billed > 0 ? (current.cashIn / current.billed) : 1;
 
     // All-time Billing snapshot — computed exactly the way the Billing page's
     // own SOA summary card computes it (no date filter at all), so this
     // block is directly cross-checkable against what's shown there.
+    //
+    // IMPORTANT: collection rate is deliberately NOT computed period-by-period
+    // (e.g. "cash received this month ÷ new billings this month"). Those two
+    // figures are different cohorts — money collected this month is usually
+    // for SOAs billed weeks or months earlier, since clients don't pay the
+    // instant a bill goes out. Dividing them produces meaningless numbers
+    // (e.g. 6000%+ if a lot of old SOAs happen to get paid in a light-billing
+    // month). The ALL-TIME ratio below is the only version of "collection
+    // rate" that's actually a valid ratio, since it's cumulative and isn't
+    // distorted by timing lag — and it matches the Billing page exactly.
     const allTimeBilled = allSOA.reduce((s, r) => s + r.grandTotal, 0);
     const allTimeReceived = allSOA.reduce((s, r) => s + r.amtReceived, 0);
     const allTime = {
@@ -997,7 +1066,7 @@ async function computeFinancials(period) {
         pendingCount: allSOA.filter(r => r.status === 'Pending').length
     };
 
-    return { bounds, prevBounds, current, previous, vat, taxesDue, netCashFlow, outstanding, collectionRate, allTime, period };
+    return { bounds, prevBounds, current, previous, vat, taxesDue, netCashFlow, outstanding, allTime, period };
 }
 
 // ═══════════════════════════════════════
@@ -1009,7 +1078,7 @@ function computeHealthScore(fin) {
     const c = fin.current;
     // 30% margin = full marks (matches the "healthy" bar used elsewhere in the app)
     const marginScore = clamp((c.margin / 30) * 100, 0, 100);
-    const collectionScore = clamp(fin.collectionRate * 100, 0, 100);
+    const collectionScore = clamp(fin.allTime.collectionRate * 100, 0, 100);
     const cashFlowScore = c.cashIn > 0
         ? clamp(50 + (fin.netCashFlow / c.cashIn) * 100, 0, 100)
         : (fin.netCashFlow >= 0 ? 60 : 0);
@@ -1054,19 +1123,21 @@ function generateRecommendations(fin) {
         });
     }
 
-    // 2. Collections risk
-    if (fin.outstanding > 0 && fin.collectionRate < 0.6) {
+    // 2. Collections risk — based on the all-time collection rate (the only
+    // mathematically valid version, since it isn't distorted by the lag
+    // between when an SOA is billed and when it actually gets paid).
+    if (fin.outstanding > 0 && fin.allTime.collectionRate < 0.6) {
         recs.push({
             severity: 'critical', icon: '🧾', tag: 'Collections',
-            title: `Collection rate is low (${(fin.collectionRate * 100).toFixed(0)}%) this ${periodLabel}`,
-            desc: `${formatCurrency(fin.outstanding)} in total outstanding receivables across all SOAs — a large share of this hasn't been collected yet.`,
+            title: `All-time collection rate is low (${(fin.allTime.collectionRate * 100).toFixed(0)}%)`,
+            desc: `${formatCurrency(fin.outstanding)} in total outstanding receivables across all SOAs — a large share of what's been billed hasn't been collected yet.`,
             action: 'Follow up on overdue SOAs before they become past-due'
         });
-    } else if (fin.outstanding > 0 && fin.collectionRate < 0.85) {
+    } else if (fin.outstanding > 0 && fin.allTime.collectionRate < 0.85) {
         recs.push({
             severity: 'warning', icon: '🧾', tag: 'Collections',
             title: `${formatCurrency(fin.outstanding)} still outstanding across SOAs`,
-            desc: `Only ${(fin.collectionRate * 100).toFixed(0)}% collected this ${periodLabel}. Manageable for now, but worth watching.`,
+            desc: `${(fin.allTime.collectionRate * 100).toFixed(0)}% collected all-time. Manageable for now, but worth watching.`,
             action: 'Review pending SOAs in Billing'
         });
     }
@@ -1325,7 +1396,10 @@ function renderSpendCard(spend) {
 }
 
 function renderCollectionCard(fin) {
-    const pct = Math.round(fin.collectionRate * 100);
+    // The featured percentage is the ALL-TIME collection rate — the only
+    // version that's a mathematically valid ratio (see the comment in
+    // computeFinancials for why period-over-period doesn't work here).
+    const pct = Math.round(fin.allTime.collectionRate * 100);
     document.getElementById('billing-period-sub').textContent = fin.bounds.label;
     document.getElementById('collection-pct').textContent = pct + '%';
     document.getElementById('collection-billed').textContent = formatCompact(fin.current.billed);
@@ -1644,59 +1718,44 @@ function setPeriod(period) {
 // Auto-advances like a stories UI, with manual prev/next/pause controls.
 // ═══════════════════════════════════════
 function buildRoadmapSlides(fin, health) {
-    const c = fin.current;
-    const slides = [];
-
-    slides.push({
-        icon: '📊', title: 'Improve Your Profit Margin',
-        sub: 'Margin is 35% of your Health Score — the single biggest lever. Every point closer to 30% moves the needle.',
-        current: c.margin.toFixed(1) + '%', target: '30%+',
-        progressPct: clamp((c.margin / 30) * 100, 3, 100),
-        steps: [
-            `Review your ${topCategory(c.categoryTotals)} — it's your largest expense category right now`,
-            'Renegotiate diesel/parts supplier rates or consolidate purchases across trucks',
-            'Track cost-per-trip by truck every month to catch outliers early'
-        ]
-    });
-
-    const collectionPct = fin.collectionRate * 100;
-    slides.push({
-        icon: '🧾', title: 'Speed Up Collections',
-        sub: 'Collection rate is 25% of your Health Score. Faster collections mean more usable cash — not just paper profit.',
-        current: collectionPct.toFixed(0) + '%', target: '90%+',
-        progressPct: clamp(collectionPct / 90 * 100, 3, 100),
-        steps: [
-            'Send the SOA immediately after delivery, not at month-end',
-            'Follow up on any SOA still unpaid after 15 days',
-            'Offer a small early-payment incentive to your top clients'
-        ]
-    });
-
-    slides.push({
-        icon: fin.netCashFlow >= 0 ? '📈' : '📉', title: 'Strengthen Cash Flow',
-        sub: 'Net Cash Flow is 25% of your Health Score. Positive cash flow means the business can fund itself without strain.',
-        current: formatCompact(fin.netCashFlow), target: 'Positive',
-        progressPct: fin.netCashFlow >= 0 ? 100 : clamp(50 + (fin.netCashFlow / Math.max(c.cashIn, 1)) * 100, 3, 49),
-        steps: [
-            'Time large purchases around when collections actually come in',
-            'Keep a cash buffer equal to at least 2 weeks of operating expenses',
-            'Delay non-critical purchases whenever cash flow is tight'
-        ]
-    });
-
-    slides.push({
-        icon: '📋', title: 'Stay Ahead of Tax Obligations',
-        sub: 'Tax readiness is 15% of your Health Score. Being prepared avoids scrambling at the BIR deadline.',
-        current: formatCompact(fin.taxesDue), target: 'Fully covered',
-        progressPct: fin.taxesDue > 0 ? clamp((c.cashIn / fin.taxesDue) * 50, 3, 100) : 100,
-        steps: [
-            "Set aside VAT as soon as revenue comes in — don't wait for quarter-end",
-            'Keep all input VAT receipts (diesel, parts, parking) organized to maximize deductions',
-            'Reconcile VAT payable monthly instead of only once per quarter'
-        ]
-    });
-
-    return slides;
+    return [
+        {
+            key: 'margin', icon: '📊', title: 'Improve Your Profit Margin',
+            sub: 'Margin is 35% of your Health Score — the single biggest lever. Drag the sliders below to simulate cutting your two biggest controllable costs.',
+            steps: [
+                `Review your ${topCategory(fin.current.categoryTotals)} — it's your largest expense category right now`,
+                'Renegotiate diesel/parts supplier rates or consolidate purchases across trucks',
+                'Track cost-per-trip by truck every month to catch outliers early'
+            ]
+        },
+        {
+            key: 'collections', icon: '🧾', title: 'Speed Up Collections',
+            sub: 'Collection rate is 25% of your Health Score. Faster collections mean more usable cash — not just paper profit.',
+            steps: [
+                'Send the SOA immediately after delivery, not at month-end',
+                'Follow up on any SOA still unpaid after 15 days',
+                'Offer a small early-payment incentive to your top clients'
+            ]
+        },
+        {
+            key: 'cashflow', icon: fin.netCashFlow >= 0 ? '📈' : '📉', title: 'Strengthen Cash Flow',
+            sub: 'Net Cash Flow is 25% of your Health Score. Positive cash flow means the business can fund itself without strain.',
+            steps: [
+                'Time large purchases around when collections actually come in',
+                'Keep a cash buffer equal to at least 2 weeks of operating expenses',
+                'Delay non-critical purchases whenever cash flow is tight'
+            ]
+        },
+        {
+            key: 'tax', icon: '📋', title: 'Stay Ahead of Tax Obligations',
+            sub: 'Tax readiness is 15% of your Health Score. Drag the slider to see how submitting more expense receipts lowers what you owe.',
+            steps: [
+                "Set aside VAT as soon as revenue comes in — don't wait for quarter-end",
+                'Keep all input VAT receipts (diesel, parts, parking) organized to maximize deductions',
+                'Reconcile VAT payable monthly instead of only once per quarter'
+            ]
+        }
+    ];
 }
 
 function openImprovementModal() {
@@ -1720,6 +1779,7 @@ function openImprovementModal() {
 function closeImprovementModal() {
     document.getElementById('roadmap-overlay').classList.remove('show');
     clearRoadmapTimer();
+    destroyRoadmapChart();
 }
 
 function clearRoadmapTimer() {
@@ -1729,24 +1789,39 @@ function clearRoadmapTimer() {
 function renderRoadmapSlide(i) {
     clearRoadmapTimer();
     const s = roadmapSlides[i];
+    const fin = currentFinancials;
     const body = document.getElementById('roadmap-body');
+
+    let interactiveHTML = `<div class="roadmap-chart-card"><div class="roadmap-chart-wrap"><canvas id="roadmap-chart"></canvas></div><div class="roadmap-chart-caption" id="roadmap-chart-caption"></div></div>`;
+
+    if (s.key === 'margin') {
+        interactiveHTML += `
+            <div class="roadmap-sliders">
+                <div class="roadmap-slider-row">
+                    <div class="roadmap-slider-label">⛽ Cut Diesel by <span id="rm-diesel-pct">0%</span></div>
+                    <input type="range" min="0" max="30" value="0" class="roadmap-slider" id="rm-diesel-slider" oninput="onRoadmapMarginChange()">
+                </div>
+                <div class="roadmap-slider-row">
+                    <div class="roadmap-slider-label">🔧 Cut Maintenance by <span id="rm-maint-pct">0%</span></div>
+                    <input type="range" min="0" max="30" value="0" class="roadmap-slider" id="rm-maint-slider" oninput="onRoadmapMarginChange()">
+                </div>
+            </div>`;
+    } else if (s.key === 'tax') {
+        interactiveHTML += `
+            <div class="roadmap-sliders">
+                <div class="roadmap-slider-row">
+                    <div class="roadmap-slider-label">🧾 Additional receipts submitted <span id="rm-receipts-val">₱0</span></div>
+                    <input type="range" min="0" max="50000" step="1000" value="0" class="roadmap-slider" id="rm-receipts-slider" oninput="onRoadmapTaxChange()">
+                </div>
+            </div>`;
+    }
+
     body.innerHTML = `
         <div class="roadmap-slide active">
             <div class="roadmap-slide-icon">${s.icon}</div>
             <div class="roadmap-slide-title">${s.title}</div>
             <div class="roadmap-slide-sub">${s.sub}</div>
-            <div class="roadmap-gauge-row">
-                <div class="roadmap-gauge-box">
-                    <div class="roadmap-gauge-label">Current</div>
-                    <div class="roadmap-gauge-val">${s.current}</div>
-                </div>
-                <div class="roadmap-gauge-arrow">➜</div>
-                <div class="roadmap-gauge-box">
-                    <div class="roadmap-gauge-label">Target</div>
-                    <div class="roadmap-gauge-val target">${s.target}</div>
-                </div>
-            </div>
-            <div class="roadmap-track"><div class="roadmap-track-fill" id="roadmap-track-fill"></div></div>
+            ${interactiveHTML}
             <div class="roadmap-steps">
                 ${s.steps.map((step, idx) => `
                     <div class="roadmap-step" style="animation-delay:${0.3 + idx * 0.35}s">
@@ -1757,10 +1832,11 @@ function renderRoadmapSlide(i) {
             </div>
         </div>
     `;
-    setTimeout(() => {
-        const fill = document.getElementById('roadmap-track-fill');
-        if (fill) fill.style.width = s.progressPct + '%';
-    }, 50);
+
+    if (s.key === 'margin') renderMarginChart(fin);
+    else if (s.key === 'collections') renderCollectionsChart(fin);
+    else if (s.key === 'cashflow') renderCashflowSlideChart(fin);
+    else if (s.key === 'tax') renderTaxChart(fin);
 
     roadmapSlides.forEach((_, idx) => {
         const seg = document.getElementById('story-fill-' + idx);
@@ -1778,6 +1854,156 @@ function renderRoadmapSlide(i) {
     document.getElementById('roadmap-prev').disabled = (i === 0);
 
     if (roadmapPlaying) startStoryFill(i);
+}
+
+// ── Per-slide interactive charts (Chart.js) ──────────────────────────────
+function destroyRoadmapChart() {
+    if (roadmapChart) { roadmapChart.destroy(); roadmapChart = null; }
+}
+
+function renderMarginChart(fin) {
+    destroyRoadmapChart();
+    const ctx = document.getElementById('roadmap-chart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    const c = fin.current;
+    roadmapChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Expenses', 'Net Profit'],
+            datasets: [
+                { label: 'Current', data: [c.accruedExpenses, c.accruedProfit], backgroundColor: '#94a3b8', borderRadius: 6 },
+                { label: 'Projected', data: [c.accruedExpenses, c.accruedProfit], backgroundColor: '#16a34a', borderRadius: 6 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 500 },
+            plugins: { legend: { display: true, position: 'top', labels: { font: { size: 10 }, boxWidth: 10 } } },
+            scales: {
+                y: { ticks: { callback: v => formatCompact(v), font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+            }
+        }
+    });
+    updateRoadmapMarginProjection();
+}
+
+function onRoadmapMarginChange() {
+    document.getElementById('rm-diesel-pct').textContent = document.getElementById('rm-diesel-slider').value + '%';
+    document.getElementById('rm-maint-pct').textContent = document.getElementById('rm-maint-slider').value + '%';
+    updateRoadmapMarginProjection();
+}
+
+function updateRoadmapMarginProjection() {
+    if (!roadmapChart || !currentFinancials) return;
+    const c = currentFinancials.current;
+    const dieselPct = parseInt(document.getElementById('rm-diesel-slider').value, 10) / 100;
+    const maintPct = parseInt(document.getElementById('rm-maint-slider').value, 10) / 100;
+    const save = (c.categoryTotals.Diesel || 0) * dieselPct + (c.categoryTotals.Maintenance || 0) * maintPct;
+    const projExpenses = Math.max(0, c.accruedExpenses - save);
+    const projProfit = c.revenue - projExpenses;
+
+    roadmapChart.data.datasets[1].data = [projExpenses, projProfit];
+    roadmapChart.update();
+
+    const caption = document.getElementById('roadmap-chart-caption');
+    if (caption) {
+        caption.innerHTML = save > 0.5
+            ? `Cutting these costs frees up <strong>${formatCompact(save)}</strong> → projected profit ${formatCompact(projProfit)}`
+            : 'Drag the sliders below to see the projected impact';
+    }
+}
+
+function renderCollectionsChart(fin) {
+    destroyRoadmapChart();
+    const ctx = document.getElementById('roadmap-chart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    const pct = fin.allTime.collectionRate * 100;
+    roadmapChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: ['Current', 'Target'], datasets: [{ data: [pct, 90], backgroundColor: ['#94a3b8', '#16a34a'], borderRadius: 6 }] },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 700 },
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => ctx.parsed.x.toFixed(0) + '%' } } },
+            scales: {
+                x: { max: 100, ticks: { callback: v => v + '%', font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                y: { ticks: { font: { size: 11 } }, grid: { display: false } }
+            }
+        }
+    });
+    const caption = document.getElementById('roadmap-chart-caption');
+    if (caption) caption.innerHTML = `All-time collection rate: <strong>${pct.toFixed(0)}%</strong> — aim for 90%+`;
+}
+
+function renderCashflowSlideChart(fin) {
+    destroyRoadmapChart();
+    const ctx = document.getElementById('roadmap-chart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    const c = fin.current;
+    roadmapChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: ['Cash In', 'Cash Out', 'Taxes Due'], datasets: [{ data: [c.cashIn, c.cashOut, fin.taxesDue], backgroundColor: ['#16a34a', '#B32533', '#f59e0b'], borderRadius: 6 }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 700 },
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { ticks: { callback: v => formatCompact(v), font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+            }
+        }
+    });
+    const caption = document.getElementById('roadmap-chart-caption');
+    if (caption) caption.innerHTML = `Net Cash Flow: <strong>${formatCurrency(fin.netCashFlow)}</strong>`;
+}
+
+function renderTaxChart(fin) {
+    destroyRoadmapChart();
+    const ctx = document.getElementById('roadmap-chart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    const v = fin.vat;
+    roadmapChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: ['Output VAT', 'Input VAT', 'Net Payable'], datasets: [{ data: [v.outputVAT, v.inputVAT, Math.max(0, v.netVATPayable)], backgroundColor: ['#ef4444', '#16a34a', '#f59e0b'], borderRadius: 6 }] },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 500 },
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { ticks: { callback: v2 => formatCompact(v2), font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+            }
+        }
+    });
+    updateRoadmapTaxProjection();
+}
+
+function onRoadmapTaxChange() {
+    const val = parseInt(document.getElementById('rm-receipts-slider').value, 10);
+    document.getElementById('rm-receipts-val').textContent = formatCompact(val);
+    updateRoadmapTaxProjection();
+}
+
+function updateRoadmapTaxProjection() {
+    if (!roadmapChart || !currentFinancials) return;
+    const v = currentFinancials.vat;
+    const extraReceipts = parseInt(document.getElementById('rm-receipts-slider').value, 10);
+    // Receipts are VAT-inclusive; the recoverable Input VAT portion is 12/112 of the total.
+    const extraInputVAT = extraReceipts * (12 / 112);
+    const projInputVAT = v.inputVAT + extraInputVAT;
+    const projNetPayable = Math.max(0, v.outputVAT - projInputVAT);
+
+    roadmapChart.data.datasets[0].data = [v.outputVAT, projInputVAT, projNetPayable];
+    roadmapChart.update();
+
+    const caption = document.getElementById('roadmap-chart-caption');
+    if (caption) {
+        caption.innerHTML = extraReceipts > 0
+            ? `Claiming ${formatCompact(extraReceipts)} in receipts adds <strong>${formatCompact(extraInputVAT)}</strong> Input VAT → Net Payable drops to ${formatCompact(projNetPayable)}`
+            : 'Drag the slider to see how more receipts reduce what you owe';
+    }
 }
 
 function startStoryFill(i) {
