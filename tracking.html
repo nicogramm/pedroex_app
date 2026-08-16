@@ -91,11 +91,11 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
   <div class="frame-wrap">
     <div class="empty-state" id="empty-state">
       <div class="empty-icon">🛰️</div>
-      <div class="empty-text">Pumili ng truck sa itaas para makita<br>ang live GPS location nito.</div>
+      <div class="empty-text">Select a truck above to see<br>its live GPS location.</div>
     </div>
     <div class="loading-overlay" id="loading-overlay" style="display:none">
       <div class="spinner"></div>
-      <span>Nagla-load...</span>
+      <span>Loading...</span>
     </div>
     <iframe id="gps-frame" style="display:none"></iframe>
   </div>
@@ -126,7 +126,7 @@ body.dark .bottom-nav { box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.4); }
 
 <script>
 // ═══════════════════════════════════════
-// CONFIG — palitan ang PROXY_BASE kapag nagbago ang Render URL mo
+// CONFIG — change PROXY_BASE if your Render URL ever changes
 // ═══════════════════════════════════════
 const PROXY_BASE = 'https://pedroex-gps-proxy.onrender.com';
 
@@ -149,19 +149,19 @@ let currentTruckId = null;
 
 async function loadTruckList() {
   const row = document.getElementById('truck-row');
-  row.innerHTML = '<span style="color:var(--text3);font-size:12px;padding:8px">Naglo-load ng listahan ng truck...</span>';
+  row.innerHTML = '<span style="color:var(--text3);font-size:12px;padding:8px">Loading truck list...</span>';
   try {
     const res = await fetch(PROXY_BASE + '/api/trucks');
     const trucks = await res.json();
     if (!trucks.length) {
-      row.innerHTML = '<span style="color:var(--text3);font-size:12px;padding:8px">Walang na-configure na truck sa proxy server.</span>';
+      row.innerHTML = '<span style="color:var(--text3);font-size:12px;padding:8px">No trucks configured on the proxy server.</span>';
       return;
     }
     row.innerHTML = trucks
       .map((t) => `<button class="truck-btn" id="truck-btn-${t.id}" onclick="selectTruck('${t.id}')">${t.name}</button>`)
       .join('');
   } catch (err) {
-    row.innerHTML = '<span style="color:var(--red);font-size:12px;padding:8px">Hindi ma-reach ang GPS proxy server. Baka natutulog pa ito (free tier) — subukan ulit pagkatapos ng ~30 segundo.</span>';
+    row.innerHTML = '<span style="color:var(--red);font-size:12px;padding:8px">Could not reach the GPS proxy server. It may still be waking up (free tier) — try again in about 30 seconds.</span>';
   }
 }
 
