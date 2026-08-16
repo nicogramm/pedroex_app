@@ -359,7 +359,6 @@ const SCOPES     = 'https://www.googleapis.com/auth/spreadsheets https://www.goo
 
 const ALL_MODULES = [
   {id:'advisor',        icon:'bulb',     label:'AI Advisor',  stat:'sv-advisor',   sub:'of all-time billings collected', wide:true, link:'advisor.html'},
-  {id:'gps',            icon:'location', label:'GPS Tracking',stat:'sv-gps',       sub:'Live truck locations', link:'tracking.html'},
   {id:'trucks',         icon:'truck',    label:'Trucks',      stat:'sv-trucks',    sub:'Fleet roster',        link:'trucks.html'},
   {id:'trips',          icon:'location', label:'Trips',       stat:'sv-trips',     sub:'On the road',         link:'trips.html'},
   {id:'manpower',       icon:'roster',   label:'Manpower',    stat:'sv-manpower',  sub:'Duty roster',         link:'manpower-roster.html'},
@@ -368,6 +367,7 @@ const ALL_MODULES = [
   {id:'messages',       icon:'chat',     label:'Messages',    stat:'sv-msg',       sub:'Team chat',           link:'messages.html'},
   {id:'emp-records',    icon:'folder',   label:'Emp Records', stat:'sv-records',   sub:'201 files',           link:'employee-records.html'},
   {id:'matrix',         icon:'chart',    label:'Matrix',      stat:'sv-matrix',    sub:'Performance',         link:'matrix.html'},
+  {id:'gps',            icon:'location', label:'GPS Tracking',stat:'sv-gps',       sub:'Live truck locations', link:'https://pedroex-gps-proxy.onrender.com/tracking.html'},
   {id:'expenses-admin', icon:'chart',    label:'Expenses',    stat:'sv-exp-admin', sub:'Reports & Analytics', wide:true, link:'expenses.html',     adminOnly:true},
   {id:'expenses-emp',   icon:'card',     label:'Expenses',    stat:'sv-exp-emp',   sub:'Submit expense',      wide:true, link:'expenses-emp.html'},
   {id:'billing',        icon:'doc',      label:'Billing',     stat:'sv-billing',   sub:'Collected (' + new Date().getFullYear() + ')', wide:true, link:'billing.html', currency:true},
