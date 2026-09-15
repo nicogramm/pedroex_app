@@ -1531,13 +1531,15 @@ window.dueLabelClass = function(t) {
 window.buildShipmentForm = function(t) {
   var hasN = !!(t.shipmentNum  && t.shipmentNum.trim());
   var hasD = !!(t.shipmentDate && t.shipmentDate.trim());
-  // Suggest next working day
+  // Suggest the previous working day — San Miguel's Shipment Date is when
+  // they dispatched it, which is 1-2 working days BEFORE the truck actually
+  // completes the delivery (the Delivery Date).
   var suggested = '';
   if (!hasD && t.date) {
     var sd = new Date(t.date + 'T00:00:00');
-    sd.setDate(sd.getDate() + 1);
-    if (sd.getDay() === 6) sd.setDate(sd.getDate() + 2);
-    if (sd.getDay() === 0) sd.setDate(sd.getDate() + 1);
+    sd.setDate(sd.getDate() - 1);
+    if (sd.getDay() === 0) sd.setDate(sd.getDate() - 2);
+    if (sd.getDay() === 6) sd.setDate(sd.getDate() - 1);
     suggested = sd.getFullYear() + '-'
       + (sd.getMonth()+1<10?'0':'') + (sd.getMonth()+1) + '-'
       + (sd.getDate()<10?'0':'') + sd.getDate();
@@ -1550,7 +1552,7 @@ window.buildShipmentForm = function(t) {
     + '<div style="background:var(--bg);border-radius:10px;box-shadow:var(--neu-in);padding:10px 12px;margin-bottom:14px">'
     + '<div class="fl" style="margin-bottom:4px">Delivery Date <span style="text-transform:none;letter-spacing:0;color:var(--text3)">(from the trip — reference only)</span></div>'
     + '<div style="font-size:14px;font-weight:600;color:var(--text)">🚚 ' + t.date + '</div>'
-    + '<div style="font-size:10px;color:var(--text2);margin-top:4px">This is when the truck delivered. It is always EARLIER than the Shipment Date below — San Miguel issues the Shipment Date 1-2 working days AFTER this delivery.</div>'
+    + '<div style="font-size:10px;color:var(--text2);margin-top:4px">This is when the truck completed the delivery. It is always LATER than the Shipment Date below — San Miguel dispatches the shipment (and assigns the Shipment Date) 1-2 working days BEFORE it actually gets delivered.</div>'
     + '</div>'
 
     // Shipment Number
@@ -1566,10 +1568,10 @@ window.buildShipmentForm = function(t) {
     + '<div class="fg"><label class="fl">Shipment Date'
     + (hasD ? ' <span style="color:var(--green);font-size:9px">✓ OK</span>'
             : ' <span style="color:var(--red);font-size:9px">★ Required</span>') + '</label>'
-    + '<input class="fi" id="sf-shipdate" type="date" min="' + (t.date||'') + '" '
+    + '<input class="fi" id="sf-shipdate" type="date" max="' + (t.date||'') + '" '
     + 'value="' + (t.shipmentDate||suggested) + '" onchange="onSfShipDateChange(this)">'
     + '<div style="font-size:10px;color:var(--blue);margin-top:5px">'
-    + '💡 The date San Miguel recorded/issued the shipment number — usually 1-2 working days AFTER the Delivery Date above (' + t.date + '). It should never be earlier than the Delivery Date.'
+    + '💡 The date San Miguel dispatched/recorded the shipment number — usually 1-2 working days BEFORE the Delivery Date above (' + t.date + '). It should never be later than the Delivery Date.'
     + '</div></div>'
 
     // Partial warning
@@ -1626,8 +1628,8 @@ window.saveShipmentNum = function() {
     setTimeout(function(){var e=document.getElementById('sf-shipdate');if(e)e.style.boxShadow='';},3000);
     return;
   }
-  if (t.date && dateVal.trim()<t.date) {
-    showToast('❌ Shipment Date ('+dateVal.trim()+') can\'t be earlier than the Delivery Date ('+t.date+')!',6000);
+  if (t.date && dateVal.trim()>t.date) {
+    showToast('❌ Shipment Date ('+dateVal.trim()+') can\'t be later than the Delivery Date ('+t.date+')!',6000);
     var el2=document.getElementById('sf-shipdate');
     if(el2){el2.style.boxShadow='var(--neu-in), 0 0 0 3px rgba(179,37,51,0.5)';el2.focus();}
     setTimeout(function(){var e=document.getElementById('sf-shipdate');if(e)e.style.boxShadow='';},4000);
