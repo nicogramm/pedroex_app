@@ -714,20 +714,24 @@ function renderTasks(){
 
   renderList(mine,'tasks-list',taskFilter);
 }
-// ═══ ADMIN: GROUPED PER HELPER ════════════════════════
-function renderAllTasks(){
-  var el=document.getElementById('all-list');
+// ═══ GROUPED-BY-HELPER PANEL RENDERER (shared) ════════
+// Renders one collapsible panel per employee/helper — e.g. "Joey's Tasks",
+// "Anewlesis's Tasks" — each panel containing that person's task cards.
+// Used by both the "All Records" tab and the "Admin (My Tasks)" tab, with
+// unique element ids per containerId so the two tabs never collide.
+function renderGroupedTasks(containerId, filter, titleFn){
+  var el=document.getElementById(containerId);
   var tasks=generatedTasks;
 
   // Apply filter
   var filtered=tasks;
-  if (allFilter==='pending')   filtered=tasks.filter(function(t){return t.status==='pending';});
-  if (allFilter==='missing')   filtered=tasks.filter(function(t){return t.status==='missing';});
-  if (allFilter==='overdue')   filtered=tasks.filter(function(t){return t.status==='overdue';});
-  if (allFilter==='submitted') filtered=tasks.filter(function(t){return t.status==='submitted'||t.status==='late';});
-  if (allFilter==='shipment')  filtered=tasks.filter(function(t){return t.type==='ShipmentNum';});
-  if (allFilter==='pod')       filtered=tasks.filter(function(t){return t.type==='POD';});
-  if (allFilter==='crates')    filtered=tasks.filter(function(t){return t.type==='Crates';});
+  if (filter==='pending')   filtered=tasks.filter(function(t){return t.status==='pending';});
+  if (filter==='missing')   filtered=tasks.filter(function(t){return t.status==='missing';});
+  if (filter==='overdue')   filtered=tasks.filter(function(t){return t.status==='overdue';});
+  if (filter==='submitted') filtered=tasks.filter(function(t){return t.status==='submitted'||t.status==='late';});
+  if (filter==='shipment')  filtered=tasks.filter(function(t){return t.type==='ShipmentNum';});
+  if (filter==='pod')       filtered=tasks.filter(function(t){return t.type==='POD';});
+  if (filter==='crates')    filtered=tasks.filter(function(t){return t.type==='Crates';});
 
   if (!filtered.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
 
@@ -761,7 +765,7 @@ function renderAllTasks(){
     if (pend) statusSummary+='<span style="color:var(--orange);font-weight:700">'+pend+' pending</span> ';
     if (done) statusSummary+='<span style="color:var(--green);font-weight:700">'+done+' done</span>';
 
-    var safeId='grp_'+name.replace(/\s+/g,'_');
+    var safeId=containerId+'_grp_'+name.replace(/\s+/g,'_');
 
     // Task rows (hidden by default, expanded if has urgent)
     var hasUrgent=od>0||miss>0;
@@ -785,7 +789,7 @@ function renderAllTasks(){
       // Header — always visible, click to toggle
       +'<div onclick="toggleGroup(\''+safeId+'\')" style="padding:14px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-left:4px solid '+headerColor+'">'
       +'<div>'
-      +'<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">👤 '+name+'</div>'
+      +'<div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">'+titleFn(name)+'</div>'
       +'<div style="font-size:11px;color:var(--text2)">'+statusSummary+'<span style="color:var(--text3)"> · '+total+' task'+(total>1?'s':'')+'</span></div>'
       +'</div>'
       +'<div id="'+safeId+'_icon" style="font-size:18px;color:var(--text3);transition:transform .2s">'+(hasUrgent?'▲':'▼')+'</div>'
@@ -798,6 +802,11 @@ function renderAllTasks(){
   }).join('');
 }
 
+// ═══ ADMIN: GROUPED PER HELPER ════════════════════════
+function renderAllTasks(){
+  renderGroupedTasks('all-list', allFilter, function(name){ return '👤 '+name; });
+}
+
 function toggleGroup(id){
   var body=document.getElementById(id);
   var icon=document.getElementById(id+'_icon');
@@ -808,13 +817,18 @@ function toggleGroup(id){
   icon.textContent=isOpen?'▼':'▲';
 }
 
-// ═══ ADMIN (MY TASKS): FLAT LIST OF EVERY HELPER'S TASKS ═══
-// Same flat card layout as the employee "My Tasks" tab, but sourced from
-// ALL employees. Tapping a card opens the normal task sheet — since
-// canEdit already allows isAdmin to fill in / override any task there,
-// this is simply the admin's window into everyone's tasks.
+// ═══ ADMIN (MY TASKS): ONE PANEL PER HELPER ═══════════
+// e.g. "Joey's Tasks", "Anewlesis's Tasks" — same grouped-panel layout as
+// "All Records", just labeled per-person. Tapping any task inside a panel
+// opens the normal task sheet — since canEdit already allows isAdmin to
+// fill in / override any task there, this is the admin's window into
+// everyone's tasks, with the ability to upload or update an employee's
+// entry (Shipment Number, Shipment Date, POD, Crates, etc.) on their behalf.
 function renderAdminTasks(){
-  renderList(generatedTasks,'admin-list',adminTaskFilter);
+  renderGroupedTasks('admin-list', adminTaskFilter, function(name){
+    var first=(name||'').split(' ')[0]||name;
+    return '🛡️ '+first+'&rsquo;s Tasks';
+  });
 }
 
 function taskIcon(type){
