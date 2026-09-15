@@ -225,11 +225,19 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
       <div id="all-list"></div>
     </div>
 
-    <!-- ADMIN (MY TASKS) TAB — admin-only, flat list of EVERY helper's tasks, click to override/fill in a value on their behalf -->
+    <!-- ADMIN (MY TASKS) TAB — admin-only. Pick an employee and see EXACTLY
+         the same "My Tasks" screen that employee sees on their own phone
+         (same reminder card, same filters, same flat task cards) — the only
+         difference is the admin can tap in and fill/override any entry. -->
     <div id="content-admin" style="display:none">
       <div style="background:rgba(124,58,237,0.08);border-left:3px solid var(--purple);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--purple);font-weight:600">
-        🛡️ Admin view — tap any task below to fill it in or override it on the employee's behalf.
+        🛡️ Admin view — this is exactly what the selected employee sees on their own My Tasks screen. Tap any task to fill it in or override it.
       </div>
+      <div class="fg">
+        <label class="fl">Employee</label>
+        <select class="fi" id="admin-emp-select" onchange="onAdminEmpChange()"></select>
+      </div>
+      <div id="admin-reminder-card" class="reminder-card" style="display:none"></div>
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterAdminTasks('all',this)">All</button>
         <button class="filter-chip" onclick="filterAdminTasks('pending',this)">Pending</button>
@@ -351,6 +359,7 @@ var generatedTasks = [];
 var taskFilter     = 'all';
 var allFilter      = 'all';
 var adminTaskFilter = 'all';
+var adminSelectedEmp = null;
 var rptPeriod      = '1st';
 var selectedTask   = null;
 var sigCanvas, sigCtx, sigDrawn = false;
@@ -667,52 +676,63 @@ function buildTasks(){
 }
 
 // ═══ RENDER TASKS ═════════════════════════════════════
-function renderTasks(){
+// ═══ "MY TASKS" VIEW (shared) ═════════════════════════
+// Renders one person's own My Tasks screen — reminder card + flat task
+// list — exactly as an employee sees it. Parameterized by personName so
+// the Admin (My Tasks) tab can render this EXACT same view for whichever
+// employee the admin has selected, not a summarized/grouped version.
+function renderPersonTasks(personName,reminderId,listId,filter){
   var mine=generatedTasks.filter(function(t){
-    return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase();
+    return personName && t.helperName.toLowerCase()===personName.toLowerCase();
   });
 
   // Reminder card
   var overdue=mine.filter(function(t){return t.status==='overdue';});
   var missing=mine.filter(function(t){return t.status==='missing';});
   var pending=mine.filter(function(t){return t.status==='pending';});
-  var rc=document.getElementById('reminder-card');
+  var rc=document.getElementById(reminderId);
 
-  if (overdue.length||missing.length||pending.length){
-    var lines=['<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">📋 Reminders</div>'];
-    if (overdue.length){
-      lines.push('<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px">⚠ '+overdue.length+' Overdue</div>');
-      overdue.forEach(function(t){
-        lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
-          +taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck
-          +' <span style="color:var(--red);font-weight:600">('+t.date+')</span></div>');
-      });
+  if (rc){
+    if (overdue.length||missing.length||pending.length){
+      var lines=['<div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px">📋 Reminders</div>'];
+      if (overdue.length){
+        lines.push('<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:6px">⚠ '+overdue.length+' Overdue</div>');
+        overdue.forEach(function(t){
+          lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
+            +taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck
+            +' <span style="color:var(--red);font-weight:600">('+t.date+')</span></div>');
+        });
+      }
+      if (missing.length){
+        lines.push('<div style="font-size:13px;font-weight:700;color:var(--purple);margin-top:'+(overdue.length?'10px':'0')+';margin-bottom:6px">📋 '+missing.length+' Missing Shipment #</div>');
+        missing.forEach(function(t){
+          lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
+            +'🔢 '+t.truck+' <span style="color:var(--purple);font-weight:600">('+t.date+')</span></div>');
+        });
+      }
+      if (pending.length){
+        lines.push('<div style="font-size:13px;font-weight:700;color:var(--orange);margin-top:'+((overdue.length||missing.length)?'10px':'0')+';margin-bottom:6px">⏳ '+pending.length+' Pending</div>');
+        pending.forEach(function(t){
+          lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
+            +taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck
+            +' <span style="color:var(--orange);font-weight:600">Due: '+t.dueDate+'</span></div>');
+        });
+      }
+      lines.push('<button onclick="document.getElementById(\''+reminderId+'\').style.display=\'none\'" '
+        +'style="margin-top:10px;width:100%;padding:8px;border:none;background:none;color:var(--text3);'
+        +'font-size:12px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Dismiss</button>');
+      rc.innerHTML=lines.join('');
+      rc.style.display='block';
+    } else {
+      rc.style.display='none';
     }
-    if (missing.length){
-      lines.push('<div style="font-size:13px;font-weight:700;color:var(--purple);margin-top:'+(overdue.length?'10px':'0')+';margin-bottom:6px">📋 '+missing.length+' Missing Shipment #</div>');
-      missing.forEach(function(t){
-        lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
-          +'🔢 '+t.truck+' <span style="color:var(--purple);font-weight:600">('+t.date+')</span></div>');
-      });
-    }
-    if (pending.length){
-      lines.push('<div style="font-size:13px;font-weight:700;color:var(--orange);margin-top:'+((overdue.length||missing.length)?'10px':'0')+';margin-bottom:6px">⏳ '+pending.length+' Pending</div>');
-      pending.forEach(function(t){
-        lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
-          +taskIcon(t.type)+' '+taskLabel(t.type)+' — '+t.truck
-          +' <span style="color:var(--orange);font-weight:600">Due: '+t.dueDate+'</span></div>');
-      });
-    }
-    lines.push('<button onclick="document.getElementById(\'reminder-card\').style.display=\'none\'" '
-      +'style="margin-top:10px;width:100%;padding:8px;border:none;background:none;color:var(--text3);'
-      +'font-size:12px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer">Dismiss</button>');
-    rc.innerHTML=lines.join('');
-    rc.style.display='block';
-  } else {
-    rc.style.display='none';
   }
 
-  renderList(mine,'tasks-list',taskFilter);
+  renderList(mine,listId,filter);
+}
+
+function renderTasks(){
+  renderPersonTasks(currentUser.fullName,'reminder-card','tasks-list',taskFilter);
 }
 // ═══ GROUPED-BY-HELPER PANEL RENDERER (shared) ════════
 // Renders one collapsible panel per employee/helper — e.g. "Joey's Tasks",
@@ -824,11 +844,38 @@ function toggleGroup(id){
 // fill in / override any task there, this is the admin's window into
 // everyone's tasks, with the ability to upload or update an employee's
 // entry (Shipment Number, Shipment Date, POD, Crates, etc.) on their behalf.
-function renderAdminTasks(){
-  renderGroupedTasks('admin-list', adminTaskFilter, function(name){
-    var first=(name||'').split(' ')[0]||name;
-    return '🛡️ '+first+'&rsquo;s Tasks';
+// ═══ ADMIN (MY TASKS): PICK AN EMPLOYEE, SEE THEIR MY TASKS SCREEN ═══
+// Renders the exact same view an employee sees on their own My Tasks tab
+// (reminder card + flat task cards, no grouping) for whichever employee
+// is selected in the dropdown — the admin just gets to also fill it in.
+function populateAdminEmpSelect(){
+  var sel=document.getElementById('admin-emp-select'); if(!sel) return;
+  var seen={},names=[];
+  generatedTasks.forEach(function(t){
+    if (t.helperName && !seen[t.helperName]){ seen[t.helperName]=true; names.push(t.helperName); }
   });
+  names.sort();
+  if (!names.length){ sel.innerHTML='<option value="">No employees found</option>'; adminSelectedEmp=null; return; }
+  if (!adminSelectedEmp || names.indexOf(adminSelectedEmp)===-1) adminSelectedEmp=names[0];
+  sel.innerHTML=names.map(function(n){
+    return '<option value="'+n+'"'+(n===adminSelectedEmp?' selected':'')+'>'+n+'</option>';
+  }).join('');
+}
+
+function onAdminEmpChange(){
+  var sel=document.getElementById('admin-emp-select'); if(!sel) return;
+  adminSelectedEmp=sel.value;
+  renderAdminTasks();
+}
+
+function renderAdminTasks(){
+  populateAdminEmpSelect();
+  if (!adminSelectedEmp){
+    var rc=document.getElementById('admin-reminder-card'); if(rc) rc.style.display='none';
+    var el=document.getElementById('admin-list'); if(el) el.innerHTML='<div class="empty-hint">No employees found.</div>';
+    return;
+  }
+  renderPersonTasks(adminSelectedEmp,'admin-reminder-card','admin-list',adminTaskFilter);
 }
 
 function taskIcon(type){
@@ -855,7 +902,7 @@ function renderList(tasks,containerId,filter){
   var el=document.getElementById(containerId);
   if (!list.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
 
-  var showWho=(containerId==='all-list'||containerId==='admin-list');
+  var showWho=(containerId==='all-list');
 
   el.innerHTML=list.map(function(t){
     var bl = t.status==='submitted'?'✓ Done'
@@ -1573,7 +1620,7 @@ window.renderList = function(tasks, containerId, filter) {
 
   if (!list.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
 
-  var showWho=(containerId==='all-list'||containerId==='admin-list');
+  var showWho=(containerId==='all-list');
 
   el.innerHTML=list.map(function(t){
     var bl = t.status==='submitted'?'✓ Done'
