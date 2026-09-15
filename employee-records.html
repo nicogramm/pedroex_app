@@ -343,9 +343,7 @@ function isRecordSubmitted(rec, taskType) {
   var num   = (rec.number||'').trim();
   var hasSig= rec.signature && rec.signature.trim().length > 10;
   var hasPic= rec.picture   && rec.picture.trim().length  > 10;
-  if (taskType==='POD')    return num.startsWith('100') || hasSig || hasPic;
-  if (taskType==='Crates') return num.startsWith('62')  || hasSig || hasPic;
-  return false;
+  return num.length > 0 || hasSig || hasPic;
 }
 
 // ═══ ROSTER ═══════════════════════════════════════════
@@ -995,9 +993,7 @@ function saveRecord(){
   else if (currentExistingSignature){ sig=currentExistingSignature; }
   var pic=uploadedImage||'';
 
-  var liq='No';
-  if (t.type==='POD'   &&(number.startsWith('100')||sig.length>10||pic.length>10)) liq='Yes';
-  if (t.type==='Crates'&&(number.startsWith('62') ||sig.length>10||pic.length>10)) liq='Yes';
+var liq = (number.trim().length>0 || sig.length>10 || pic.length>10) ? 'Yes' : 'No';
 
   var sheetType=t.type==='POD'?'Proof of Deliveries':'Crates';
   var row=[
