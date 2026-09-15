@@ -384,6 +384,10 @@
             display: flex;
         }
 
+        .modal-overlay.stacked {
+            z-index: 1100;
+        }
+
         @keyframes slideInUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
@@ -1476,6 +1480,26 @@
         </div>
     </div>
 
+    <!-- Category Truck Breakdown Modal (stacks above Chart Modal) -->
+    <div class="modal-overlay stacked" id="categoryTruckModal">
+        <div class="modal-header">
+            <div class="modal-title" id="category-truck-modal-title">Category Breakdown</div>
+            <button class="modal-close" onclick="closeCategoryTruckModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-section">
+                <div class="modal-chart-wrapper" style="height:260px">
+                    <canvas id="category-truck-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">By Truck</div>
+                <div class="modal-list" id="category-truck-list"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
@@ -1513,6 +1537,7 @@
         let expensePieChart = null;
         let fleetBarChart = null;
         let chartModalChart = null;
+        let categoryTruckChart = null;
 
         // Cache for filtered data
         let cachedFilteredTrips = null;
@@ -3242,6 +3267,8 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
             };
 
             // Build detailed breakdown
+            // 👆 Each category card is now clickable — opens a per-truck
+            // breakdown (bar chart + list, ₱ amount and %) via showCategoryTruckBreakdown().
             const categoryBreakdown = Object.entries(categoryTotals)
                 .filter(([cat, amt]) => amt > 0)
                 .sort((a, b) => b[1] - a[1])
@@ -3253,7 +3280,8 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                     const changeColor = change > 2 ? 'var(--red)' : change < -2 ? 'var(--green)' : 'var(--text3)';
                     
                     return `
-                        <div style="margin-bottom:20px;padding:16px;background:var(--bg2);border-radius:12px;box-shadow:var(--neu-xs);border-left:4px solid ${categoryColors[cat]}">
+                        <div onclick="showCategoryTruckBreakdown('${cat}')" style="margin-bottom:20px;padding:16px;background:var(--bg2);border-radius:12px;box-shadow:var(--neu-xs);border-left:4px solid ${categoryColors[cat]};cursor:pointer;position:relative">
+                            <div style="position:absolute;top:14px;right:16px;font-size:9px;color:var(--text3);opacity:0.6;font-weight:600">👆 Per truck</div>
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                                 <div style="font-size:16px;font-weight:700;color:var(--text)">
                                     ${categoryIcons[cat]} ${cat}
@@ -3598,6 +3626,133 @@ Expenses = ${formatCurrency(totalExpenses)}<br>
                     }
                 }
             });
+        }
+
+        // ═══════════════════════════════════════
+        // 🆕 CATEGORY → PER-TRUCK BREAKDOWN
+        // Triggered by tapping a category card inside the Expense Mix modal
+        // (Diesel, Maintenance, Manpower, Documentation, Other).
+        // Shows a bar chart (₱ amount per truck) plus a list with ₱ and %.
+        // ═══════════════════════════════════════
+        function showCategoryTruckBreakdown(category) {
+            const trips = getFilteredTrips();
+            const expenses = getFilteredExpenses();
+            const tripDates = [...new Set(trips.map(t => t.deliveryDate))];
+
+            const truckTotals = {};
+            function addAmount(truck, amt) {
+                if (!truck) return;
+                if (!truckTotals[truck]) truckTotals[truck] = 0;
+                truckTotals[truck] += amt;
+            }
+
+            if (category === 'Manpower') {
+                tripDates.forEach(date => {
+                    getManpowerExpensesForDate(date).forEach(m => addAmount(m.truck, m.amount));
+                });
+            } else if (category === 'Documentation') {
+                tripDates.forEach(date => {
+                    getDocumentationExpensesForDate(date).forEach(d => addAmount(d.truck, d.amount));
+                });
+            } else if (category === 'Other') {
+                expenses
+                    .filter(e => e.category !== 'Diesel' && e.category !== 'Maintenance')
+                    .forEach(e => addAmount(e.truck, e.amount));
+            } else {
+                // Diesel, Maintenance (exact category match on the expense row)
+                expenses
+                    .filter(e => e.category === category)
+                    .forEach(e => addAmount(e.truck, e.amount));
+            }
+
+            const categoryTotal = Object.values(truckTotals).reduce((sum, v) => sum + v, 0);
+
+            const truckArray = Object.entries(truckTotals)
+                .map(([truck, amount]) => ({
+                    truck,
+                    amount,
+                    percent: categoryTotal > 0 ? (amount / categoryTotal * 100) : 0
+                }))
+                .sort((a, b) => b.amount - a.amount);
+
+            const icons = {
+                'Diesel': '⛽', 'Maintenance': '🔧', 'Manpower': '👷',
+                'Documentation': '📄', 'Other': '📦'
+            };
+            const colors = {
+                'Diesel': '#f59e0b', 'Maintenance': '#ef4444', 'Manpower': '#10b981',
+                'Documentation': '#3b82f6', 'Other': '#8b5cf6'
+            };
+
+            document.getElementById('category-truck-modal-title').textContent =
+                `${icons[category] || '📦'} ${category} — By Truck`;
+
+            const ctx = document.getElementById('category-truck-canvas');
+            categoryTruckChart = destroyChart(categoryTruckChart);
+
+            if (truckArray.length > 0) {
+                categoryTruckChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: truckArray.map(t => t.truck),
+                        datasets: [{
+                            label: category + ' (₱)',
+                            data: truckArray.map(t => t.amount),
+                            backgroundColor: colors[category] || '#8b5cf6',
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const t = truckArray[context.dataIndex];
+                                        return formatCurrency(t.amount) + ' (' + t.percent.toFixed(1) + '%)';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: (value) => formatCompact(value), font: { size: 10 } },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            },
+                            x: {
+                                ticks: { font: { size: 10, weight: '600' } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const listEl = document.getElementById('category-truck-list');
+            if (truckArray.length === 0) {
+                listEl.innerHTML = '<div class="empty-state"><p>No ' + category.toLowerCase() + ' expenses recorded for this period.</p></div>';
+            } else {
+                listEl.innerHTML = truckArray.map(t => `
+                    <div class="modal-list-item">
+                        <div class="modal-list-label">🚛 ${t.truck}</div>
+                        <div class="modal-list-value">
+                            ${formatCurrency(t.amount)}<br>
+                            <span style="font-size:10px;color:var(--text3)">${t.percent.toFixed(1)}% of ${category}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('categoryTruckModal').classList.add('show');
+        }
+
+        function closeCategoryTruckModal() {
+            document.getElementById('categoryTruckModal').classList.remove('show');
+            categoryTruckChart = destroyChart(categoryTruckChart);
         }
 
               function renderFleetPerformanceModal() {
