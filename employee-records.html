@@ -189,6 +189,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
     <div class="tabs">
       <button class="tab active" id="tab-tasks" onclick="switchTab('tasks')">My Tasks</button>
       <button class="tab" id="tab-all" onclick="switchTab('all')" style="display:none">All Records</button>
+      <button class="tab" id="tab-admin" onclick="switchTab('admin')" style="display:none">Admin (My Tasks)</button>
       <button class="tab" id="tab-report" onclick="switchTab('report')" style="display:none">Report</button>
     </div>
     <div id="loading-main" class="loading-wrap"><div class="spinner"></div>&nbsp;Loading...</div>
@@ -222,6 +223,24 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,.4)}
         <button class="filter-chip" onclick="filterAll('crates',this)">Crates</button>
       </div>
       <div id="all-list"></div>
+    </div>
+
+    <!-- ADMIN (MY TASKS) TAB — admin-only, flat list of EVERY helper's tasks, click to override/fill in a value on their behalf -->
+    <div id="content-admin" style="display:none">
+      <div style="background:rgba(124,58,237,0.08);border-left:3px solid var(--purple);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--purple);font-weight:600">
+        🛡️ Admin view — tap any task below to fill it in or override it on the employee's behalf.
+      </div>
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterAdminTasks('all',this)">All</button>
+        <button class="filter-chip" onclick="filterAdminTasks('pending',this)">Pending</button>
+        <button class="filter-chip" onclick="filterAdminTasks('missing',this)">Missing</button>
+        <button class="filter-chip" onclick="filterAdminTasks('overdue',this)">Overdue</button>
+        <button class="filter-chip" onclick="filterAdminTasks('submitted',this)">Done</button>
+        <button class="filter-chip" onclick="filterAdminTasks('shipment',this)">Shipment #</button>
+        <button class="filter-chip" onclick="filterAdminTasks('pod',this)">POD</button>
+        <button class="filter-chip" onclick="filterAdminTasks('crates',this)">Crates</button>
+      </div>
+      <div id="admin-list"></div>
     </div>
 
     <!-- REPORT TAB (ADMIN) -->
@@ -331,6 +350,7 @@ var allRecords     = [];
 var generatedTasks = [];
 var taskFilter     = 'all';
 var allFilter      = 'all';
+var adminTaskFilter = 'all';
 var rptPeriod      = '1st';
 var selectedTask   = null;
 var sigCanvas, sigCtx, sigDrawn = false;
@@ -431,6 +451,7 @@ function dueLabelClass(t){
   isAdmin=(localStorage.getItem('pedroex-role')||'').toLowerCase()==='admin';
   if (isAdmin){
     document.getElementById('tab-all').style.display='';
+    document.getElementById('tab-admin').style.display='';
     document.getElementById('tab-report').style.display='';
   }
   loadAll();
@@ -440,7 +461,7 @@ function dueLabelClass(t){
 function loadAll(){
   var email=(localStorage.getItem('pedroex-email')||'').toLowerCase();
   document.getElementById('loading-main').style.display='flex';
-  ['content-tasks','content-all','content-report'].forEach(function(id){
+  ['content-tasks','content-all','content-admin','content-report'].forEach(function(id){
     var el=document.getElementById(id); if(el) el.style.display='none';
   });
 
@@ -787,6 +808,15 @@ function toggleGroup(id){
   icon.textContent=isOpen?'▼':'▲';
 }
 
+// ═══ ADMIN (MY TASKS): FLAT LIST OF EVERY HELPER'S TASKS ═══
+// Same flat card layout as the employee "My Tasks" tab, but sourced from
+// ALL employees. Tapping a card opens the normal task sheet — since
+// canEdit already allows isAdmin to fill in / override any task there,
+// this is simply the admin's window into everyone's tasks.
+function renderAdminTasks(){
+  renderList(generatedTasks,'admin-list',adminTaskFilter);
+}
+
 function taskIcon(type){
   if (type==='ShipmentNum') return '🔢';
   if (type==='POD')         return '📄';
@@ -811,6 +841,8 @@ function renderList(tasks,containerId,filter){
   var el=document.getElementById(containerId);
   if (!list.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
 
+  var showWho=(containerId==='all-list'||containerId==='admin-list');
+
   el.innerHTML=list.map(function(t){
     var bl = t.status==='submitted'?'✓ Done'
             :t.status==='late'     ?'⚠ Late'
@@ -819,7 +851,7 @@ function renderList(tasks,containerId,filter){
             :'⏳ Pending';
     var bc = 'badge-'+t.status;
     var dc = dueLabelClass(t);
-    var who=containerId==='all-list'?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
+    var who=showWho?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
     var cr =t.type==='Crates'?'<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>':'';
     var sn =t.shipmentNum?'<div class="task-meta-row">🔢 Shipment: '+t.shipmentNum+'</div>':'';
     var sub=(!t.isScheduled&&t.scheduledHelper)
@@ -847,6 +879,7 @@ function openTask(taskId){
 
   var canEdit=isAdmin||currentUser.fullName.toLowerCase()===t.helperName.toLowerCase();
   var canDelete=isAdmin&&t.type!=='ShipmentNum';
+  var isAdminOverride=isAdmin&&currentUser.fullName.toLowerCase()!==t.helperName.toLowerCase();
 
   var rows=[
     ['Trip Type',t.tripType||'—'],['Truck',t.truck],['Date',t.date],
@@ -871,6 +904,11 @@ function openTask(taskId){
     +rows.map(function(r){return '<div class="dt-row"><span class="dt-label">'+r[0]+'</span><span class="dt-val">'+r[1]+'</span></div>';}).join('')
     +'</div>';
 
+  var overrideNote=isAdminOverride
+    ?'<div style="background:rgba(124,58,237,0.08);border-left:3px solid var(--purple);border-radius:10px;padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--purple);font-weight:600">'
+      +'🛡️ Admin override — you are filling this in on behalf of '+t.helperName+'.</div>'
+    :'';
+
   var media='';
   if (t.submitted&&t.type!=='ShipmentNum'){
     if (t.signature) media+='<div class="fg"><label class="fl">Signature</label>'
@@ -883,11 +921,11 @@ function openTask(taskId){
   var action='';
   if (canEdit){
     if (t.type==='ShipmentNum'){
-      action=buildShipmentForm(t);
+      action=overrideNote+buildShipmentForm(t);
     } else if (!t.submitted){
-      action=buildRecordForm(t,false);
+      action=overrideNote+buildRecordForm(t,false);
     } else {
-      action=media+'<button class="btn btn-primary" onclick="openEditForm()">✏️ Edit Submission</button>';
+      action=overrideNote+media+'<button class="btn btn-primary" onclick="openEditForm()">✏️ Edit Submission</button>';
       if (canDelete) action+='<button class="btn-danger" onclick="confirmDeleteTask()">Delete Record</button>';
     }
   } else { action=media; }
@@ -1051,14 +1089,20 @@ function filterAll(f,btn){
   document.querySelectorAll('#content-all .filter-chip').forEach(function(c){c.classList.remove('active');});
   btn.classList.add('active'); renderAllTasks();
 }
+function filterAdminTasks(f,btn){
+  adminTaskFilter=f;
+  document.querySelectorAll('#content-admin .filter-chip').forEach(function(c){c.classList.remove('active');});
+  btn.classList.add('active'); renderAdminTasks();
+}
 
 // ═══ TABS ═════════════════════════════════════════════
 function switchTab(name){
-  ['tasks','all','report'].forEach(function(t){
+  ['tasks','all','admin','report'].forEach(function(t){
     document.getElementById('tab-'+t).classList.toggle('active',t===name);
     var el=document.getElementById('content-'+t); if(el) el.style.display=(t===name?'block':'none');
   });
   if (name==='all') renderAllTasks();
+  if (name==='admin') renderAdminTasks();
   if (name==='report'){
     var rc=document.getElementById('rpt-content');
     var rl=document.getElementById('rpt-loading');
@@ -1515,6 +1559,8 @@ window.renderList = function(tasks, containerId, filter) {
 
   if (!list.length){el.innerHTML='<div class="empty-hint">No tasks found.</div>';return;}
 
+  var showWho=(containerId==='all-list'||containerId==='admin-list');
+
   el.innerHTML=list.map(function(t){
     var bl = t.status==='submitted'?'✓ Done'
             :t.status==='late'     ?'⚠ Late'
@@ -1525,7 +1571,7 @@ window.renderList = function(tasks, containerId, filter) {
     var bc = t.status==='partial' ? 'badge-overdue' : 'badge-'+t.status;
     var dc = window.dueLabelClass(t);
     var dl = window.dueLabel(t);
-    var who=containerId==='all-list'?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
+    var who=showWho?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
     var cr=t.type==='Crates'?'<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>':'';
 
     // Per-field status for ShipmentNum
