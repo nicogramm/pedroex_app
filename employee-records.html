@@ -150,7 +150,7 @@ body.dark .rpt-row{border-bottom-color:rgba(255,255,255,.03)}
 .saving-spinner{width:36px;height:36px;border:3px solid var(--text3);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
 .saving-text{font-size:14px;color:var(--text2);font-weight:500}
 @keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s}
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;white-space:pre-wrap;max-width:88vw;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .toast.show{opacity:1}
 .empty-hint{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
 .loading-wrap{display:flex;align-items:center;justify-content:center;gap:10px;padding:48px;color:var(--text3);font-size:13px}
@@ -368,9 +368,10 @@ var currentExistingSignature = null;
 var _reminderShown = false;
 
 // ═══ SUBMISSION DETECTION ═════════════════════════════
-// FIX (Sept 2026): dati, kailangan mag-start sa "100" (POD) o "62" (Crates)
-// yung document number bago ituring na "submitted" ang record. Tinanggal na
-// ito — anumang laman sa number field (o may signature/photo) ay sapat na.
+// FIX (Sept 2026): previously, the document number had to start with "100"
+// (POD) or "62" (Crates) before a record counted as "submitted". That
+// prefix requirement has been removed — any content in the number field
+// (or a signature/photo) is now enough.
 function isRecordSubmitted(rec, taskType) {
   var num   = (rec.number||'').trim();
   var hasSig= rec.signature && rec.signature.trim().length > 10;
@@ -495,30 +496,43 @@ function loadAll(){
     currentUser=empRow;
 
     // Trips: A=ID,B=DeliveryDate,C=Truck,D=ShipmentDate,E=Type,F=ShipmentNum,G=Billed,H=Route,I=Rate
-    allTrips=(res[1].values||[]).filter(function(r){return r[1];}).map(function(r,i){
-      return {
+    // IMPORTANT: rowIndex must be the row's position in the ACTUAL sheet
+    // (data starts at row 2), computed from the RAW array before any
+    // filtering. Filtering first and then using the filtered array's index
+    // (the old `.filter(...).map((r,i)=>rowIndex:i+2)` pattern) silently
+    // desyncs every row's rowIndex the moment any earlier row is blank —
+    // every save after that point then writes to the WRONG row. Building
+    // with forEach over the untouched raw rows avoids that entirely.
+    allTrips=[];
+    (res[1].values||[]).forEach(function(r,i){
+      if (!r[1]) return; // skip rows with no DeliveryDate, but keep true row number
+      allTrips.push({
         rowIndex:i+2,
         id:r[0]||'', deliveryDate:r[1]||'', truck:r[2]||'',
         shipmentDate:r[3]||'', type:r[4]||'',
         shipmentNum:r[5]||'',  // col F — may be empty
         billed:r[6]||'', route:r[7]||'', rate:r[8]||''
-      };
+      });
     });
 
-    allAtt=(res[2].values||[]).filter(function(r){return r[1];}).map(function(r,i){
-      return {rowIndex:i+2,id:r[0]||'',date:r[1]||'',name:r[2]||'',team:r[3]||'',
+    allAtt=[];
+    (res[2].values||[]).forEach(function(r,i){
+      if (!r[1]) return;
+      allAtt.push({rowIndex:i+2,id:r[0]||'',date:r[1]||'',name:r[2]||'',team:r[3]||'',
               crates:r[4]||'0',meal:r[5]||'',truck:r[6]||'',location:r[7]||'',
-              lat:r[8]||'',lng:r[9]||'',time:r[10]||'',helperType:r[11]||''};
+              lat:r[8]||'',lng:r[9]||'',time:r[10]||'',helperType:r[11]||''});
     });
 
-    allRecords=(res[3].values||[]).filter(function(r){return r[1];}).map(function(r,i){
-      return {
+    allRecords=[];
+    (res[3].values||[]).forEach(function(r,i){
+      if (!r[1]) return;
+      allRecords.push({
         rowIndex:i+2, sheetId:r[0]||String(i+2),
         empName:r[1]||'', date:r[2]||'', subDate:r[3]||'',
         truck:r[4]||'', docType:r[5]||'', number:r[6]||'',
         liquidated:r[7]||'', ackBy:r[8]||'',
         signature:r[9]||'', picture:r[10]||'', comments:r[11]||''
-      };
+      });
     });
 
     generatedTasks=buildTasks();
@@ -529,8 +543,9 @@ function loadAll(){
 
   }).catch(function(err){
     document.getElementById('loading-main').innerHTML=
-      '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load. Check connection.</div>';
-    console.error(err);
+      '<div style="text-align:center;padding:40px;color:var(--red)">Failed to load.<br><span style="font-size:11px;color:var(--text3)">'
+      +((err&&err.message)?err.message:'Check connection.')+'</span></div>';
+    console.error('[loadAll]',err);
   });
 }
 
@@ -943,7 +958,7 @@ function openTask(taskId){
   var isAdminOverride=isAdmin&&currentUser.fullName.toLowerCase()!==t.helperName.toLowerCase();
 
   var rows=[
-    ['Trip Type',t.tripType||'—'],['Truck',t.truck],['Date',t.date],
+    ['Trip Type',t.tripType||'—'],['Truck',t.truck],['Delivery Date',t.date],
     ['Route',t.route||'—'],['Assigned To',t.helperName],
     ['Scheduled Helper',t.scheduledHelper||'—'],['Status',t.status.toUpperCase()]
   ];
@@ -1016,7 +1031,7 @@ function saveShipmentNum(){
       hideSaving();
       showToast('✅ Shipment number filed!');
       closeSheet('task-sheet'); loadAll();
-    }).catch(function(err){hideSaving();showToast('❌ Save failed.');console.error(err);});
+    }).catch(function(err){hideSaving();showToast('❌ '+(err&&err.message?err.message:'Save failed.'),6000);console.error('[saveShipmentNum]',err);});
 }
 
 // ═══ POD / CRATES FORM ════════════════════════════════
@@ -1027,7 +1042,10 @@ function buildRecordForm(t,isEdit){
     :'<input type="hidden" id="sf-crates" value="'+(t.expectedCrates||'0')+'">';
   var numHint=t.type==='POD'?'POD #':'Return Slip #';
 
-  return '<div class="fg"><label class="fl">Submission Date</label>'
+  return '<div style="background:rgba(37,99,235,0.07);border-left:3px solid var(--blue);border-radius:10px;'
+    + 'padding:8px 12px;margin-bottom:14px;font-size:11px;color:var(--blue);font-weight:600">'
+    + 'ℹ️ To mark this task Done, fill in at least ONE of: ' + numHint + ', Signature, or Photo. Submission Date alone is not enough.</div>'
+    + '<div class="fg"><label class="fl">Submission Date</label>'
     +'<input class="fi" type="date" id="sf-date" value="'+(isEdit?(t.submissionDate||fmtDate(new Date())):fmtDate(new Date()))+'"></div>'
     +cr
     +'<div class="fg"><label class="fl">'+numHint+' (Optional)</label>'
@@ -1096,9 +1114,9 @@ function saveRecord(){
   else if (currentExistingSignature){ sig=currentExistingSignature; }
   var pic=uploadedImage||'';
 
-  // FIX (Sept 2026): tinanggal na ang "100"/"62" prefix requirement.
-  // Kahit anong number (o kahit wala, basta may signature/photo) ay
-  // itinuturing nang "Liquidated: Yes".
+  // FIX (Sept 2026): the "100"/"62" prefix requirement has been removed.
+  // Any number (or none, as long as there's a signature/photo) is now
+  // enough to be treated as "Liquidated: Yes".
   var liq = (number.trim().length>0 || sig.length>10 || pic.length>10) ? 'Yes' : 'No';
 
   var sheetType=t.type==='POD'?'Proof of Deliveries':'Crates';
@@ -1116,9 +1134,12 @@ function saveRecord(){
 
   p.then(function(){
     hideSaving();
-    showToast(isLate?'⚠ Submitted (Late)':'✅ Record submitted!');
+    var msg = liq==='No'
+      ? '⚠ Saved, but still NOT marked Done — add a '+(t.type==='POD'?'POD #':'Return Slip #')+', Signature, or Photo to complete it.'
+      : (isLate?'⚠ Submitted (Late)':'✅ Record submitted!');
+    showToast(msg, liq==='No'?6000:3000);
     closeSheet('task-sheet'); loadAll();
-  }).catch(function(err){hideSaving();showToast('❌ Save failed.');console.error(err);});
+  }).catch(function(err){hideSaving();showToast('❌ '+(err&&err.message?err.message:'Save failed.'),6000);console.error('[saveRecord]',err);});
 }
 
 // ═══ DELETE ═══════════════════════════════════════════
@@ -1136,7 +1157,7 @@ function doDelete(){
   apiUpdate(TAB_RECORDS+'!A'+selectedTask.recordRowIndex+':L'+selectedTask.recordRowIndex,
     [['','','','','','','','No','','','','']])
     .then(function(){hideSaving();showToast('✅ Deleted.');closeSheet('task-sheet');loadAll();})
-    .catch(function(err){hideSaving();showToast('❌ Delete failed.');console.error(err);});
+    .catch(function(err){hideSaving();showToast('❌ '+(err&&err.message?err.message:'Delete failed.'),6000);console.error('[doDelete]',err);});
 }
 
 // ═══ FILTERS ══════════════════════════════════════════
@@ -1394,24 +1415,41 @@ function removePic(){
 }
 
 // ═══ API ══════════════════════════════════════════════
+// Shared response handler: redirect to re-login on an expired/invalid token
+// (401), otherwise surface the REAL reason a write failed (Google's API
+// returns {error:{message,status}} in the body — e.g. "Requested entity was
+// not found", "The caller does not have permission", "Unable to parse
+// range" — instead of the old generic "Save failed." that hid the cause.
+function apiHandleResponse(r){
+  if (r.status===401){ location.href='index.html'; throw new Error('Auth'); }
+  if (!r.ok){
+    return r.text().then(function(txt){
+      var msg='HTTP '+r.status;
+      try{ var j=JSON.parse(txt); if (j&&j.error&&j.error.message) msg=j.error.message; }
+      catch(e){ if (txt) msg=txt.slice(0,200); }
+      throw new Error(msg);
+    });
+  }
+  return r.json();
+}
 function apiGet(range){
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range),
     {headers:{Authorization:'Bearer '+token}})
-    .then(function(r){if(r.status===401){location.href='index.html';throw new Error('Auth');}return r.json();});
+    .then(apiHandleResponse);
 }
 function apiAppend(range,values){
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)
     +':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
     {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
      body:JSON.stringify({values:values})})
-    .then(function(r){if(!r.ok) throw new Error('Append failed');return r.json();});
+    .then(apiHandleResponse);
 }
 function apiUpdate(range,values){
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)
     +'?valueInputOption=USER_ENTERED',
     {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
      body:JSON.stringify({values:values})})
-    .then(function(r){if(!r.ok) throw new Error('Update failed');return r.json();});
+    .then(apiHandleResponse);
 }
 
 // ═══ UTILS ════════════════════════════════════════════
@@ -1422,7 +1460,7 @@ function closeConfirm(){document.getElementById('confirm-overlay').classList.rem
 function showSaving(m){document.getElementById('saving-text').textContent=m||'Saving...';document.getElementById('saving-overlay').classList.add('show');}
 function hideSaving(){document.getElementById('saving-overlay').classList.remove('show');}
 var _tt;
-function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},3000);}
+function showToast(m,dur){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},dur||3000);}
 ['task-sheet','notif-sheet'].forEach(function(id){
   var el=document.getElementById(id);
   if(el) el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('open');});
@@ -1430,7 +1468,7 @@ function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.c
 </script>
 <!--
 =======================================================
-RECORDS.HTML PATCH — Shipment Date sa My Tasks
+RECORDS.HTML PATCH — Shipment Date in My Tasks
 =======================================================
 HOW TO APPLY:
 
@@ -1508,6 +1546,13 @@ window.buildShipmentForm = function(t) {
     + 'border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:var(--purple);font-weight:600">'
     + '📋 Required: Shipment Number AND Shipment Date</div>'
 
+    // Reference: Delivery Date (read-only, for context only — NOT the field being filled in)
+    + '<div style="background:var(--bg);border-radius:10px;box-shadow:var(--neu-in);padding:10px 12px;margin-bottom:14px">'
+    + '<div class="fl" style="margin-bottom:4px">Delivery Date <span style="text-transform:none;letter-spacing:0;color:var(--text3)">(from the trip — reference only)</span></div>'
+    + '<div style="font-size:14px;font-weight:600;color:var(--text)">🚚 ' + t.date + '</div>'
+    + '<div style="font-size:10px;color:var(--text2);margin-top:4px">This is when the truck delivered. It is always EARLIER than the Shipment Date below — San Miguel issues the Shipment Date 1-2 working days AFTER this delivery.</div>'
+    + '</div>'
+
     // Shipment Number
     + '<div class="fg"><label class="fl">Shipment Number'
     + (hasN ? ' <span style="color:var(--green);font-size:9px">✓ OK</span>'
@@ -1515,15 +1560,16 @@ window.buildShipmentForm = function(t) {
     + '<input class="fi" id="sf-shipnum" type="text" inputmode="numeric" '
     + 'value="' + (t.shipmentNum||'') + '" placeholder="e.g. 1004766903" '
     + 'oninput="onSfShipNumChange(this)"></div>'
+    + '<div style="font-size:10px;color:var(--text2);margin:-8px 0 14px">The tracking number San Miguel gives this shipment.</div>'
 
     // Shipment Date
     + '<div class="fg"><label class="fl">Shipment Date'
     + (hasD ? ' <span style="color:var(--green);font-size:9px">✓ OK</span>'
             : ' <span style="color:var(--red);font-size:9px">★ Required</span>') + '</label>'
-    + '<input class="fi" id="sf-shipdate" type="date" '
+    + '<input class="fi" id="sf-shipdate" type="date" min="' + (t.date||'') + '" '
     + 'value="' + (t.shipmentDate||suggested) + '" onchange="onSfShipDateChange(this)">'
     + '<div style="font-size:10px;color:var(--blue);margin-top:5px">'
-    + '💡 Date recorded by San Miguel — usually 1-2 working days after delivery (' + t.date + ')'
+    + '💡 The date San Miguel recorded/issued the shipment number — usually 1-2 working days AFTER the Delivery Date above (' + t.date + '). It should never be earlier than the Delivery Date.'
     + '</div></div>'
 
     // Partial warning
@@ -1580,6 +1626,13 @@ window.saveShipmentNum = function() {
     setTimeout(function(){var e=document.getElementById('sf-shipdate');if(e)e.style.boxShadow='';},3000);
     return;
   }
+  if (t.date && dateVal.trim()<t.date) {
+    showToast('❌ Shipment Date ('+dateVal.trim()+') can\'t be earlier than the Delivery Date ('+t.date+')!',6000);
+    var el2=document.getElementById('sf-shipdate');
+    if(el2){el2.style.boxShadow='var(--neu-in), 0 0 0 3px rgba(179,37,51,0.5)';el2.focus();}
+    setTimeout(function(){var e=document.getElementById('sf-shipdate');if(e)e.style.boxShadow='';},4000);
+    return;
+  }
   showSaving('Filing Shipment # and Date...');
   // Save D=ShipmentDate, E=Type, F=ShipmentNum in one range update
   apiUpdate(TAB_TRIPS+'!D'+t.tripRowIndex+':F'+t.tripRowIndex,
@@ -1590,7 +1643,7 @@ window.saveShipmentNum = function() {
       closeSheet('task-sheet');
       loadAll();
     })
-    .catch(function(err){ hideSaving(); showToast('❌ Save failed.'); console.error(err); });
+    .catch(function(err){ hideSaving(); showToast('❌ '+(err&&err.message?err.message:'Save failed.'),6000); console.error('[saveShipmentNum:patched]',err); });
 };
 
 // Override the task card meta to show per-field status for ShipmentNum
