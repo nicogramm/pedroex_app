@@ -339,6 +339,9 @@ var currentExistingSignature = null;
 var _reminderShown = false;
 
 // ═══ SUBMISSION DETECTION ═════════════════════════════
+// FIX (Sept 2026): dati, kailangan mag-start sa "100" (POD) o "62" (Crates)
+// yung document number bago ituring na "submitted" ang record. Tinanggal na
+// ito — anumang laman sa number field (o may signature/photo) ay sapat na.
 function isRecordSubmitted(rec, taskType) {
   var num   = (rec.number||'').trim();
   var hasSig= rec.signature && rec.signature.trim().length > 10;
@@ -554,6 +557,7 @@ function buildTasks(){
         helperName:primary, truck:truck, date:date,
         route:trip.route, tripType:trip.type, tripId:trip.id,
         shipmentNum:trip.shipmentNum||'',
+        shipmentDate:trip.shipmentDate||'',
         dueDate:   date,  // reference only, no enforcement
         submitted: snDone,
         submissionDate:'',
@@ -922,7 +926,7 @@ function buildRecordForm(t,isEdit){
     ?'<div class="fg"><label class="fl">Crates Count Returned</label>'
       +'<input class="fi" id="sf-crates" type="number" value="'+t.expectedCrates+'" min="0"></div>'
     :'<input type="hidden" id="sf-crates" value="'+(t.expectedCrates||'0')+'">';
-  var numHint=t.type==='POD'?'POD # (starts with 100...)':'Return Slip # (starts with 62...)';
+  var numHint=t.type==='POD'?'POD #':'Return Slip #';
 
   return '<div class="fg"><label class="fl">Submission Date</label>'
     +'<input class="fi" type="date" id="sf-date" value="'+(isEdit?(t.submissionDate||fmtDate(new Date())):fmtDate(new Date()))+'"></div>'
@@ -993,7 +997,10 @@ function saveRecord(){
   else if (currentExistingSignature){ sig=currentExistingSignature; }
   var pic=uploadedImage||'';
 
-var liq = (number.trim().length>0 || sig.length>10 || pic.length>10) ? 'Yes' : 'No';
+  // FIX (Sept 2026): tinanggal na ang "100"/"62" prefix requirement.
+  // Kahit anong number (o kahit wala, basta may signature/photo) ay
+  // itinuturing nang "Liquidated: Yes".
+  var liq = (number.trim().length>0 || sig.length>10 || pic.length>10) ? 'Yes' : 'No';
 
   var sheetType=t.type==='POD'?'Proof of Deliveries':'Crates';
   var row=[
@@ -1316,7 +1323,7 @@ function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.c
   if(el) el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('open');});
 });
 </script>
-<!-- 
+<!--
 =======================================================
 RECORDS.HTML PATCH — Shipment Date sa My Tasks
 =======================================================
@@ -1487,7 +1494,7 @@ var _origRenderList = window.renderList;
 window.renderList = function(tasks, containerId, filter) {
   // Call original
   _origRenderList(tasks, containerId, filter);
-  
+
   // Post-process: fix ShipmentNum partial badges and add ship date status
   var el=document.getElementById(containerId);
   if (!el) return;
@@ -1520,7 +1527,7 @@ window.renderList = function(tasks, containerId, filter) {
     var dl = window.dueLabel(t);
     var who=containerId==='all-list'?'<div class="task-meta-row">👤 '+t.helperName+'</div>':'';
     var cr=t.type==='Crates'?'<div class="task-meta-row">📦 Expected: <strong>'+t.expectedCrates+' crates</strong></div>':'';
-    
+
     // Per-field status for ShipmentNum
     var sn='';
     if (t.type==='ShipmentNum'){
@@ -1536,7 +1543,7 @@ window.renderList = function(tasks, containerId, filter) {
     } else {
       sn=t.shipmentNum?'<div class="task-meta-row">🔢 '+t.shipmentNum+'</div>':'';
     }
-    
+
     var sub=(!t.isScheduled&&t.scheduledHelper)
       ?'<span style="font-size:10px;color:var(--orange);margin-top:4px;display:block">⚠ Sched: '
         +t.scheduledHelper.split(' ')[0]+' → '+t.helperName.split(' ')[0]+'</span>':'';
@@ -1567,9 +1574,5 @@ window.buildTasks = function() {
 
 console.log('✅ Records.html Shipment Date patch loaded');
 </script>
-</body>
-</html>
-
-
 </body>
 </html>
