@@ -573,6 +573,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
   <div class="confirm-box">
     <div class="confirm-title" id="confirm-title">Confirm</div>
     <div class="confirm-msg" id="confirm-msg"></div>
+    <input class="fi" id="confirm-pw" type="password" placeholder="Enter password" autocomplete="off" style="display:none;margin-bottom:18px">
     <div class="confirm-btns">
       <button class="cb cb-cancel" onclick="closeConfirm()">Cancel</button>
       <button class="cb cb-confirm" id="confirm-ok">Confirm</button>
@@ -599,6 +600,7 @@ var TAB_TRUCKS     = 'Truck Roster';
 // ═══ STATE ════════════════════════════════════════════
 var token         = '';
 var isAdmin       = false;
+var STATUS_PASSWORD = 'peroex';   // anti-mis-tap guard only (visible in page source)
 var isReadOnly    = false;   // true when Employees!F (Status) = SEPARATED
 var currentUser   = null;
 var allAttendance = [];
@@ -1336,8 +1338,16 @@ function promptToggleStatus(idx) {
     ? 'Reactivate '+name+'? They will be able to check in and submit entries again.'
     : 'Mark '+name+' as SEPARATED? Their account becomes read-only: they can view records but cannot check in, add, edit or delete anything.';
   document.getElementById('confirm-ok').textContent='Confirm';
-  document.getElementById('confirm-ok').onclick=function(){ doSetStatus(idx, sep?'ACTIVE':'SEPARATED'); };
+  var pw=document.getElementById('confirm-pw');
+  pw.value=''; pw.style.display='block';
+  var submit=function(){
+    if (pw.value!==STATUS_PASSWORD) { showToast('❌ Wrong password.'); pw.value=''; pw.focus(); return; }
+    doSetStatus(idx, sep?'ACTIVE':'SEPARATED');
+  };
+  document.getElementById('confirm-ok').onclick=submit;
+  pw.onkeydown=function(e){ if (e.key==='Enter') submit(); };
   document.getElementById('confirm-overlay').classList.add('open');
+  setTimeout(function(){ pw.focus(); },50);
 }
 function doSetStatus(idx, newStatus) {
   var r=allEmployees[idx]; if (!r||!isAdmin) return;
@@ -1371,7 +1381,8 @@ function apiUpdate(range, values) {
 // ═══ HELPERS ══════════════════════════════════════════
 function fmtDate(d) { return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 function pad(n) { return n<10?'0'+n:String(n); }
-function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+function resetConfirmPw() { var i=document.getElementById('confirm-pw'); if (i) { i.value=''; i.style.display='none'; i.onkeydown=null; } }
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); resetConfirmPw(); }
 function showSaving(m) { document.getElementById('saving-text').textContent=m||'Saving...'; document.getElementById('saving-overlay').classList.add('show'); }
 function hideSaving() { document.getElementById('saving-overlay').classList.remove('show'); }
 var _tt;
@@ -1379,7 +1390,7 @@ function showToast(m) { var t=document.getElementById('toast'); t.textContent=m;
 
 ['att-sheet','confirm-overlay'].forEach(function(id){
   var el=document.getElementById(id);
-  if(el) el.addEventListener('click',function(e){ if(e.target===el) el.classList.remove('open'); });
+  if(el) el.addEventListener('click',function(e){ if(e.target===el) { el.classList.remove('open'); resetConfirmPw(); } });
 });
 
 // ═══ PULL TO REFRESH ══════════════════════════════════
