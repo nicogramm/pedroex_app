@@ -367,6 +367,32 @@ var uploadedImage  = null;
 var currentExistingSignature = null;
 var _reminderShown = false;
 
+// ═══ LINK TO TRIPS (Shipment # / Date are filled in on trips.html) ═══
+// Opens trips.html with this person's unfinished Shipment # / Date trips
+// blinking in the calendar. openRow = trip to open straight away.
+function goTrips(personName, openRow){
+  var rows=generatedTasks.filter(function(t){
+    return t.type==='ShipmentNum' && t.status!=='submitted' && t.tripRowIndex
+        && (t.helperName||'').toLowerCase()===(personName||'').toLowerCase();
+  }).map(function(t){return t.tripRowIndex;});
+  var q=new URLSearchParams({from:'tasks',emp:personName||'',rows:rows.join(','),open:openRow||''});
+  location.href='trips.html?'+q.toString();
+}
+function goTripsFor(taskId){
+  var t=generatedTasks.find(function(x){return x.id===taskId;}); if(!t) return;
+  goTrips(t.helperName, t.tripRowIndex);
+}
+function tripsLinkBtn(taskId){
+  return '<button onclick="event.stopPropagation();goTripsFor(\''+taskId+'\')" '
+    +'style="margin-top:8px;width:100%;padding:9px;border:none;border-radius:10px;background:var(--bg);box-shadow:var(--neu-xs);'
+    +'color:var(--purple);font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">🚚 Open in Trips →</button>';
+}
+function tripsLinkAllBtn(personName){
+  return '<button onclick="goTrips(\''+String(personName||'').replace(/'/g,"\\'")+'\')" '
+    +'style="margin-top:10px;width:100%;padding:10px;border:none;border-radius:10px;background:var(--bg);box-shadow:var(--neu-xs);'
+    +'color:var(--purple);font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer">🚚 Show these in Trips (blinking dates) →</button>';
+}
+
 // ═══ SUBMISSION DETECTION ═════════════════════════════
 // FIX (Sept 2026): previously, the document number had to start with "100"
 // (POD) or "62" (Crates) before a record counted as "submitted". That
@@ -703,7 +729,7 @@ function renderPersonTasks(personName,reminderId,listId,filter){
 
   // Reminder card
   var overdue=mine.filter(function(t){return t.status==='overdue';});
-  var missing=mine.filter(function(t){return t.status==='missing';});
+  var missing=mine.filter(function(t){return t.status==='missing'||t.status==='partial';});
   var pending=mine.filter(function(t){return t.status==='pending';});
   var rc=document.getElementById(reminderId);
 
@@ -719,11 +745,12 @@ function renderPersonTasks(personName,reminderId,listId,filter){
         });
       }
       if (missing.length){
-        lines.push('<div style="font-size:13px;font-weight:700;color:var(--purple);margin-top:'+(overdue.length?'10px':'0')+';margin-bottom:6px">📋 '+missing.length+' Missing Shipment #</div>');
+        lines.push('<div style="font-size:13px;font-weight:700;color:var(--purple);margin-top:'+(overdue.length?'10px':'0')+';margin-bottom:6px">📋 '+missing.length+' Missing Shipment # / Date</div>');
         missing.forEach(function(t){
           lines.push('<div style="font-size:12px;color:var(--text2);padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04)">'
             +'🔢 '+t.truck+' <span style="color:var(--purple);font-weight:600">('+t.date+')</span></div>');
         });
+        lines.push(tripsLinkAllBtn(personName));
       }
       if (pending.length){
         lines.push('<div style="font-size:13px;font-weight:700;color:var(--orange);margin-top:'+((overdue.length||missing.length)?'10px':'0')+';margin-bottom:6px">⏳ '+pending.length+' Pending</div>');
@@ -817,7 +844,9 @@ function renderGroupedTasks(containerId, filter, titleFn){
         +'<div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+cr+'</div>'
         +(t.docNumber?'<div class="task-meta-row">🔢 '+t.docNumber+'</div>':'')
         +'</div>'
-        +'<div class="task-due '+dc+'">'+dueLabel(t)+'</div></div>';
+        +'<div class="task-due '+dc+'">'+dueLabel(t)+'</div>'
+        +(t.type==='ShipmentNum'&&t.status!=='submitted'?tripsLinkBtn(t.id):'')
+        +'</div>';
     }).join('');
 
     return '<div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);margin-bottom:12px;overflow:hidden">'
@@ -997,7 +1026,7 @@ function openTask(taskId){
   var action='';
   if (canEdit){
     if (t.type==='ShipmentNum'){
-      action=overrideNote+buildShipmentForm(t);
+      action=overrideNote+(t.status!=='submitted'?tripsLinkBtn(t.id).replace('margin-top:8px','margin:0 0 14px'):'')+buildShipmentForm(t);
     } else if (!t.submitted){
       action=overrideNote+buildRecordForm(t,false);
     } else {
@@ -1293,7 +1322,7 @@ function scard(v,l,c){
 function updateNotifBadge(){
   var urgent=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
-        &&(t.status==='overdue'||t.status==='pending'||t.status==='missing');
+        &&(t.status==='overdue'||t.status==='pending'||t.status==='missing'||t.status==='partial');
   });
   var n=urgent.length;
   var b=document.getElementById('notif-badge');
@@ -1307,7 +1336,7 @@ function updateNotifBadge(){
 
 function showReminderPopup(urgent){
   var overdue=urgent.filter(function(t){return t.status==='overdue';});
-  var missing=urgent.filter(function(t){return t.status==='missing';});
+  var missing=urgent.filter(function(t){return t.status==='missing'||t.status==='partial';});
   var pending=urgent.filter(function(t){return t.status==='pending';});
 
   var html='<div style="text-align:center;margin-bottom:16px">'
@@ -1325,13 +1354,14 @@ function showReminderPopup(urgent){
     });
   }
   if (missing.length){
-    html+='<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-top:12px;margin-bottom:8px">📋 Missing Shipment #</div>';
+    html+='<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-top:12px;margin-bottom:8px">📋 Missing Shipment # / Date</div>';
     missing.forEach(function(t){
       html+='<div class="notif-item" style="border-left:3px solid var(--purple)">'
         +'<div class="notif-icon">🔢</div>'
         +'<div><div class="notif-text">Shipment # — '+t.truck+'</div>'
         +'<div class="notif-meta">'+t.date+'</div></div></div>';
     });
+    html+=tripsLinkAllBtn(currentUser.fullName);
   }
   if (pending.length){
     html+='<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--orange);margin-top:12px;margin-bottom:8px">⏳ Pending</div>';
@@ -1349,7 +1379,7 @@ function showReminderPopup(urgent){
 function openNotifSheet(){
   var urgent=generatedTasks.filter(function(t){
     return t.helperName.toLowerCase()===currentUser.fullName.toLowerCase()
-        &&(t.status==='overdue'||t.status==='pending'||t.status==='missing');
+        &&(t.status==='overdue'||t.status==='pending'||t.status==='missing'||t.status==='partial');
   });
   if (!urgent.length){showToast('✓ All tasks completed!');return;}
   showReminderPopup(urgent);
@@ -1716,7 +1746,9 @@ window.renderList = function(tasks, containerId, filter) {
       +'<div class="task-meta"><div class="task-meta-row">📅 '+t.date+(t.route?' · '+t.route.split('/')[0]:'')+'</div>'
       +who+cr+(t.type!=='ShipmentNum'?sn:'')+sub+'</div>'
       +(t.type==='ShipmentNum'?sn:'')
-      +'<div class="task-due '+dc+'">'+dl+'</div></div>';
+      +'<div class="task-due '+dc+'">'+dl+'</div>'
+      +(t.type==='ShipmentNum'&&t.status!=='submitted'?tripsLinkBtn(t.id):'')
+      +'</div>';
   }).join('');
 };
 
