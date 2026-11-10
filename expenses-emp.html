@@ -177,6 +177,9 @@ body.dark .day-detail-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .fab:active{transform:scale(0.93)}
 .fab-report{bottom:calc(148px + env(safe-area-inset-bottom,0px));background:var(--bg);color:var(--red);box-shadow:var(--neu-out)}
 
+.ro-banner{background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);border-left:4px solid var(--orange);padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.5;display:none}
+.ro-banner b{color:var(--text)}
+
 /* TOAST */
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:3px solid var(--red);padding:13px 22px;font-size:13px;font-weight:500;color:var(--text);z-index:400;max-width:90%;opacity:0;pointer-events:none;transition:opacity 0.25s}
 .toast.show{opacity:1}
@@ -247,6 +250,8 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 
 <div class="page-wrap">
 
+  <div class="ro-banner" id="ro-banner">🔒 <b>Read-only account.</b> Your status is SEPARATED. You can view expenses but cannot add, edit or delete anything.</div>
+
   <!-- ═══ VAT EXPENSES PANE ═══ -->
   <div class="pane active" id="pane-vat">
 
@@ -258,7 +263,7 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 
     <div class="view-toggle">
       <button class="view-btn active" onclick="switchView(event,'calendar')">📅 Calendar</button>
-      <button class="view-btn" onclick="switchView(event,'form')">➕ Add New</button>
+      <button class="view-btn" id="btn-add-vat" onclick="switchView(event,'form')">➕ Add New</button>
     </div>
 
     <div class="quarter-selector" id="quarter-selector"></div>
@@ -351,7 +356,7 @@ body.dark .report-header{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
     <!-- TOGGLE: LIST / ADD -->
     <div class="view-toggle" id="masbate-view-toggle">
       <button class="view-btn active" onclick="switchMasbateView(event,'list')">📋 View Byahe</button>
-      <button class="view-btn" onclick="switchMasbateView(event,'add')">➕ Add Expense</button>
+      <button class="view-btn" id="btn-add-masbate" onclick="switchMasbateView(event,'add')">➕ Add Expense</button>
     </div>
 
     <!-- MASBATE LIST VIEW -->
@@ -572,6 +577,7 @@ let currentExpenseType = 'diesel';
 let firstLoad = true;
 let selectedDay = null;
 let activeMainTab = 'vat';
+let isReadOnly = false;   // true when Employees!F (Status) = SEPARATED
 
 // ═══ INIT ═══
 (function init() {
@@ -588,7 +594,34 @@ let activeMainTab = 'vat';
   updateFormLabels();
   loadExpenses();
   loadMasbateExpenses();
+  checkEmployeeStatus();
 })();
+
+// ═══ READ-ONLY MODE (SEPARATED EMPLOYEES) ═══
+function applyReadOnlyUI() {
+  document.getElementById('ro-banner').style.display = 'block';
+  ['btn-add-vat','btn-add-masbate','fab'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  // If an "add" view is currently open, go back to the list/calendar
+  if (document.getElementById('form-view').classList.contains('active')) {
+    switchView({target: document.querySelector('#pane-vat .view-btn')}, 'calendar');
+  }
+  document.getElementById('masbate-add-view').style.display = 'none';
+  document.getElementById('masbate-list-view').style.display = '';
+  const listBtn = document.querySelector('#masbate-view-toggle .view-btn');
+  if (listBtn) listBtn.classList.add('active');
+}
+function checkEmployeeStatus() {
+  const email = (localStorage.getItem('pedroex-email') || '').toLowerCase();
+  if (!email) return Promise.resolve();
+  return apiGet('Employees!A2:F').then(res => {
+    const row = (res.values || []).find(r => (r[0] || '').toLowerCase() === email);
+    isReadOnly = !!row && String(row[5] || '').trim().toUpperCase() === 'SEPARATED';
+    if (isReadOnly) applyReadOnlyUI();
+  }).catch(() => {});
+}
 
 // ═══ MAIN TAB SWITCHING ═══
 function switchMainTab(tab) {
@@ -800,6 +833,7 @@ function renderMasbateList() {
 
 // ═══ SUBMIT MASBATE EXPENSE ═══
 async function submitMasbateExpense() {
+  if (isReadOnly) { showToast('🔒 Read-only account.'); return; }
   const truck = document.getElementById('ms-truck').value.trim();
   const date = document.getElementById('ms-date').value.trim();
   const type = document.getElementById('ms-type').value.trim();
@@ -840,6 +874,7 @@ async function submitMasbateExpense() {
 
 // ═══ EDIT MASBATE ═══
 function openMsEdit(rowIndex) {
+  if (isReadOnly) { showToast('🔒 Read-only account.'); return; }
   editingMasbate = allMasbateExpenses.find(e => e.rowIndex === rowIndex);
   if (!editingMasbate) return;
   document.getElementById('mse-truck').value = editingMasbate.truck;
@@ -969,7 +1004,7 @@ function switchView(event, view) {
   document.querySelectorAll('.calendar-view, .form-view').forEach(v => v.classList.remove('active'));
   document.getElementById(view + '-view').classList.add('active');
   const showFabs = view === 'calendar';
-  document.getElementById('fab').style.display = showFabs ? 'flex' : 'none';
+  document.getElementById('fab').style.display = (showFabs && !isReadOnly) ? 'flex' : 'none';
   document.getElementById('fab-report').style.display = showFabs ? 'flex' : 'none';
 }
 
@@ -1064,7 +1099,7 @@ function showDayDetail(dateStr) {
   const typeLabels = {diesel:'Diesel', parts:'Parts & Repairs', parking:'Parking & Tolls'};
   document.getElementById('day-detail-content').innerHTML = dayExpenses.map(e => {
     const isMine = e.user === currentUser;
-    return `<div class="expense-item ${e.type} ${isMine?'':'not-mine'}" ${isMine?`onclick="openEditDrawer(${e.rowIndex})"`:''}>
+    return `<div class="expense-item ${e.type} ${isMine?'':'not-mine'}" ${isMine && !isReadOnly?`onclick="openEditDrawer(${e.rowIndex})"`:''}>
       <div class="ei-header"><div class="ei-payee">${e.payee}</div><div class="ei-amount">₱${e.amount.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
       <div class="ei-details">${e.address?`📍 ${e.address}<br>`:''}${e.tin?`🏢 TIN: ${e.tin}<br>`:''}${e.orNum?`🧾 OR: ${e.orNum}`:''}</div>
       <div class="ei-type">${typeLabels[e.type]}</div>
@@ -1077,6 +1112,7 @@ function showDayDetail(dateStr) {
 function closeDayDetail() { document.getElementById('day-detail-overlay').classList.remove('open'); }
 
 function submitExpense() {
+  if (isReadOnly) { showToast('🔒 Read-only account.'); return; }
   const date = document.getElementById('f-date').value.trim();
   const payee = document.getElementById('f-payee').value.trim();
   const address = document.getElementById('f-address').value.trim();
@@ -1099,6 +1135,7 @@ function submitExpense() {
 }
 
 function openEditDrawer(rowIndex) {
+  if (isReadOnly) { showToast('🔒 Read-only account.'); return; }
   editingExpense = allExpenses.find(e => e.rowIndex === rowIndex);
   if (!editingExpense) return;
   if (editingExpense.user !== currentUser) { showToast('❌ You can only edit your own expenses'); return; }
@@ -1143,6 +1180,7 @@ function deleteExpense() {
 }
 
 function checkOrCreateSheet(quarterName) {
+  if (isReadOnly) return Promise.reject(new Error('Read-only account'));
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}`, {headers:{Authorization:'Bearer '+token}})
     .then(r => { if (!r.ok) throw new Error('Cannot access spreadsheet'); return r.json(); })
     .then(data => {
@@ -1154,6 +1192,7 @@ function checkOrCreateSheet(quarterName) {
 }
 
 function createQuarterlySheet(quarterName) {
+  if (isReadOnly) return Promise.reject(new Error('Read-only account'));
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {
     method:'POST', headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},
     body: JSON.stringify({requests:[{addSheet:{properties:{title:quarterName}}}]})
@@ -1213,11 +1252,13 @@ function apiGet(range) {
     .then(r => { if (r.status===401){location.href='index.html';throw new Error('Unauthorized');} if (!r.ok) throw new Error('API Error'); return r.json(); });
 }
 function apiUpdate(range, values) {
+  if (isReadOnly) return Promise.reject(new Error('Read-only account'));
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`,
     {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})})
     .then(r => { if (!r.ok) throw new Error('Update failed'); return r.json(); });
 }
 function apiAppend(range, values) {
+  if (isReadOnly) return Promise.reject(new Error('Read-only account'));
   return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
     {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values})})
     .then(r => { if (!r.ok) throw new Error('Append failed'); return r.json(); });
