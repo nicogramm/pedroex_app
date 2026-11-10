@@ -173,6 +173,18 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 /* ── PATCH: Shipment date enforcement banner ── */
 .shipdate-warn{background:rgba(179,37,51,0.08);border-left:3px solid var(--red);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:var(--red);font-weight:600;display:none}
 .shipdate-hint{font-size:10px;color:var(--blue);margin-top:5px;line-height:1.5}
+/* ── My Tasks link: blinking dates + banner ── */
+@keyframes tlTwinkleE{0%,100%{box-shadow:0 0 0 0 rgba(179,37,51,0);transform:scale(1);background:transparent}50%{box-shadow:0 0 0 3px rgba(179,37,51,.55),0 0 16px 5px rgba(179,37,51,.6);transform:scale(1.07);background:rgba(179,37,51,.14)}}
+@keyframes tlTwinkleW{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0);transform:scale(1);background:transparent}50%{box-shadow:0 0 0 3px rgba(245,158,11,.55),0 0 16px 5px rgba(245,158,11,.6);transform:scale(1.07);background:rgba(245,158,11,.16)}}
+@keyframes tlSpark{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(25deg)}}
+.cal-day.tl-e{animation:tlTwinkleE 1.3s ease-in-out infinite;z-index:1;overflow:visible}
+.cal-day.tl-w{animation:tlTwinkleW 1.3s ease-in-out infinite;z-index:1;overflow:visible}
+.cal-day.tl-e::after,.cal-day.tl-w::after{content:'✨';position:absolute;top:-6px;right:-3px;font-size:11px;line-height:1;animation:tlSpark 1.3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.cal-day.tl-e,.cal-day.tl-w,.cal-day.tl-e::after,.cal-day.tl-w::after{animation:none}.cal-day.tl-e{outline:2px solid var(--red)}.cal-day.tl-w{outline:2px solid var(--orange)}}
+.tl-banner{display:none;background:var(--bg);border-radius:14px;box-shadow:var(--neu-sm);border-left:4px solid var(--red);padding:12px 14px;margin-bottom:14px}
+.tl-chip{background:var(--bg);border:none;border-radius:20px;box-shadow:var(--neu-xs);padding:5px 11px;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;color:var(--text);cursor:pointer}
+.tl-chip:active{box-shadow:var(--neu-in)}
+.page-header{flex-wrap:wrap;gap:8px}
 </style>
 </head>
 <body>
@@ -192,6 +204,7 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <button class="icon-btn" onclick="openReportModal()" style="background:var(--blue);color:#fff;box-shadow:4px 4px 12px rgba(37,99,235,0.4)">📊 Report</button>
+        <button class="icon-btn" onclick="location.href='employee-records.html'">📋 Tasks</button>
         <button class="icon-btn" onclick="loadAll()">↻</button>
       </div>
     </div>
@@ -215,6 +228,12 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
           <button class="btn btn-red" onclick="applyRateAdjustment()">Apply Changes</button>
         </div>
       </div>
+    </div>
+    <div class="tl-banner" id="tl-banner">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:4px">📋 From My Tasks</div>
+      <div id="tl-text" style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:10px"></div>
+      <div id="tl-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+      <button class="icon-btn" onclick="location.href='employee-records.html'">← Back to My Tasks</button>
     </div>
     <div class="reminder-section" id="reminder-section">
       <div class="reminder-header"><span>🔔 Reminders</span><span class="reminder-count" id="reminder-count">0</span></div>
@@ -358,6 +377,64 @@ var calYear,calMonth,todayStr='',selectedTrip=null,selectedDay=null;
 var activeFilters={truck:'',type:'',billed:'',route:'',shipment:''};
 var filteredTrips=[];
 
+// ── Link from My Tasks (employee-records.html): ?from=tasks&emp=Name&rows=12,15&open=12 ──
+var tl=(function(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(q.get('from')!=='tasks')return null;
+    var rows=(q.get('rows')||'').split(',').map(function(x){return parseInt(x);}).filter(function(n){return n>1;});
+    var open=parseInt(q.get('open'))||0;
+    if(open&&rows.indexOf(open)===-1)rows.push(open);
+    return {emp:q.get('emp')||'',rows:rows,open:open};
+  }catch(e){return null;}
+})();
+var tlApplied=false;
+// 'e' = no Shipment # yet (red) · 'w' = has # but no Shipment Date (orange) · null = complete / not a task
+function tlSeverity(t){
+  if(!tl||tl.rows.indexOf(t.rowIndex)===-1)return null;
+  if(!t.shipmentNumber||!t.shipmentNumber.trim())return 'e';
+  if(!t.shipmentDate||!t.shipmentDate.trim())return 'w';
+  return null;
+}
+function tlDateMap(){
+  var m={};
+  allTrips.forEach(function(t){
+    var s=tlSeverity(t);if(!s||!t.deliveryDate)return;
+    if(!m[t.deliveryDate]||s==='e')m[t.deliveryDate]=s;
+  });
+  return m;
+}
+function tlJump(row){
+  var t=allTrips.find(function(x){return x.rowIndex===row;});if(!t)return;
+  calYear=parseInt(t.deliveryDate.slice(0,4));calMonth=parseInt(t.deliveryDate.slice(5,7))-1;
+  renderCalendar();selectDay(t.deliveryDate);
+}
+function updateTaskBanner(){
+  var b=document.getElementById('tl-banner');if(!b)return;
+  if(!tl){b.style.display='none';return;}
+  var open=allTrips.filter(function(t){return tlSeverity(t);}).sort(function(a,c){return c.deliveryDate.localeCompare(a.deliveryDate);});
+  var who=tl.emp?'<b>'+tl.emp+'</b>':'your';
+  var msg;
+  if(!open.length) msg='✅ No more trips need a Shipment # / Date'+(tl.emp?' for <b>'+tl.emp+'</b>':'')+'.';
+  else msg=(tl.emp?'<b>'+tl.emp+'</b>\'s':'Your')+' tasks: <b>'+open.length+'</b> trip'+(open.length>1?'s':'')+' need a Shipment # / Date. ✨ Blinking dates: <b style="color:var(--red)">red</b> = no Shipment #, <b style="color:var(--orange)">orange</b> = no Shipment Date.';
+  document.getElementById('tl-text').innerHTML=msg;
+  document.getElementById('tl-chips').innerHTML=open.slice(0,12).map(function(t){
+    return '<button class="tl-chip" onclick="tlJump('+t.rowIndex+')">'+t.deliveryDate.slice(5)+' · '+t.truck+'</button>';
+  }).join('')+(open.length>12?'<span style="font-size:11px;color:var(--text3);align-self:center">+'+(open.length-12)+' more</span>':'');
+  b.style.display='block';
+}
+function applyTaskLink(){
+  if(!tl)return;
+  var openTrip=tl.open?allTrips.find(function(t){return t.rowIndex===tl.open;}):null;
+  var target=openTrip||allTrips.filter(function(t){return tlSeverity(t);}).sort(function(a,c){return c.deliveryDate.localeCompare(a.deliveryDate);})[0];
+  if(target){
+    calYear=parseInt(target.deliveryDate.slice(0,4));calMonth=parseInt(target.deliveryDate.slice(5,7))-1;
+    renderCalendar();selectDay(target.deliveryDate);
+  }
+  updateTaskBanner();
+  if(openTrip)openTripDetail(openTrip.rowIndex);
+}
+
 var TRUCK_COLORS=[
   {bg:'#B32533',text:'#fff'},{bg:'#D94452',text:'#fff'},{bg:'#8B1E28',text:'#fff'},
   {bg:'#E85D6B',text:'#fff'},{bg:'#6B1720',text:'#fff'},{bg:'#F07A85',text:'#fff'},
@@ -474,6 +551,7 @@ function loadAll(){
     document.getElementById('filter-bar').style.display='';
     document.getElementById('calendar-card').style.display='';
     buildReminders();
+    if(!tlApplied){tlApplied=true;applyTaskLink();}
   }).catch(function(err){
     document.getElementById('wrap-loading').style.display='none';
     showToast('Failed to load. Check connection.');console.error(err);
@@ -554,6 +632,7 @@ function renderCalendar(){
     if(!dayMap[day])dayMap[day]=[];
     dayMap[day].push({truck:r.truck,color:getTruckColor(r.truck)});
   });
+  var tlMap=tlDateMap();
   var html=DAYS.map(function(d){return '<div class="cal-dn">'+d+'</div>';}).join('');
   for(var i=0;i<first;i++)html+='<div class="cal-day other-month"></div>';
   for(var d=1;d<=days;d++){
@@ -562,6 +641,7 @@ function renderCalendar(){
     if(dateStr===todayStr)cls+=' today';
     if(entries.length)cls+=' has-trip';
     if(dateStr===selectedDay)cls+=' selected';
+    if(tlMap[dateStr])cls+=' tl-'+tlMap[dateStr];
     var pills='';
     if(entries.length){
       var shown=entries.slice(0,3);
@@ -570,6 +650,7 @@ function renderCalendar(){
     html+='<div class="'+cls+'" onclick="selectDay(\''+dateStr+'\')"><div class="cal-day-num">'+d+'</div>'+pills+'</div>';
   }
   grid.innerHTML=html;
+  updateTaskBanner();
 }
 function hasActiveFilter(){return activeFilters.truck||activeFilters.type||activeFilters.billed||activeFilters.route;}
 function selectDay(dateStr){
@@ -591,7 +672,8 @@ function selectDay(dateStr){
       var shipDateBadge=r.shipmentDate
         ?'<span class="badge">Ship: '+r.shipmentDate+'</span>'
         :'<span class="badge orange">No Ship Date</span>';
-      return '<div class="trip-item" onclick="openTripDetail('+r.rowIndex+')" style="border-left:4px solid '+c.bg+'">'
+      var tlS=tlSeverity(r);
+      return '<div class="trip-item" onclick="openTripDetail('+r.rowIndex+')" style="border-left:4px solid '+c.bg+(tlS?';outline:2px solid '+(tlS==='e'?'var(--red)':'var(--orange)')+';outline-offset:2px':'')+'">'
         +'<div class="trip-truck" style="color:'+c.bg+'">🚛 '+r.truck+'</div>'
         +'<div class="trip-meta">'+(r.shipmentNumber?'Shipment #'+r.shipmentNumber:'No shipment #')+(r.route?' · 📍 '+r.route:'')+'</div>'
         +'<div class="trip-badges">'+typeBadge+billedBadge+shipDateBadge+'</div></div>';
