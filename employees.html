@@ -954,6 +954,18 @@ async function init() {
     await loadAdvances();
     loadCalendar();
 
+    // Coming back from attendance.html after fixing an entry: reopen Validation and re-run it
+    const dq = new URLSearchParams(location.search);
+    if (dq.get('tab') === 'validation') {
+      const vm = dq.get('vm'), vp = dq.get('vp'), vt = dq.get('vt');
+      if (/^\d{4}-\d{2}$/.test(vm||'')) document.getElementById('val-month').value = vm;
+      if (vp === '1st' || vp === '2nd') selectValPeriod(vp);
+      switchAdminTab('validation');
+      if (['report','calendar','issues','grid'].includes(vt)) switchValTab(vt);
+      history.replaceState(null, '', location.pathname);
+      runValidation();
+    }
+
     const payrollSelect = document.getElementById('payroll-employee');
     allEmployees.forEach(emp => {
       const o = document.createElement('option');
@@ -1005,6 +1017,7 @@ function switchAdminTab(tab) {
 // VALIDATION TAB SWITCHING
 // ═══════════════════════════════════════════════════════
 function switchValTab(tab) {
+  valTab = tab;
   ['report','calendar','issues','grid'].forEach(t => {
     document.getElementById(`val-tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`val-view-${t}`).style.display = t === tab ? 'block' : 'none';
@@ -2304,6 +2317,14 @@ async function loadEmployeeHistory() {
 // ═══════════════════════════════════════════════════════
 // VALIDATION
 // ═══════════════════════════════════════════════════════
+let valTab='report';
+// Jump to attendance.html on the right day/truck so the admin can fix the entry, with a way back
+function valGoFix(date, truck) {
+  const q = new URLSearchParams({ from:'validation', date:date||'', truck:truck||'',
+    vm: document.getElementById('val-month').value || '', vp: valPeriod, vt: valTab });
+  location.href = 'attendance.html?' + q.toString();
+}
+function valFixHint() { return '<div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--red);text-align:right">✏️ Tap to fix in Attendance →</div>'; }
 let validationResults=[]; let valCalYear=new Date().getFullYear(); let valCalMonth=new Date().getMonth(); let valPeriod='1st';
 
 async function runValidation() {
@@ -2362,9 +2383,10 @@ function valRenderReport() {
     dayResults.forEach(r=>{
       const statusIcon=r.status==='ok'?'✅':r.status==='warn'?'⚠️':'❌';
       const badgeBg=r.trip.isMasbate?'rgba(41,128,185,0.15);color:#2980b9':r.trip.freshFrozen==='Fresh'?'rgba(39,174,96,0.15);color:var(--green)':'rgba(179,37,51,0.12);color:var(--red)';
-      const card=document.createElement('div');card.className='val-trip-group';card.style.cursor='pointer';card.onclick=()=>valShowDayDetail(dateStr);
+      const card=document.createElement('div');card.className='val-trip-group';card.style.cursor='pointer';card.onclick=()=>{ if (r.status==='ok') valShowDayDetail(dateStr); else valGoFix(dateStr, r.trip.truck); };
       const attHtml=r.attStatuses.length?r.attStatuses.map(a=>{const cls=a.correct===true?'ok':a.correct===false?'err':'warn';const initials=a.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();return `<div class="val-att-row"><div class="val-avatar">${initials}</div><div style="font-size:13px;font-weight:600;color:var(--text);flex:1">${a.name}</div><div style="display:flex;gap:6px"><span class="val-flag ${cls}">${a.actual||'—'}</span>${a.correct===false?`<span class="val-flag err">→ ${a.expected}</span>`:''}</div></div>`;}).join(''):`<div style="font-size:12px;color:var(--text3);padding:8px 0">No attendance records</div>`;
       card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--shadow-d)"><div><div style="font-size:14px;font-weight:700;color:var(--text)">${statusIcon} ${r.trip.truck}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${r.trip.route} · ${r.atts.length} attendee${r.atts.length!==1?'s':''}</div></div><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:4px 10px;border-radius:8px;background:${badgeBg};white-space:nowrap;margin-left:8px">${r.trip.isMasbate?'Masbate':r.trip.freshFrozen}</span></div>${attHtml}${r.issues.length?`<div style="margin-top:8px;padding:8px 10px;background:rgba(179,37,51,0.07);border-radius:8px">${r.issues.map(i=>`<div style="font-size:11px;color:var(--red);font-weight:500;padding:2px 0">⚠ ${i}</div>`).join('')}</div>`:''}`;
+      if (r.status!=='ok') card.insertAdjacentHTML('beforeend', valFixHint());
       sec.appendChild(card);
     });
     container.appendChild(sec);
@@ -2408,6 +2430,8 @@ function valShowDayDetail(dateStr) {
     const statusIcon=r.status==='ok'?'✅':r.status==='warn'?'⚠️':'❌';
     html+=`<div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--shadow-d)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div style="font-size:15px;font-weight:700;color:var(--text)">${statusIcon} ${r.trip.truck}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${r.trip.route}</div></div><span style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;background:rgba(39,174,96,0.15);color:var(--green)">${r.trip.isMasbate?'Masbate':r.trip.freshFrozen}</span></div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">Attendance (${r.atts.length})</div>${r.attStatuses.map(a=>{const cls=a.correct===true?'ok':a.correct===false?'err':'warn';const initials=a.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();return`<div class="val-att-row"><div class="val-avatar">${initials}</div><div style="font-size:13px;font-weight:600;color:var(--text);flex:1">${a.name}</div><div style="display:flex;gap:6px"><span class="val-flag ${cls}">${a.actual||'—'}</span>${a.correct===false?`<span class="val-flag err">→ ${a.expected}</span>`:''}</div></div>`;}).join('')}${r.issues.length?`<div style="margin-top:10px;padding:10px;background:rgba(179,37,51,0.07);border-radius:8px">${r.issues.map(i=>`<div style="font-size:11px;color:var(--red);font-weight:500;padding:2px 0">⚠ ${i}</div>`).join('')}</div>`:''}</div>`;
   });
+  const bad = dayResults.find(x => x.status !== 'ok');
+  if (bad) html += `<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="valGoFix('${dateStr}','${String(bad.trip.truck||'').replace(/'/g,"\\'")}')">✏️ Fix in Attendance</button>`;
   document.getElementById('val-day-modal-body').innerHTML=html;
   document.getElementById('val-day-modal').classList.add('active');
 }
@@ -2415,9 +2439,9 @@ function valShowDayDetail(dateStr) {
 function valRenderIssues(orphanAtts) {
   const container=document.getElementById('val-issues-content');container.innerHTML='';let hasContent=false;
   const errors=validationResults.filter(r=>r.status==='err');const warnings=validationResults.filter(r=>r.status==='warn');
-  if(errors.length){hasContent=true;const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';hdr.textContent=`❌ Errors (${errors.length})`;container.appendChild(hdr);errors.forEach(r=>{const d=new Date(r.trip.deliveryDate+'T00:00:00');const div=document.createElement('div');div.style.cssText='background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid var(--red);padding:14px 16px;margin-bottom:10px;cursor:pointer';div.onclick=()=>valShowDayDetail(r.trip.deliveryDate);div.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:13px;font-weight:700;color:var(--text)">${r.trip.truck}${r.trip.isMasbate?' · Masbate':''}</div><div style="font-size:11px;color:var(--text3)">${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</div></div><div style="font-size:12px;color:var(--text2);line-height:1.6">${r.issues.map(i=>`• ${i}`).join('<br>')}</div>`;container.appendChild(div);});}
-  if(warnings.length){hasContent=true;const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';hdr.textContent=`⚠️ Warnings (${warnings.length})`;container.appendChild(hdr);warnings.forEach(r=>{const d=new Date(r.trip.deliveryDate+'T00:00:00');const div=document.createElement('div');div.style.cssText='background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid var(--orange);padding:14px 16px;margin-bottom:10px';div.innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">${r.trip.truck} · ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</div><div style="font-size:12px;color:var(--text2);line-height:1.6">${r.issues.map(i=>`• ${i}`).join('<br>')}</div>`;container.appendChild(div);});}
-  if(orphanAtts.length){hasContent=true;const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2980b9;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';hdr.textContent=`ℹ️ Attendance Without Trip (${orphanAtts.length})`;container.appendChild(hdr);const grouped={};orphanAtts.forEach(a=>{const key=`${a.date}|${a.truck}`;if(!grouped[key])grouped[key]={date:a.date,truck:a.truck,names:[]};grouped[key].names.push(a.name);});Object.values(grouped).forEach(g=>{const d=new Date(g.date+'T00:00:00');const div=document.createElement('div');div.style.cssText='background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid #2980b9;padding:14px 16px;margin-bottom:10px';div.innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">${g.truck} · ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</div><div style="font-size:12px;color:var(--text2)">No trip record found.<br><b>Employees:</b> ${g.names.join(', ')}</div>`;container.appendChild(div);});}
+  if(errors.length){hasContent=true;const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';hdr.textContent=`❌ Errors (${errors.length})`;container.appendChild(hdr);errors.forEach(r=>{const d=new Date(r.trip.deliveryDate+'T00:00:00');const div=document.createElement('div');div.style.cssText='background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid var(--red);padding:14px 16px;margin-bottom:10px;cursor:pointer';div.onclick=()=>valGoFix(r.trip.deliveryDate, r.trip.truck);div.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:13px;font-weight:700;color:var(--text)">${r.trip.truck}${r.trip.isMasbate?' · Masbate':''}</div><div style="font-size:11px;color:var(--text3)">${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</div></div><div style="font-size:12px;color:var(--text2);line-height:1.6">${r.issues.map(i=>`• ${i}`).join('<br>')}</div>${valFixHint()}`;container.appendChild(div);});}
+  if(warnings.length){hasContent=true;const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';hdr.textContent=`⚠️ Warnings (${warnings.length})`;container.appendChild(hdr);warnings.forEach(r=>{const d=new Date(r.trip.deliveryDate+'T00:00:00');const div=document.createElement('div');div.style.cssText='background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid var(--orange);padding:14px 16px;margin-bottom:10px';div.onclick=()=>valGoFix(r.trip.deliveryDate, r.trip.truck);div.style.cursor='pointer';div.innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">${r.trip.truck} · ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</div><div style="font-size:12px;color:var(--text2);line-height:1.6">${r.issues.map(i=>`• ${i}`).join('<br>')}</div>${valFixHint()}`;container.appendChild(div);});}
+  if(orphanAtts.length){hasContent=true;const hdr=document.createElement('div');hdr.style.cssText='font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#2980b9;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--shadow-d)';hdr.textContent=`ℹ️ Attendance Without Trip (${orphanAtts.length})`;container.appendChild(hdr);const grouped={};orphanAtts.forEach(a=>{const key=`${a.date}|${a.truck}`;if(!grouped[key])grouped[key]={date:a.date,truck:a.truck,names:[]};grouped[key].names.push(a.name);});Object.values(grouped).forEach(g=>{const d=new Date(g.date+'T00:00:00');const div=document.createElement('div');div.style.cssText='background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);border-left:4px solid #2980b9;padding:14px 16px;margin-bottom:10px';div.onclick=()=>valGoFix(g.date, g.truck);div.style.cursor='pointer';div.innerHTML=`<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px">${g.truck} · ${d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</div><div style="font-size:12px;color:var(--text2)">No trip record found.<br><b>Employees:</b> ${g.names.join(', ')}</div>${valFixHint()}`;container.appendChild(div);});}
   if(!hasContent)document.getElementById('val-issues-empty').style.display='block';
 }
 
