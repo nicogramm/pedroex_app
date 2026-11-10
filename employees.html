@@ -82,7 +82,8 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:0}
 .modal.active{display:flex}
-.modal-content{background:var(--bg);border-radius:0;box-shadow:none;padding:20px;width:100vw;height:100vh;max-width:none;max-height:none;overflow-y:auto;display:flex;flex-direction:column}
+.modal-content input,.modal-content select,.modal-content textarea{min-width:0;max-width:100%}
+.modal-content{overflow-x:hidden;background:var(--bg);border-radius:0;box-shadow:none;padding:20px;width:100vw;height:100vh;max-width:none;max-height:none;overflow-y:auto;display:flex;flex-direction:column}
 .modal-header{font-size:20px;font-weight:700;color:var(--text);margin-bottom:20px;position:sticky;top:0;background:var(--bg);z-index:10;padding-bottom:10px;border-bottom:2px solid var(--shadow-d)}
 .modal-actions{display:flex;gap:10px;margin-top:auto;padding-top:20px;position:sticky;bottom:0;background:var(--bg);z-index:10;border-top:2px solid var(--shadow-d)}
 
@@ -215,7 +216,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .plan-badge.cancelled{background:rgba(179,37,51,.12);color:var(--red)}
 .plan-ded-row{background:var(--bg2);border-radius:12px;padding:12px;margin-top:10px}
 .plan-ded-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.plan-ded-input{width:110px;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-in);padding:8px 10px;font-size:14px;font-weight:700;color:var(--text);font-family:Inter,sans-serif;outline:none;text-align:right}
+.plan-ded-input{width:110px;min-width:0;flex-shrink:0;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-in);padding:8px 10px;font-size:14px;font-weight:700;color:var(--text);font-family:Inter,sans-serif;outline:none;text-align:right}
 .emp-check-list{max-height:220px;overflow-y:auto;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:8px 12px}
 .emp-check-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--text);border-bottom:1px solid rgba(0,0,0,.05)}
 .emp-check-row:last-child{border-bottom:none}
@@ -641,9 +642,9 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
       </div>
       <div class="summary-section">
         <div class="summary-label">ADVANCE DEDUCTION (MANUAL)</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-          <span style="font-size:13px;color:var(--text2);white-space:nowrap">Deductions from Advances:</span>
-          <input type="number" id="manual-deduction" style="flex:1;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-in);padding:10px 14px;font-size:15px;font-weight:600;color:var(--text);font-family:Inter,sans-serif;outline:none" placeholder="0.00" min="0" step="0.01" oninput="recalcNetPay()">
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+          <span style="font-size:13px;color:var(--text2)">Deductions from Advances:</span>
+          <input type="number" id="manual-deduction" style="flex:1;min-width:0;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-in);padding:10px 14px;font-size:15px;font-weight:600;color:var(--text);font-family:Inter,sans-serif;outline:none" placeholder="0.00" min="0" step="0.01" oninput="recalcNetPay()">
         </div>
       </div>
       <div class="summary-net">
