@@ -196,6 +196,30 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .savings-stat-label{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
 .savings-stat-value{font-size:14px;font-weight:700;color:var(--text)}
 .savings-interest-banner{background:rgba(39,174,96,0.1);border-radius:10px;padding:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+
+/* INSTALLMENT DEDUCTION PLANS */
+.plan-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:12px}
+.plan-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.plan-title{font-size:14px;font-weight:700;color:var(--text)}
+.plan-sub{font-size:11px;color:var(--text2);margin-top:3px;line-height:1.6}
+.plan-bal{text-align:right;flex-shrink:0}
+.plan-bal-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3)}
+.plan-bal-val{font-size:18px;font-weight:700;color:var(--red)}
+.plan-bal-val.done{color:var(--green)}
+.plan-bar{height:8px;border-radius:8px;background:var(--bg);box-shadow:var(--neu-in);overflow:hidden;margin:4px 0 8px}
+.plan-bar>div{height:100%;background:var(--green);border-radius:8px}
+.plan-stats{display:flex;justify-content:space-between;font-size:11px;color:var(--text2)}
+.plan-badge{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:6px;margin-left:6px;vertical-align:middle}
+.plan-badge.active{background:rgba(243,156,18,.15);color:var(--orange)}
+.plan-badge.done{background:rgba(39,174,96,.15);color:var(--green)}
+.plan-badge.cancelled{background:rgba(179,37,51,.12);color:var(--red)}
+.plan-ded-row{background:var(--bg2);border-radius:12px;padding:12px;margin-top:10px}
+.plan-ded-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.plan-ded-input{width:110px;background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-in);padding:8px 10px;font-size:14px;font-weight:700;color:var(--text);font-family:Inter,sans-serif;outline:none;text-align:right}
+.emp-check-list{max-height:220px;overflow-y:auto;background:var(--bg);border-radius:12px;box-shadow:var(--neu-in);padding:8px 12px}
+.emp-check-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--text);border-bottom:1px solid rgba(0,0,0,.05)}
+.emp-check-row:last-child{border-bottom:none}
+.emp-check-row input{width:18px;height:18px;accent-color:var(--red)}
 </style>
 </head>
 <body>
@@ -289,6 +313,18 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:20px" onclick="calculatePayroll()">🧮 Calculate Payroll</button>
       </div>
+      <!-- INSTALLMENT DEDUCTION PLANS -->
+      <div class="section-divider"></div>
+      <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px">
+        <div>
+          <h3 class="section-title">Deduction Plans</h3>
+          <p class="section-subtitle">Installment deductions (e.g. penalties) with remaining balance</p>
+        </div>
+        <button class="btn btn-primary" style="flex:none;padding:10px 14px;font-size:12px" onclick="showAddPlanModal()">➕ New Plan</button>
+      </div>
+      <div id="plans-list"></div>
+      <div id="plans-empty" class="empty-state" style="display:none"><div class="empty-icon">📉</div><div class="empty-text">No deduction plans yet.</div></div>
+
       <!-- PAYROLL HISTORY -->
       <div class="section-divider"></div>
       <div class="section-header">
@@ -470,6 +506,12 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
     <div id="emp-savings-list"></div>
     <div class="section-divider"></div>
     <div class="section-header">
+      <h3 class="section-title">📉 My Deduction Plans</h3>
+      <p class="section-subtitle">Installment deductions and remaining balance</p>
+    </div>
+    <div id="emp-plans-list"></div>
+    <div class="section-divider"></div>
+    <div class="section-header">
       <h3 class="section-title">My Payroll History</h3>
       <p class="section-subtitle">View your salary records</p>
     </div>
@@ -586,8 +628,14 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
           <div class="summary-item"><span>Savings Plan (5%)</span><strong id="summary-savings">₱0.00</strong></div>
           <div class="summary-item"><span>Advances Deducted</span><strong id="summary-adv-ded">₱0.00</strong></div>
           <div class="summary-item"><span>Gov't Contributions</span><strong id="summary-contrib">₱0.00</strong></div>
+          <div class="summary-item"><span>Installment Plans</span><strong id="summary-plan-ded">₱0.00</strong></div>
           <div class="summary-item"><span>Total Deductions</span><strong id="summary-total-ded">₱0.00</strong></div>
         </div>
+      </div>
+      <div class="summary-section" id="plan-ded-section" style="display:none">
+        <div class="summary-label">INSTALLMENT PLANS (THIS PAYROLL)</div>
+        <div id="plan-ded-list"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px;font-weight:700;color:var(--text)"><span>Total Plan Deductions</span><span id="summary-plan-total">₱0.00</span></div>
       </div>
       <div class="summary-section">
         <div class="summary-label">ADVANCE DEDUCTION (MANUAL)</div>
@@ -712,6 +760,39 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
   </div>
 </div>
 
+<!-- ═══ NEW DEDUCTION PLAN MODAL ═══ -->
+<div class="modal" id="plan-modal">
+  <div class="modal-content">
+    <div class="modal-header">New Deduction Plan</div>
+    <div class="form-group">
+      <label class="form-label">Reason</label>
+      <input type="text" class="form-input" id="plan-reason" placeholder="e.g. Penalty — damaged goods">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount per employee (₱)</label>
+      <input type="number" class="form-input" id="plan-total" placeholder="1000" step="0.01" min="0" oninput="updatePlanPreview()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Payable over (months)</label>
+      <input type="number" class="form-input" id="plan-months" placeholder="10" step="1" min="1" oninput="updatePlanPreview()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Start deducting from</label>
+      <input type="date" class="form-input" id="plan-start">
+      <div style="font-size:11px;color:var(--text3);margin-top:6px">Applies starting with the payroll period that ends on or after this date.</div>
+    </div>
+    <div id="plan-preview" style="display:none;background:var(--bg2);border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--text);line-height:1.7"></div>
+    <div class="form-group">
+      <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">Employees <button type="button" class="att-override-toggle" onclick="togglePlanAll()">Select / clear all</button></label>
+      <div class="emp-check-list" id="plan-emp-list"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closePlanModal()">Cancel</button>
+      <button class="btn btn-primary" id="plan-save-btn" onclick="savePlans()">💾 Create Plan</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -743,6 +824,12 @@ let attendanceOverridden = false;
 // Savings state
 let savingsData             = [];
 let currentSavingsEmployee  = null;
+
+// Employee status (Employees!F) + installment deduction plans
+let separatedNames = new Set();   // full names whose Status = SEPARATED
+let deductionPlans = [];          // rows from 'Deduction Plans'
+let planPaid       = {};          // planId -> total deducted so far (from Payroll History col AG)
+let payrollRowsAG  = [];          // Payroll History rows A:AG
 
 // ═══════════════════════════════════════════════════════
 // HELPERS
@@ -778,9 +865,29 @@ function showToast(msg) {
 // ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
+function isSepRow(r) { return String((r && r[5]) || '').trim().toUpperCase() === 'SEPARATED'; }
+function isSeparatedName(name) { return separatedNames.has(String(name || '').trim()); }
+
+async function refreshSeparatedNames() {
+  try {
+    const res = await gSheets('Employees!A2:F');
+    separatedNames = new Set((res.values || []).filter(isSepRow).map(r => `${r[1] || ''} ${r[2] || ''}`.trim()));
+  } catch (e) { console.warn('refreshSeparatedNames failed', e); }
+}
+
+// Admin rights come from the sheet (Role col D) and are lost when Status = SEPARATED
+async function verifyRoleFromSheet() {
+  try {
+    const res = await gSheets('Employees!A2:F');
+    const me = (res.values || []).find(r => (r[0] || '').toLowerCase() === (userEmail || '').toLowerCase());
+    if (me) isAdmin = String(me[3] || '').trim().toLowerCase() === 'admin' && !isSepRow(me);
+  } catch (e) { console.warn('verifyRoleFromSheet failed', e); }
+}
+
 async function init() {
   document.body.classList.toggle('dark', localStorage.getItem('pedroex-theme') === 'dark');
   if (!token) { location.href = 'index.html'; return; }
+  await verifyRoleFromSheet();
 
   if (isAdmin) {
     document.getElementById('admin-badge').style.display = 'inline-block';
@@ -804,7 +911,7 @@ async function init() {
     const payrollSelect = document.getElementById('payroll-employee');
     allEmployees.forEach(emp => {
       const o = document.createElement('option');
-      o.value = emp.fullName; o.textContent = emp.fullName;
+      o.value = emp.fullName; o.textContent = emp.fullName + (emp.separated ? ' (Separated)' : '');
       payrollSelect.appendChild(o);
     });
 
@@ -843,6 +950,7 @@ function switchAdminTab(tab) {
       document.getElementById('hist-filter-month').value = monthStr;
     }
     loadHistory();
+    loadPlansUI();
     if (!savingsData.length) loadSavingsQuiet();
   }
 }
@@ -877,9 +985,11 @@ function selectPeriod(period) {
 // ═══════════════════════════════════════════════════════
 async function loadEmployees() {
   try {
-    const res  = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:D`, { headers: { 'Authorization': 'Bearer ' + token } });
+    const res  = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:F`, { headers: { 'Authorization': 'Bearer ' + token } });
     const data = await res.json();
-    allEmployees = (data.values || []).filter(r => r[3] === 'Employee').map(r => ({ email:r[0], firstName:r[1], lastName:r[2], fullName:`${r[1]} ${r[2]}` }));
+    const empRows = data.values || [];
+    separatedNames = new Set(empRows.filter(isSepRow).map(r => `${r[1] || ''} ${r[2] || ''}`.trim()));
+    allEmployees = empRows.filter(r => r[3] === 'Employee').map(r => ({ email:r[0], firstName:r[1], lastName:r[2], fullName:`${r[1]} ${r[2]}`, separated:isSepRow(r) }));
     const filterSelect  = document.getElementById('filter-employee');
     const advanceSelect = document.getElementById('advance-employee');
     allEmployees.forEach(emp => {
@@ -1130,7 +1240,11 @@ async function calculatePayroll() {
     const periodAdv   = (advRes.values||[]).filter(r=>(r[2]||'')===empName&&(r[1]||'')>=startDate&&(r[1]||'')<=endDate).reduce((s,r)=>s+(parseFloat(r[3])||0),0);
     const totalAdv    = existingAdv+periodAdv;
 
-    currentPayrollData = { name:empName, period:`${startDate} to ${endDate}`, position, attYes, attMeals, attNo, twoManDays:twoMan, twoManDates:twoManComment, periodAdv, existingAdv, totalAdv, empSSS, empPagibig, empPhilHealth, totalContrib, pedroexSSS, pedroexPagibig, pedroexPhilHealth, basePay, twoManPay, mealPay, grossPay, savingsPlan, isOverridden:false, autoAtt:{ attYes, attMeals, attNo, twoManDays:twoMan } };
+    // Installment deduction plans (balances come from Payroll History col AG)
+    if (!(await loadPlansData())) throw new Error('Could not load deduction plans — nothing was calculated.');
+    const plans = buildPlansForPeriod(empName, `${startDate} to ${endDate}`, endDate);
+
+    currentPayrollData = { name:empName, period:`${startDate} to ${endDate}`, position, attYes, attMeals, attNo, twoManDays:twoMan, twoManDates:twoManComment, periodAdv, existingAdv, totalAdv, empSSS, empPagibig, empPhilHealth, totalContrib, pedroexSSS, pedroexPagibig, pedroexPhilHealth, basePay, twoManPay, mealPay, grossPay, savingsPlan, isOverridden:false, autoAtt:{ attYes, attMeals, attNo, twoManDays:twoMan }, plans };
     showPayrollResult();
   } catch(err) { console.error(err); showToast('❌ Error: '+err.message); }
 }
@@ -1140,7 +1254,11 @@ function recalcNetPay() {
   const d = currentPayrollData;
   const manualDed   = parseFloat(document.getElementById('manual-deduction').value)||0;
   const remainingAdv= Math.max(0,d.totalAdv-manualDed);
-  const totalDed    = manualDed+d.totalContrib+d.savingsPlan;
+  const planTotal   = (d.plans||[]).reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+  const totalDed    = manualDed+d.totalContrib+d.savingsPlan+planTotal;
+  document.getElementById('summary-plan-ded').textContent   = '₱'+planTotal.toFixed(2);
+  document.getElementById('summary-plan-total').textContent = '₱'+planTotal.toFixed(2);
+  d.planDedTotal = planTotal;
   const netPay      = d.grossPay-totalDed;
   document.getElementById('summary-deducted').textContent      = '₱'+manualDed.toFixed(2);
   document.getElementById('summary-new-existing').textContent  = '₱'+remainingAdv.toFixed(2);
@@ -1268,6 +1386,7 @@ function showPayrollResult() {
   document.getElementById('summary-contrib').textContent = '₱'+d.totalContrib.toFixed(2);
   document.getElementById('payroll-comments').value = d.twoManDates||'';
   document.getElementById('manual-deduction').value = '';
+  renderPlanDeductions();
   recalcNetPay();
   const actions = document.querySelector('#payroll-result-modal .modal-actions');
   actions.innerHTML = `<button class="btn btn-secondary" onclick="closePayrollResultModal()">Close</button><button class="btn btn-primary" onclick="savePayrollToHistory()">💾 Save to History</button>`;
@@ -1283,9 +1402,10 @@ async function savePayrollToHistory() {
   const comments = (data.isOverridden ? '[Manual Attendance Override] ' : '') + rawComments;
   if (!data.deductedAdv && data.deductedAdv!==0) { showToast('Please enter advance deduction first.'); return; }
   try {
-    const row = ['PAY-'+Date.now(), data.name, data.period, data.attYes+data.attMeals+data.attNo, data.periodAdv, 0, data.existingAdv, data.totalAdv, data.pedroexSSS||0, data.empSSS, data.pedroexPagibig||0, data.empPagibig, data.pedroexPhilHealth||0, data.empPhilHealth, data.deductedAdv, data.totalDed, data.remainingAdv, data.twoManDays, data.twoManPay, selectedPeriod==='1st'?data.savingsPlan:0, selectedPeriod==='2nd'?data.savingsPlan:0, data.savingsPlan, '', '', '', data.grossPay, data.mealPay, data.netPay, comments, data.attYes, data.attMeals, data.attNo];
-    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:AF:append?valueInputOption=USER_ENTERED`, { method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body:JSON.stringify({values:[row]}) });
-    if (res.ok) { showToast('✅ Payroll saved!'); closePayrollResultModal(); currentPayrollData=null; loadHistory(); } else showToast('❌ Error saving payroll.');
+    await ensurePayrollPlanColumn();
+    const row = ['PAY-'+Date.now(), data.name, data.period, data.attYes+data.attMeals+data.attNo, data.periodAdv, 0, data.existingAdv, data.totalAdv, data.pedroexSSS||0, data.empSSS, data.pedroexPagibig||0, data.empPagibig, data.pedroexPhilHealth||0, data.empPhilHealth, data.deductedAdv, data.totalDed, data.remainingAdv, data.twoManDays, data.twoManPay, selectedPeriod==='1st'?data.savingsPlan:0, selectedPeriod==='2nd'?data.savingsPlan:0, data.savingsPlan, '', '', '', data.grossPay, data.mealPay, data.netPay, comments, data.attYes, data.attMeals, data.attNo, planDedString(data)];
+    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:AG:append?valueInputOption=USER_ENTERED`, { method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body:JSON.stringify({values:[row]}) });
+    if (res.ok) { showToast('✅ Payroll saved!'); closePayrollResultModal(); currentPayrollData=null; loadHistory(); loadPlansUI(); } else showToast('❌ Error saving payroll.');
   } catch(err) { showToast('❌ Error saving payroll.'); }
 }
 
@@ -1311,7 +1431,7 @@ async function loadHistory() {
   document.getElementById('history-list').innerHTML = '';
   document.getElementById('history-empty').style.display = 'none';
   try {
-    const res  = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AF`, {headers:{'Authorization':'Bearer '+token}});
+    const res  = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AG`, {headers:{'Authorization':'Bearer '+token}});
     const data = await res.json();
     let rows   = data.values||[];
     const empF = document.getElementById('hist-filter-emp')?.value||'';
@@ -1405,6 +1525,12 @@ function showHistoryDetail(r) {
   html += sec('CONTRIBUTIONS', row('Employee SSS',fmtP(r[9]))+row('Employee Pag-IBIG',fmtP(r[11]))+row('Employee PhilHealth',fmtP(r[13]))+row('PEDROEX SSS',fmtP(r[8]))+row('PEDROEX Pag-IBIG',fmtP(r[10]))+row('PEDROEX PhilHealth',fmtP(r[12])));
   html += sec('EARNINGS', row('Base Pay','₱'+basePay.toFixed(2),`(${baseDays} days)`)+row('2-Man Team Bonus',fmtP(r[18]),`(${twoManDays} days × ₱280)`)+row('Meal Allowance',fmtP(r[26]),`(${mealDays} days × ₱210)`)+row('Gross Pay',fmtP(r[25]),'',false,true));
   html += sec('SAVINGS & DEDUCTIONS', row('Savings Plan',fmtP(r[21]),'(5% of Gross)')+row('Total Deductions',fmtP(r[15]))+row('Net Pay',fmtP(r[27]),'',true));
+  const planEntries = parsePlanDed(r[32]);
+  if (planEntries.length) html += sec('INSTALLMENT PLANS', planEntries.map(e => {
+    const p = deductionPlans.find(x => x.id === e.id);
+    const bal = p ? Math.max(0, r2(p.total - (planPaid[e.id]||0))) : null;
+    return row(escHtml(p ? p.reason : 'Plan '+e.id), fmtP(e.amount), bal===null ? '' : 'Balance now '+peso(bal));
+  }).join(''));
   html += sec('2-MAN TEAM', row('2-Man Team Days',r[17]||'0')+row('2-Man Team Dates',r[28]||'—'));
   html += sec('SAVINGS WITHDRAWALS', row('Withdrawal Dates',r[22]||'—')+row('Withdrawal Amounts',r[23]||'—')+row('Interest Accrued',fmtP(r[24])));
   document.getElementById('hist-detail-body').innerHTML = html;
@@ -1418,11 +1544,15 @@ function showHistoryDetail(r) {
   document.getElementById('history-detail-modal').classList.add('active');
 }
 
-function editPayrollHistory() {
+async function editPayrollHistory() {
   const r = window.currentHistoryRow; if (!r) return;
-  currentPayrollData = { name:r[1], period:r[2], attYes:parseInt(r[29]||0), attMeals:parseInt(r[30]||0), attNo:parseInt(r[31]||0), twoManDays:r[17]||0, periodAdv:parseFloat(r[4]||0), existingAdv:parseFloat(r[6]||0), totalAdv:parseFloat(r[7]||0), empSSS:parseFloat(r[9]||0), empPagibig:parseFloat(r[11]||0), empPhilHealth:parseFloat(r[13]||0), totalContrib:parseFloat(r[9]||0)+parseFloat(r[11]||0)+parseFloat(r[13]||0), pedroexSSS:parseFloat(r[8]||0), pedroexPagibig:parseFloat(r[10]||0), pedroexPhilHealth:parseFloat(r[12]||0), basePay:parseFloat(r[25]||0)-parseFloat(r[18]||0)-parseFloat(r[26]||0), twoManPay:parseFloat(r[18]||0), mealPay:parseFloat(r[26]||0), grossPay:parseFloat(r[25]||0), savingsPlan:parseFloat(r[21]||0), deductedAdv:parseFloat(r[14]||0), remainingAdv:parseFloat(r[16]||0), totalDed:parseFloat(r[15]||0), netPay:parseFloat(r[27]||0), twoManDates:r[28]||'', payrollId:r[0], isOverridden:/^\[Manual Attendance Override\]/.test(r[28]||''), autoAtt:null };
+  const savedDed = parseFloat(r[14]||0);   // showPayrollResult() recalculates with an empty field, so remember it first
+  currentPayrollData = { name:r[1], period:r[2], attYes:parseInt(r[29]||0), attMeals:parseInt(r[30]||0), attNo:parseInt(r[31]||0), twoManDays:r[17]||0, periodAdv:parseFloat(r[4]||0), existingAdv:parseFloat(r[6]||0), totalAdv:parseFloat(r[7]||0), empSSS:parseFloat(r[9]||0), empPagibig:parseFloat(r[11]||0), empPhilHealth:parseFloat(r[13]||0), totalContrib:parseFloat(r[9]||0)+parseFloat(r[11]||0)+parseFloat(r[13]||0), pedroexSSS:parseFloat(r[8]||0), pedroexPagibig:parseFloat(r[10]||0), pedroexPhilHealth:parseFloat(r[12]||0), basePay:parseFloat(r[25]||0)-parseFloat(r[18]||0)-parseFloat(r[26]||0), twoManPay:parseFloat(r[18]||0), mealPay:parseFloat(r[26]||0), grossPay:parseFloat(r[25]||0), savingsPlan:parseFloat(r[21]||0), deductedAdv:parseFloat(r[14]||0), remainingAdv:parseFloat(r[16]||0), totalDed:parseFloat(r[15]||0), netPay:parseFloat(r[27]||0), twoManDates:r[28]||'', payrollId:r[0], isOverridden:/^\[Manual Attendance Override\]/.test(r[28]||''), autoAtt:null, plans:[] };
+  if (!(await loadPlansData())) { showToast('❌ Could not load deduction plans.'); currentPayrollData = null; return; }
+  currentPayrollData.plans = buildPlansForEdit(r);
   showPayrollResult();
-  document.getElementById('manual-deduction').value = currentPayrollData.deductedAdv;
+  document.getElementById('manual-deduction').value = savedDed;
+  recalcNetPay();
   document.getElementById('payroll-comments').value  = (currentPayrollData.twoManDates||'').replace(/^\[Manual Attendance Override\]\s*/, '');
   document.querySelector('#payroll-result-modal .modal-actions').innerHTML = `<button class="btn btn-secondary" onclick="closePayrollResultModal()">Cancel</button><button class="btn btn-primary" onclick="updatePayrollHistory()">💾 Update</button>`;
   document.getElementById('history-detail-modal').classList.remove('active');
@@ -1436,11 +1566,12 @@ async function updatePayrollHistory() {
   try {
     const res    = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:A`, {headers:{'Authorization':'Bearer '+token}});
     const idData = await res.json();
+    await ensurePayrollPlanColumn();
     const rowNum = (idData.values||[]).findIndex(r=>r[0]===data.payrollId)+1;
     if (rowNum<2) { showToast('❌ Record not found'); return; }
-    const row = [data.payrollId,data.name,data.period,data.attYes+data.attMeals+data.attNo,data.periodAdv,0,data.existingAdv,data.totalAdv,data.pedroexSSS||0,data.empSSS,data.pedroexPagibig||0,data.empPagibig,data.pedroexPhilHealth||0,data.empPhilHealth,data.deductedAdv,data.totalDed,data.remainingAdv,data.twoManDays,data.twoManPay,selectedPeriod==='1st'?data.savingsPlan:0,selectedPeriod==='2nd'?data.savingsPlan:0,data.savingsPlan,'','','',data.grossPay,data.mealPay,data.netPay,comments,data.attYes,data.attMeals,data.attNo];
-    const upd = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A${rowNum}:AF${rowNum}?valueInputOption=USER_ENTERED`, {method:'PUT',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:[row]})});
-    if (upd.ok) { showToast('✅ Payroll updated!'); closePayrollResultModal(); currentPayrollData=null; loadHistory(); } else showToast('❌ Error updating');
+    const row = [data.payrollId,data.name,data.period,data.attYes+data.attMeals+data.attNo,data.periodAdv,0,data.existingAdv,data.totalAdv,data.pedroexSSS||0,data.empSSS,data.pedroexPagibig||0,data.empPagibig,data.pedroexPhilHealth||0,data.empPhilHealth,data.deductedAdv,data.totalDed,data.remainingAdv,data.twoManDays,data.twoManPay,periodIs2nd(data.period)?0:data.savingsPlan,periodIs2nd(data.period)?data.savingsPlan:0,data.savingsPlan,'','','',data.grossPay,data.mealPay,data.netPay,comments,data.attYes,data.attMeals,data.attNo,planDedString(data)];
+    const upd = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A${rowNum}:AG${rowNum}?valueInputOption=USER_ENTERED`, {method:'PUT',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:[row]})});
+    if (upd.ok) { showToast('✅ Payroll updated!'); closePayrollResultModal(); currentPayrollData=null; loadHistory(); loadPlansUI(); } else showToast('❌ Error updating');
   } catch(err) { showToast('❌ Error updating'); }
 }
 
@@ -1454,7 +1585,7 @@ async function deletePayrollHistory() {
     const rowNum = (idData.values||[]).findIndex(row=>row[0]===r[0])+1;
     if (rowNum<2) { showToast('❌ Record not found'); return; }
     const del = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, {method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({requests:[{deleteDimension:{range:{sheetId,dimension:'ROWS',startIndex:rowNum-1,endIndex:rowNum}}}]})});
-    if (del.ok) { showToast('✅ Payroll deleted'); document.getElementById('history-detail-modal').classList.remove('active'); loadHistory(); } else showToast('❌ Error deleting');
+    if (del.ok) { showToast('✅ Payroll deleted'); document.getElementById('history-detail-modal').classList.remove('active'); loadHistory(); loadPlansUI(); } else showToast('❌ Error deleting');
   } catch(err) { showToast('❌ Error deleting'); }
 }
 
@@ -1564,7 +1695,7 @@ function renderSavingsList(targetId = 'savings-list', readOnly = false, onlyName
       <!-- Header -->
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
         <div>
-          <div style="font-size:16px;font-weight:700;color:var(--text)">${emp.name}</div>
+          <div style="font-size:16px;font-weight:700;color:var(--text)">${emp.name}${isSeparatedName(emp.name)?' <span class="plan-badge cancelled">Separated</span>':''}</div>
           <div style="font-size:11px;font-weight:600;color:${maturityColor};margin-top:3px">${maturityLabel}</div>
           <div style="font-size:10px;color:var(--text3);margin-top:2px">Since: ${firstDateLabel}</div>
         </div>
@@ -1607,7 +1738,7 @@ function renderSavingsList(targetId = 'savings-list', readOnly = false, onlyName
         </div>` : ''}
 
       <!-- Action Button (admin only) -->
-      ${readOnly ? '' : `<button class="btn ${emp.isMature?'btn-primary':'btn-secondary'}"
+      ${readOnly ? '' : isSeparatedName(emp.name) ? `<div style="width:100%;padding:14px;border-radius:12px;text-align:center;font-size:13px;font-weight:700;color:var(--red);background:rgba(179,37,51,0.1)">🚫 Separated — withdrawal disabled</div>` : `<button class="btn ${emp.isMature?'btn-primary':'btn-secondary'}"
         style="width:100%;${!emp.isMature?'opacity:0.6;cursor:not-allowed':''}"
         onclick="${emp.isMature ? `openSavingsWithdrawalModal('${emp.name.replace(/'/g,"\\'")}')` : `showToast('🔒 Savings not yet mature — ${6-emp.monthsElapsed} month(s) remaining')`}">
         ${emp.isMature ? '💰 Process Withdrawal' : `🔒 Locked — ${6-emp.monthsElapsed} month(s) to go`}
@@ -1621,6 +1752,7 @@ function renderSavingsList(targetId = 'savings-list', readOnly = false, onlyName
 function openSavingsWithdrawalModal(empName) {
   const emp = savingsData.find(e=>e.name===empName);
   if (!emp) return;
+  if (isSeparatedName(empName)) { showToast('🚫 '+empName+' is SEPARATED — withdrawal disabled.'); return; }
   currentSavingsEmployee = emp;
 
   document.getElementById('sw-modal-title').textContent = empName+' — Withdrawal';
@@ -1692,6 +1824,13 @@ async function processWithdrawal() {
   showToast('Processing withdrawal...');
 
   try {
+    // Re-check status straight from the sheet (this page may have been open for a while)
+    await refreshSeparatedNames();
+    if (isSeparatedName(emp.name)) {
+      showToast('🚫 '+emp.name+' is SEPARATED — withdrawal not allowed.');
+      closeSavingsWithdrawalModal(); renderSavingsList(); return;
+    }
+
     // Fetch latest payroll rows for this employee
     const res  = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AF`, {headers:{'Authorization':'Bearer '+token}});
     const data = await res.json();
@@ -1732,6 +1871,260 @@ async function processWithdrawal() {
     console.error(err); showToast('❌ Error: '+err.message);
     document.getElementById('sw-confirm-btn').disabled=false;
   }
+}
+
+// ═══════════════════════════════════════════════════════
+// INSTALLMENT DEDUCTION PLANS
+// A plan = fixed amount payable in equal installments, one per payroll (kinsenas).
+//   per payroll = total / (months × 2)
+// Sheet 'Deduction Plans' (auto-created): ID | Employee | Reason | Total | Months | Per Payroll | Start | Status | Created
+// What was actually deducted is stored on each Payroll History row in col AG
+// ("planId=amount;planId=amount"), so balance = total − Σ(AG) and it stays correct
+// when a payroll is edited or deleted.
+// ═══════════════════════════════════════════════════════
+const PLANS_SHEET = 'Deduction Plans';
+const r2   = n => Math.round(((parseFloat(n)||0) + Number.EPSILON) * 100) / 100;
+const peso = n => '₱' + (parseFloat(n)||0).toLocaleString('en-PH',{minimumFractionDigits:2});
+const escHtml = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function parsePlanDed(str) {
+  return String(str||'').split(';').map(s=>s.trim()).filter(Boolean).map(s => {
+    const i = s.indexOf('=');
+    return { id: s.slice(0,i).trim(), amount: parseFloat(s.slice(i+1))||0 };
+  }).filter(x => x.id && x.amount > 0);
+}
+function planDedString(d) {
+  return (d.plans||[]).filter(p => (parseFloat(p.amount)||0) > 0).map(p => `${p.id}=${r2(p.amount).toFixed(2)}`).join(';');
+}
+function periodIs2nd(period) { return (parseInt(String(period||'').slice(8,10))||1) >= 16; }
+
+// Returns true on success. Missing 'Deduction Plans' sheet (HTTP 400) simply means "no plans yet".
+async function loadPlansData() {
+  try {
+    const hdr = { headers: { 'Authorization': 'Bearer ' + token } };
+    const [pRes, hRes] = await Promise.all([
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(PLANS_SHEET+'!A2:I')}`, hdr),
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AG`, hdr)
+    ]);
+    if (!hRes.ok) return false;
+    if (!pRes.ok && pRes.status !== 400) return false;
+    const pData = pRes.ok ? await pRes.json() : { values: [] };
+    const hData = await hRes.json();
+    deductionPlans = (pData.values||[]).map((r,i) => ({
+      rowIndex:i+2, id:r[0]||'', name:r[1]||'', reason:r[2]||'', total:parseFloat(r[3])||0, months:parseInt(r[4])||0,
+      perPeriod:parseFloat(r[5])||0, start:r[6]||'', status:String(r[7]||'ACTIVE').trim().toUpperCase(), created:r[8]||''
+    })).filter(p => p.id);
+    payrollRowsAG = hData.values || [];
+    planPaid = {};
+    payrollRowsAG.forEach(r => parsePlanDed(r[32]).forEach(e => { planPaid[e.id] = r2((planPaid[e.id]||0) + e.amount); }));
+    return true;
+  } catch (e) { console.warn('loadPlansData error:', e); return false; }
+}
+
+// Plans that apply to this employee for this payroll period
+function buildPlansForPeriod(empName, periodStr, endDate) {
+  return deductionPlans.filter(p => p.name === empName && p.status === 'ACTIVE').map(p => {
+    const balance = Math.max(0, r2(p.total - (planPaid[p.id]||0)));
+    const already = payrollRowsAG.filter(r => (r[1]||'') === empName && (r[2]||'') === periodStr)
+      .reduce((s,r) => s + ((parsePlanDed(r[32]).find(x => x.id === p.id) || {amount:0}).amount), 0);
+    const starts = !p.start || endDate >= p.start;
+    const suggested = (!starts || already > 0) ? 0 : Math.min(p.perPeriod, balance);   // last installment = whatever is left
+    return { id:p.id, reason:p.reason, total:p.total, months:p.months, perPeriod:p.perPeriod, balanceBefore:balance, amount:r2(suggested), already, starts, startDate:p.start };
+  }).filter(p => p.balanceBefore > 0);
+}
+
+// When editing a saved payroll: the plans recorded on that row, with the balance as it was before that row
+function buildPlansForEdit(r) {
+  return parsePlanDed(r[32]).map(e => {
+    const p = deductionPlans.find(x => x.id === e.id);
+    const paidOthers = (planPaid[e.id]||0) - e.amount;
+    const before = p ? Math.max(0, r2(p.total - paidOthers)) : e.amount;
+    return { id:e.id, reason:p?p.reason:'(plan not found)', total:p?p.total:0, months:p?p.months:0, perPeriod:p?p.perPeriod:e.amount,
+             balanceBefore:before, amount:e.amount, already:0, starts:true, startDate:p?p.start:'' };
+  });
+}
+
+function renderPlanDeductions() {
+  const d = currentPayrollData;
+  const plans = (d && d.plans) || [];
+  document.getElementById('plan-ded-section').style.display = plans.length ? 'block' : 'none';
+  document.getElementById('plan-ded-list').innerHTML = plans.map((p,i) => `
+    <div class="plan-ded-row">
+      <div class="plan-ded-top">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${escHtml(p.reason||'Deduction')}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">${peso(p.perPeriod)} per payroll · balance before ${peso(p.balanceBefore)}</div>
+          ${!p.starts ? `<div style="font-size:11px;color:var(--orange);font-weight:600;margin-top:2px">Starts ${escHtml(p.startDate)} — not due yet</div>` : ''}
+          ${p.already > 0 ? `<div style="font-size:11px;color:var(--orange);font-weight:600;margin-top:2px">Already deducted ${peso(p.already)} in a saved payroll for this period</div>` : ''}
+        </div>
+        <input type="number" class="plan-ded-input" min="0" step="0.01" value="${p.amount}" oninput="onPlanAmountInput(${i}, this)">
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:8px;text-align:right">Balance after: <b id="plan-after-${i}" style="color:var(--green)">${peso(p.balanceBefore - p.amount)}</b></div>
+    </div>`).join('');
+}
+
+function onPlanAmountInput(i, el) {
+  const p = currentPayrollData && currentPayrollData.plans && currentPayrollData.plans[i]; if (!p) return;
+  let v = parseFloat(el.value); if (!(v > 0)) v = 0;
+  if (v > p.balanceBefore) { v = p.balanceBefore; el.value = v; showToast('Capped at remaining balance '+peso(p.balanceBefore)); }
+  p.amount = r2(v);
+  document.getElementById('plan-after-'+i).textContent = peso(p.balanceBefore - p.amount);
+  recalcNetPay();
+}
+
+// Payroll History needs column AG ("Plan Deductions"); add it once if the sheet is only 32 columns wide
+let _agReady = false;
+async function ensurePayrollPlanColumn() {
+  if (_agReady) return;
+  const hdr = { 'Authorization': 'Bearer ' + token };
+  const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=sheets(properties(sheetId,title,gridProperties(columnCount)))`, { headers: hdr });
+  if (!r.ok) throw new Error('Cannot read spreadsheet info');
+  const d = await r.json();
+  const sh = (d.sheets||[]).find(s => s.properties.title === 'Payroll History');
+  if (!sh) throw new Error('Payroll History sheet not found');
+  const cols = sh.properties.gridProperties.columnCount;
+  if (cols < 33) {
+    const b = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, { method:'POST', headers:{...hdr,'Content-Type':'application/json'},
+      body: JSON.stringify({ requests:[{ appendDimension:{ sheetId: sh.properties.sheetId, dimension:'COLUMNS', length: 33 - cols } }] }) });
+    if (!b.ok) throw new Error('Could not add the Plan Deductions column');
+  }
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent('Payroll History!AG1')}?valueInputOption=USER_ENTERED`,
+    { method:'PUT', headers:{...hdr,'Content-Type':'application/json'}, body: JSON.stringify({ values:[['Plan Deductions']] }) });
+  _agReady = true;
+}
+
+async function ensurePlansSheet() {
+  const hdr = { 'Authorization': 'Bearer ' + token };
+  const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=sheets(properties(title))`, { headers: hdr });
+  if (!r.ok) throw new Error('Cannot read spreadsheet info');
+  const d = await r.json();
+  if ((d.sheets||[]).some(s => s.properties.title === PLANS_SHEET)) return;
+  const b = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, { method:'POST', headers:{...hdr,'Content-Type':'application/json'},
+    body: JSON.stringify({ requests:[{ addSheet:{ properties:{ title: PLANS_SHEET } } }] }) });
+  if (!b.ok) throw new Error('Could not create the Deduction Plans sheet');
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(PLANS_SHEET+'!A1:I1')}?valueInputOption=USER_ENTERED`,
+    { method:'PUT', headers:{...hdr,'Content-Type':'application/json'}, body: JSON.stringify({ values:[['ID','Employee','Reason','Total','Months','Per Payroll','Start Date','Status','Created']] }) });
+}
+
+// ── Plan cards ──────────────────────────────────────────
+function planCardHtml(p, adminView) {
+  const paid     = Math.min(p.total, planPaid[p.id]||0);
+  const balance  = Math.max(0, r2(p.total - paid));
+  const pct      = p.total > 0 ? Math.min(100, Math.round(paid / p.total * 100)) : 0;
+  const cancelled = p.status === 'CANCELLED';
+  const done     = !cancelled && balance <= 0;
+  const badge    = cancelled ? '<span class="plan-badge cancelled">Cancelled</span>' : done ? '<span class="plan-badge done">Fully paid</span>' : '<span class="plan-badge active">Active</span>';
+  const left     = (!cancelled && !done && p.perPeriod > 0) ? Math.ceil(balance / p.perPeriod) : 0;
+  const who      = adminView ? `${escHtml(p.name)}${isSeparatedName(p.name) ? ' <span class="plan-badge cancelled">Separated</span>' : ''} — ` : '';
+  return `<div class="plan-card"${cancelled ? ' style="opacity:.6"' : ''}>
+    <div class="plan-head">
+      <div>
+        <div class="plan-title">${who}${escHtml(p.reason||'Deduction')}${badge}</div>
+        <div class="plan-sub">${peso(p.total)} over ${p.months} month${p.months!==1?'s':''} · ${peso(p.perPeriod)} per kinsenas × ${p.months*2} payrolls<br>Starts: ${escHtml(p.start||'—')}</div>
+      </div>
+      <div class="plan-bal"><div class="plan-bal-label">Balance</div><div class="plan-bal-val${done?' done':''}">${peso(balance)}</div></div>
+    </div>
+    <div class="plan-bar"><div style="width:${pct}%"></div></div>
+    <div class="plan-stats"><span>Paid ${peso(paid)} (${pct}%)</span><span>${left ? left+' payroll'+(left!==1?'s':'')+' left' : ''}</span></div>
+    ${adminView && !cancelled && !done ? `<button class="btn btn-secondary" style="width:100%;margin-top:12px;padding:10px;font-size:12px;color:var(--red)" onclick="cancelPlan('${p.id}')">Cancel plan</button>` : ''}
+  </div>`;
+}
+
+async function loadPlansUI() {
+  const ok = await loadPlansData();
+  if (!ok) { showToast('❌ Failed to load deduction plans.'); return; }
+  renderPlanCards();
+}
+
+function renderPlanCards() {
+  const wrap = document.getElementById('plans-list'); const empty = document.getElementById('plans-empty');
+  if (!wrap) return;
+  const rank = p => p.status === 'CANCELLED' ? 2 : (r2(p.total - (planPaid[p.id]||0)) <= 0 ? 1 : 0);
+  const list = deductionPlans.slice().sort((a,b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+  wrap.innerHTML = list.map(p => planCardHtml(p, true)).join('');
+  empty.style.display = list.length ? 'none' : 'block';
+}
+
+async function cancelPlan(id) {
+  const p = deductionPlans.find(x => x.id === id); if (!p) return;
+  const bal = Math.max(0, r2(p.total - (planPaid[p.id]||0)));
+  if (!confirm(`Cancel this plan?\n\n${p.name} — ${p.reason}\nRemaining ${peso(bal)} will no longer be deducted.\nPast deductions stay in payroll history.`)) return;
+  try {
+    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(PLANS_SHEET+'!H'+p.rowIndex)}?valueInputOption=USER_ENTERED`,
+      { method:'PUT', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body: JSON.stringify({ values:[['CANCELLED']] }) });
+    if (!res.ok) throw new Error('Update failed ('+res.status+')');
+    showToast('Plan cancelled.'); await loadPlansUI();
+  } catch (e) { console.error(e); showToast('❌ '+e.message); }
+}
+
+// ── New plan modal (one plan per selected employee) ─────
+function showAddPlanModal() {
+  const t = new Date();
+  document.getElementById('plan-reason').value = '';
+  document.getElementById('plan-total').value  = '';
+  document.getElementById('plan-months').value = '';
+  document.getElementById('plan-start').value  = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${t.getDate() <= 15 ? '01' : '16'}`;
+  const list = document.getElementById('plan-emp-list');
+  list.innerHTML = allEmployees.filter(e => !e.separated).map(e =>
+    `<label class="emp-check-row"><input type="checkbox" value="${escHtml(e.fullName)}"><span>${escHtml(e.fullName)}</span></label>`).join('')
+    || '<div style="font-size:12px;color:var(--text3);padding:8px 0">No active employees.</div>';
+  list.onchange = updatePlanPreview;
+  document.getElementById('plan-preview').style.display = 'none';
+  document.getElementById('plan-modal').classList.add('active');
+}
+function closePlanModal() { document.getElementById('plan-modal').classList.remove('active'); }
+function togglePlanAll() {
+  const boxes = [...document.querySelectorAll('#plan-emp-list input')];
+  const all = boxes.length && boxes.every(b => b.checked);
+  boxes.forEach(b => b.checked = !all);
+  updatePlanPreview();
+}
+function updatePlanPreview() {
+  const total = parseFloat(document.getElementById('plan-total').value);
+  const months = parseInt(document.getElementById('plan-months').value);
+  const box = document.getElementById('plan-preview');
+  if (!(total > 0) || !(months >= 1)) { box.style.display = 'none'; return; }
+  const periods = months * 2, per = r2(total / periods);
+  const n = document.querySelectorAll('#plan-emp-list input:checked').length;
+  box.innerHTML = `<b>${peso(per)}</b> per kinsenas × ${periods} payrolls = ${peso(total)} per employee`
+    + (r2(per * periods) !== r2(total) ? '<br><span style="color:var(--text2);font-size:12px">The last payroll adjusts for rounding.</span>' : '')
+    + (n ? `<br><span style="color:var(--text2);font-size:12px">${n} employee${n!==1?'s':''} selected</span>` : '');
+  box.style.display = 'block';
+}
+async function savePlans() {
+  const reason = document.getElementById('plan-reason').value.trim();
+  const total  = parseFloat(document.getElementById('plan-total').value);
+  const months = parseInt(document.getElementById('plan-months').value);
+  const start  = document.getElementById('plan-start').value;
+  const names  = [...document.querySelectorAll('#plan-emp-list input:checked')].map(i => i.value);
+  if (!reason)          { showToast('Enter a reason.'); return; }
+  if (!(total > 0))     { showToast('Enter a valid amount.'); return; }
+  if (!(months >= 1))   { showToast('Months must be at least 1.'); return; }
+  if (!start)           { showToast('Pick a start date.'); return; }
+  if (!names.length)    { showToast('Select at least one employee.'); return; }
+  const btn = document.getElementById('plan-save-btn'); btn.disabled = true;
+  try {
+    await ensurePlansSheet();
+    const per = r2(total / (months * 2));
+    const created = new Date().toISOString().slice(0,10), base = Date.now();
+    const rows = names.map((n,i) => ['DED-'+base+'-'+i, n, reason, total, months, per, start, 'ACTIVE', created]);
+    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(PLANS_SHEET+'!A:I')}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
+      { method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body: JSON.stringify({ values: rows }) });
+    if (!res.ok) throw new Error('Save failed ('+res.status+')');
+    showToast(`✅ ${rows.length} plan${rows.length!==1?'s':''} created`);
+    closePlanModal(); await loadPlansUI();
+  } catch (e) { console.error(e); showToast('❌ '+e.message); }
+  finally { btn.disabled = false; }
+}
+
+// ── Employee view ───────────────────────────────────────
+async function loadMyPlans(myName) {
+  const wrap = document.getElementById('emp-plans-list'); if (!wrap) return;
+  const ok = await loadPlansData();
+  if (!ok) { wrap.innerHTML = '<div class="empty-state"><div class="empty-text">Could not load deduction plans.</div></div>'; return; }
+  const mine = deductionPlans.filter(p => p.name === myName);
+  wrap.innerHTML = mine.length ? mine.map(p => planCardHtml(p, false)).join('')
+    : '<div class="empty-state"><div class="empty-icon">📉</div><div class="empty-text">No deduction plans.</div></div>';
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1829,13 +2222,14 @@ function viewEmployeeAdvanceDetail(advance) {
 async function loadEmployeeHistory() {
   try {
     const [histRes, empRes] = await Promise.all([
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AF`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AG`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:D`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
     ]);
     const myRow  = (empRes.values||[]).find(r=>(r[0]||'').toLowerCase()===userEmail.toLowerCase());
     const myName = myRow ? ((myRow[1]||'')+' '+(myRow[2]||'')).trim() : '';
     let rows = (histRes.values||[]).filter(r=>(r[1]||'')===myName);
     rows.sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));
+    await loadMyPlans(myName);
     document.getElementById('emp-history-loading').style.display = 'none';
     if (!rows.length) { document.getElementById('emp-history-empty').style.display='block'; return; }
     await loadSavingsQuiet(); // same savings computation the admin uses
