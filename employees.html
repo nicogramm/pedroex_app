@@ -338,6 +338,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
           </select>
           <input type="month" class="filter-input" id="hist-filter-month" onchange="loadHistory()" style="flex:1">
         </div>
+        <div style="display:flex;gap:6px;background:var(--bg);border-radius:16px;box-shadow:var(--neu-in);padding:6px;margin-bottom:14px"><button class="tab-btn active" id="hh-all" onclick="setHistHalf('all')">All</button><button class="tab-btn" id="hh-1st" onclick="setHistHalf('1st')">1st Half</button><button class="tab-btn" id="hh-2nd" onclick="setHistHalf('2nd')">2nd Half</button></div>
         <div id="history-loading" class="loading" style="display:none"><div class="spinner"></div></div>
         <div id="history-list"></div>
         <div id="history-empty" class="empty-state" style="display:none">
@@ -516,6 +517,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
       <p class="section-subtitle">View your salary records</p>
     </div>
     <div style="background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:16px;margin-bottom:16px">
+      <div style="display:flex;gap:6px;background:var(--bg);border-radius:16px;box-shadow:var(--neu-in);padding:6px;margin-bottom:14px"><button class="tab-btn active" id="eh-all" onclick="setEmpHistHalf('all')">All</button><button class="tab-btn" id="eh-1st" onclick="setEmpHistHalf('1st')">1st Half</button><button class="tab-btn" id="eh-2nd" onclick="setEmpHistHalf('2nd')">2nd Half</button></div>
       <div id="emp-history-loading" class="loading"><div class="spinner"></div></div>
       <div id="emp-history-list"></div>
       <div id="emp-history-empty" class="empty-state" style="display:none">
@@ -793,6 +795,22 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
   </div>
 </div>
 
+<!-- ═══ CONFIRM DELETE MODAL ═══ -->
+<div id="cfm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:500;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--bg);border-radius:20px;box-shadow:var(--neu-out);padding:22px;width:100%;max-width:380px">
+    <div id="cfm-title" style="font-size:17px;font-weight:700;color:var(--red);margin-bottom:10px"></div>
+    <div id="cfm-msg" style="font-size:13px;color:var(--text);line-height:1.7;margin-bottom:14px"></div>
+    <div id="cfm-pw-wrap" style="display:none;margin-bottom:14px">
+      <label class="form-label">Type the password to confirm</label>
+      <input type="password" class="form-input" id="cfm-pw" autocomplete="off" placeholder="Password">
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" onclick="cfmDone(false)">Cancel</button>
+      <button class="btn btn-primary" id="cfm-ok" onclick="cfmDone(true)">Delete</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -865,6 +883,33 @@ function showToast(msg) {
 // ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
+const CONFIRM_PASSWORD = 'peroex';
+let _cfmResolve = null;
+// Promise<boolean>. With needPw the user must type the password before it resolves true.
+function askConfirm({title, msg, okLabel='Delete', needPw=false}) {
+  return new Promise(res => {
+    if (_cfmResolve) _cfmResolve(false);
+    _cfmResolve = res;
+    document.getElementById('cfm-title').textContent = title;
+    document.getElementById('cfm-msg').innerHTML = msg;
+    document.getElementById('cfm-ok').textContent = okLabel;
+    document.getElementById('cfm-pw').value = '';
+    document.getElementById('cfm-pw-wrap').style.display = needPw ? 'block' : 'none';
+    document.getElementById('cfm-modal').dataset.pw = needPw ? '1' : '';
+    document.getElementById('cfm-modal').style.display = 'flex';
+    if (needPw) setTimeout(() => document.getElementById('cfm-pw').focus(), 50);
+  });
+}
+function cfmDone(yes) {
+  const m = document.getElementById('cfm-modal');
+  if (yes && m.dataset.pw && document.getElementById('cfm-pw').value !== CONFIRM_PASSWORD) {
+    showToast('❌ Wrong password.'); document.getElementById('cfm-pw').value = ''; return;
+  }
+  m.style.display = 'none';
+  const r = _cfmResolve; _cfmResolve = null; if (r) r(!!yes);
+}
+document.addEventListener('keydown', e => { if (e.key==='Enter' && document.getElementById('cfm-modal').style.display==='flex') cfmDone(true); });
+
 function isSepRow(r) { return String((r && r[5]) || '').trim().toUpperCase() === 'SEPARATED'; }
 function isSeparatedName(name) { return separatedNames.has(String(name || '').trim()); }
 
@@ -1169,7 +1214,7 @@ async function updateAdvance() {
 
 async function deleteAdvance() {
   const adv = window.currentAdvanceRow; if (!adv) return;
-  if (!confirm(`Delete this advance?\n\n${adv.name} — ₱${adv.amount.toFixed(2)}\n${formatDate(adv.date)}`)) return;
+  if (!(await askConfirm({title:'🗑️ Delete advance?', msg:`<b>${escHtml(adv.name)}</b><br>₱${adv.amount.toFixed(2)} — ${escHtml(formatDate(adv.date))}<br><br>This cannot be undone.`}))) return;
   try {
     const sheetId = await getSheetIdByTitle('Employee Advances');
     if (!sheetId) { showToast('❌ Sheet not found'); return; }
@@ -1426,6 +1471,11 @@ async function calculateYTD(empName) {
   } catch(e) { return null; }
 }
 
+let histHalf = 'all', empHistHalf = 'all';
+function paintHalfTabs(prefix, cur) { ['all','1st','2nd'].forEach(k => { const b = document.getElementById(prefix+'-'+k); if (b) b.classList.toggle('active', k===cur); }); }
+function setHistHalf(h) { histHalf = h; paintHalfTabs('hh', h); loadHistory(); }
+function setEmpHistHalf(h) { empHistHalf = h; paintHalfTabs('eh', h); loadEmployeeHistory(); }
+
 async function loadHistory() {
   document.getElementById('history-loading').style.display = 'flex';
   document.getElementById('history-list').innerHTML = '';
@@ -1438,6 +1488,8 @@ async function loadHistory() {
     const monF = document.getElementById('hist-filter-month')?.value||'';
     if (empF) rows = rows.filter(r=>(r[1]||'')===empF);
     if (monF) rows = rows.filter(r=>(r[2]||'').includes(monF));
+    if (histHalf==='1st') rows = rows.filter(r=>!periodIs2nd(r[2]));
+    else if (histHalf==='2nd') rows = rows.filter(r=>periodIs2nd(r[2]));
     rows.sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));
     document.getElementById('history-loading').style.display = 'none';
     if (!rows.length) { document.getElementById('history-empty').style.display='block'; return; }
@@ -1577,7 +1629,8 @@ async function updatePayrollHistory() {
 
 async function deletePayrollHistory() {
   const r = window.currentHistoryRow; if (!r||!r[0]) return;
-  if (!confirm(`Delete this payroll record?\n\n${r[1]} — ${r[2]}`)) return;
+  const planTxt = parsePlanDed(r[32]).length ? '<br><br><b>Note:</b> its installment-plan deductions will be returned to the plan balance.' : '';
+  if (!(await askConfirm({title:'🗑️ Delete payroll record?', msg:`<b>${escHtml(r[1])}</b><br>${escHtml(r[2])}<br>Net pay: <b>₱${parseFloat(r[27]||0).toFixed(2)}</b><br><br>This cannot be undone. Savings and YTD totals will change.${planTxt}`, needPw:true}))) return;
   try {
     const sheetId = await getSheetIdByTitle('Payroll History'); if (!sheetId) { showToast('❌ Sheet not found'); return; }
     const res    = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:A`, {headers:{'Authorization':'Bearer '+token}});
@@ -2048,7 +2101,7 @@ function renderPlanCards() {
 async function cancelPlan(id) {
   const p = deductionPlans.find(x => x.id === id); if (!p) return;
   const bal = Math.max(0, r2(p.total - (planPaid[p.id]||0)));
-  if (!confirm(`Cancel this plan?\n\n${p.name} — ${p.reason}\nRemaining ${peso(bal)} will no longer be deducted.\nPast deductions stay in payroll history.`)) return;
+  if (!(await askConfirm({title:'Cancel deduction plan?', okLabel:'Cancel plan', needPw:true, msg:`<b>${escHtml(p.name)}</b> — ${escHtml(p.reason)}<br>Remaining <b>${peso(bal)}</b> will no longer be deducted.<br>Past deductions stay in payroll history.`}))) return;
   try {
     const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(PLANS_SHEET+'!H'+p.rowIndex)}?valueInputOption=USER_ENTERED`,
       { method:'PUT', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body: JSON.stringify({ values:[['CANCELLED']] }) });
@@ -2230,12 +2283,18 @@ async function loadEmployeeHistory() {
     let rows = (histRes.values||[]).filter(r=>(r[1]||'')===myName);
     rows.sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));
     await loadMyPlans(myName);
+    const allMine = rows;
+    if (empHistHalf==='1st') rows = rows.filter(r=>!periodIs2nd(r[2]));
+    else if (empHistHalf==='2nd') rows = rows.filter(r=>periodIs2nd(r[2]));
     document.getElementById('emp-history-loading').style.display = 'none';
-    if (!rows.length) { document.getElementById('emp-history-empty').style.display='block'; return; }
+    document.getElementById('emp-history-empty').style.display = 'none';
+    document.getElementById('emp-history-list').innerHTML = '';
+    if (!allMine.length) { document.getElementById('emp-history-empty').style.display='block'; return; }
     await loadSavingsQuiet(); // same savings computation the admin uses
     renderSavingsList('emp-savings-list', true, myName);
     const ytd = await calculateYTD(myName);
     let html = ytd ? buildYTDCard(myName, ytd) : '';
+    if (!rows.length) html += '<div class="empty-state"><div class="empty-text">No records for this half.</div></div>';
     html += rows.map(r=>`<div style="background:var(--bg);border-radius:14px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;cursor:pointer" onclick='showHistoryDetail(${JSON.stringify(r)})'><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-size:13px;font-weight:600;color:var(--text2)">${r[2]||'—'}</div><div style="font-size:16px;font-weight:700;color:var(--red)">₱${parseFloat(r[27]||0).toFixed(2)}</div></div><div style="display:flex;gap:12px"><span style="font-size:11px;color:var(--text3)">Gross: <b style="color:var(--text)">₱${parseFloat(r[25]||0).toFixed(2)}</b></span><span style="font-size:11px;color:var(--text3)">Deductions: <b style="color:var(--text)">₱${parseFloat(r[15]||0).toFixed(2)}</b></span></div></div>`).join('');
     document.getElementById('emp-history-list').innerHTML = html;
   } catch(err) { document.getElementById('emp-history-loading').style.display='none'; showToast('❌ Failed to load history.'); }
