@@ -159,6 +159,13 @@ body.dark .dt-row{border-bottom-color:rgba(255,255,255,0.04)}
 .cal-day.has-att{box-shadow:var(--neu-xs)}
 .cal-day.has-att .cal-day-num{color:var(--text);font-weight:600}
 .cal-day.selected{box-shadow:var(--neu-in)}
+@keyframes fixTwinkleE{0%,100%{box-shadow:0 0 0 0 rgba(179,37,51,0);transform:scale(1);background:transparent}50%{box-shadow:0 0 0 3px rgba(179,37,51,.55),0 0 16px 5px rgba(179,37,51,.6);transform:scale(1.07);background:rgba(179,37,51,.14)}}
+@keyframes fixTwinkleW{0%,100%{box-shadow:0 0 0 0 rgba(243,156,18,0);transform:scale(1);background:transparent}50%{box-shadow:0 0 0 3px rgba(243,156,18,.55),0 0 16px 5px rgba(243,156,18,.6);transform:scale(1.07);background:rgba(243,156,18,.16)}}
+.cal-day.fix-e{animation:fixTwinkleE 1.3s ease-in-out infinite;position:relative;z-index:1}
+.cal-day.fix-w{animation:fixTwinkleW 1.3s ease-in-out infinite;position:relative;z-index:1}
+.cal-day.fix-e::after,.cal-day.fix-w::after{content:'✨';position:absolute;top:-6px;right:-3px;font-size:11px;line-height:1;animation:fixSpark 1.3s ease-in-out infinite}
+@keyframes fixSpark{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(25deg)}}
+@media (prefers-reduced-motion:reduce){.cal-day.fix-e,.cal-day.fix-w,.cal-day.fix-e::after,.cal-day.fix-w::after{animation:none}.cal-day.fix-e{outline:2px solid var(--red)}.cal-day.fix-w{outline:2px solid var(--orange)}}
 .cal-day.other-month{opacity:0.3}
 .cal-names{
   display:flex;
@@ -383,6 +390,14 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 
     <!-- TAB: CALENDAR -->
     <div id="tab-content-calendar" style="display:none">
+      <div id="vfix-banner" style="display:none;position:sticky;top:0;z-index:20;background:var(--bg);border-radius:14px;box-shadow:var(--neu-sm);border-left:4px solid var(--red);padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:4px">🛠 Fixing from Validation</div>
+        <div id="vfix-text" style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="icon-btn" onclick="vfixBack()">← Back to Validation</button>
+          <button class="icon-btn" id="vfix-add" style="display:none" onclick="vfixAdd()">➕ Add attendance</button>
+        </div>
+      </div>
       <div class="neu-card" style="padding:14px;margin-bottom:14px">
         <div class="card-title" style="margin-bottom:10px">Filter Attendance</div>
         <div class="fg" style="margin-bottom:10px">
@@ -777,7 +792,7 @@ function loadAll() {
     renderCalendar();
     document.getElementById('wrap-loading').style.display = 'none';
 
-    if (firstLoad) { firstLoad = false; switchTab('checkin'); }
+    if (firstLoad) { firstLoad = false; switchTab('checkin'); applyDeepLink(); }
     else { switchTab(document.querySelector('.tab.active').id.replace('tab-','')); }
 
   }).catch(function(err) {
@@ -797,6 +812,47 @@ function applyReadOnlyUI() {
 
 function getPosition(name) {
   return positionMap[(name||'').toLowerCase()] || 'Helper';
+}
+
+// ═══ DEEP LINK FROM employees.html VALIDATION ════════
+var vfix = null;   // {date, truck, vm, vp, vt, bad:{date:'e'|'w'}}
+function applyDeepLink() {
+  var q = new URLSearchParams(location.search);
+  var date = q.get('date') || '';
+  if (q.get('from') !== 'validation' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+  vfix = { date:date, truck:q.get('truck')||'', vm:q.get('vm')||'', vp:q.get('vp')||'', vt:q.get('vt')||'', bad:{} };
+  (q.get('bad')||'').split(',').forEach(function(p){
+    var m = p.match(/^(\d{4}-\d{2}-\d{2}):([ew])$/); if (m) vfix.bad[m[1]] = m[2];
+  });
+  if (!vfix.bad[date]) vfix.bad[date] = 'e';
+  calYear = parseInt(date.slice(0,4)); calMonth = parseInt(date.slice(5,7)) - 1;
+  switchTab('calendar'); renderCalendar(); selectDay(date);
+}
+function vfixBack() {
+  if (!vfix) { location.href = 'employees.html'; return; }
+  location.href = 'employees.html?tab=validation&vm='+encodeURIComponent(vfix.vm)+'&vp='+encodeURIComponent(vfix.vp)+'&vt='+encodeURIComponent(vfix.vt);
+}
+function vfixAdd() {
+  if (!vfix || !isAdmin) return;
+  document.getElementById('manual-date').value = vfix.date;
+  if (vfix.truck) document.getElementById('manual-truck').value = vfix.truck;
+  switchTab('admin');
+}
+function vfixSameTruck(r) { return vfix && vfix.truck && (r.truck||'').toLowerCase() === vfix.truck.toLowerCase(); }
+function updateVfixBanner() {
+  var b = document.getElementById('vfix-banner'); if (!b) return;
+  if (!vfix || !isAdmin) { b.style.display = 'none'; return; }
+  var d = new Date(vfix.date + 'T00:00:00');
+  var label = d.toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'});
+  var onDay = allAttendance.filter(function(r){ return r.date === vfix.date && (!vfix.truck || vfixSameTruck(r)); });
+  var msg = '<b>' + (vfix.truck ? vfix.truck + ' · ' : '') + label + '</b> — ';
+  var nBad = Object.keys(vfix.bad).length;
+  msg += onDay.length ? ('tap a highlighted record to correct it, then go back to Validation.')
+                      : 'no attendance record for this truck on this day. Add the missing entry.';
+  if (nBad) msg += '<br><span style="font-size:12px;color:var(--text2)">✨ Blinking dates in the calendar need fixing (' + nBad + '): <b style="color:var(--red)">red</b> = error, <b style="color:var(--orange)">orange</b> = missing / no trip.</span>';
+  document.getElementById('vfix-text').innerHTML = msg;
+  document.getElementById('vfix-add').style.display = onDay.length ? 'none' : '';
+  b.style.display = 'block';
 }
 
 function switchTab(name) {
@@ -1072,6 +1128,7 @@ function renderCalendar() {
     if (dateStr===todayStr) cls+=' today';
     if (entries.length)     cls+=' has-att';
     if (dateStr===selectedDay) cls+=' selected';
+    if (vfix && isAdmin && vfix.bad[dateStr]) cls+=' fix-'+vfix.bad[dateStr];
     var pillsHtml='';
     if (entries.length) {
       var shown=entries.slice(0,3);
@@ -1088,6 +1145,7 @@ function selectDay(dateStr) {
   selectedDay=dateStr; renderCalendar();
   var source=hasActiveFilter()?filteredAttendance:allAttendance;
   var recs=source.filter(function(r){ return r.date===dateStr; });
+  if (vfix && vfix.truck && dateStr===vfix.date) recs.sort(function(a,b){ return (vfixSameTruck(b)?1:0)-(vfixSameTruck(a)?1:0); });
   var panel=document.getElementById('day-panel');
   var d=new Date(dateStr+'T00:00:00');
   var label=d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -1110,13 +1168,15 @@ function selectDay(dateStr) {
         helperTypeBadge = '<span class="badge" style="background:var(--text3);color:#fff">2nd Helper</span>';
       }
       
-      return '<div class="att-item" onclick="openAttDetail('+r.rowIndex+')" style="border-left:4px solid '+c.bg+'">'
+      var focus = vfix && dateStr===vfix.date && vfixSameTruck(r);
+      return '<div class="att-item" onclick="openAttDetail('+r.rowIndex+')" style="border-left:4px solid '+c.bg+(focus?';outline:2px solid var(--red);outline-offset:2px':'')+'">'
         +'<div class="att-name" style="color:'+c.bg+'">'+r.name+'</div>'
         +'<div class="att-meta">'+(r.time||'')+(r.truck?' · 🚛 '+r.truck:'')+'</div>'
         +'<div class="att-badges">'+(r.crates?'<span class="badge">'+r.crates+' crates</span>':'')+mealBadge+teamBadge+posBadge+helperTypeBadge+'</div></div>';
     }).join('');
   }
   panel.classList.add('show');
+  updateVfixBanner();
   setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); },100);
 }
 
