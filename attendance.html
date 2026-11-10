@@ -85,6 +85,16 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .status-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-top:5px}
 .pill-present{background:var(--green);color:#fff}
 .pill-pending{background:var(--orange);color:#fff}
+.pill-separated{background:var(--text3);color:#fff}
+.ro-banner{display:none;background:var(--bg);border-radius:14px;box-shadow:var(--neu-in);border-left:4px solid var(--orange);padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text2);line-height:1.5}
+.ro-banner b{color:var(--text)}
+.eli-actions{display:flex;align-items:center;gap:8px}
+.eli-status{background:var(--bg);border:none;border-radius:10px;box-shadow:var(--neu-sm);padding:7px 10px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap}
+.eli-status:active{box-shadow:var(--neu-in)}
+.eli-status.sep{color:var(--red)}
+.eli-status.react{color:var(--green)}
+.emp-list-item.separated{opacity:.65}
+.sep-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:var(--text3);color:#fff;margin-left:6px;vertical-align:middle}
 
 /* FORM */
 .fg{margin-bottom:14px}
@@ -286,6 +296,9 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
       </div>
       <div id="today-label" style="font-size:11px;color:var(--text2)"></div>
     </div>
+
+    <!-- READ-ONLY BANNER (SEPARATED) -->
+    <div class="ro-banner" id="ro-banner">🔒 <b>Read-only account.</b> Your status is SEPARATED. You can view records but cannot check in, add, edit or delete anything.</div>
 
     <!-- TABS -->
     <div class="tabs" id="tabs-bar">
@@ -586,6 +599,7 @@ var TAB_TRUCKS     = 'Truck Roster';
 // ═══ STATE ════════════════════════════════════════════
 var token         = '';
 var isAdmin       = false;
+var isReadOnly    = false;   // true when Employees!F (Status) = SEPARATED
 var currentUser   = null;
 var allAttendance = [];
 var myRecords     = [];
@@ -661,11 +675,13 @@ function loadAll() {
   if (mEmp)   while (mEmp.options.length > 1)   mEmp.remove(1);
 
   Promise.all([
-    apiGet(TAB_EMPLOYEES  + '!A2:E'),
+    apiGet(TAB_EMPLOYEES  + '!A2:F'),   // A Email | B First | C Last | D Role | E Position | F Status
     apiGet(TAB_TRUCKS     + '!A2:B'),
     apiGet(TAB_ATTENDANCE + '!A2:L')  // ← NOW READING COLUMN L (Helper Type)
   ]).then(function(res) {
-    allEmployees = (res[0].values || []).filter(function(r){ return r[0]; });
+    allEmployees = (res[0].values || [])
+      .map(function(r, i){ r._row = i + 2; return r; })
+      .filter(function(r){ return r[0]; });
     var truckRows = res[1].values || [];
     var attRows   = res[2].values || [];
 
@@ -687,7 +703,7 @@ function loadAll() {
       allEmployees.forEach(function(r) {
         var fullName = ((r[1]||'') + ' ' + (r[2]||'')).trim();
         if (!fullName) return;
-        var o = document.createElement('option'); o.value = fullName; o.textContent = fullName;
+        var o = document.createElement('option'); o.value = fullName; o.textContent = fullName + (isSeparatedRow(r) ? ' (Separated)' : '');
         mEmp.appendChild(o);
       });
     }
@@ -720,8 +736,13 @@ function loadAll() {
       position: empRow[4]||'Helper'
     };
 
+    currentUser.status = String(empRow[5] || '').trim();
+    isReadOnly = isSeparatedRow(empRow);
+    isAdmin    = (currentUser.role || '').toLowerCase() === 'admin' && !isReadOnly;
+    applyReadOnlyUI();
+
     document.getElementById('emp-name').textContent = currentUser.fullName;
-    document.getElementById('emp-role').textContent = currentUser.role + ' · ' + currentUser.position;
+    document.getElementById('emp-role').textContent = currentUser.role + ' · ' + currentUser.position + (isReadOnly ? ' · Separated' : '');
 
     myRecords = allAttendance.filter(function(r){ return r.name.toLowerCase() === currentUser.fullName.toLowerCase(); });
 
@@ -729,10 +750,21 @@ function loadAll() {
       document.getElementById('tab-admin').style.display = '';
       document.getElementById('tab-report').style.display = '';
       renderEmployeeList();
+    } else {
+      document.getElementById('tab-admin').style.display = 'none';
+      document.getElementById('tab-report').style.display = 'none';
     }
 
     var todayRec = myRecords.find(function(r){ return r.date === todayStr; });
-    if (todayRec) { showDoneState(todayRec); }
+    if (isReadOnly) {
+      document.getElementById('wrap-form').style.display = 'none';
+      if (todayRec) { showDoneState(todayRec); }
+      else {
+        document.getElementById('wrap-done').style.display = 'none';
+        document.getElementById('status-pill').textContent = 'Separated';
+        document.getElementById('status-pill').className   = 'status-pill pill-separated';
+      }
+    } else if (todayRec) { showDoneState(todayRec); }
     else {
       document.getElementById('wrap-form').style.display = 'block';
       document.getElementById('status-pill').textContent = 'Not checked in';
@@ -751,6 +783,14 @@ function loadAll() {
     showToast('Failed to load. Check connection.');
     console.error(err);
   });
+}
+
+function isSeparatedRow(r) {
+  return String((r && r[5]) || '').trim().toUpperCase() === 'SEPARATED';
+}
+function applyReadOnlyUI() {
+  var b = document.getElementById('ro-banner');
+  if (b) b.style.display = isReadOnly ? 'block' : 'none';
 }
 
 function getPosition(name) {
@@ -840,6 +880,7 @@ function getLocation() {
 // ═══ SUBMIT ATTENDANCE ════════════════════════════════
 function submitAttendance() {
   if (!currentUser) { showToast('No user loaded.'); return; }
+  if (isReadOnly) { showToast('🔒 Read-only account.'); return; }
   var localExists = myRecords.find(function(r){ return r.date===todayStr; });
   if (localExists) { showToast('⚠️ Naka-attendance ka na ngayon!'); showDoneState(localExists); return; }
   
@@ -1228,13 +1269,20 @@ function addManualAttendance() {
 function renderEmployeeList() {
   var wrap=document.getElementById('emp-list-wrap');
   if (!allEmployees.length) { wrap.innerHTML='<div class="empty-hint">No employees yet.</div>'; return; }
+  var myEmail=(currentUser&&currentUser.email?currentUser.email:'').toLowerCase();
   wrap.innerHTML=allEmployees.map(function(r,i){
     var fullName=((r[1]||'')+' '+(r[2]||'')).trim();
     var position=r[4]||'—';
-    return '<div class="emp-list-item"><div class="eli-info">'
-      +'<div class="eli-name">'+fullName+'</div>'
+    var sep=isSeparatedRow(r);
+    var isMe=(r[0]||'').toLowerCase()===myEmail;
+    var statusBtn=isMe?'':(sep
+      ?'<button class="eli-status react" onclick="promptToggleStatus('+i+')">Reactivate</button>'
+      :'<button class="eli-status sep" onclick="promptToggleStatus('+i+')">Separate</button>');
+    return '<div class="emp-list-item'+(sep?' separated':'')+'"><div class="eli-info">'
+      +'<div class="eli-name">'+fullName+(sep?'<span class="sep-tag">Separated</span>':'')+'</div>'
       +'<div class="eli-email">'+r[0]+'  ·  '+(r[3]||'Employee')+' · '+position+'</div>'
-      +'</div><button class="eli-del" onclick="promptDeleteEmp('+i+')" title="Remove">×</button></div>';
+      +'</div><div class="eli-actions">'+statusBtn
+      +'<button class="eli-del" onclick="promptDeleteEmp('+i+')" title="Remove">×</button></div></div>';
   }).join('');
   var manualEmpSel=document.getElementById('manual-emp');
   if (manualEmpSel) {
@@ -1242,12 +1290,13 @@ function renderEmployeeList() {
     while (manualEmpSel.options.length>1) manualEmpSel.remove(1);
     allEmployees.forEach(function(r){
       var fullName=((r[1]||'')+' '+(r[2]||'')).trim(); if (!fullName) return;
-      var o=document.createElement('option'); o.value=fullName; o.textContent=fullName; manualEmpSel.appendChild(o);
+      var o=document.createElement('option'); o.value=fullName; o.textContent=fullName+(isSeparatedRow(r)?' (Separated)':''); manualEmpSel.appendChild(o);
     });
     manualEmpSel.value=currentValue;
   }
 }
 function addEmployee() {
+  if (!isAdmin) { showToast('Admin only.'); return; }
   var email=document.getElementById('ae-email').value.trim().toLowerCase();
   var fname=document.getElementById('ae-fname').value.trim();
   var lname=document.getElementById('ae-lname').value.trim();
@@ -1256,8 +1305,7 @@ function addEmployee() {
   if (allEmployees.find(function(r){ return (r[0]||'').toLowerCase()===email; })) { showToast('Email already registered.'); return; }
   showSaving('Adding employee...');
   apiAppend(TAB_EMPLOYEES+'!A:D',[[email,fname,lname,role]]).then(function(){
-    hideSaving(); allEmployees.push([email,fname,lname,role,'Helper']);
-    renderEmployeeList();
+    hideSaving(); loadAll();
     document.getElementById('ae-email').value=''; document.getElementById('ae-fname').value=''; document.getElementById('ae-lname').value='';
     showToast('✅ Employee added!');
   }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
@@ -1270,10 +1318,35 @@ function promptDeleteEmp(idx) {
   document.getElementById('confirm-overlay').classList.add('open');
 }
 function doDeleteEmp(idx) {
-  var rowIndex=idx+2; closeConfirm(); showSaving('Removing...');
-  apiUpdate(TAB_EMPLOYEES+'!A'+rowIndex+':D'+rowIndex,[['','','','']]).then(function(){
+  var r=allEmployees[idx]; if (!r||!isAdmin) return;
+  var rowIndex=r._row; closeConfirm(); showSaving('Removing...');
+  apiUpdate(TAB_EMPLOYEES+'!A'+rowIndex+':F'+rowIndex,[['','','','','','']]).then(function(){
     hideSaving(); allEmployees.splice(idx,1); renderEmployeeList(); showToast('✅ Employee removed.');
   }).catch(function(err){ hideSaving(); showToast('❌ Failed.'); console.error(err); });
+}
+
+// ═══ EMPLOYEE STATUS (ADMIN) — Employees!F ════════════
+// SEPARATED  => read-only account.  Blank / ACTIVE => normal.
+function promptToggleStatus(idx) {
+  var r=allEmployees[idx]; if (!r||!isAdmin) return;
+  var name=((r[1]||'')+' '+(r[2]||'')).trim();
+  var sep=isSeparatedRow(r);
+  document.getElementById('confirm-title').textContent=sep?'Reactivate Employee?':'Mark as Separated?';
+  document.getElementById('confirm-msg').textContent=sep
+    ? 'Reactivate '+name+'? They will be able to check in and submit entries again.'
+    : 'Mark '+name+' as SEPARATED? Their account becomes read-only: they can view records but cannot check in, add, edit or delete anything.';
+  document.getElementById('confirm-ok').textContent='Confirm';
+  document.getElementById('confirm-ok').onclick=function(){ doSetStatus(idx, sep?'ACTIVE':'SEPARATED'); };
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function doSetStatus(idx, newStatus) {
+  var r=allEmployees[idx]; if (!r||!isAdmin) return;
+  if ((r[0]||'').toLowerCase()===currentUser.email.toLowerCase()) { closeConfirm(); showToast("You can't change your own status."); return; }
+  closeConfirm(); showSaving('Updating status...');
+  apiUpdate(TAB_EMPLOYEES+'!F'+r._row+':F'+r._row,[[newStatus]]).then(function(){
+    hideSaving(); r[5]=newStatus; renderEmployeeList();
+    showToast(newStatus==='SEPARATED'?'🔒 Marked as Separated (read-only).':'✅ Reactivated.');
+  }).catch(function(err){ hideSaving(); showToast('❌ Failed to update status.'); console.error(err); });
 }
 
 // ═══ API ══════════════════════════════════════════════
@@ -1283,11 +1356,13 @@ function apiGet(range) {
     .then(function(r){ if(r.status===401){location.href='index.html';throw new Error('Auth');} return r.json(); });
 }
 function apiAppend(range, values) {
+  if (isReadOnly) return Promise.reject(new Error('Read-only account'));
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS',
     {method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
     .then(function(r){ if(!r.ok) throw new Error('Append failed '+r.status); return r.json(); });
 }
 function apiUpdate(range, values) {
+  if (isReadOnly) return Promise.reject(new Error('Read-only account'));
   return fetch('https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(range)+'?valueInputOption=USER_ENTERED',
     {method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:values})})
     .then(function(r){ if(!r.ok) throw new Error('Update failed '+r.status); return r.json(); });
