@@ -2317,10 +2317,15 @@ async function loadEmployeeHistory() {
 // ═══════════════════════════════════════════════════════
 // VALIDATION
 // ═══════════════════════════════════════════════════════
-let valTab='report';
+let valTab='report'; let valOrphanAtts=[];
 // Jump to attendance.html on the right day/truck so the admin can fix the entry, with a way back
 function valGoFix(date, truck) {
-  const q = new URLSearchParams({ from:'validation', date:date||'', truck:truck||'',
+  // every date that needs fixing in this run: e = error, w = warning / attendance without trip
+  const sev = {};
+  validationResults.forEach(r => { if (r.status==='err') sev[r.trip.deliveryDate]='e'; else if (r.status==='warn' && sev[r.trip.deliveryDate]!=='e') sev[r.trip.deliveryDate]='w'; });
+  valOrphanAtts.forEach(a => { if (!sev[a.date]) sev[a.date]='w'; });
+  const bad = Object.keys(sev).sort().map(d => d+':'+sev[d]).join(',');
+  const q = new URLSearchParams({ from:'validation', date:date||'', truck:truck||'', bad:bad,
     vm: document.getElementById('val-month').value || '', vp: valPeriod, vt: valTab });
   location.href = 'attendance.html?' + q.toString();
 }
@@ -2346,6 +2351,7 @@ async function runValidation() {
     validationResults=trips.map(trip=>{const truckAtts=atts.filter(a=>a.truck===trip.truck&&a.date===trip.deliveryDate);return{trip,atts:truckAtts,...validateTrip(trip,truckAtts)};});
     const orphanAtts=atts.filter(a=>!trips.some(t=>t.truck===a.truck&&t.deliveryDate===a.date));
     document.getElementById('val-loading').style.display='none';
+    valOrphanAtts=orphanAtts;
     valRenderSummary(); valRenderReport(); valRenderCalendar(); valRenderIssues(orphanAtts); valRenderGrid();
   } catch(err) { document.getElementById('val-loading').style.display='none'; showToast('❌ Validation error: '+err.message); }
 }
