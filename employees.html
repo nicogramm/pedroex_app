@@ -221,6 +221,21 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
 .emp-check-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--text);border-bottom:1px solid rgba(0,0,0,.05)}
 .emp-check-row:last-child{border-bottom:none}
 .emp-check-row input{width:18px;height:18px;accent-color:var(--red)}
+
+/* GENERATE ALL + MEAL HOLD */
+.gate-msg{font-size:12px;line-height:1.7;background:var(--bg2);border-radius:12px;padding:10px 12px}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.bulk-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:14px;margin-bottom:12px}
+.bulk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bulk-grid div,.bulk-sum div{background:var(--bg2);border-radius:10px;padding:8px 6px;text-align:center}
+.bulk-grid span,.bulk-sum span{display:block;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:3px}
+.bulk-grid b{font-size:12px;color:var(--text)}
+.bulk-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.bulk-sum b{font-size:13px;color:var(--text)}
+.hold-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--shadow-d)}
+.hold-row:last-child{border-bottom:none}
+.hold-chk{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text2);flex-shrink:0}
+.hold-chk input{width:18px;height:18px;accent-color:var(--green)}
 </style>
 </head>
 <body>
@@ -297,7 +312,7 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
       <div class="payroll-calc-card">
         <div class="form-group">
           <label class="form-label">Select Month</label>
-          <input type="month" class="form-input" id="payroll-month">
+          <input type="month" class="form-input" id="payroll-month" onchange="refreshPayrollGate()">
         </div>
         <div class="form-group">
           <label class="form-label">Payroll Period</label>
@@ -313,6 +328,12 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
           </select>
         </div>
         <button class="btn btn-primary" style="width:100%;margin-top:20px" onclick="calculatePayroll()">🧮 Calculate Payroll</button>
+      </div>
+      <div class="payroll-calc-card">
+        <h3 class="section-title" style="font-size:16px;margin-bottom:4px">⚡ Generate All Payroll</h3>
+        <p class="section-subtitle" style="margin-bottom:12px">Uses the month and period selected above, for every employee with attendance.</p>
+        <div class="gate-msg" id="bulk-gate-msg">Select a month to check validation.</div>
+        <button class="btn btn-primary" id="bulk-btn" style="width:100%;margin-top:14px" onclick="openBulkPayroll()" disabled>⚡ Generate All Payroll</button>
       </div>
       <!-- INSTALLMENT DEDUCTION PLANS -->
       <div class="section-divider"></div>
@@ -508,6 +529,12 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
     <div id="emp-savings-list"></div>
     <div class="section-divider"></div>
     <div class="section-header">
+      <h3 class="section-title">🍽️ Meal Allowance on Hold</h3>
+      <p class="section-subtitle">Paid after your records are complete</p>
+    </div>
+    <div id="emp-hold-card"></div>
+    <div class="section-divider"></div>
+    <div class="section-header">
       <h3 class="section-title">📉 My Deduction Plans</h3>
       <p class="section-subtitle">Installment deductions and remaining balance</p>
     </div>
@@ -624,6 +651,11 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
           <div class="summary-item"><span>Meal Allowance</span><strong id="summary-meal">₱0.00</strong></div>
           <div class="summary-item"><span>Gross Pay</span><strong id="summary-gross">₱0.00</strong></div>
         </div>
+      </div>
+      <div class="summary-section" id="meal-hold-section" style="display:none">
+        <div class="summary-label">MEAL ALLOWANCE — HOLD / RELEASE</div>
+        <div id="meal-hold-list"></div>
+        <div id="meal-hold-total" style="font-size:12px;color:var(--text2);margin-top:10px"></div>
       </div>
       <div class="summary-section">
         <div class="summary-label">DEDUCTIONS</div>
@@ -792,6 +824,20 @@ body.dark .topbar{box-shadow:0 3px 10px rgba(0,0,0,0.3)}
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closePlanModal()">Cancel</button>
       <button class="btn btn-primary" id="plan-save-btn" onclick="savePlans()">💾 Create Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GENERATE ALL PAYROLL MODAL ═══ -->
+<div class="modal" id="bulk-modal">
+  <div class="modal-content">
+    <div class="modal-header">Generate All Payroll</div>
+    <div id="bulk-head"></div>
+    <div id="bulk-list"></div>
+    <div id="bulk-skipped"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeBulkModal()">Cancel</button>
+      <button class="btn btn-primary" id="bulk-confirm-btn" onclick="confirmBulkPayroll()" disabled>✅ Confirm &amp; Generate</button>
     </div>
   </div>
 </div>
@@ -1009,6 +1055,7 @@ function switchAdminTab(tab) {
     }
     loadHistory();
     loadPlansUI();
+    refreshPayrollGate();
     if (!savingsData.length) loadSavingsQuiet();
   }
 }
@@ -1037,6 +1084,7 @@ function selectPeriod(period) {
   selectedPeriod = period;
   document.getElementById('period-1st').classList.toggle('active', period === '1st');
   document.getElementById('period-2nd').classList.toggle('active', period === '2nd');
+  refreshPayrollGate();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1249,85 +1297,264 @@ function resetAddAdvanceModal() {
 // ═══════════════════════════════════════════════════════
 // PAYROLL CALCULATOR
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// MEAL ALLOWANCE HOLD  (ported from records.html so payroll can see who is "complete")
+// A meal-allowance day is HELD when that day's tasks for the employee (Shipment # + Date,
+// POD, Crates) are not all done. Held days are paid in a later payroll once complete.
+// Payroll History: AH = held dates (not paid in that payroll), AI = released dates
+// (paid in that payroll from an earlier hold).
+// ═══════════════════════════════════════════════════════
+const MEAL_RATE   = 210;
+const COMP_TRUCKS = ['CAH','CBQ','CAN','NHE','CBJ'];
+const COMP_ANCHOR = new Date(2026,4,18);                 // same anchor as records.html
+const COMP_HELPERS = ['Jessie Briones','Anewlesis Amor','Joey Mison','John Richard Cordovilla','Michael Tibayan'];
+const SHIP_NUM_OK = /^(\d{7}|100\d{7})$/;                // 7 digits (new) or legacy 100xxxxxxx; only used for soft warnings
+const LATE_RELEASES = true;                              // a LATE-but-submitted record still releases the hold
+
+function isoDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function compMonday(d){ const dt=new Date(d); dt.setHours(0,0,0,0); const day=dt.getDay(); dt.setDate(dt.getDate()+(day===0?-6:1-day)); return dt; }
+function compScheduled(truck,date){
+  const idx=COMP_TRUCKS.indexOf(truck); if(idx===-1) return null;
+  const w=Math.round((compMonday(date)-compMonday(COMP_ANCHOR))/(7*864e5));
+  return COMP_HELPERS[((idx-w)%5+500)%5];
+}
+function compPodDue(tripDate,route){
+  const d=new Date(tripDate+'T00:00:00');
+  if((route||'').toLowerCase().indexOf('masbate')>-1){ d.setDate(d.getDate()+4); return d; }
+  d.setDate(d.getDate()+(d.getDay()===6?2:1));
+  if(d.getDay()===0) d.setDate(d.getDate()+1);
+  return d;
+}
+function compCratesDue(tripDate){ const d=new Date(tripDate+'T00:00:00'); d.setDate(d.getDate()+7); return d; }
+
+function splitDates(s){ return String(s||'').split(',').map(x=>x.trim()).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)); }
+
+function parseTripRows(vals){ const out=[]; (vals||[]).forEach((r,i)=>{ if(!r[1]) return; out.push({rowIndex:i+2,deliveryDate:r[1]||'',truck:r[2]||'',shipmentDate:r[3]||'',type:r[4]||'',shipmentNum:r[5]||'',route:r[7]||''}); }); return out; }
+function parseAttRows(vals){ const out=[]; (vals||[]).forEach(r=>{ if(!r[1]) return; out.push({date:r[1]||'',name:r[2]||'',truck:r[6]||'',helperType:r[11]||''}); }); return out; }
+function parseRecRows(vals){ const out=[]; (vals||[]).forEach(r=>{ if(!r[1]) return; out.push({empName:r[1]||'',date:r[2]||'',subDate:r[3]||'',truck:r[4]||'',docType:r[5]||'',number:r[6]||'',signature:r[9]||'',picture:r[10]||''}); }); return out; }
+function parseEmpRows(vals){ return (vals||[]).filter(r=>r[0]).map(r=>({fullName:((r[1]||'')+' '+(r[2]||'')).trim(),position:r[4]||'Helper'})); }
+
+// → { 'helper name lower|YYYY-MM-DD': { items:[{type,label,status,flags[]}], complete:boolean } }
+function buildComplianceMap(trips, att, emps, recs){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const posOf=n=>{ const e=emps.find(x=>x.fullName.toLowerCase()===String(n||'').toLowerCase()); return e?e.position.toLowerCase():'helper'; };
+  const findRec=(helper,date,truck,docType)=>recs.find(r=>r.empName.toLowerCase()===helper.toLowerCase()&&r.date===date&&r.truck.trim().toLowerCase()===truck.trim().toLowerCase()&&r.docType===docType);
+  const recDone=r=>!!r&&((r.number||'').trim().length>0||(r.signature||'').trim().length>10||(r.picture||'').trim().length>10);
+  const docStatus=(rec,due)=>{
+    if(recDone(rec)){ return (rec.subDate&&new Date(rec.subDate+'T00:00:00')>new Date(due+'T23:59:59'))?'late':'submitted'; }
+    return today>new Date(due+'T23:59:59')?'overdue':'pending';
+  };
+  const map={}, seen={};
+  const push=(helper,date,item)=>{
+    const k=helper.toLowerCase()+'|'+date;
+    const e=map[k]||(map[k]={items:[],complete:true});
+    e.items.push(item);
+    if(!(item.status==='submitted'||(LATE_RELEASES&&item.status==='late'))) e.complete=false;
+  };
+  trips.forEach(trip=>{
+    const truck=(trip.truck||'').trim(), date=trip.deliveryDate; if(!truck||!date) return;
+    const scheduled=compScheduled(truck,new Date(date+'T00:00:00'));
+    const attOnDay=att.filter(a=>a.date===date&&a.truck.trim().toLowerCase()===truck.toLowerCase());
+    const helpers=attOnDay.filter(a=>posOf(a.name)==='helper');
+    let primary=null; const mp=helpers.find(h=>h.helperType==='Primary');
+    if(mp) primary=mp.name;
+    else if(scheduled){ const sa=helpers.find(h=>h.name.toLowerCase()===scheduled.toLowerCase()); primary=sa?scheduled:(helpers.length?helpers[0].name:scheduled); }
+    else if(helpers.length) primary=helpers[0].name;
+    if(!primary) return;
+    const isMasbate=(trip.route||'').toLowerCase().indexOf('masbate')>-1;
+    const isFresh=(trip.type||'').toLowerCase()==='fresh';
+
+    // Shipment # + Shipment Date (both needed)
+    let k=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|S';
+    if(!seen[k]){ seen[k]=true;
+      const hasN=!!(trip.shipmentNum&&String(trip.shipmentNum).trim()), hasD=!!(trip.shipmentDate&&String(trip.shipmentDate).trim());
+      const flags=[];
+      if(hasN&&!SHIP_NUM_OK.test(String(trip.shipmentNum).trim())) flags.push('Ship # "'+String(trip.shipmentNum).trim()+'" is not 7 digits');
+      if(hasD&&trip.shipmentDate>date) flags.push('Ship date is after delivery date');
+      push(primary,date,{type:'S',label:'Ship #/Date',truck:truck,status:(hasN&&hasD)?'submitted':(hasN||hasD)?'partial':'missing',flags});
+    }
+    // POD
+    k=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|P';
+    if(!seen[k]){ seen[k]=true;
+      const due=isoDate(compPodDue(date,trip.route)); const rec=findRec(primary,date,truck,'Proof of Deliveries'); const flags=[];
+      if(recDone(rec)&&!(rec.picture||'').trim()&&!(rec.signature||'').trim()) flags.push('POD has a number only — no photo/signature');
+      push(primary,date,{type:'P',label:'POD',truck:truck,status:docStatus(rec,due),flags});
+    }
+    // Crates (Fresh, non-Masbate)
+    if(isFresh&&!isMasbate){
+      k=primary.toLowerCase()+'|'+date+'|'+truck.toLowerCase()+'|C';
+      if(!seen[k]){ seen[k]=true;
+        const due=isoDate(compCratesDue(date)); const rec=findRec(primary,date,truck,'Crates'); const flags=[];
+        if(recDone(rec)&&!(rec.picture||'').trim()&&!(rec.signature||'').trim()) flags.push('Crates has a number only — no photo/signature');
+        push(primary,date,{type:'C',label:'Crates',truck:truck,status:docStatus(rec,due),flags});
+      }
+    }
+  });
+  Object.keys(map).forEach(k=>{ map[k].flags=[].concat.apply([],map[k].items.map(i=>i.flags)); });
+  return map;
+}
+function describeIncomplete(c){
+  return c.items.filter(i=>!(i.status==='submitted'||(LATE_RELEASES&&i.status==='late'))).map(i=>i.label+' '+i.status+(c.items.length>1?' ('+i.truck+')':'')).join(', ');
+}
+
+// Held dates of an employee that are still waiting (held in an earlier payroll, never released yet)
+function mealPendingFor(empName, histRows){
+  const held=new Set(), rel=new Set();
+  (histRows||[]).forEach(r=>{ if((r[1]||'')!==empName) return; splitDates(r[33]).forEach(d=>held.add(d)); splitDates(r[34]).forEach(d=>rel.add(d)); });
+  return [...held].filter(d=>!rel.has(d)).sort();
+}
+function holdTotals(d){
+  const items=(d&&d.holdItems)||[];
+  return {
+    held:     items.filter(i=>i.kind==='held'&&!i.release).map(i=>i.date),
+    released: items.filter(i=>i.kind!=='held'&&i.release).map(i=>i.date)
+  };
+}
+function syncHoldFromItems(d){ const ht=holdTotals(d); d.heldDates=ht.held; d.releasedDates=ht.released; }
+function mealNote(d){
+  const ht=holdTotals(d); const days=d.attYes+d.attMeals;
+  const heldN=Math.min(ht.held.length,days);
+  return `(${days} days × ₱${MEAL_RATE}${heldN?` − ${heldN} held`:''}${ht.released.length?` + ${ht.released.length} released`:''})`;
+}
+
+// ═══════════════════════════════════════════════════════
+// PAYROLL CONTEXT + CALCULATION (shared by single + bulk)
+// ═══════════════════════════════════════════════════════
+function periodRange(month, period){
+  const [y,m]=[parseInt(month.split('-')[0]), parseInt(month.split('-')[1])];
+  const mm=String(m).padStart(2,'0');
+  if(period==='1st') return { startDate:`${y}-${mm}-01`, endDate:`${y}-${mm}-15` };
+  return { startDate:`${y}-${mm}-16`, endDate:`${y}-${mm}-${new Date(y,m,0).getDate()}` };
+}
+
+async function loadPayrollContext(){
+  await ensurePayrollPlanColumn();                       // AH/AI must exist before they are read
+  const [emp,att,hist,adv,trips,recs] = await Promise.all([
+    gSheets('Employees!A2:F'), gSheets('Attendance!A2:L'), gSheets('Payroll History!A2:AI'),
+    gSheets('Employee Advances!A2:D'), gSheets('Trips!A2:I'), gSheets('Records!A2:L')
+  ]);
+  if(!(await loadPlansData())) throw new Error('Could not load deduction plans — nothing was calculated.');
+  const empRows=emp.values||[];
+  const ctx={ empRows, attRows:att.values||[], histRows:hist.values||[], advRows:adv.values||[] };
+  ctx.comp=buildComplianceMap(parseTripRows(trips.values), parseAttRows(att.values), parseEmpRows(empRows), parseRecRows(recs.values));
+  return ctx;
+}
+
+function buildPayrollData(empName, ctx, period, startDate, endDate){
+  const empRow=ctx.empRows.find(r=>((r[1]||'')+' '+(r[2]||'')).trim()===empName);
+  const position=empRow&&empRow[4]?empRow[4]:'Helper';
+  const baseRate=position==='Driver'?500:350;
+
+  const myAtt=ctx.attRows.filter(r=>(r[2]||'')===empName&&(r[1]||'')>=startDate&&(r[1]||'')<=endDate);
+  let attYes=0,attMeals=0,attNo=0,twoMan=0; const twoManDates=[], mealDates=[];
+  myAtt.forEach(r=>{
+    const meal=(r[5]||''), team=(r[3]||'');
+    if(meal==='Yes'){ attYes++; mealDates.push(r[1]); } else if(meal==='Meals Only'){ attMeals++; mealDates.push(r[1]); } else attNo++;
+    if(team==='Yes'){ twoMan++; twoManDates.push(r[1]); }
+  });
+  const twoManComment=twoManDates.length>0?'2-Man Team: '+twoManDates.map(d=>new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})).join(', '):'';
+
+  // Meal-allowance hold / release
+  const lower=empName.toLowerCase(); const holdItems=[];
+  [...new Set(mealDates)].sort().forEach(dt=>{
+    const c=ctx.comp[lower+'|'+dt];
+    if(c&&!c.complete) holdItems.push({date:dt,kind:'held',release:false,why:describeIncomplete(c),flags:c.flags||[]});
+  });
+  mealPendingFor(empName,ctx.histRows).filter(dt=>dt<startDate).forEach(dt=>{
+    const c=ctx.comp[lower+'|'+dt]; const done=!c||c.complete;
+    holdItems.push({date:dt,kind:done?'release':'pending',release:done,why:done?'':describeIncomplete(c),flags:c?(c.flags||[]):[]});
+  });
+  const ht=holdTotals({holdItems});
+
+  const mealDays=attYes+attMeals;
+  const basePay=(attYes+attNo)*baseRate;
+  const twoManPay=twoMan*280;
+  const mealPay=(mealDays-Math.min(ht.held.length,mealDays)+ht.released.length)*MEAL_RATE;
+  const grossPay=basePay+twoManPay+mealPay;
+  const savingsPlan=grossPay*0.05;
+
+  const empSSS=period==='1st'?225:0, empPagibig=period==='1st'?200:0, empPhilHealth=period==='2nd'?250:0;
+  const totalContrib=empSSS+empPagibig+empPhilHealth;
+  const pedroexSSS=period==='1st'?475:0, pedroexPagibig=period==='1st'?200:0, pedroexPhilHealth=period==='2nd'?250:0;
+
+  const histRows=ctx.histRows.filter(r=>(r[1]||'')===empName).sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));
+  const existingAdv=histRows.length>0?(parseFloat(histRows[0][16])||0):0;
+  const periodAdv=ctx.advRows.filter(r=>(r[2]||'')===empName&&(r[1]||'')>=startDate&&(r[1]||'')<=endDate).reduce((s,r)=>s+(parseFloat(r[3])||0),0);
+  const totalAdv=existingAdv+periodAdv;
+  const plans=buildPlansForPeriod(empName,`${startDate} to ${endDate}`,endDate);
+
+  return { name:empName, period:`${startDate} to ${endDate}`, position, attYes, attMeals, attNo, twoManDays:twoMan, twoManDates:twoManComment,
+    periodAdv, existingAdv, totalAdv, empSSS, empPagibig, empPhilHealth, totalContrib, pedroexSSS, pedroexPagibig, pedroexPhilHealth,
+    basePay, twoManPay, mealPay, grossPay, savingsPlan, isOverridden:false, autoAtt:{attYes,attMeals,attNo,twoManDays:twoMan}, plans,
+    holdItems, keepW:['','',''] };
+}
+
 async function calculatePayroll() {
   const month   = document.getElementById('payroll-month').value;
   const empName = document.getElementById('payroll-employee').value;
   if (!month||!empName) { showToast('Select month and employee.'); return; }
   showToast('Calculating...');
   try {
-    const [year, monthNum] = [month.split('-')[0], parseInt(month.split('-')[1])];
-    let startDate, endDate;
-    if (selectedPeriod==='1st') { startDate=`${year}-${String(monthNum).padStart(2,'0')}-01`; endDate=`${year}-${String(monthNum).padStart(2,'0')}-15`; }
-    else { startDate=`${year}-${String(monthNum).padStart(2,'0')}-16`; endDate=`${year}-${String(monthNum).padStart(2,'0')}-${new Date(year,monthNum,0).getDate()}`; }
-
-    const [empRes, attRes, histRes, advRes] = await Promise.all([
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:E`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Attendance!A2:K`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AF`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employee%20Advances!A2:D`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
-    ]);
-
-    const empRow  = (empRes.values||[]).find(r=>((r[1]||'')+' '+(r[2]||'')).trim()===empName);
-    const position = empRow && empRow[4] ? empRow[4] : 'Helper';
-    const baseRate = position==='Driver' ? 500 : 350;
-
-    const myAtt = (attRes.values||[]).filter(r=>(r[2]||'')===empName && (r[1]||'')>=startDate && (r[1]||'')<=endDate);
-    let attYes=0, attMeals=0, attNo=0, twoMan=0; const twoManDates=[];
-    myAtt.forEach(r => {
-      const meal=(r[5]||''); const team=(r[3]||'');
-      if (meal==='Yes') attYes++; else if (meal==='Meals Only') attMeals++; else attNo++;
-      if (team==='Yes') { twoMan++; twoManDates.push(r[1]); }
-    });
-
-    const twoManComment = twoManDates.length>0 ? '2-Man Team: '+twoManDates.map(d=>new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})).join(', ') : '';
-    const basePay    = (attYes+attNo)*baseRate;
-    const twoManPay  = twoMan*280;
-    const mealPay    = (attYes+attMeals)*210;
-    const grossPay   = basePay+twoManPay+mealPay;
-    const savingsPlan= grossPay*0.05;
-
-    const empSSS         = selectedPeriod==='1st' ? 225 : 0;
-    const empPagibig     = selectedPeriod==='1st' ? 200 : 0;
-    const empPhilHealth  = selectedPeriod==='2nd' ? 250 : 0;
-    const totalContrib   = empSSS+empPagibig+empPhilHealth;
-    const pedroexSSS        = selectedPeriod==='1st' ? 475 : 0;
-    const pedroexPagibig    = selectedPeriod==='1st' ? 200 : 0;
-    const pedroexPhilHealth = selectedPeriod==='2nd' ? 250 : 0;
-
-    const histRows = (histRes.values||[]).filter(r=>(r[1]||'')===empName).sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));
-    const existingAdv = histRows.length>0 ? (parseFloat(histRows[0][16])||0) : 0;
-    const periodAdv   = (advRes.values||[]).filter(r=>(r[2]||'')===empName&&(r[1]||'')>=startDate&&(r[1]||'')<=endDate).reduce((s,r)=>s+(parseFloat(r[3])||0),0);
-    const totalAdv    = existingAdv+periodAdv;
-
-    // Installment deduction plans (balances come from Payroll History col AG)
-    if (!(await loadPlansData())) throw new Error('Could not load deduction plans — nothing was calculated.');
-    const plans = buildPlansForPeriod(empName, `${startDate} to ${endDate}`, endDate);
-
-    currentPayrollData = { name:empName, period:`${startDate} to ${endDate}`, position, attYes, attMeals, attNo, twoManDays:twoMan, twoManDates:twoManComment, periodAdv, existingAdv, totalAdv, empSSS, empPagibig, empPhilHealth, totalContrib, pedroexSSS, pedroexPagibig, pedroexPhilHealth, basePay, twoManPay, mealPay, grossPay, savingsPlan, isOverridden:false, autoAtt:{ attYes, attMeals, attNo, twoManDays:twoMan }, plans };
+    const { startDate, endDate } = periodRange(month, selectedPeriod);
+    const ctx = await loadPayrollContext();
+    currentPayrollData = buildPayrollData(empName, ctx, selectedPeriod, startDate, endDate);
     showPayrollResult();
   } catch(err) { console.error(err); showToast('❌ Error: '+err.message); }
+}
+
+// Pure net-pay maths shared by the single modal and the bulk generator
+function computeNet(d, manualDed){
+  manualDed = parseFloat(manualDed)||0;
+  const remainingAdv = Math.max(0, d.totalAdv-manualDed);
+  const planTotal    = (d.plans||[]).reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+  const totalDed     = manualDed+d.totalContrib+d.savingsPlan+planTotal;
+  return { manualDed, remainingAdv, planTotal, totalDed, netPay:d.grossPay-totalDed };
 }
 
 function recalcNetPay() {
   if (!currentPayrollData) return;
   const d = currentPayrollData;
-  const manualDed   = parseFloat(document.getElementById('manual-deduction').value)||0;
-  const remainingAdv= Math.max(0,d.totalAdv-manualDed);
-  const planTotal   = (d.plans||[]).reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  const totalDed    = manualDed+d.totalContrib+d.savingsPlan+planTotal;
-  document.getElementById('summary-plan-ded').textContent   = '₱'+planTotal.toFixed(2);
-  document.getElementById('summary-plan-total').textContent = '₱'+planTotal.toFixed(2);
-  d.planDedTotal = planTotal;
-  const netPay      = d.grossPay-totalDed;
-  document.getElementById('summary-deducted').textContent      = '₱'+manualDed.toFixed(2);
-  document.getElementById('summary-new-existing').textContent  = '₱'+remainingAdv.toFixed(2);
-  document.getElementById('summary-adv-ded').textContent       = '₱'+manualDed.toFixed(2);
-  document.getElementById('summary-total-ded').textContent     = '₱'+totalDed.toFixed(2);
-  document.getElementById('summary-net').textContent           = '₱'+netPay.toFixed(2);
-  currentPayrollData.deductedAdv  = manualDed;
-  currentPayrollData.remainingAdv = remainingAdv;
-  currentPayrollData.totalDed     = totalDed;
-  currentPayrollData.netPay       = netPay;
+  const n = computeNet(d, document.getElementById('manual-deduction').value);
+  document.getElementById('summary-plan-ded').textContent   = '₱'+n.planTotal.toFixed(2);
+  document.getElementById('summary-plan-total').textContent = '₱'+n.planTotal.toFixed(2);
+  d.planDedTotal = n.planTotal;
+  document.getElementById('summary-deducted').textContent      = '₱'+n.manualDed.toFixed(2);
+  document.getElementById('summary-new-existing').textContent  = '₱'+n.remainingAdv.toFixed(2);
+  document.getElementById('summary-adv-ded').textContent       = '₱'+n.manualDed.toFixed(2);
+  document.getElementById('summary-total-ded').textContent     = '₱'+n.totalDed.toFixed(2);
+  document.getElementById('summary-net').textContent           = '₱'+n.netPay.toFixed(2);
+  d.deductedAdv  = n.manualDed;
+  d.remainingAdv = n.remainingAdv;
+  d.totalDed     = n.totalDed;
+  d.netPay       = n.netPay;
+}
+
+// ── Held-meal section inside the payroll modal ─────────
+function renderMealHold(){
+  const d=currentPayrollData; const sec=document.getElementById('meal-hold-section'); if(!sec) return;
+  const items=(d&&d.holdItems)||[];
+  if(!items.length){ sec.style.display='none'; return; }
+  const ht=holdTotals(d);
+  const kindLbl={held:'Held now', pending:'Still held', release:'Released from earlier hold'};
+  const kindCls={held:'var(--red)', pending:'var(--orange)', release:'var(--green)'};
+  document.getElementById('meal-hold-list').innerHTML=items.map((it,i)=>`
+    <div class="hold-row">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${escHtml(formatDate(it.date))} <span style="font-size:10px;font-weight:700;color:${kindCls[it.kind]}">· ${kindLbl[it.kind]}</span></div>
+        ${it.why?`<div style="font-size:11px;color:var(--text2);margin-top:2px">${escHtml(it.why)}</div>`:''}
+        ${(it.flags||[]).map(f=>`<div style="font-size:11px;color:var(--orange);margin-top:2px">⚠ ${escHtml(f)}</div>`).join('')}
+      </div>
+      <label class="hold-chk"><input type="checkbox" ${it.release?'checked':''} onchange="onHoldToggle(${i},this.checked)"> Pay</label>
+    </div>`).join('');
+  document.getElementById('meal-hold-total').innerHTML=
+    `Held: <b style="color:var(--red)">${peso(ht.held.length*MEAL_RATE)}</b> (${ht.held.length} day${ht.held.length!==1?'s':''}) · Released: <b style="color:var(--green)">${peso(ht.released.length*MEAL_RATE)}</b> (${ht.released.length})`;
+  sec.style.display='block';
+}
+function onHoldToggle(i,checked){
+  const d=currentPayrollData; if(!d||!d.holdItems||!d.holdItems[i]) return;
+  d.holdItems[i].release=!!checked;
+  recalcFromAttendance();
+  renderMealHold();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1400,7 +1627,8 @@ function recalcFromAttendance() {
   const baseRate    = d.position === 'Driver' ? 500 : 350;
   const basePay     = (attYes + attNo) * baseRate;
   const twoManPay   = twoManDays * 280;
-  const mealPay     = (attYes + attMeals) * 210;
+  syncHoldFromItems(d);
+  const mealPay     = (attYes + attMeals - Math.min(d.heldDates.length, attYes + attMeals) + d.releasedDates.length) * MEAL_RATE;
   const grossPay    = basePay + twoManPay + mealPay;
   const savingsPlan = grossPay * 0.05;
 
@@ -1411,7 +1639,7 @@ function recalcFromAttendance() {
   const mealDays = attYes + attMeals;
   document.getElementById('summary-base').innerHTML     = '₱'+basePay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${baseDays} days × ₱${baseRate})</div>`;
   document.getElementById('summary-2man-pay').innerHTML = '₱'+twoManPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${twoManDays} days × ₱280)</div>`;
-  document.getElementById('summary-meal').innerHTML     = '₱'+mealPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${mealDays} days × ₱210)</div>`;
+  document.getElementById('summary-meal').innerHTML     = '₱'+mealPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">${mealNote(d)}</div>`;
   document.getElementById('summary-gross').textContent  = '₱'+grossPay.toFixed(2);
   document.getElementById('summary-savings').innerHTML  = '₱'+savingsPlan.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(5% of Gross Pay)</div>`;
 
@@ -1439,13 +1667,15 @@ function showPayrollResult() {
   const baseRate = d.position==='Driver'?500:350; const baseDays=d.attYes+d.attNo; const mealDays=d.attYes+d.attMeals;
   document.getElementById('summary-base').innerHTML    = '₱'+d.basePay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${baseDays} days × ₱${baseRate})</div>`;
   document.getElementById('summary-2man-pay').innerHTML= '₱'+d.twoManPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${d.twoManDays} days × ₱280)</div>`;
-  document.getElementById('summary-meal').innerHTML    = '₱'+d.mealPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(${mealDays} days × ₱210)</div>`;
+  document.getElementById('summary-meal').innerHTML    = '₱'+d.mealPay.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">${mealNote(d)}</div>`;
   document.getElementById('summary-gross').textContent = '₱'+d.grossPay.toFixed(2);
   document.getElementById('summary-savings').innerHTML = '₱'+d.savingsPlan.toFixed(2)+`<div style="font-size:10px;color:var(--text3);margin-top:2px">(5% of Gross Pay)</div>`;
   document.getElementById('summary-contrib').textContent = '₱'+d.totalContrib.toFixed(2);
   document.getElementById('payroll-comments').value = d.twoManDates||'';
   document.getElementById('manual-deduction').value = '';
   renderPlanDeductions();
+  syncHoldFromItems(d);
+  renderMealHold();
   recalcNetPay();
   const actions = document.querySelector('#payroll-result-modal .modal-actions');
   actions.innerHTML = `<button class="btn btn-secondary" onclick="closePayrollResultModal()">Close</button><button class="btn btn-primary" onclick="savePayrollToHistory()">💾 Save to History</button>`;
@@ -1462,8 +1692,8 @@ async function savePayrollToHistory() {
   if (!data.deductedAdv && data.deductedAdv!==0) { showToast('Please enter advance deduction first.'); return; }
   try {
     await ensurePayrollPlanColumn();
-    const row = ['PAY-'+Date.now(), data.name, data.period, data.attYes+data.attMeals+data.attNo, data.periodAdv, 0, data.existingAdv, data.totalAdv, data.pedroexSSS||0, data.empSSS, data.pedroexPagibig||0, data.empPagibig, data.pedroexPhilHealth||0, data.empPhilHealth, data.deductedAdv, data.totalDed, data.remainingAdv, data.twoManDays, data.twoManPay, selectedPeriod==='1st'?data.savingsPlan:0, selectedPeriod==='2nd'?data.savingsPlan:0, data.savingsPlan, '', '', '', data.grossPay, data.mealPay, data.netPay, comments, data.attYes, data.attMeals, data.attNo, planDedString(data)];
-    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:AG:append?valueInputOption=USER_ENTERED`, { method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body:JSON.stringify({values:[row]}) });
+    const row = payrollRow(data, 'PAY-'+Date.now(), comments);
+    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:AI:append?valueInputOption=USER_ENTERED`, { method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body:JSON.stringify({values:[row]}) });
     if (res.ok) { showToast('✅ Payroll saved!'); closePayrollResultModal(); currentPayrollData=null; loadHistory(); loadPlansUI(); } else showToast('❌ Error saving payroll.');
   } catch(err) { showToast('❌ Error saving payroll.'); }
 }
@@ -1495,8 +1725,7 @@ async function loadHistory() {
   document.getElementById('history-list').innerHTML = '';
   document.getElementById('history-empty').style.display = 'none';
   try {
-    const res  = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AG`, {headers:{'Authorization':'Bearer '+token}});
-    const data = await res.json();
+    const data = await fetchHistoryValues();
     let rows   = data.values||[];
     const empF = document.getElementById('hist-filter-emp')?.value||'';
     const monF = document.getElementById('hist-filter-month')?.value||'';
@@ -1590,6 +1819,8 @@ function showHistoryDetail(r) {
   html += sec('ADVANCES', row('Advance 1',fmtP(r[4]))+row('Existing Advances',fmtP(r[6]))+row('Total Advances',fmtP(r[7]))+row('Advance Deduction',fmtP(r[14]))+row('Remaining Advances',fmtP(r[16])));
   html += sec('CONTRIBUTIONS', row('Employee SSS',fmtP(r[9]))+row('Employee Pag-IBIG',fmtP(r[11]))+row('Employee PhilHealth',fmtP(r[13]))+row('PEDROEX SSS',fmtP(r[8]))+row('PEDROEX Pag-IBIG',fmtP(r[10]))+row('PEDROEX PhilHealth',fmtP(r[12])));
   html += sec('EARNINGS', row('Base Pay','₱'+basePay.toFixed(2),`(${baseDays} days)`)+row('2-Man Team Bonus',fmtP(r[18]),`(${twoManDays} days × ₱280)`)+row('Meal Allowance',fmtP(r[26]),`(${mealDays} days × ₱210)`)+row('Gross Pay',fmtP(r[25]),'',false,true));
+  const heldD=splitDates(r[33]), relD=splitDates(r[34]);
+  if (heldD.length||relD.length) html += sec('MEAL ALLOWANCE HOLD', row('Held (not paid in this payroll)', heldD.map(formatDate).join(', ')||'—', heldD.length?heldD.length+' day(s) × ₱'+MEAL_RATE:'')+row('Released (paid from an earlier hold)', relD.map(formatDate).join(', ')||'—', relD.length?relD.length+' day(s) × ₱'+MEAL_RATE:''));
   html += sec('SAVINGS & DEDUCTIONS', row('Savings Plan',fmtP(r[21]),'(5% of Gross)')+row('Total Deductions',fmtP(r[15]))+row('Net Pay',fmtP(r[27]),'',true));
   const planEntries = parsePlanDed(r[32]);
   if (planEntries.length) html += sec('INSTALLMENT PLANS', planEntries.map(e => {
@@ -1613,7 +1844,9 @@ function showHistoryDetail(r) {
 async function editPayrollHistory() {
   const r = window.currentHistoryRow; if (!r) return;
   const savedDed = parseFloat(r[14]||0);   // showPayrollResult() recalculates with an empty field, so remember it first
-  currentPayrollData = { name:r[1], period:r[2], attYes:parseInt(r[29]||0), attMeals:parseInt(r[30]||0), attNo:parseInt(r[31]||0), twoManDays:r[17]||0, periodAdv:parseFloat(r[4]||0), existingAdv:parseFloat(r[6]||0), totalAdv:parseFloat(r[7]||0), empSSS:parseFloat(r[9]||0), empPagibig:parseFloat(r[11]||0), empPhilHealth:parseFloat(r[13]||0), totalContrib:parseFloat(r[9]||0)+parseFloat(r[11]||0)+parseFloat(r[13]||0), pedroexSSS:parseFloat(r[8]||0), pedroexPagibig:parseFloat(r[10]||0), pedroexPhilHealth:parseFloat(r[12]||0), basePay:parseFloat(r[25]||0)-parseFloat(r[18]||0)-parseFloat(r[26]||0), twoManPay:parseFloat(r[18]||0), mealPay:parseFloat(r[26]||0), grossPay:parseFloat(r[25]||0), savingsPlan:parseFloat(r[21]||0), deductedAdv:parseFloat(r[14]||0), remainingAdv:parseFloat(r[16]||0), totalDed:parseFloat(r[15]||0), netPay:parseFloat(r[27]||0), twoManDates:r[28]||'', payrollId:r[0], isOverridden:/^\[Manual Attendance Override\]/.test(r[28]||''), autoAtt:null, plans:[] };
+  currentPayrollData = { name:r[1], period:r[2], attYes:parseInt(r[29]||0), attMeals:parseInt(r[30]||0), attNo:parseInt(r[31]||0), twoManDays:r[17]||0, periodAdv:parseFloat(r[4]||0), existingAdv:parseFloat(r[6]||0), totalAdv:parseFloat(r[7]||0), empSSS:parseFloat(r[9]||0), empPagibig:parseFloat(r[11]||0), empPhilHealth:parseFloat(r[13]||0), totalContrib:parseFloat(r[9]||0)+parseFloat(r[11]||0)+parseFloat(r[13]||0), pedroexSSS:parseFloat(r[8]||0), pedroexPagibig:parseFloat(r[10]||0), pedroexPhilHealth:parseFloat(r[12]||0), basePay:parseFloat(r[25]||0)-parseFloat(r[18]||0)-parseFloat(r[26]||0), twoManPay:parseFloat(r[18]||0), mealPay:parseFloat(r[26]||0), grossPay:parseFloat(r[25]||0), savingsPlan:parseFloat(r[21]||0), deductedAdv:parseFloat(r[14]||0), remainingAdv:parseFloat(r[16]||0), totalDed:parseFloat(r[15]||0), netPay:parseFloat(r[27]||0), twoManDates:r[28]||'', payrollId:r[0], isOverridden:/^\[Manual Attendance Override\]/.test(r[28]||''), autoAtt:null, plans:[],
+    keepW:[r[22]||'', r[23]||'', r[24]||''],   // savings withdrawals live in W:Y of this row — keep them when editing
+    holdItems:[].concat(splitDates(r[33]).map(dt=>({date:dt,kind:'held',release:false,why:'',flags:[]})), splitDates(r[34]).map(dt=>({date:dt,kind:'release',release:true,why:'',flags:[]}))) };
   if (!(await loadPlansData())) { showToast('❌ Could not load deduction plans.'); currentPayrollData = null; return; }
   currentPayrollData.plans = buildPlansForEdit(r);
   showPayrollResult();
@@ -1635,8 +1868,8 @@ async function updatePayrollHistory() {
     await ensurePayrollPlanColumn();
     const rowNum = (idData.values||[]).findIndex(r=>r[0]===data.payrollId)+1;
     if (rowNum<2) { showToast('❌ Record not found'); return; }
-    const row = [data.payrollId,data.name,data.period,data.attYes+data.attMeals+data.attNo,data.periodAdv,0,data.existingAdv,data.totalAdv,data.pedroexSSS||0,data.empSSS,data.pedroexPagibig||0,data.empPagibig,data.pedroexPhilHealth||0,data.empPhilHealth,data.deductedAdv,data.totalDed,data.remainingAdv,data.twoManDays,data.twoManPay,periodIs2nd(data.period)?0:data.savingsPlan,periodIs2nd(data.period)?data.savingsPlan:0,data.savingsPlan,'','','',data.grossPay,data.mealPay,data.netPay,comments,data.attYes,data.attMeals,data.attNo,planDedString(data)];
-    const upd = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A${rowNum}:AG${rowNum}?valueInputOption=USER_ENTERED`, {method:'PUT',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:[row]})});
+    const row = payrollRow(data, data.payrollId, comments);
+    const upd = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A${rowNum}:AI${rowNum}?valueInputOption=USER_ENTERED`, {method:'PUT',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({values:[row]})});
     if (upd.ok) { showToast('✅ Payroll updated!'); closePayrollResultModal(); currentPayrollData=null; loadHistory(); loadPlansUI(); } else showToast('❌ Error updating');
   } catch(err) { showToast('❌ Error updating'); }
 }
@@ -2050,13 +2283,13 @@ async function ensurePayrollPlanColumn() {
   const sh = (d.sheets||[]).find(s => s.properties.title === 'Payroll History');
   if (!sh) throw new Error('Payroll History sheet not found');
   const cols = sh.properties.gridProperties.columnCount;
-  if (cols < 33) {
+  if (cols < 35) {
     const b = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}:batchUpdate`, { method:'POST', headers:{...hdr,'Content-Type':'application/json'},
-      body: JSON.stringify({ requests:[{ appendDimension:{ sheetId: sh.properties.sheetId, dimension:'COLUMNS', length: 33 - cols } }] }) });
+      body: JSON.stringify({ requests:[{ appendDimension:{ sheetId: sh.properties.sheetId, dimension:'COLUMNS', length: 35 - cols } }] }) });
     if (!b.ok) throw new Error('Could not add the Plan Deductions column');
   }
-  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent('Payroll History!AG1')}?valueInputOption=USER_ENTERED`,
-    { method:'PUT', headers:{...hdr,'Content-Type':'application/json'}, body: JSON.stringify({ values:[['Plan Deductions']] }) });
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent('Payroll History!AG1:AI1')}?valueInputOption=USER_ENTERED`,
+    { method:'PUT', headers:{...hdr,'Content-Type':'application/json'}, body: JSON.stringify({ values:[['Plan Deductions','Meal Held','Meal Released']] }) });
   _agReady = true;
 }
 
@@ -2289,7 +2522,7 @@ function viewEmployeeAdvanceDetail(advance) {
 async function loadEmployeeHistory() {
   try {
     const [histRes, empRes] = await Promise.all([
-      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A2:AG`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
+      fetchHistoryValues(),
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Employees!A2:D`, {headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()),
     ]);
     const myRow  = (empRes.values||[]).find(r=>(r[0]||'').toLowerCase()===userEmail.toLowerCase());
@@ -2297,6 +2530,7 @@ async function loadEmployeeHistory() {
     let rows = (histRes.values||[]).filter(r=>(r[1]||'')===myName);
     rows.sort((a,b)=>(b[0]||'').localeCompare(a[0]||''));
     await loadMyPlans(myName);
+    renderMyHolds(myName, histRes.values||[]);
     const allMine = rows;
     if (empHistHalf==='1st') rows = rows.filter(r=>!periodIs2nd(r[2]));
     else if (empHistHalf==='2nd') rows = rows.filter(r=>periodIs2nd(r[2]));
@@ -2332,6 +2566,21 @@ function valGoFix(date, truck) {
 function valFixHint() { return '<div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--red);text-align:right">✏️ Tap to fix in Attendance →</div>'; }
 let validationResults=[]; let valCalYear=new Date().getFullYear(); let valCalMonth=new Date().getMonth(); let valPeriod='1st';
 
+// ═══════════════════════════════════════════════════════
+// VALIDATION CORE (used by the Validation tab AND the Generate-All gate)
+// ═══════════════════════════════════════════════════════
+async function computeValidation(year, mon, period) {
+  const lastDay=new Date(year,mon,0).getDate();
+  const startStr=period==='1st'?`${year}-${String(mon).padStart(2,'0')}-01`:`${year}-${String(mon).padStart(2,'0')}-16`;
+  const endStr  =period==='1st'?`${year}-${String(mon).padStart(2,'0')}-15`:`${year}-${String(mon).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+  const [tripsRes,attRes]=await Promise.all([gSheets('Trips!A2:I'),gSheets('Attendance!A2:K')]);
+  const trips=(tripsRes.values||[]).filter(r=>(r[1]||'')>=startStr&&(r[1]||'')<=endStr).map(r=>({id:r[0]||'',deliveryDate:r[1]||'',truck:(r[2]||'').trim(),freshFrozen:r[4]||'',route:(r[7]||'').trim(),isMasbate:(r[7]||'').toLowerCase().includes('masbate')}));
+  const atts=(attRes.values||[]).filter(r=>(r[1]||'')>=startStr&&(r[1]||'')<=endStr).map(r=>({date:r[1]||'',name:(r[2]||'').trim(),twoManFlag:(r[3]||'').trim(),truck:(r[6]||'').trim()}));
+  const results=trips.map(trip=>{const truckAtts=atts.filter(a=>a.truck===trip.truck&&a.date===trip.deliveryDate);return{trip,atts:truckAtts,...validateTrip(trip,truckAtts)};});
+  const orphanAtts=atts.filter(a=>!trips.some(t=>t.truck===a.truck&&t.deliveryDate===a.date));
+  return { startStr, endStr, trips, atts, results, orphanAtts };
+}
+
 async function runValidation() {
   const month=document.getElementById('val-month').value; if(!month){showToast('Please select a month first.');return;}
   const [year,mon]=month.split('-').map(Number); valCalYear=year; valCalMonth=mon-1;
@@ -2339,21 +2588,234 @@ async function runValidation() {
   document.getElementById('val-report-empty').style.display='none'; document.getElementById('val-issues-empty').style.display='none';
   document.getElementById('val-report-content').innerHTML=''; document.getElementById('val-issues-content').innerHTML='';
   try {
-    const lastDay=new Date(year,mon,0).getDate();
-    const startStr=valPeriod==='1st'?`${year}-${String(mon).padStart(2,'0')}-01`:`${year}-${String(mon).padStart(2,'0')}-16`;
-    const endStr  =valPeriod==='1st'?`${year}-${String(mon).padStart(2,'0')}-15`:`${year}-${String(mon).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
-    const [tripsRes,attRes]=await Promise.all([gSheets('Trips!A2:I'),gSheets('Attendance!A2:K')]);
-    const trips=(tripsRes.values||[]).filter(r=>(r[1]||'')>=startStr&&(r[1]||'')<=endStr).map(r=>({id:r[0]||'',deliveryDate:r[1]||'',truck:(r[2]||'').trim(),freshFrozen:r[4]||'',route:(r[7]||'').trim(),isMasbate:(r[7]||'').toLowerCase().includes('masbate')}));
-    const atts=(attRes.values||[]).filter(r=>(r[1]||'')>=startStr&&(r[1]||'')<=endStr).map(r=>({date:r[1]||'',name:(r[2]||'').trim(),twoManFlag:(r[3]||'').trim(),truck:(r[6]||'').trim()}));
-    const trucks=[...new Set(trips.map(t=>t.truck))].sort();
+    const v=await computeValidation(year,mon,valPeriod);
+    const trucks=[...new Set(v.trips.map(t=>t.truck))].sort();
     const truckSel=document.getElementById('val-truck'); truckSel.innerHTML='<option value="">All Trucks</option>';
     trucks.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;truckSel.appendChild(o);});
-    validationResults=trips.map(trip=>{const truckAtts=atts.filter(a=>a.truck===trip.truck&&a.date===trip.deliveryDate);return{trip,atts:truckAtts,...validateTrip(trip,truckAtts)};});
-    const orphanAtts=atts.filter(a=>!trips.some(t=>t.truck===a.truck&&t.deliveryDate===a.date));
+    validationResults=v.results;
     document.getElementById('val-loading').style.display='none';
-    valOrphanAtts=orphanAtts;
-    valRenderSummary(); valRenderReport(); valRenderCalendar(); valRenderIssues(orphanAtts); valRenderGrid();
+    valOrphanAtts=v.orphanAtts;
+    valRenderSummary(); valRenderReport(); valRenderCalendar(); valRenderIssues(v.orphanAtts); valRenderGrid();
   } catch(err) { document.getElementById('val-loading').style.display='none'; showToast('❌ Validation error: '+err.message); }
+}
+
+// ═══════════════════════════════════════════════════════
+// GENERATE ALL PAYROLL — gate + modal + confirm
+// Enabled only when Validation (same month + period) has NO errors. Warnings are fine.
+// ═══════════════════════════════════════════════════════
+let payrollGate = { state:'idle', key:'' };
+let bulkRows = [], bulkBusy = false;
+
+function renderGate() {
+  const msg=document.getElementById('bulk-gate-msg'), btn=document.getElementById('bulk-btn'); if(!msg||!btn) return;
+  const g=payrollGate; let html='', ok=false;
+  if (g.state==='checking') html='<span style="color:var(--text2)">⏳ Checking Validation for this period…</span>';
+  else if (g.state==='error') html=`<span style="color:var(--red)">❌ Could not run the validation check (${escHtml(g.msg||'')}).</span>`;
+  else if (g.state==='done') {
+    if (g.errors>0) html=`<span style="color:var(--red);font-weight:700">🔴 ${g.errors} validation error${g.errors!==1?'s':''} — fix these before generating payroll.</span>`;
+    else if (g.trips===0) html='<span style="color:var(--orange);font-weight:600">🟡 No trips found for this period — nothing to validate.</span>', ok=true;
+    else { html=`<span style="color:var(--green);font-weight:700">🟢 Validation passed — no errors${g.warnings?` <span style="color:var(--orange);font-weight:600">(${g.warnings} warning${g.warnings!==1?'s':''}, allowed)</span>`:''}.</span>`; ok=true; }
+  } else html='<span style="color:var(--text3)">Select a month to check validation.</span>';
+  html+=` <a href="#" onclick="refreshPayrollGate();return false" style="font-size:11px;color:var(--text2);margin-left:6px">↻ re-check</a>`;
+  if (g.state==='done' && g.errors>0) html+=` <a href="#" onclick="gotoValidationFromGate();return false" style="font-size:11px;color:var(--red);margin-left:6px;font-weight:700">View errors →</a>`;
+  msg.innerHTML=html;
+  btn.disabled=!ok||bulkBusy;
+}
+
+async function refreshPayrollGate() {
+  const month=(document.getElementById('payroll-month')||{}).value;
+  if (!month) { payrollGate={state:'idle',key:''}; renderGate(); return; }
+  const key=month+'|'+selectedPeriod;
+  payrollGate={state:'checking',key}; renderGate();
+  try {
+    const [y,m]=month.split('-').map(Number);
+    const v=await computeValidation(y,m,selectedPeriod);
+    if (payrollGate.key!==key) return;                       // user changed month/period meanwhile
+    payrollGate={ state:'done', key, trips:v.results.length, errors:v.results.filter(r=>r.status==='err').length, warnings:v.results.filter(r=>r.status==='warn').length };
+  } catch(e) { if (payrollGate.key!==key) return; payrollGate={state:'error',key,msg:e.message}; }
+  renderGate();
+}
+
+function gotoValidationFromGate() {
+  document.getElementById('val-month').value=document.getElementById('payroll-month').value;
+  selectValPeriod(selectedPeriod); switchAdminTab('validation'); switchValTab('issues'); runValidation();
+}
+
+function closeBulkModal(){ document.getElementById('bulk-modal').classList.remove('active'); bulkRows=[]; }
+
+async function openBulkPayroll() {
+  if (bulkBusy) return;
+  const month=document.getElementById('payroll-month').value; if(!month){ showToast('Select a month first.'); return; }
+  bulkBusy=true; renderGate(); showToast('Checking validation and loading data…');
+  try {
+    // Fresh gate check — never trust the button state alone
+    const [y,m]=month.split('-').map(Number);
+    const v=await computeValidation(y,m,selectedPeriod);
+    const errs=v.results.filter(r=>r.status==='err').length;
+    payrollGate={ state:'done', key:month+'|'+selectedPeriod, trips:v.results.length, errors:errs, warnings:v.results.filter(r=>r.status==='warn').length };
+    if (errs>0) { showToast(`🔴 ${errs} validation error${errs!==1?'s':''} — fix them first.`); return; }
+
+    const { startDate, endDate } = periodRange(month, selectedPeriod);
+    const periodStr=`${startDate} to ${endDate}`;
+    const ctx=await loadPayrollContext();
+    const names=allEmployees.map(e=>e.fullName);
+    const skipped=[]; bulkRows=[];
+    names.forEach(name=>{
+      if (ctx.histRows.some(r=>(r[1]||'')===name&&(r[2]||'')===periodStr)) { skipped.push({name,why:'already has a payroll for this period'}); return; }
+      const hasAtt=ctx.attRows.some(r=>(r[2]||'')===name&&(r[1]||'')>=startDate&&(r[1]||'')<=endDate);
+      if (!hasAtt) {
+        const pend=mealPendingFor(name,ctx.histRows).length;
+        if (pend) skipped.push({name,why:`no attendance this period, but ${pend} held meal day${pend!==1?'s':''} waiting — use Calculate (single) to release`});
+        return;                                              // no attendance → no payroll (avoids contributions-only negative pay)
+      }
+      const d=buildPayrollData(name,ctx,selectedPeriod,startDate,endDate);
+      bulkRows.push({ d, include:true, ded:0, sep:isSeparatedName(name) });
+    });
+    bulkMeta={ month, period:selectedPeriod, startDate, endDate, periodStr, skipped, today:isoDate(new Date()) };
+    renderBulk();
+    document.getElementById('bulk-modal').classList.add('active');
+  } catch(err) { console.error(err); showToast('❌ '+err.message); }
+  finally { bulkBusy=false; renderGate(); if (bulkRows.length) updateBulkSummary(); }
+}
+
+function bulkNet(r){ return computeNet(r.d, r.ded); }
+
+function renderBulk() {
+  const meta=bulkMeta;
+  const early = meta.endDate>meta.today ? `<div style="background:rgba(243,156,18,.12);border-left:3px solid var(--orange);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--orange);font-weight:600">⚠ This period ends ${escHtml(formatDate(meta.endDate))} — it has not finished yet.</div>` : '';
+  document.getElementById('bulk-head').innerHTML = `${early}
+    <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Period: <b style="color:var(--text)">${escHtml(meta.periodStr)}</b><br>Enter how much to deduct from each person's advances, then confirm. Default is ₱0.</div>
+    <div id="bulk-summary"></div>
+    <button class="btn btn-secondary" style="width:100%;padding:10px;font-size:12px;margin-bottom:14px" onclick="fillMaxAdv()">Fill max advance deduction (never below ₱0 net)</button>`;
+  document.getElementById('bulk-list').innerHTML = bulkRows.length ? bulkRows.map((r,i)=>{
+    const d=r.d, ht=holdTotals(d), days=d.attYes+d.attMeals+d.attNo;
+    const heldN=Math.min(ht.held.length,d.attYes+d.attMeals);
+    const hold = (heldN||ht.released.length) ? `<div style="font-size:11px;margin-top:8px;line-height:1.6">
+        ${heldN?`<span style="color:var(--red);font-weight:700">Meal held: ${heldN} day${heldN!==1?'s':''} (${peso(heldN*MEAL_RATE)})</span><br>`:''}
+        ${ht.released.length?`<span style="color:var(--green);font-weight:700">Meal released: ${ht.released.length} day${ht.released.length!==1?'s':''} (${peso(ht.released.length*MEAL_RATE)})</span>`:''}</div>` : '';
+    const warn = d.holdItems.filter(it=>it.release&&(it.flags||[]).length)
+      .map(it=>(it.flags||[]).map(f=>`<div style="font-size:11px;color:var(--orange);margin-top:3px">⚠ ${escHtml(formatDate(it.date))}: ${escHtml(f)}</div>`).join('')).join('');
+    return `<div class="bulk-card" id="brow-${i}">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--text);min-width:0"><input type="checkbox" checked style="width:18px;height:18px;accent-color:var(--red);flex-shrink:0" onchange="onBulkInc(${i},this.checked)"><span style="overflow:hidden;text-overflow:ellipsis">${escHtml(d.name)}${r.sep?' <span class="plan-badge cancelled">Separated</span>':''}</span></label>
+        <div id="bnet-${i}" style="font-size:16px;font-weight:700;color:var(--red);white-space:nowrap"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin:4px 0 8px">${escHtml(d.position)} · ${days} day${days!==1?'s':''}</div>
+      <div class="bulk-grid">
+        <div><span>Gross</span><b>${peso(d.grossPay)}</b></div>
+        <div><span>Gov't</span><b>${peso(d.totalContrib)}</b></div>
+        <div><span>Savings 5%</span><b>${peso(d.savingsPlan)}</b></div>
+        <div><span>Plans</span><b>${peso(computeNet(d,0).planTotal)}</b></div>
+      </div>
+      ${hold}${warn}
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;background:var(--bg2);border-radius:12px;padding:10px 12px">
+        <div style="font-size:11px;color:var(--text2)">Advance balance<br><b style="font-size:14px;color:var(--text)">${peso(d.totalAdv)}</b></div>
+        <div style="font-size:11px;color:var(--text2);text-align:right">Deduct<br><input type="number" id="bded-${i}" class="plan-ded-input" min="0" step="0.01" placeholder="0.00" ${d.totalAdv<=0?'disabled':''} oninput="onBulkDed(${i},this)"></div>
+      </div>
+      <div id="bneg-${i}" style="display:none;font-size:11px;color:var(--red);font-weight:700;margin-top:6px">Net pay would be negative — lower the advance deduction or untick this person.</div>
+    </div>`;
+  }).join('') : '<div class="empty-state"><div class="empty-icon">🧮</div><div class="empty-text">No employees with attendance in this period.</div></div>';
+  document.getElementById('bulk-skipped').innerHTML = meta.skipped.length ? `<div style="font-size:11px;color:var(--text2);line-height:1.7;margin-top:6px"><b>Skipped:</b><br>${meta.skipped.map(s=>`• ${escHtml(s.name)} — ${escHtml(s.why)}`).join('<br>')}</div>` : '';
+  bulkRows.forEach((r,i)=>updateBulkRow(i));
+  updateBulkSummary();
+}
+
+function updateBulkRow(i) {
+  const r=bulkRows[i]; const n=bulkNet(r);
+  const el=document.getElementById('bnet-'+i), neg=document.getElementById('bneg-'+i), card=document.getElementById('brow-'+i);
+  if (el) { el.textContent=peso(n.netPay); el.style.color=n.netPay<0?'var(--red)':'var(--green)'; }
+  if (neg) neg.style.display=(r.include&&n.netPay<0)?'block':'none';
+  if (card) card.style.opacity=r.include?'1':'.45';
+}
+function updateBulkSummary() {
+  const inc=bulkRows.filter(r=>r.include);
+  let gross=0, ded=0, net=0, bad=0;
+  inc.forEach(r=>{ const n=bulkNet(r); gross+=r.d.grossPay; ded+=n.manualDed; net+=n.netPay; if(n.netPay<0) bad++; });
+  const s=document.getElementById('bulk-summary');
+  if (s) s.innerHTML=`<div class="bulk-sum"><div><span>Employees</span><b>${inc.length}</b></div><div><span>Total gross</span><b>${peso(gross)}</b></div><div><span>Advance deducted</span><b>${peso(ded)}</b></div><div><span>Total net</span><b>${peso(net)}</b></div></div>`;
+  const btn=document.getElementById('bulk-confirm-btn');
+  if (btn) { btn.disabled = !inc.length || bad>0 || bulkBusy; btn.textContent = bad>0 ? '⛔ Fix negative net pay first' : `✅ Confirm & Generate (${inc.length})`; }
+}
+function onBulkInc(i,checked){ bulkRows[i].include=!!checked; updateBulkRow(i); updateBulkSummary(); }
+function onBulkDed(i,el){
+  const r=bulkRows[i]; let v=parseFloat(el.value); if(!(v>0)) v=0;
+  if (v>r.d.totalAdv) { v=r.d.totalAdv; el.value=v; showToast('Capped at advance balance '+peso(v)); }
+  r.ded=r2(v); updateBulkRow(i); updateBulkSummary();
+}
+function fillMaxAdv(){
+  bulkRows.forEach((r,i)=>{
+    if (!r.include) return;
+    const n0=computeNet(r.d,0);                               // net with no advance deduction
+    const v=Math.max(0, Math.min(r.d.totalAdv, r2(n0.netPay)));
+    r.ded=r2(v); const el=document.getElementById('bded-'+i); if(el) el.value=v>0?v:''; updateBulkRow(i);
+  });
+  updateBulkSummary();
+}
+
+// Single row builder — used by Save, Update and Generate-All so the 35 columns can never drift apart
+function payrollRow(data, id, comments) {
+  const ht=holdTotals(data); const k=data.keepW||['','',''];
+  const is2nd=periodIs2nd(data.period);
+  return [id,data.name,data.period,data.attYes+data.attMeals+data.attNo,data.periodAdv,0,data.existingAdv,data.totalAdv,
+    data.pedroexSSS||0,data.empSSS,data.pedroexPagibig||0,data.empPagibig,data.pedroexPhilHealth||0,data.empPhilHealth,
+    data.deductedAdv,data.totalDed,data.remainingAdv,data.twoManDays,data.twoManPay,
+    is2nd?0:data.savingsPlan,is2nd?data.savingsPlan:0,data.savingsPlan,k[0],k[1],k[2],
+    data.grossPay,data.mealPay,data.netPay,comments,data.attYes,data.attMeals,data.attNo,planDedString(data),
+    ht.held.join(', '),ht.released.join(', ')];
+}
+
+async function confirmBulkPayroll() {
+  if (bulkBusy) return;
+  const inc=bulkRows.filter(r=>r.include); if(!inc.length) return;
+  let gross=0, ded=0, net=0;
+  inc.forEach(r=>{ const n=bulkNet(r); if(n.netPay<0) return; gross+=r.d.grossPay; ded+=n.manualDed; net+=n.netPay; });
+  if (inc.some(r=>bulkNet(r).netPay<0)) { showToast('Fix negative net pay first.'); return; }
+  const ok=await askConfirm({ title:'⚡ Generate all payroll?', okLabel:'Generate',
+    msg:`<b>${inc.length}</b> payroll record${inc.length!==1?'s':''} for <b>${escHtml(bulkMeta.periodStr)}</b> will be saved to Payroll History.<br><br>Total gross: <b>${peso(gross)}</b><br>Advance deducted: <b>${peso(ded)}</b><br>Total net pay: <b>${peso(net)}</b><br><br>This cannot be undone in one click.` });
+  if (!ok) return;
+  bulkBusy=true; updateBulkSummary(); showToast('Generating payroll…');
+  try {
+    await ensurePayrollPlanColumn();
+    // Last-second duplicate guard (modal may have been open a while / double tap)
+    const cur=await gSheets('Payroll History!B2:C');
+    const dup=inc.filter(r=>(cur.values||[]).some(x=>(x[0]||'')===r.d.name&&(x[1]||'')===bulkMeta.periodStr));
+    if (dup.length) { showToast('❌ Already generated for: '+dup.map(r=>r.d.name).join(', ')+'. Nothing was saved.',6000); return; }
+    const base=Date.now();
+    const rows=inc.map((r,i)=>{
+      const n=bulkNet(r);
+      Object.assign(r.d,{ deductedAdv:n.manualDed, remainingAdv:n.remainingAdv, totalDed:n.totalDed, netPay:n.netPay, planDedTotal:n.planTotal });
+      return payrollRow(r.d,'PAY-'+base+'-'+i,r.d.twoManDates||'');
+    });
+    const res=await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Payroll%20History!A:AI:append?valueInputOption=USER_ENTERED`,
+      { method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body:JSON.stringify({values:rows}) });
+    if (!res.ok) throw new Error('Save failed ('+res.status+') — nothing was saved.');
+    showToast(`✅ ${rows.length} payroll record${rows.length!==1?'s':''} generated`);
+    savingsData=[]; closeBulkModal(); loadHistory(); loadPlansUI(); refreshPayrollGate();
+  } catch(err) { console.error(err); showToast('❌ '+err.message,6000); }
+  finally { bulkBusy=false; if (bulkRows.length) updateBulkSummary(); renderGate(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// PAYROLL HISTORY READ (AH/AI may not exist yet → fall back to A:AG)
+// ═══════════════════════════════════════════════════════
+async function fetchHistoryValues() {
+  const hdr={ headers:{ 'Authorization':'Bearer '+token } };
+  const base=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/`;
+  let res=await fetch(base+'Payroll%20History!A2:AI',hdr);
+  if (res.status===400) res=await fetch(base+'Payroll%20History!A2:AG',hdr);
+  if (!res.ok) throw new Error('Sheets API error: '+res.status);
+  return res.json();
+}
+
+// Employee view: held meal allowance that is still waiting
+function renderMyHolds(myName, histValues) {
+  const card=document.getElementById('emp-hold-card'); if(!card) return;
+  const pend=mealPendingFor(myName, histValues);
+  if (!pend.length) { card.innerHTML='<div class="empty-state"><div class="empty-icon">🍽️</div><div class="empty-text">No held meal allowance.</div></div>'; return; }
+  card.innerHTML=`<div class="plan-card"><div class="plan-head"><div><div class="plan-title">Meal allowance on hold</div>
+    <div class="plan-sub">Finish your Shipment # / Date, POD and Crates records for these days (Records page). It will be paid in your next payroll after they are complete.</div></div>
+    <div class="plan-bal"><div class="plan-bal-label">On hold</div><div class="plan-bal-val">${peso(pend.length*MEAL_RATE)}</div></div></div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.8">${pend.map(d=>'• '+escHtml(formatDate(d))).join('<br>')}</div></div>`;
 }
 
 function validateTrip(trip,truckAtts) {
