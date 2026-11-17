@@ -232,6 +232,41 @@ body.dark .bottom-nav{box-shadow:0 -3px 14px rgba(0,0,0,0.4)}
 .deduction-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
 body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
 .deduction-item:last-child{border-bottom:none}
+
+/* ═══ REVIEW SCREEN ═══ */
+.sn{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:700;letter-spacing:.4px;color:var(--text);cursor:pointer;white-space:nowrap}
+.sn-d{color:var(--text3);font-weight:500}
+.sn.bad{color:var(--red)}
+.sn mark{background:rgba(179,37,51,.2);color:var(--red);border-radius:3px;padding:0 1px}
+.rv-sec{margin:18px 0 8px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.rv-card{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--red)}
+.rv-card.warn{border-left-color:var(--orange)}
+.rv-card.info{border-left-color:var(--blue)}
+.rv-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rv-meta{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5}
+.rv-reason{font-size:12px;color:var(--text);margin-top:8px;line-height:1.5}
+.rv-note{font-size:11px;margin-top:6px;padding:6px 8px;border-radius:8px;background:rgba(245,158,11,.12);color:var(--orange);font-weight:600;line-height:1.4}
+.rv-note.info{background:rgba(37,99,235,.08);color:var(--blue)}
+.rv-diff{margin-top:8px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;font-size:11px;color:var(--text2)}
+.rv-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.rv-btn{flex:1;min-width:120px;border:none;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;background:var(--bg);box-shadow:var(--neu-sm);color:var(--text)}
+.rv-btn.go{background:var(--green);color:#fff;box-shadow:none}
+.rv-btn.red{background:var(--red);color:#fff;box-shadow:none}
+.rv-btn:active{transform:scale(.97)}
+.rv-sel{width:100%;margin-top:8px;font-size:12px}
+.rv-undo{background:none;border:none;color:var(--text2);font-size:11px;text-decoration:underline;cursor:pointer;font-family:Inter,sans-serif;padding:0;margin-top:6px}
+.rv-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px;flex-wrap:wrap}
+.rv-row:last-child{border-bottom:none}
+.rv-row .rv-sub{color:var(--text2);font-size:11px;flex:1;min-width:120px}
+.rv-wrap{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:4px 14px;margin-bottom:10px}
+.rv-wrap summary{cursor:pointer;padding:12px 0;font-size:13px;font-weight:700;list-style:none}
+.rv-wrap summary::-webkit-details-marker{display:none}
+.rv-file{background:var(--bg);border-radius:16px;box-shadow:var(--neu-out);padding:14px 16px;margin-bottom:12px}
+.rv-chk{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0;color:var(--text2)}
+.rv-chk b{color:var(--text)}
+.rv-chk .good{color:var(--green);font-weight:700}
+.rv-chk .bad{color:var(--red);font-weight:700}
+.rv-chk .caution{color:var(--orange);font-weight:700}
 </style>
 </head>
 <body>
@@ -280,73 +315,19 @@ body.dark .deduction-item{border-bottom-color:rgba(255,255,255,0.04)}
       <!-- DEBUG PANEL -->
       <div id="debug-panel" style="display:none;margin-bottom:14px"></div>
 
-      <!-- SOA PREVIEW CALENDAR (shown after parse, before commit) -->
-      <div id="soa-preview-section" style="display:none">
-        <div class="neu-card" style="padding:16px">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <div class="section-title" style="margin-bottom:0">📅 SOA Shipment Preview</div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <select class="fi" id="preview-truck-filter" onchange="renderSOAPreviewCalendar()"
-                style="width:auto;padding:6px 10px;font-size:12px;box-shadow:var(--neu-xs)">
-                <option value="">All Trucks</option>
-              </select>
-              <button class="cal-nav" onclick="changePreviewMonth(-1)">‹</button>
-              <span id="preview-cal-title" style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap"></span>
-              <button class="cal-nav" onclick="changePreviewMonth(1)">›</button>
-            </div>
-          </div>
-          <!-- Legend -->
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Matched</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Unmatched</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Typo</div>
-          </div>
-          <div class="cal-grid" id="preview-cal-grid"></div>
-          <!-- Day detail -->
-          <div class="day-panel" id="preview-day-panel" style="margin-top:12px">
-            <div class="day-panel-title" id="preview-day-title"></div>
-            <div id="preview-day-list"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RESULTS SECTION -->
+      <!-- REVIEW: iisang listahan — problema muna, OK naka-collapse -->
       <div id="match-results-section" style="display:none">
-
-        <!-- SUMMARY STATS -->
+        <div id="review-files"></div>
         <div class="stat-grid" id="match-stats"></div>
-
-        <!-- TYPO FLAGS with fix buttons -->
-        <div id="typo-section" style="display:none">
-          <div class="neu-card" style="border-left:4px solid var(--orange);padding:16px">
-            <div class="card-title" style="color:var(--orange);margin-bottom:10px">⚠️ Possible Typo Errors — SOA is Ground Truth</div>
-            <div id="typo-list"></div>
-          </div>
-        </div>
-
-        <!-- MATCH DETAILS -->
-        <div class="neu-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <div class="card-title" style="margin-bottom:0">Match Results</div>
-            <select class="fi" id="match-filter" onchange="filterMatchResults()"
-              style="width:auto;padding:6px 10px;font-size:12px;box-shadow:var(--neu-xs)">
-              <option value="all">All</option>
-              <option value="matched">Matched ✅</option>
-              <option value="unmatched">Unmatched ❌</option>
-              <option value="typo">Typo Flags ⚠️</option>
-            </select>
-          </div>
-          <div id="match-list"></div>
-        </div>
+        <div id="review-attn"></div>
+        <div id="review-warn"></div>
+        <div id="review-ok"></div>
+        <div id="review-billed"></div>
 
         <!-- COMMIT BUTTON (ADMIN ONLY) -->
         <div id="commit-section" style="display:none">
-          <button class="btn btn-green" onclick="commitToSheets()" id="commit-btn">
-            ✅ Save to Google Sheets &amp; Mark Billed
-          </button>
-          <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px">
-            Updates Billing Statement, marks matched trips as Billed = Yes, logs to SOA Masters
-          </div>
+          <button class="btn btn-green" onclick="commitToSheets()" id="commit-btn">✅ I-save sa Google Sheets</button>
+          <div id="commit-note" style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px"></div>
         </div>
       </div>
 
@@ -551,7 +532,7 @@ var currentSOA  = null;
   calMonth = now.getMonth();
 
   setupDropZone();
-  loadTrips();
+  loadTrips().catch(function(e) { console.error('Load trips error:', e); });
 })();
 
 // ═══ TAB SWITCHING ════════════════════════════════════
@@ -565,8 +546,10 @@ function switchTab(tab) {
 }
 
 // ═══ LOAD TRIPS FROM SHEETS ═══════════════════════════
+// Nagbabalik ng Promise para makapaghintay ang Process Files sa sariwang Trips.
 function loadTrips() {
-  apiGet(TAB_TRIPS+'!A2:I').then(function(res) {
+  return apiGet(TAB_TRIPS+'!A2:I').then(function(res) {
+    if (res.error) throw new Error((res.error && res.error.message) || 'Hindi mabasa ang Trips sheet');
     var rows = res.values || [];
     allTrips = [];
     rows.forEach(function(r, i) {
@@ -578,28 +561,48 @@ function loadTrips() {
         truck:          r[2] || '',
         shipmentDate:   r[3] ? convertExcelDate(r[3]) : '',
         type:           r[4] || '',
-        shipmentNumber: r[5] || '',
+        shipmentNumber: String(r[5] == null ? '' : r[5]).trim(),
         billed:         r[6] || '',
         route:          r[7] || '',
         rate:           r[8] || ''
       });
     });
 
-    // Build truck dropdown for calendar filter
+    // Build truck dropdown for calendar filter (nililinis muna para hindi dumoble)
     var trucks = [];
     allTrips.forEach(function(t) { if (t.truck && trucks.indexOf(t.truck) === -1) trucks.push(t.truck); });
     trucks.sort();
     var sel = document.getElementById('cal-filter-truck');
+    var keep = sel.value;
+    sel.innerHTML = '<option value="">All Trucks</option>';
     trucks.forEach(function(tk) {
       var o = document.createElement('option'); o.value = tk; o.textContent = tk;
       sel.appendChild(o);
     });
+    sel.value = keep;
 
     renderCalStats();
     renderBillingCalendar();
-  }).catch(function(e) { console.error('Load trips error:', e); });
+    return allTrips;
+  });
 }
 
+// Ano na ang nasa Billing Statement at SOA Masters (para hindi madoble ang bill)
+function loadBillingContext() {
+  return Promise.all([
+    apiGet(TAB_BILLING_STMT+'!A2:G'),
+    apiGet(TAB_SOA+'!A2:A')
+  ]).then(function(res) {
+    // 400 = wala pang ganoong sheet → bakante lang. Ibang error = huwag ituloy.
+    res.forEach(function(x) {
+      if (x && x.error && x.error.code !== 400) throw new Error(x.error.message || 'Hindi mabasa ang Billing Statement / SOA Masters');
+    });
+    var billedNums = {}, existingSoaNums = {};
+    (res[0].values || []).forEach(function(r) { var n = String(r[2] == null ? '' : r[2]).trim(); if (n) billedNums[n] = true; });
+    (res[1].values || []).forEach(function(r) { var n = String(r[0] == null ? '' : r[0]).trim(); if (n) existingSoaNums[n] = true; });
+    return { billedNums: billedNums, existingSoaNums: existingSoaNums };
+  });
+}
 // ═══ DROP ZONE SETUP ══════════════════════════════════
 function setupDropZone() {
   var zone  = document.getElementById('drop-zone');
@@ -636,7 +639,7 @@ function renderFileQueue() {
     return '<div class="file-item">'
       + '<div class="file-icon">📊</div>'
       + '<div class="file-info">'
-      + '<div class="file-name">' + f.name + '</div>'
+      + '<div class="file-name">' + esc(f.name) + '</div>'
       + '<div class="file-meta">' + (f.size/1024).toFixed(1) + ' KB</div>'
       + '</div>'
       + '<span class="file-status pending">Ready</span>'
@@ -646,64 +649,73 @@ function renderFileQueue() {
 }
 
 function removeFile(i) { queuedFiles.splice(i, 1); renderFileQueue(); }
-function clearFiles()   { queuedFiles = []; parsedFiles = []; matchResults = []; renderFileQueue(); document.getElementById('match-results-section').style.display='none'; }
+function clearFiles()   { queuedFiles = []; parsedFiles = []; matchResults = []; decisions = {}; parseErrors = []; renderFileQueue(); document.getElementById('match-results-section').style.display='none'; }
 
 // ═══ PROCESS FILES ════════════════════════════════════
-function processFiles() {
-  if (!queuedFiles.length) { showToast('⚠️ No files queued'); return; }
-  parsedFiles = [];
-  matchResults = [];
+var decisions  = {};     // key -> { num, link, numChoice } — mga desisyon mo sa Review
+var billCtx    = { billedNums:{}, existingSoaNums:{} };
+var parseErrors = [];
 
-  var promises = queuedFiles.map(function(file) {
-    return new Promise(function(resolve) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          var parsed = parseSOAExcel(e.target.result, file.name);
-          resolve(parsed);
-        } catch(err) {
-          console.error('Parse error', file.name, err);
-          resolve(null);
-        }
-      };
-      reader.readAsArrayBuffer(file);
-    });
-  });
-
-  showSaving('Parsing Excel files...');
-
-  Promise.all(promises).then(function(results) {
-    parsedFiles = results.filter(Boolean);
-    hideSaving();
-
-    if (!parsedFiles.length) { showToast('❌ Failed to parse any files'); return; }
-
-    // Run matching
-    matchResults = runMatching(parsedFiles, allTrips);
-    renderMatchResults();
-    initSOAPreview();
-    document.getElementById('match-results-section').style.display = '';
-    if (isAdmin) document.getElementById('commit-section').style.display = '';
-    showToast('✅ Parsed ' + parsedFiles.length + ' file(s) · ' + matchResults.filter(function(r){return r.status==='matched';}).length + ' matched / ' + matchResults.length + ' total');
+function readFileAsBuffer(file) {
+  return new Promise(function(resolve) {
+    var fr = new FileReader();
+    fr.onload  = function(e) { resolve({ file:file, buf:e.target.result }); };
+    fr.onerror = function()  { resolve({ file:file, error:'Hindi mabasa ang file' }); };
+    fr.readAsArrayBuffer(file);
   });
 }
 
+function processFiles() {
+  if (!queuedFiles.length) { showToast('⚠️ No files queued'); return; }
+  decisions = {}; parsedFiles = []; matchResults = []; parseErrors = [];
+  showSaving('Binabasa ang SOA at ang Trips...');
+
+  Promise.all([
+    Promise.all(queuedFiles.map(readFileAsBuffer)),
+    loadTrips(),            // sariwang Trips bago mag-match
+    loadBillingContext()
+  ]).then(function(out) {
+    out[0].forEach(function(x) {
+      if (x.error) { parseErrors.push({ fileName:x.file.name, error:x.error }); return; }
+      try { parsedFiles.push(parseSOAExcel(x.buf, x.file.name)); }
+      catch (err) { console.error('Parse error', x.file.name, err); parseErrors.push({ fileName:x.file.name, error:err.message }); }
+    });
+    billCtx = out[2];
+    hideSaving();
+
+    if (!parsedFiles.length) { renderReview(); showToast('❌ Walang nabasang file'); return; }
+    if (!allTrips.length)    showToast('⚠️ Walang laman ang Trips sheet');
+
+    matchResults = runMatching(parsedFiles, allTrips, matchCtx());
+    renderReview();
+    var attn = matchResults.filter(function(r){ return ATTN_STATUS[r.status]; }).length;
+    showToast(attn ? '⚠️ ' + attn + ' ang kailangang ayusin' : '✅ Handa na lahat');
+  }).catch(function(err) {
+    hideSaving();
+    console.error(err);
+    showToast('❌ ' + err.message);
+  });
+}
 // ═══ PARSE SOA EXCEL ══════════════════════════════════
+// Hindi na nawawala ang mga row nang tahimik: lahat ng nilaktawan ay nasa `skipped`
+// (may row # at dahilan), at ang maling-format na shipment # ay itinatago bilang
+// "invalid" para makita mo — hindi na basta itinatapon.
 function parseSOAExcel(arrayBuffer, fileName) {
   // raw:true keeps numbers as numbers and dates as Excel serial numbers
   var wb = XLSX.read(arrayBuffer, { type:'array', raw:true });
 
-  // Use first sheet (SOA BILLING FORMAT-Routing)
+  // Unang sheet (SOA BILLING FORMAT-Routing)
   var wsName = wb.SheetNames[0];
   var ws = wb.Sheets[wsName];
+  if (!ws) throw new Error('Walang sheet sa file');
+  var rng = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+  var rowOff = rng.s.r;   // sheet_to_json(header:1) ay nagsisimula sa unang row ng !ref
 
   // SOA Number from M7 — try cell value directly
   var soaCell = ws['M7'];
   var soaNum  = soaCell ? String(soaCell.v || '').trim() : '';
-  // Also try L7, N7 in case of column shift
-  if (!soaNum) { var c = ws['L7']; soaNum = c ? String(c.v||'').trim() : ''; }
-  if (!soaNum) { var c = ws['N7']; soaNum = c ? String(c.v||'').trim() : ''; }
-  // Fallback to filename
+  if (!soaNum) { var c1 = ws['L7']; soaNum = c1 ? String(c1.v||'').trim() : ''; }
+  if (!soaNum) { var c2 = ws['N7']; soaNum = c2 ? String(c2.v||'').trim() : ''; }
   if (!soaNum) {
     var fnMatch = fileName.match(/(\d+_\d+)/);
     if (fnMatch) soaNum = fnMatch[1];
@@ -713,119 +725,119 @@ function parseSOAExcel(arrayBuffer, fileName) {
   var periodCell = ws['M8'] || ws['L8'] || ws['N8'];
   var period = periodCell ? String(periodCell.v || '').trim() : '';
 
-  // Get raw 2D array — raw:true means dates are Excel serials, numbers are numbers
   var jsonData = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:null });
 
-  // ── STEP 1: Detect header row and column positions dynamically ──
-  // Look for the row containing 'SHIPMENT NO.' anywhere in rows 8-15
-  var colDate = 1, colPlate = 2, colCapacity = 3, colShipNum = 4, colShipCost = 5;
-  var colDest = 7, colType = 9, colKgs = 10, colRate = 11, colToll = 12, colDemurrage = 13;
-  var headerRowIdx = 9; // default: row 10 (0-indexed = 9)
-
-  for (var h = 7; h <= 14; h++) {
+  // ── STEP 1: hanapin ang header row at ang mga column ──
+  var colDate=-1, colPlate=-1, colShipNum=-1, colShipCost=-1, colDest=-1, colType=-1, colKgs=-1, colRate=-1, colToll=-1, colDemurrage=-1;
+  var headerRowIdx = -1;
+  for (var h = 0; h <= Math.min(25, jsonData.length-1); h++) {
     var hrow = jsonData[h];
     if (!hrow) continue;
-    var found = false;
+    var found = false, tmp = {};
     for (var c = 0; c < hrow.length; c++) {
-      var cellStr = String(hrow[c] || '').toUpperCase().trim();
-      if (cellStr === 'SHIPMENT NO.' || cellStr === 'SHIPMENT NO') {
-        colShipNum  = c;
-        headerRowIdx = h;
-        found = true;
-      }
-      if (cellStr === 'SHIPMENT COST NO.' || cellStr === 'SHIPMENT COST NO') colShipCost = c;
-      if (cellStr === 'DATE')              colDate     = c;
-      if (cellStr === 'PLATE NO.' || cellStr === 'PLATE NO') colPlate = c;
-      if (cellStr === 'CAPACITY')          colCapacity = c;
-      if (cellStr.includes('DESTINATION') || cellStr.includes('CLUSTER')) colDest = c;
-      if (cellStr === 'DELIVERY TYPE')     colType     = c;
-      if (cellStr === 'KGS')               colKgs      = c;
-      if (cellStr === 'RATE')              colRate     = c;
-      if (cellStr.includes('TOLL') || cellStr.includes('PARKING')) colToll = c;
-      if (cellStr === 'DEMURRAGE')         colDemurrage = c;
+      var cellStr = String(hrow[c] == null ? '' : hrow[c]).toUpperCase().trim();
+      if (cellStr === 'SHIPMENT NO.' || cellStr === 'SHIPMENT NO') { tmp.ship = c; found = true; }
+      if (cellStr === 'SHIPMENT COST NO.' || cellStr === 'SHIPMENT COST NO') tmp.cost = c;
+      if (cellStr === 'DATE')              tmp.date  = c;
+      if (cellStr === 'PLATE NO.' || cellStr === 'PLATE NO') tmp.plate = c;
+      if (cellStr.indexOf('DESTINATION') >= 0 || cellStr.indexOf('CLUSTER') >= 0) tmp.dest = c;
+      if (cellStr === 'DELIVERY TYPE')     tmp.type  = c;
+      if (cellStr === 'KGS')               tmp.kgs   = c;
+      if (cellStr === 'RATE')              tmp.rate  = c;
+      if (cellStr.indexOf('TOLL') >= 0 || cellStr.indexOf('PARKING') >= 0) tmp.toll = c;
+      if (cellStr === 'DEMURRAGE')         tmp.dem   = c;
     }
-    if (found) break;
+    if (found) {
+      headerRowIdx = h;
+      colShipNum = tmp.ship; colShipCost = tmp.cost == null ? -1 : tmp.cost;
+      colDate = tmp.date == null ? -1 : tmp.date; colPlate = tmp.plate == null ? -1 : tmp.plate;
+      colDest = tmp.dest == null ? -1 : tmp.dest; colType = tmp.type == null ? -1 : tmp.type;
+      colKgs = tmp.kgs == null ? -1 : tmp.kgs; colRate = tmp.rate == null ? -1 : tmp.rate;
+      colToll = tmp.toll == null ? -1 : tmp.toll; colDemurrage = tmp.dem == null ? -1 : tmp.dem;
+      break;
+    }
+  }
+  if (headerRowIdx < 0) throw new Error('Hindi makita ang header na "SHIPMENT NO." sa unang sheet');
+  if (colDate < 0 || colPlate < 0) throw new Error('Kulang ang header: kailangan ang DATE at PLATE NO.');
+
+  function cell(row, idx) { return idx >= 0 && row ? row[idx] : null; }
+  function txt(row, idx)  { var v = cell(row, idx); return v == null ? '' : String(v).trim(); }
+
+  // ── STEP 2: saan nagtatapos ang data? (sa "TOTAL TRIPS" na row) ──
+  var footerIdx = jsonData.length;
+  for (var f = headerRowIdx + 1; f < jsonData.length; f++) {
+    var frow = jsonData[f]; if (!frow) continue;
+    var isFooter = false;
+    for (var fc = 0; fc < frow.length; fc++) {
+      if (String(frow[fc] == null ? '' : frow[fc]).toLowerCase().trim() === 'total trips') { isFooter = true; break; }
+    }
+    if (isFooter) { footerIdx = f; break; }
   }
 
-  console.log('📋 Header row:', headerRowIdx, '| Ship# col:', colShipNum, '| Date col:', colDate, '| Plate col:', colPlate);
-
-  var shipments = [];
-  var grandTotal = 0, vatAmt = 0, totalTripsCount = 0;
-
-  // ── STEP 2: Parse data rows starting after header ──
-  for (var i = headerRowIdx + 1; i < jsonData.length; i++) {
+  // ── STEP 3: data rows ──
+  var shipments = [], skipped = [];
+  var sumRate = 0, sumExtra = 0;
+  for (var i = headerRowIdx + 1; i < footerIdx; i++) {
     var row = jsonData[i];
     if (!row) continue;
+    var rawDate  = cell(row, colDate);
+    var plateRaw = txt(row, colPlate);
+    var shipRaw  = cell(row, colShipNum);
+    var shipNum  = shipRaw == null ? '' : String(shipRaw).trim().replace(/\.0+$/, '').replace(/\s+/g, '');
+    if (!rawDate && !plateRaw && !shipNum) continue;          // talagang blangkong row
+    var xlRow = i + rowOff + 1;                                // row # na makikita mo sa Excel
 
-    // Date cell — Excel serial number or already a date string
-    var rawDate = row[colDate];
-    if (!rawDate) continue;
     var parsedDate = excelSerialToDate(rawDate);
-    if (!parsedDate) continue;
-
-    // Shipment Number — col E (index 4) = 10-digit number like 1004792410
-    var shipNumRaw = row[colShipNum];
-    if (shipNumRaw === null || shipNumRaw === undefined) continue;
-    var shipNum = String(shipNumRaw).trim().replace(/\.0+$/, ''); // remove decimal if any
-    if (!shipNum || !shipNum.match(/^\d{7,}$/)) continue; // Must be at least 7 digits
-
-    // Plate / truck
-    var plateRaw  = String(row[colPlate] || '').trim();
+    if (!parsedDate)  { skipped.push({ xlRow:xlRow, reason:'Walang valid na petsa', plate:plateRaw, ship:shipNum }); continue; }
     var truckCode = extractTruckCode(plateRaw);
-    if (!truckCode) continue;
+    if (!plateRaw || !truckCode) { skipped.push({ xlRow:xlRow, reason:'Walang plate no.', plate:plateRaw, ship:shipNum }); continue; }
+    if (!shipNum)     { skipped.push({ xlRow:xlRow, reason:'Walang shipment #', plate:plateRaw, ship:'' }); continue; }
+
+    var rate = parseFloat(cell(row, colRate)) || 0;
+    var toll = parseFloat(cell(row, colToll)) || 0;
+    var dem  = parseFloat(cell(row, colDemurrage)) || 0;
+    sumRate += rate; sumExtra += toll + dem;
 
     shipments.push({
+      xlRow:       xlRow,
       date:        parsedDate,
       plate:       plateRaw,
       truck:       truckCode,
-      shipNum:     shipNum,
-      shipCostNum: String(row[colShipCost] || '').trim(),
-      dest:        String(row[colDest]     || '').trim(),
-      type:        String(row[colType]     || '').trim(),
-      kgs:         parseFloat(row[colKgs])      || 0,
-      rate:        parseFloat(row[colRate])     || 0,
-      toll:        parseFloat(row[colToll])     || 0,
-      demurrage:   parseFloat(row[colDemurrage])|| 0
+      shipNum:     shipNum,            // ayon sa SOA — maaaring mali (tingnan ang isValidShipNum)
+      shipCostNum: txt(row, colShipCost),
+      dest:        txt(row, colDest),
+      type:        txt(row, colType),
+      kgs:         parseFloat(cell(row, colKgs)) || 0,
+      rate:        rate,
+      toll:        toll,
+      demurrage:   dem
     });
   }
 
-  // ── STEP 3: Parse summary/totals (scan all rows for keywords) ──
-  for (var j = 0; j < jsonData.length; j++) {
+  // ── STEP 4: totals (hanapin ang keyword, kunin ang unang numero sa kanan) ──
+  var grandTotal = 0, vatAmt = 0, totalTripsCount = 0;
+  function numRight(sr, ci, intOnly) {
+    for (var ni = ci + 1; ni < sr.length; ni++) {
+      var v = sr[ni];
+      if (v !== null && v !== undefined && !isNaN(parseFloat(v))) return intOnly ? parseInt(v) : parseFloat(v);
+    }
+    return 0;
+  }
+  for (var j = headerRowIdx + 1; j < jsonData.length; j++) {
     var sr = jsonData[j];
     if (!sr) continue;
     for (var ci = 0; ci < sr.length; ci++) {
-      var cellVal = String(sr[ci] || '').toLowerCase().trim();
-      if (cellVal.includes('grand total')) {
-        // Grand total value is usually in the next non-null cell to the right
-        for (var ni = ci+1; ni < sr.length; ni++) {
-          if (sr[ni] !== null && sr[ni] !== undefined && !isNaN(parseFloat(sr[ni]))) {
-            grandTotal = parseFloat(sr[ni]); break;
-          }
-        }
-      }
-      if (cellVal === 'vat 12%' || cellVal.includes('vat 12')) {
-        for (var ni = ci+1; ni < sr.length; ni++) {
-          if (sr[ni] !== null && !isNaN(parseFloat(sr[ni]))) {
-            vatAmt = parseFloat(sr[ni]); break;
-          }
-        }
-      }
-      if (cellVal === 'total trips') {
-        for (var ni = ci+1; ni < sr.length; ni++) {
-          if (sr[ni] !== null && !isNaN(parseInt(sr[ni]))) {
-            totalTripsCount = parseInt(sr[ni]); break;
-          }
-        }
-      }
+      var cellVal = String(sr[ci] == null ? '' : sr[ci]).toLowerCase().trim();
+      if (cellVal.indexOf('grand total') >= 0) grandTotal = numRight(sr, ci, false);
+      if (cellVal === 'vat 12%' || cellVal.indexOf('vat 12') >= 0) vatAmt = numRight(sr, ci, false);
+      if (cellVal === 'total trips') totalTripsCount = numRight(sr, ci, true);
     }
   }
 
-  console.log('✅ Parsed:', fileName, '| SOA:', soaNum, '| Shipments:', shipments.length, '| Grand Total:', grandTotal);
-  if (shipments.length > 0) console.log('   Sample:', shipments[0].date, shipments[0].shipNum, shipments[0].truck);
-
-  return { fileName, soaNum, period, shipments, grandTotal, vatAmt, totalTripsCount };
+  return { fileName:fileName, soaNum:soaNum, period:period, shipments:shipments, skipped:skipped,
+           grandTotal:grandTotal, vatAmt:vatAmt, totalTripsCount:totalTripsCount,
+           sumRate:sumRate, sumExtra:sumExtra };
 }
-
 // ── Convert Excel serial date number OR date string to YYYY-MM-DD ──
 function excelSerialToDate(value) {
   if (!value && value !== 0) return '';
@@ -858,578 +870,452 @@ function extractTruckCode(plate) {
   return m ? m[1].toUpperCase() : plate;
 }
 
-// ═══ LEVENSHTEIN DISTANCE ═════════════════════════════
-function levenshtein(a, b) {
-  var m = a.length, n = b.length;
-  var dp = [];
-  for (var i = 0; i <= m; i++) { dp[i] = [i]; }
-  for (var j = 0; j <= n; j++) { dp[0][j] = j; }
-  for (var i = 1; i <= m; i++) {
-    for (var j = 1; j <= n; j++) {
-      dp[i][j] = a[i-1] === b[j-1]
-        ? dp[i-1][j-1]
-        : 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);
+// ═══ SHIPMENT # RULES ═════════════════════════════════
+// Pamantayan ngayon: 7 digits. Palitan lang ang SHIP_DIGITS kung magbago ulit.
+// Hindi ito pinipilit ng "prefix" (hal. 100…) — haba at puro digit lang.
+var SHIP_DIGITS = 7;
+function isValidShipNum(s) { return new RegExp('^\\d{' + SHIP_DIGITS + '}$').test(String(s == null ? '' : s)); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function dayDiff(a, b) { return Math.round((new Date(a+'T00:00:00') - new Date(b+'T00:00:00')) / 86400000); }
+function tripPeso(v) { var n = parseFloat(String(v == null ? '' : v).replace(/[₱,\s]/g, '')); return isNaN(n) ? 0 : n; }
+
+// Edit distance na may adjacent transposition (4018041 ↔ 4018014 = 1)
+function osaDistance(a, b) {
+  var m = a.length, n = b.length, d = [], i, j;
+  for (i = 0; i <= m; i++) d[i] = [i];
+  for (j = 0; j <= n; j++) d[0][j] = j;
+  for (i = 1; i <= m; i++) {
+    for (j = 1; j <= n; j++) {
+      var cost = a[i-1] === b[j-1] ? 0 : 1;
+      d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + cost);
+      if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);
     }
   }
-  return dp[m][n];
+  return d[m][n];
 }
 
-// ═══ MATCHING ENGINE ════════════════════════════════
+// ═══ MATCHING ENGINE ══════════════════════════════════
 //
-// DUAL GROUND TRUTH: Both Shipment # AND Shipment Date from SOA
+// Mga prinsipyo:
+//  • Ang SOA ay HINDI laging tama (kayo mismo ang naghahanda nito). Kaya ang SOA # na hindi
+//    {SHIP_DIGITS}-digit ay "invalid" at HINDI kailanman isinusulat sa Trips hangga't hindi naitatama.
+//  • One-to-one: ang isang trip ay maaaring angkinin ng ISANG SOA row lang.
+//  • Ang "typo" ay 1-digit na diperensya lang, at hindi puwedeng ang number ng trip ay lehitimong
+//    number ng ibang row sa parehong SOA (magkakalapit ang mga number, kaya dati ay napagkakamalan).
+//  • Hindi ginagalaw ang mga trip na Billed = Yes (maliban kung exact # → "naka-bill na").
 //
-// ANCHOR PRIORITY:
-//   Pass 1 — Exact Ship# match (SOA ship# = Trips ship#, same truck) → MATCHED
-//   Pass 2 — Exact ShipDate match (SOA date = Trips shipmentDate, same truck)
-//             AND ship# also matches → MATCHED (strongest confirmation)
-//   Pass 2b — Exact ShipDate match but trip has no ship# yet → MATCHED (SOA fills it)
-//   Pass 3 — Delivery date window fallback (SOA date = delivery ± 0-2 days) → MATCHED
-//   Pass 4 — Levenshtein typo (within date window, edit dist ≤ 4) → TYPO
-//   Pass 5 — Sequential gap analysis per truck → flag anomalies
+// Mga phase (bawat phase ay sa lahat ng row bago ang susunod):
+//   0  format / doble sa loob ng SOA
+//   1  nasa Billing Statement na → "billed"
+//   2  manual link na pinili mo
+//   3  exact ship# + parehong truck
+//   4  ship date + parehong truck, blangko ang ship# ng trip
+//   5  delivery-date window (SOA date = delivery + 0…2 araw), blangko ang ship# ng trip
+//   6  typo (1 digit) sa loob ng window
+//   7  ang matitira → unmatched, na may listahan ng posibleng trip
 //
-// Ship# is unique per truck. SOA is always ground truth.
-//
-function runMatching(parsedFiles, allTrips) {
-  var results = [];
+// Status: matched | typo | unmatched | invalid | conflict | billed
+var ATTN_STATUS = { typo:1, invalid:1, conflict:1, unmatched:1 };
 
-  // ── Index 1: Ship# → trips (for exact number match) ──
-  var byShipNum = {};
-  allTrips.forEach(function(t) {
-    var num = (t.shipmentNumber || '').trim();
-    if (!num) return;
-    if (!byShipNum[num]) byShipNum[num] = [];
-    byShipNum[num].push(t);
+function runMatching(files, trips, ctx) {
+  ctx = ctx || {};
+  var decisions = ctx.decisions || {};
+  var billedNums = ctx.billedNums || {};
+  var results = [], claimed = {}, seen = {}, soaNums = {};
+  var byTruck = {}, byNum = {};
+
+  trips.forEach(function(t) {
+    var code = extractTruckCode(t.truck);
+    (byTruck[code] = byTruck[code] || []).push(t);
+    var n = (t.shipmentNumber || '').trim();
+    if (n) (byNum[n] = byNum[n] || []).push(t);
   });
+  function free(t)    { return !claimed[t.rowIndex]; }
+  function isBlank(t) { return !(t.shipmentNumber || '').trim(); }
+  function claim(r, t, method) { claimed[t.rowIndex] = true; r.matchedTrip = t; r.deliveryDate = t.deliveryDate; r.matchMethod = method; }
+  function pending(r) { return r.status === 'unmatched'; }
 
-  // ── Index 2: ShipDate|TruckCode → trips (for date anchor) ──
-  var byShipDate = {};
-  allTrips.forEach(function(t) {
-    var sd = (t.shipmentDate || '').trim();
-    var tc = extractTruckCode(t.truck);
-    if (!sd || !tc) return;
-    var key = sd + '|' + tc;
-    if (!byShipDate[key]) byShipDate[key] = [];
-    byShipDate[key].push(t);
-  });
-
-  var soaByTruck = {};
-
-  parsedFiles.forEach(function(pf) {
-    pf.shipments.forEach(function(soaRow) {
-      var result = {
-        soaRow:       soaRow,
-        soaNum:       pf.soaNum,
-        fileName:     pf.fileName,
-        matchedTrip:  null,
-        status:       'unmatched',
-        typoFlag:     null,
-        deliveryDate: null,
-        diagnosis:    '',
-        matchMethod:  ''
-      };
-
-      var truckCode  = soaRow.truck;
-      var soaDateObj = new Date(soaRow.date + 'T00:00:00');
-
-      if (!soaByTruck[truckCode]) soaByTruck[truckCode] = [];
-      soaByTruck[truckCode].push({ num: parseInt(soaRow.shipNum), result: result });
-
-      // ══ PASS 1: Exact shipment NUMBER match ══
-      // SOA shipNum == Trips shipmentNumber, same truck
-      var exactList = byShipNum[soaRow.shipNum] || [];
-      var exact = exactList.find(function(t){ return extractTruckCode(t.truck) === truckCode; })
-               || exactList[0];
-      if (exact) {
-        result.matchedTrip  = exact;
-        result.status       = 'matched';
-        result.deliveryDate = exact.deliveryDate;
-        result.matchMethod  = 'Ship# exact';
-        // Bonus: if trip also has matching shipment date → double confirmation
-        if (exact.shipmentDate && exact.shipmentDate === soaRow.date) {
-          result.matchMethod = 'Ship# + ShipDate exact ✓✓';
-        }
-        results.push(result);
-        return;
-      }
-
-      // ══ PASS 2: Exact shipment DATE match ══
-      // SOA date == Trips shipmentDate, same truck
-      var sdKey = soaRow.date + '|' + truckCode;
-      var sdCandidates = byShipDate[sdKey] || [];
-
-      // 2a: date matches AND ship# also matches → strongest
-      var sdAndNum = sdCandidates.find(function(t){
-        return (t.shipmentNumber||'').trim() === soaRow.shipNum;
+  files.forEach(function(pf) {
+    pf.shipments.forEach(function(s) {
+      var key = pf.fileName + '|' + s.xlRow, dec = decisions[key] || {};
+      results.push({
+        key:key, soaRow:s, soaNum:pf.soaNum, fileName:pf.fileName,
+        num: dec.num || s.shipNum, numEdited: !!dec.num && dec.num !== s.shipNum, dec:dec,
+        status:'unmatched', flags:[], matchedTrip:null, deliveryDate:null, matchMethod:'',
+        typoFlag:null, finalNum:null, diagnosis:'', invalidReason:'', candidates:[]
       });
-      if (sdAndNum) {
-        result.matchedTrip  = sdAndNum;
-        result.status       = 'matched';
-        result.deliveryDate = sdAndNum.deliveryDate;
-        result.matchMethod  = 'ShipDate + Ship# exact ✓✓';
-        results.push(result);
-        return;
-      }
-
-      // 2b: date matches, trip has no ship# yet → SOA provides it
-      var sdBlank = sdCandidates.filter(function(t){
-        return !t.shipmentNumber || !t.shipmentNumber.trim();
-      });
-      if (sdBlank.length >= 1) {
-        // If multiple blanks on same date+truck, pick first (ambiguous but best effort)
-        result.matchedTrip  = sdBlank[0];
-        result.status       = 'matched';
-        result.deliveryDate = sdBlank[0].deliveryDate;
-        result.matchMethod  = 'ShipDate exact (ship# blank, SOA fills it)';
-        results.push(result);
-        return;
-      }
-
-      // 2c: date matches, trip HAS a different ship# → possible typo
-      if (sdCandidates.length > 0) {
-        var sdBest = null, sdBestDist = Infinity;
-        sdCandidates.forEach(function(t) {
-          var d = levenshtein(soaRow.shipNum, (t.shipmentNumber||'').trim());
-          if (d < sdBestDist) { sdBestDist = d; sdBest = t; }
-        });
-        if (sdBest && sdBestDist <= 4) {
-          result.matchedTrip  = sdBest;
-          result.status       = 'typo';
-          result.deliveryDate = sdBest.deliveryDate;
-          result.matchMethod  = 'ShipDate exact, ship# typo (dist '+sdBestDist+')';
-          result.typoFlag = {
-            soaNum:   soaRow.shipNum,
-            tripsNum: (sdBest.shipmentNumber||'').trim(),
-            dist:     sdBestDist
-          };
-          results.push(result);
-          return;
-        }
-      }
-
-      // ══ PASS 3: Delivery date window fallback ══
-      // SOA date ≈ delivery date + 0-2 days (pre-shipmentDate enforcement)
-      var delivCandidates = allTrips.filter(function(t) {
-        if (!t.truck || !t.deliveryDate) return false;
-        if (extractTruckCode(t.truck) !== truckCode) return false;
-        var diff = Math.round((soaDateObj - new Date(t.deliveryDate + 'T00:00:00')) / 86400000);
-        return diff >= 0 && diff <= 2;
-      });
-
-      if (!delivCandidates.length) {
-        // Widen to ±5 days for diagnosis info only
-        var wider = allTrips.filter(function(t) {
-          if (!t.truck || !t.deliveryDate) return false;
-          if (extractTruckCode(t.truck) !== truckCode) return false;
-          var diff = Math.round((soaDateObj - new Date(t.deliveryDate+'T00:00:00')) / 86400000);
-          return Math.abs(diff) <= 5;
-        });
-        if (wider.length) {
-          var nearest = wider.reduce(function(a,b){
-            var da = Math.abs(Math.round((soaDateObj-new Date(a.deliveryDate+'T00:00:00'))/86400000));
-            var db = Math.abs(Math.round((soaDateObj-new Date(b.deliveryDate+'T00:00:00'))/86400000));
-            return da<db?a:b;
-          });
-          var dDiff = Math.round((soaDateObj-new Date(nearest.deliveryDate+'T00:00:00'))/86400000);
-          result.diagnosis = 'Nearest '+truckCode+': delivery '+nearest.deliveryDate
-            +' ('+dDiff+'d offset)'
-            +' · ship#: '+(nearest.shipmentNumber||'blank')
-            +' · shipDate: '+(nearest.shipmentDate||'blank');
-        } else {
-          var truckTrips = allTrips.filter(function(t){ return extractTruckCode(t.truck)===truckCode; });
-          result.diagnosis = truckTrips.length
-            ? 'No '+truckCode+' trip near '+soaRow.date+' ('+truckTrips.length+' total exist)'
-            : 'Truck '+truckCode+' not found in Trips sheet';
-        }
-        results.push(result);
-        return;
-      }
-
-      // Blank ship# in window → MATCHED
-      var dlBlanks = delivCandidates.filter(function(t){ return !t.shipmentNumber || !t.shipmentNumber.trim(); });
-      if (dlBlanks.length >= 1) {
-        // Prefer trip whose shipmentDate matches SOA date
-        dlBlanks.sort(function(a,b){
-          var aEx = a.shipmentDate===soaRow.date?0:1, bEx = b.shipmentDate===soaRow.date?0:1;
-          if (aEx!==bEx) return aEx-bEx;
-          var da=Math.abs(Math.round((soaDateObj-new Date(a.deliveryDate+'T00:00:00'))/86400000));
-          var db=Math.abs(Math.round((soaDateObj-new Date(b.deliveryDate+'T00:00:00'))/86400000));
-          return da-db;
-        });
-        result.matchedTrip  = dlBlanks[0];
-        result.status       = 'matched';
-        result.deliveryDate = dlBlanks[0].deliveryDate;
-        result.matchMethod  = 'Delivery window (ship# blank)';
-        results.push(result);
-        return;
-      }
-
-      // ══ PASS 4: Levenshtein typo within delivery window ══
-      var withNums = delivCandidates.filter(function(t){ return t.shipmentNumber && t.shipmentNumber.trim(); });
-      var bestDist = Infinity, bestTrip = null;
-      withNums.forEach(function(t) {
-        var d = levenshtein(soaRow.shipNum, t.shipmentNumber.trim());
-        if (d < bestDist) { bestDist = d; bestTrip = t; }
-      });
-      if (bestTrip && bestDist >= 1 && bestDist <= 4) {
-        result.matchedTrip  = bestTrip;
-        result.status       = 'typo';
-        result.deliveryDate = bestTrip.deliveryDate;
-        result.matchMethod  = 'Levenshtein typo (dist '+bestDist+')';
-        result.typoFlag = {
-          soaNum:   soaRow.shipNum,
-          tripsNum: bestTrip.shipmentNumber.trim(),
-          dist:     bestDist
-        };
-      } else if (bestTrip) {
-        result.diagnosis = 'Candidate found (delivery: '+bestTrip.deliveryDate
-          +') but ship# too different: Trips='+bestTrip.shipmentNumber
-          +' SOA='+soaRow.shipNum+' (dist '+bestDist+')';
-      }
-      results.push(result);
     });
   });
+  var ordered = results.slice().sort(function(a, b) {
+    return a.soaRow.date.localeCompare(b.soaRow.date) || a.soaRow.xlRow - b.soaRow.xlRow;
+  });
 
-  // ══ PASS 5: Sequential gap check per truck ══
-  Object.keys(soaByTruck).forEach(function(truck) {
-    var entries = soaByTruck[truck].filter(function(e){ return !isNaN(e.num) && e.num > 0; });
-    entries.sort(function(a,b){ return a.result.soaRow.date.localeCompare(b.result.soaRow.date); });
-    for (var i = 1; i < entries.length; i++) {
-      var gap = entries[i].num - entries[i-1].num;
-      if (gap < 0 && entries[i].result.status !== 'typo' && entries[i].result.status !== 'matched') {
-        entries[i].result.status = 'typo';
-        entries[i].result.typoFlag = {
-          soaNum: entries[i].result.soaRow.shipNum,
-          tripsNum: entries[i].result.soaRow.shipNum,
-          dist: 0, seqFlag: true,
-          seqNote: 'Ship# decreased '+entries[i-1].num+' → '+entries[i].num+' (possible transposition)'
-        };
+  function pickBest(cands, r) {
+    var words = (r.soaRow.dest || '').toLowerCase().split(/[\/\s,]+/).filter(function(w){ return w.length > 3; });
+    var best = null, bs = 1e9;
+    cands.forEach(function(t) {
+      var s = 0, route = (t.route || '').toLowerCase(), tr = tripPeso(t.rate);
+      if (tr && r.soaRow.rate && Math.abs(tr - r.soaRow.rate) < 0.5) s -= 4;
+      if (words.some(function(w){ return route.indexOf(w) >= 0; })) s -= 2;
+      s += Math.abs(dayDiff(r.soaRow.date, t.deliveryDate || r.soaRow.date)) * 0.1;
+      if (s < bs) { bs = s; best = t; }
+    });
+    return best;
+  }
+
+  // ── Phase 0: format at doble ──
+  ordered.forEach(function(r) {
+    if (!isValidShipNum(r.num)) {
+      r.status = 'invalid';
+      r.invalidReason = /^\d+$/.test(r.num)
+        ? 'Hindi ' + SHIP_DIGITS + '-digit ang number (' + r.num.length + ' digits). Karaniwang ' + SHIP_DIGITS + ' digits ngayon — mali ito sa SOA.'
+        : 'May titik o simbolo ang number — dapat ' + SHIP_DIGITS + ' digits lang.';
+      return;
+    }
+    if (seen[r.num]) { r.status = 'invalid'; r.invalidReason = 'Doble ang number — nasa row ' + seen[r.num] + ' na rin ng SOA.'; return; }
+    seen[r.num] = r.soaRow.xlRow; soaNums[r.num] = true;
+  });
+
+  // ── Phase 1: nasa Billing Statement na ──
+  ordered.forEach(function(r) {
+    if (!pending(r) || !billedNums[r.num]) return;
+    r.status = 'billed'; r.matchMethod = 'Nasa Billing Statement na';
+    var tt = (byNum[r.num] || []).filter(function(t){ return free(t) && extractTruckCode(t.truck) === r.soaRow.truck; })[0];
+    if (tt) claim(r, tt, 'Nasa Billing Statement na');
+  });
+
+  // ── Phase 2: manual link ──
+  ordered.forEach(function(r) {
+    if (!pending(r) || !r.dec.link) return;
+    var t = trips.filter(function(x){ return x.rowIndex === r.dec.link && free(x); })[0];
+    if (!t) return;
+    claim(r, t, 'Manual link'); r.status = 'matched'; r.finalNum = r.num;
+    var old = (t.shipmentNumber || '').trim();
+    if (old && old !== r.num) r.flags.push({ lvl:'warn', t:'Papalitan ang # sa Trips: ' + old + ' → ' + r.num });
+  });
+
+  // ── Phase 3: exact ship# ──
+  ordered.forEach(function(r) {
+    if (!pending(r)) return;
+    var list = (byNum[r.num] || []).filter(free);
+    var same = list.filter(function(t){ return extractTruckCode(t.truck) === r.soaRow.truck; });
+    if (same.length) {
+      var t = same[0];
+      claim(r, t, 'Ship# exact');
+      if (t.billed === 'Yes') { r.status = 'billed'; return; }
+      r.status = 'matched'; r.finalNum = r.num;
+      var dd = dayDiff(r.soaRow.date, t.deliveryDate || r.soaRow.date);
+      if (Math.abs(dd) > 7) r.flags.push({ lvl:'warn', t:'Malayo ang petsa: SOA ' + r.soaRow.date + ' · delivery ' + t.deliveryDate + ' (' + (dd > 0 ? '+' : '') + dd + ' araw)' });
+      return;
+    }
+    if (list.length) {
+      r.status = 'conflict'; r.matchedTrip = list[0];
+      r.diagnosis = 'Nasa Trips ang # na ito pero sa ibang truck: ' + list[0].truck + ' (' + list[0].deliveryDate + ').';
+    }
+  });
+
+  // ── Phase 4: ship date + blangkong ship# ──
+  var sdCount = {};
+  ordered.forEach(function(r) {
+    if (!pending(r)) return;
+    var k = r.soaRow.date + '|' + r.soaRow.truck;
+    if (sdCount[k] === undefined) {
+      sdCount[k] = (byTruck[r.soaRow.truck] || []).filter(function(t){
+        return free(t) && t.billed !== 'Yes' && t.shipmentDate === r.soaRow.date && isBlank(t);
+      }).length;
+    }
+  });
+  ordered.forEach(function(r) {
+    if (!pending(r)) return;
+    var cands = (byTruck[r.soaRow.truck] || []).filter(function(t){
+      return free(t) && t.billed !== 'Yes' && t.shipmentDate === r.soaRow.date && isBlank(t);
+    });
+    if (!cands.length) return;
+    var t = pickBest(cands, r);
+    claim(r, t, 'ShipDate (ship# blangko)'); r.status = 'matched'; r.finalNum = r.num;
+    if (sdCount[r.soaRow.date + '|' + r.soaRow.truck] > 1)
+      r.flags.push({ lvl:'warn', t:'Maraming blangkong trip ng truck na ito sa araw na ito — tiyaking tama ang napares (' + (t.route || 'walang route') + ').' });
+  });
+
+  // ── Phase 5: delivery-date window + blangkong ship# ──
+  ordered.forEach(function(r) {
+    if (!pending(r)) return;
+    var cands = (byTruck[r.soaRow.truck] || []).filter(function(t){
+      if (!free(t) || t.billed === 'Yes' || !isBlank(t) || !t.deliveryDate) return false;
+      var d = dayDiff(r.soaRow.date, t.deliveryDate);
+      return d >= 0 && d <= 2;
+    });
+    if (!cands.length) return;
+    var t = pickBest(cands, r);
+    claim(r, t, 'Delivery window (ship# blangko)'); r.status = 'matched'; r.finalNum = r.num;
+  });
+
+  // ── Phase 6: typo — 1 digit lang, at hindi lehitimong # ng ibang SOA row ──
+  ordered.forEach(function(r) {
+    if (!pending(r)) return;
+    var cands = [];
+    (byTruck[r.soaRow.truck] || []).forEach(function(t) {
+      if (!free(t) || t.billed === 'Yes') return;
+      var n = (t.shipmentNumber || '').trim();
+      if (!n || soaNums[n]) return;
+      var inWin = t.shipmentDate === r.soaRow.date;
+      if (!inWin && t.deliveryDate) { var d = dayDiff(r.soaRow.date, t.deliveryDate); inWin = d >= 0 && d <= 2; }
+      if (!inWin) return;
+      if (osaDistance(r.num, n) !== 1) return;
+      cands.push(t);
+    });
+    if (!cands.length) return;
+    cands.sort(function(a, b){ return Math.abs(dayDiff(r.soaRow.date, a.deliveryDate || r.soaRow.date)) - Math.abs(dayDiff(r.soaRow.date, b.deliveryDate || r.soaRow.date)); });
+    var t = cands[0], tn = (t.shipmentNumber || '').trim();
+    claim(r, t, 'Typo (1 digit)');
+    r.status = 'typo'; r.typoFlag = { soaNum:r.num, tripsNum:tn };
+    if (r.dec.numChoice === 'soa') {
+      r.status = 'matched'; r.finalNum = r.num;
+      r.flags.push({ lvl:'info', t:'Itatama ang # sa Trips: ' + tn + ' → ' + r.num });
+    } else if (r.dec.numChoice === 'trips') {
+      r.status = 'matched'; r.finalNum = tn;
+      r.flags.push({ lvl:'warn', t:'Iba ang # sa SOA (' + r.num + ') — itama rin sa source Excel.' });
+    }
+  });
+
+  // ── Phase 7: posibleng trip + paliwanag para sa matitira ──
+  results.forEach(function(r) {
+    if (r.status !== 'unmatched' && r.status !== 'conflict' && r.status !== 'invalid') return;
+    var list = (byTruck[r.soaRow.truck] || []).filter(function(t){ return free(t) && t.billed !== 'Yes'; }).map(function(t) {
+      var d1 = t.deliveryDate ? Math.abs(dayDiff(r.soaRow.date, t.deliveryDate)) : 99;
+      var d2 = t.shipmentDate ? Math.abs(dayDiff(r.soaRow.date, t.shipmentDate)) : 99;
+      return { t:t, d:Math.min(d1, d2) };
+    }).filter(function(x){ return x.d <= 7; }).sort(function(a, b){ return a.d - b.d; }).slice(0, 6);
+    r.candidates = list.map(function(x){ return x.t; });
+    if (r.status === 'unmatched') {
+      if (r.candidates.length) r.diagnosis = 'Walang tugmang trip. May ' + r.candidates.length + ' posibleng trip ng ' + r.soaRow.truck + ' malapit sa ' + r.soaRow.date + ' — pumili sa ibaba.';
+      else {
+        var all = (byTruck[r.soaRow.truck] || []).length;
+        r.diagnosis = all ? 'Walang ' + r.soaRow.truck + ' trip na malapit sa ' + r.soaRow.date + ' (' + all + ' trip ang meron sa kabuuan). Idagdag muna ang trip sa Trips page.'
+                          : 'Hindi makita ang truck ' + r.soaRow.truck + ' sa Trips sheet.';
       }
+    }
+  });
+
+  // ── Dagdag na babala sa mga napares ──
+  results.forEach(function(r) {
+    if (!r.matchedTrip || (r.status !== 'matched' && r.status !== 'typo')) return;
+    var tr = tripPeso(r.matchedTrip.rate);
+    if (tr > 0 && r.soaRow.rate > 0 && Math.abs(tr - r.soaRow.rate) > 0.5)
+      r.flags.push({ lvl:'warn', t:'Rate: SOA ' + formatCurrency(r.soaRow.rate) + ' ≠ Trips ' + formatCurrency(tr) });
+  });
+  var byT = {};
+  results.forEach(function(r) { if (isValidShipNum(r.num)) (byT[r.soaRow.truck] = byT[r.soaRow.truck] || []).push(r); });
+  Object.keys(byT).forEach(function(k) {
+    var arr = byT[k].sort(function(a, b){ return a.soaRow.date.localeCompare(b.soaRow.date) || a.soaRow.xlRow - b.soaRow.xlRow; });
+    for (var i = 1; i < arr.length; i++) {
+      if (parseInt(arr[i].num, 10) < parseInt(arr[i-1].num, 10))
+        arr[i].flags.push({ lvl:'warn', t:'Bumaba ang # kumpara sa nakaraang row (' + arr[i-1].num + ') — posibleng mali.' });
     }
   });
 
   return results;
 }
 
-
-
-// ═══ RENDER MATCH RESULTS ═════════════════════════════
-var _allMatchResults = [];
-
-// ═══ PRE-PROCESS: SOA PREVIEW CALENDAR ══════════════
-var previewYear, previewMonth;
-var previewSelectedDay = null;
-
-function initSOAPreview() {
-  var now = new Date();
-  // Default to month of first SOA shipment
-  if (parsedFiles.length && parsedFiles[0].shipments.length) {
-    var d = new Date(parsedFiles[0].shipments[0].date + 'T00:00:00');
-    previewYear  = d.getFullYear();
-    previewMonth = d.getMonth();
-  } else {
-    previewYear  = now.getFullYear();
-    previewMonth = now.getMonth();
+// ═══ DISPLAY HELPERS ══════════════════════════════════
+// Laging buo ang number: malabo ang unang 3, bold ang huling 4. I-tap para kopyahin.
+function fmtShip(n) {
+  n = String(n == null ? '' : n);
+  if (isValidShipNum(n)) {
+    var cut = n.length - 4;
+    return '<span class="sn" data-n="' + esc(n) + '"><span class="sn-d">' + esc(n.slice(0, cut)) + '</span>' + esc(n.slice(cut)) + '</span>';
   }
+  return '<span class="sn bad" data-n="' + esc(n) + '">' + esc(n || '(blangko)') + '</span>';
+}
+// Itinatampok ang mga digit na magkaiba (prefix at suffix na pareho ay hindi)
+function diffPair(a, b) {
+  var p = 0; while (p < a.length && p < b.length && a[p] === b[p]) p++;
+  var s = 0; while (s < a.length - p && s < b.length - p && a[a.length-1-s] === b[b.length-1-s]) s++;
+  function wrap(x) {
+    var mid = x.slice(p, x.length - s);
+    return esc(x.slice(0, p)) + '<mark>' + (mid ? esc(mid) : '·') + '</mark>' + esc(x.slice(x.length - s));
+  }
+  return [wrap(a), wrap(b)];
+}
+function fmtDay(ds) {
+  var d = new Date(ds + 'T00:00:00');
+  return d.toLocaleDateString('en-PH', { month:'short', day:'numeric' });
+}
+function tripLabel(t) {
+  return fmtDay(t.deliveryDate) + ' · ' + (t.shipmentNumber ? '#' + t.shipmentNumber : 'blangko ang #') + ' · ' + (t.route || 'walang route') + (t.rate ? ' · ₱' + tripPeso(t.rate).toLocaleString() : '');
+}
 
-  // Populate truck filter
-  var trucks = [];
+// ═══ REVIEW ═══════════════════════════════════════════
+function matchCtx() { return { decisions:decisions, billedNums:billCtx.billedNums }; }
+function rerun() { matchResults = runMatching(parsedFiles, allTrips, matchCtx()); renderReview(); }
+function setDecision(i, patch) { var r = matchResults[i]; if (!r) return; decisions[r.key] = Object.assign({}, decisions[r.key] || {}, patch); rerun(); }
+function actUndo(i) { var r = matchResults[i]; if (!r) return; delete decisions[r.key]; rerun(); }
+function actTypo(i, choice) { setDecision(i, { numChoice:choice }); }
+function actFixAllTypos() {
+  matchResults.forEach(function(r) { if (r.status === 'typo') decisions[r.key] = Object.assign({}, decisions[r.key] || {}, { numChoice:'soa' }); });
+  rerun();
+}
+function actLink(i) {
+  var sel = document.getElementById('cand-' + i);
+  if (!sel || !sel.value) { showToast('Pumili muna ng trip'); return; }
+  setDecision(i, { link:parseInt(sel.value, 10) });
+}
+function actSetNum(i) {
+  var inp = document.getElementById('num-' + i);
+  var v = (inp && inp.value || '').replace(/\s+/g, '');
+  if (!isValidShipNum(v)) { showToast('Kailangan ay ' + SHIP_DIGITS + ' digits'); return; }
+  setDecision(i, { num:v });
+}
+
+document.addEventListener('click', function(e) {
+  var el = e.target.closest && e.target.closest('.sn[data-n]');
+  if (!el) return;
+  var n = el.getAttribute('data-n');
+  if (n && navigator.clipboard) navigator.clipboard.writeText(n).then(function(){ showToast('📋 Kinopya: ' + n); }).catch(function(){});
+});
+
+function renderFileChecks() {
+  var html = '';
+  parseErrors.forEach(function(e) {
+    html += '<div class="rv-file" style="border-left:4px solid var(--red)"><div style="font-size:13px;font-weight:700;color:var(--red)">❌ Hindi nabasa: ' + esc(e.fileName) + '</div>'
+         + '<div class="rv-meta">' + esc(e.error) + '</div></div>';
+  });
   parsedFiles.forEach(function(pf) {
-    pf.shipments.forEach(function(s) {
-      if (s.truck && trucks.indexOf(s.truck) === -1) trucks.push(s.truck);
-    });
-  });
-  trucks.sort();
-  var sel = document.getElementById('preview-truck-filter');
-  sel.innerHTML = '<option value="">All Trucks</option>'
-    + trucks.map(function(t){ return '<option value="'+t+'">'+t+'</option>'; }).join('');
-
-  document.getElementById('soa-preview-section').style.display = '';
-  renderSOAPreviewCalendar();
-}
-
-function changePreviewMonth(d) {
-  previewMonth += d;
-  if (previewMonth < 0)  { previewMonth = 11; previewYear--; }
-  if (previewMonth > 11) { previewMonth = 0;  previewYear++; }
-  previewSelectedDay = null;
-  document.getElementById('preview-day-panel').classList.remove('show');
-  renderSOAPreviewCalendar();
-}
-
-function renderSOAPreviewCalendar() {
-  var filterTruck = document.getElementById('preview-truck-filter').value;
-  document.getElementById('preview-cal-title').textContent = MONTHS[previewMonth] + ' ' + previewYear;
-
-  // Build day map: SOA date -> {matched:[], unmatched:[], typo:[]}
-  var dayMap = {};
-  matchResults.forEach(function(r) {
-    var parts = r.soaRow.date.split('-');
-    if (parseInt(parts[0]) !== previewYear || parseInt(parts[1])-1 !== previewMonth) return;
-    if (filterTruck && r.soaRow.truck !== filterTruck) return;
-    var d = parseInt(parts[2]);
-    if (!dayMap[d]) dayMap[d] = { matched:[], unmatched:[], typo:[] };
-    dayMap[d][r.status].push(r);
-  });
-
-  var days  = new Date(previewYear, previewMonth+1, 0).getDate();
-  var first = new Date(previewYear, previewMonth, 1).getDay();
-
-  var html = DAYS.map(function(d){ return '<div class="cal-dn">'+d+'</div>'; }).join('');
-  for (var i = 0; i < first; i++) html += '<div class="cal-day other-month"></div>';
-
-  for (var d = 1; d <= days; d++) {
-    var dateStr = previewYear+'-'+pad(previewMonth+1)+'-'+pad(d);
-    var info    = dayMap[d];
-    var cls     = 'cal-day';
-    if (dateStr === todayStr)           cls += ' today';
-    if (dateStr === previewSelectedDay) cls += ' selected';
-
-    var inner = '<div class="cal-day-num">'+d+'</div>';
-
-    if (info) {
-      var all = info.matched.concat(info.typo).concat(info.unmatched);
-      var hasU = info.unmatched.length > 0, hasT = info.typo.length > 0, hasM = info.matched.length > 0;
-      if (hasU || hasT) cls += ' has-unbilled';
-      else if (hasM)    cls += ' has-billed';
-
-      // Pills: truck code + last 4 digits of shipnum
-      var pills = '<div class="cal-names">';
-      var shown = all.slice(0, 3);
-      shown.forEach(function(r) {
-        var bg = r.status==='matched' ? '#16a34a' : r.status==='typo' ? '#f59e0b' : '#B32533';
-        var shortNum = r.soaRow.shipNum ? r.soaRow.shipNum.slice(-4) : '????';
-        pills += '<div class="cal-name-pill" style="background:'+bg+';color:#fff">'
-          + r.soaRow.truck+' ·'+shortNum+'</div>';
-      });
-      if (all.length > 3) {
-        pills += '<div class="cal-name-pill" style="background:var(--text3);color:#fff">+' + (all.length-3) + '</div>';
-      }
-      pills += '</div>';
-      inner += pills;
-    }
-
-    html += '<div class="'+cls+'" '
-      + 'onclick="selectPreviewDay(\''+dateStr+'\')" '
-      + 'style="min-height:52px;height:auto;max-height:none">'
-      + inner + '</div>';
-  }
-  document.getElementById('preview-cal-grid').innerHTML = html;
-}
-
-
-function selectPreviewDay(dateStr) {
-  previewSelectedDay = dateStr;
-  renderSOAPreviewCalendar();
-
-  var filterTruck = document.getElementById('preview-truck-filter').value;
-  var dayResults  = matchResults.filter(function(r) {
-    return r.soaRow.date === dateStr && (!filterTruck || r.soaRow.truck === filterTruck);
-  });
-
-  var d     = new Date(dateStr + 'T00:00:00');
-  var label = d.toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-  document.getElementById('preview-day-title').textContent = label + ' — ' + dayResults.length + ' shipment(s)';
-
-  var panel = document.getElementById('preview-day-panel');
-
-  if (!dayResults.length) {
-    document.getElementById('preview-day-list').innerHTML = '<div class="empty-hint">No SOA shipments on this date</div>';
-    panel.classList.add('show');
-    return;
-  }
-
-  document.getElementById('preview-day-list').innerHTML = dayResults.map(function(r) {
-    var statusColor = r.status==='matched' ? 'var(--green)' : r.status==='typo' ? 'var(--orange)' : 'var(--red)';
-    var statusIcon  = r.status==='matched' ? '✅' : r.status==='typo' ? '⚠️' : '❌';
-    var statusLabel = r.status==='matched' ? 'Matched' : r.status==='typo' ? 'Typo Detected' : 'Unmatched';
-
-    var deliveryInfo = r.matchedTrip
-      ? '<div style="font-size:11px;color:var(--text3);margin-top:3px">'
-        + 'Delivery: <strong>'+r.deliveryDate+'</strong> · Row: '+r.matchedTrip.rowIndex
-        + (r.matchedTrip.route ? ' · '+r.matchedTrip.route : '')
-        + '</div>'
-      : '<div style="font-size:11px;color:var(--red);margin-top:3px">No matching trip in Trips sheet</div>';
-
-    var typoBlock = '';
-    if (r.typoFlag && !r.typoFlag.seqFlag && r.matchedTrip) {
-      typoBlock = '<div style="background:rgba(245,158,11,0.1);border-radius:8px;padding:8px 10px;margin-top:8px">'
-        + '<div style="font-size:11px;margin-bottom:6px">'
-        + 'Trips has: <strong style="color:var(--red)">'+r.typoFlag.tripsNum+'</strong><br>'
-        + 'SOA says: <strong style="color:var(--green)">'+r.typoFlag.soaNum+'</strong>'
-        + ' <span style="color:var(--text3);font-size:10px">('+r.typoFlag.dist+' char diff)</span>'
-        + '</div>'
-        + '<button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
-        + 'style="width:100%;background:var(--orange);color:#fff;border:none;border-radius:8px;'
-        + 'padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">'
-        + '🔧 Fix Shipment # in Trips Sheet</button></div>';
-    }
-
-    var diagBlock = '';
-    if (r.status==='unmatched' && r.diagnosis) {
-      diagBlock = '<div style="font-size:10px;color:var(--orange);margin-top:6px;background:rgba(245,158,11,0.08);'
-        +'border-radius:6px;padding:6px 8px">ℹ️ '+r.diagnosis+'</div>';
-    }
-
-    return '<div class="match-item" style="border-left:4px solid '+statusColor+';margin-bottom:10px">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center">'
-      + '<span style="font-size:14px;font-weight:700;color:var(--text)">🚛 '+r.soaRow.truck+'</span>'
-      + '<span style="font-size:11px;font-weight:700;color:'+statusColor+'">'+statusIcon+' '+statusLabel+'</span>'
-      + '</div>'
-      + '<div style="font-size:13px;font-weight:600;color:var(--text2);margin-top:4px;font-family:monospace">'
-      + r.soaRow.shipNum + '</div>'
-      + '<div style="font-size:11px;color:var(--text2);margin-top:2px">'
-      + (r.soaRow.dest || '—') + (r.soaRow.rate ? ' · ₱'+r.soaRow.rate.toLocaleString() : '')
-      + '</div>'
-      + deliveryInfo + typoBlock + diagBlock
+    var rows = pf.shipments.length;
+    var expected = (pf.sumRate + pf.sumExtra) * (1 + VAT_RATE);
+    var totOk = pf.grandTotal > 0 && Math.abs(expected - pf.grandTotal) <= 1;
+    html += '<div class="rv-file">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div><div style="font-size:14px;font-weight:700;color:var(--text)">SOA ' + esc(pf.soaNum || '—') + '</div>'
+      + '<div class="rv-meta">' + esc(pf.period || 'walang period') + ' · ' + esc(pf.fileName) + '</div></div></div>'
+      + '<div style="margin-top:8px">'
+      + '<div class="rv-chk"><span>Trips ayon sa SOA / nabasa</span><span class="' + (pf.totalTripsCount === rows ? 'good' : 'bad') + '">' + (pf.totalTripsCount || '—') + ' / ' + rows + (pf.totalTripsCount === rows ? ' ✓' : ' ✗') + '</span></div>'
+      + '<div class="rv-chk"><span>Kabuuang rate × 1.12 ' + (pf.sumExtra ? '(kasama toll/demurrage)' : '') + '</span><span>' + formatCurrency(expected) + '</span></div>'
+      + '<div class="rv-chk"><span>Grand Total sa SOA</span><span class="' + (totOk ? 'good' : 'caution') + '">' + formatCurrency(pf.grandTotal) + (totOk ? ' ✓' : ' ⚠ hindi tugma') + '</span></div>'
+      + (billCtx.existingSoaNums[pf.soaNum] ? '<div class="rv-note info">ℹ️ Nasa SOA Masters na ang SOA na ito — hindi na ito madodoble.</div>' : '')
       + '</div>';
-  }).join('');
-
-  panel.classList.add('show');
-  setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 100);
+    if (pf.skipped.length) {
+      html += '<div class="rv-note" style="margin-top:8px">⚠️ ' + pf.skipped.length + ' row ang HINDI nabasa (hindi mabi-bill):<br>'
+        + pf.skipped.slice(0, 8).map(function(s){ return 'Row ' + s.xlRow + ': ' + esc(s.reason) + (s.plate ? ' · ' + esc(s.plate) : '') + (s.ship ? ' · #' + esc(s.ship) : ''); }).join('<br>')
+        + (pf.skipped.length > 8 ? '<br>…at ' + (pf.skipped.length - 8) + ' pa' : '') + '</div>';
+    }
+    html += '</div>';
+  });
+  document.getElementById('review-files').innerHTML = html;
 }
 
-// ── Apply typo fix: update Trips sheet with correct shipment number from SOA ──
-function applyTypoFix(rowIndex, correctShipNum) {
-  var trip = allTrips.find(function(t){ return t.rowIndex === rowIndex; });
-  if (!trip) { showToast('❌ Trip not found'); return; }
-
-  document.getElementById('confirm-title').textContent = 'Fix Shipment Number?';
-  document.getElementById('confirm-msg').innerHTML =
-    'Update Trips row <strong>' + rowIndex + '</strong><br>'
-    + '🚛 ' + trip.truck + ' · ' + trip.deliveryDate + '<br><br>'
-    + 'Change: <span style="color:var(--red)">' + (trip.shipmentNumber||'(blank)') + '</span>'
-    + ' → <span style="color:var(--green)">' + correctShipNum + '</span><br>'
-    + '<span style="font-size:11px;color:var(--text3)">SOA is the ground truth</span>';
-  document.getElementById('confirm-ok').className = 'cb cb-green';
-  document.getElementById('confirm-ok').textContent = 'Fix It';
-  document.getElementById('confirm-ok').onclick = function() {
-    closeConfirm();
-    showSaving('Fixing shipment number...');
-    var row = [trip.id, trip.deliveryDate, trip.truck, trip.shipmentDate,
-               trip.type, correctShipNum, trip.billed, trip.route, trip.rate];
-    apiUpdate(TAB_TRIPS+'!A'+rowIndex+':I'+rowIndex, [row]).then(function() {
-      hideSaving();
-      // Update local state
-      trip.shipmentNumber = correctShipNum;
-      // Re-run matching with updated trips
-      matchResults = runMatching(parsedFiles, allTrips);
-      renderMatchResults();
-      initSOAPreview();
-      showToast('✅ Fixed! Row '+rowIndex+' updated.');
-    }).catch(function(err){ hideSaving(); showToast('❌ Fix failed: '+err.message); });
-  };
-  document.getElementById('confirm-overlay').classList.add('open');
+function flagsHtml(r) {
+  return r.flags.map(function(f){ return '<div class="rv-note' + (f.lvl === 'info' ? ' info' : '') + '">' + (f.lvl === 'info' ? 'ℹ️ ' : '⚠️ ') + esc(f.t) + '</div>'; }).join('');
+}
+function topHtml(r) {
+  return '<div class="rv-top"><div>' + fmtShip(r.num) + '</div><span class="badge">🚛 ' + esc(r.soaRow.truck) + '</span></div>'
+    + '<div class="rv-meta">' + esc(fmtDay(r.soaRow.date)) + ' · ' + esc(r.soaRow.dest || '—') + (r.soaRow.rate ? ' · ' + formatCurrency(r.soaRow.rate) : '') + ' · SOA row ' + r.soaRow.xlRow + '</div>';
+}
+function undoHtml(i, r) {
+  return (isAdmin && decisions[r.key]) ? '<button class="rv-undo" onclick="actUndo(' + i + ')">↩ Ibalik ang pinili ko</button>' : '';
 }
 
-// ═══ RENDER MATCH RESULTS ═════════════════════════════
-var _allMatchResults = [];
+function attnCard(r, i) {
+  var h = '<div class="rv-card">' + topHtml(r);
+  if (r.status === 'typo') {
+    var d = diffPair(r.typoFlag.soaNum, r.typoFlag.tripsNum);
+    h += '<div class="rv-reason"><b>Posibleng typo (1 digit).</b> Alin ang tama?</div>'
+      + '<div class="rv-diff"><span>SOA</span><span class="sn">' + d[0] + '</span><span>Trips</span><span class="sn">' + d[1] + '</span></div>'
+      + '<div class="rv-meta">Trips row ' + r.matchedTrip.rowIndex + ' · delivery ' + esc(r.matchedTrip.deliveryDate) + ' · ' + esc(r.matchedTrip.route || '') + '</div>';
+    if (isAdmin) h += '<div class="rv-actions"><button class="rv-btn go" onclick="actTypo(' + i + ',\'soa\')">✔ Tama ang SOA</button><button class="rv-btn" onclick="actTypo(' + i + ',\'trips\')">✔ Tama ang Trips</button></div>';
+  } else if (r.status === 'invalid') {
+    h += '<div class="rv-reason"><b>❌ ' + esc(r.invalidReason) + '</b><br>Hindi ito isusulat sa Trips hangga\'t hindi naitatama.</div>';
+    if (r.candidates.length) h += '<div class="rv-meta">Posibleng trip: ' + r.candidates.slice(0, 3).map(function(t){ return esc(tripLabel(t)); }).join(' &nbsp;|&nbsp; ') + '</div>';
+    if (isAdmin) h += '<div class="rv-actions"><input class="fi" id="num-' + i + '" inputmode="numeric" maxlength="' + SHIP_DIGITS + '" placeholder="Tamang ' + SHIP_DIGITS + '-digit #" style="flex:2;min-width:140px;padding:10px 12px;font-size:14px"><button class="rv-btn go" onclick="actSetNum(' + i + ')">Gamitin</button></div>'
+      + '<div class="rv-meta" style="margin-top:6px">Hindi nababago ng app ang orihinal na Excel — itama rin doon.</div>';
+  } else {
+    h += '<div class="rv-reason">' + esc(r.diagnosis) + '</div>';
+    if (isAdmin && r.candidates.length) {
+      h += '<select class="fi rv-sel" id="cand-' + i + '"><option value="">Pumili ng trip…</option>'
+        + r.candidates.map(function(t){ return '<option value="' + t.rowIndex + '">' + esc(tripLabel(t)) + '</option>'; }).join('') + '</select>'
+        + '<div class="rv-actions"><button class="rv-btn go" onclick="actLink(' + i + ')">🔗 Ipares sa trip na ito</button></div>';
+    }
+  }
+  return h + flagsHtml(r) + '</div>';
+}
 
-function renderMatchResults() {
-  _allMatchResults = matchResults.slice();
+function renderReview() {
+  document.getElementById('match-results-section').style.display = '';
+  renderFileChecks();
 
-  var matched   = matchResults.filter(function(r){ return r.status==='matched'; }).length;
-  var unmatched = matchResults.filter(function(r){ return r.status==='unmatched'; }).length;
-  var typos     = matchResults.filter(function(r){ return r.status==='typo'; }).length;
-  var total     = matchResults.length;
+  var R = matchResults, attn = [], warn = [], ok = [], billed = [];
+  R.forEach(function(r, i) {
+    if (ATTN_STATUS[r.status]) attn.push(i);
+    else if (r.status === 'billed') billed.push(i);
+    else if (r.flags.some(function(f){ return f.lvl === 'warn'; })) warn.push(i);
+    else ok.push(i);
+  });
 
   document.getElementById('match-stats').innerHTML = [
-    {label:'Total',     val:total,    cls:''},
-    {label:'Matched ✅', val:matched,  cls:'green'},
-    {label:'Unmatched ❌',val:unmatched,cls:'red'},
-    {label:'Typo ⚠️',   val:typos,    cls:'orange'}
-  ].map(function(s){
-    return '<div class="stat-box"><div class="stat-label">'+s.label+'</div>'
-      +'<div class="stat-val '+s.cls+'">'+s.val+'</div></div>';
-  }).join('');
+    { label:'Kabuuang row',      val:R.length,               cls:'' },
+    { label:'Handa na ✅',        val:ok.length + warn.length, cls:'green' },
+    { label:'Kailangang ayusin', val:attn.length,            cls:attn.length ? 'red' : 'green' },
+    { label:'Naka-bill na',      val:billed.length,          cls:'blue' }
+  ].map(function(s) { return '<div class="stat-box"><div class="stat-label">' + s.label + '</div><div class="stat-val ' + s.cls + '">' + s.val + '</div></div>'; }).join('');
 
-  // Typo section with Fix buttons
-  var typoItems = matchResults.filter(function(r){ return r.status==='typo' && r.typoFlag && !r.typoFlag.seqFlag; });
-  var typoSec   = document.getElementById('typo-section');
-  if (typoItems.length) {
-    typoSec.style.display = '';
-    document.getElementById('typo-list').innerHTML = typoItems.map(function(r) {
-      var rowIdx = r.matchedTrip ? r.matchedTrip.rowIndex : 0;
-      return '<div class="typo-flag" style="margin-bottom:12px;padding:12px 14px">'
-        + '<div style="display:flex;justify-content:space-between;align-items:flex-start">'
-        + '<div>'
-        + '<div style="font-weight:700;color:var(--text);margin-bottom:4px">🚛 '+r.soaRow.truck+' · '+r.soaRow.date+'</div>'
-        + '<div style="font-size:11px;margin-bottom:2px">SOA (correct): <strong style="color:var(--green)">'+r.typoFlag.soaNum+'</strong></div>'
-        + '<div style="font-size:11px;margin-bottom:2px">Trips (wrong): <strong style="color:var(--red)">'+r.typoFlag.tripsNum+'</strong>'
-        + ' <span style="color:var(--text3);font-size:10px">edit dist: '+r.typoFlag.dist+'</span></div>'
-        + (r.deliveryDate ? '<div style="font-size:10px;color:var(--text3)">Delivery date: '+r.deliveryDate+'</div>' : '')
-        + '</div>'
-        + (rowIdx ? '<button onclick="applyTypoFix('+rowIdx+',\''+r.typoFlag.soaNum+'\')" '
-          + 'style="flex-shrink:0;margin-left:10px;background:var(--orange);color:#fff;border:none;'
-          + 'border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;'
-          + 'font-family:Inter,sans-serif;white-space:nowrap">🔧 Fix</button>' : '')
-        + '</div></div>';
-    }).join('');
-  } else { typoSec.style.display = 'none'; }
+  // 1) Kailangang ayusin
+  var typoCount = R.filter(function(r){ return r.status === 'typo'; }).length;
+  var attnHtml = '';
+  if (attn.length) {
+    attnHtml = '<div class="rv-sec" style="color:var(--red)">⚠️ Kailangang ayusin (' + attn.length + ')</div>'
+      + (isAdmin && typoCount > 1 ? '<button class="rv-btn go" style="width:100%;margin-bottom:10px" onclick="actFixAllTypos()">✔ Gamitin ang SOA # sa lahat ng ' + typoCount + ' typo</button>' : '')
+      + attn.map(function(i){ return attnCard(R[i], i); }).join('');
+  } else if (R.length) {
+    attnHtml = '<div class="rv-card info"><b>✅ Walang kailangang ayusin.</b></div>';
+  }
+  document.getElementById('review-attn').innerHTML = attnHtml;
 
-  filterMatchResults();
-}
+  // 2) Suriin (napares pero may babala)
+  document.getElementById('review-warn').innerHTML = warn.length
+    ? '<div class="rv-sec" style="color:var(--orange)">👀 Suriin (' + warn.length + ') — napares, may babala</div>'
+      + warn.map(function(i) { var r = R[i];
+          return '<div class="rv-card warn">' + topHtml(r) + '<div class="rv-meta">→ Trips row ' + r.matchedTrip.rowIndex + ' · delivery ' + esc(r.deliveryDate) + '</div>' + flagsHtml(r) + undoHtml(i, r) + '</div>'; }).join('')
+    : '';
 
-function filterMatchResults() {
-  var filter = document.getElementById('match-filter').value;
-  var source = _allMatchResults.filter(function(r) {
-    if (filter==='matched')   return r.status==='matched';
-    if (filter==='unmatched') return r.status==='unmatched';
-    if (filter==='typo')      return r.status==='typo';
-    return true;
-  });
+  // 3) OK — naka-collapse
+  function rowHtml(i) {
+    var r = R[i];
+    return '<div class="rv-row"><span style="width:46px;color:var(--text2)">' + esc(fmtDay(r.soaRow.date)) + '</span><span class="badge">' + esc(r.soaRow.truck) + '</span>'
+      + fmtShip(r.finalNum || r.num) + '<span class="rv-sub">' + esc(r.soaRow.dest || '') + (r.soaRow.rate ? ' · ' + formatCurrency(r.soaRow.rate) : '') + (r.deliveryDate ? ' · deliv ' + esc(fmtDay(r.deliveryDate)) : '') + '</span>'
+      + (r.flags.length ? '<div style="width:100%">' + flagsHtml(r) + '</div>' : '') + (decisions[r.key] ? '<div style="width:100%">' + undoHtml(i, r) + '</div>' : '') + '</div>';
+  }
+  document.getElementById('review-ok').innerHTML = ok.length
+    ? '<details class="rv-wrap"' + (attn.length || warn.length ? '' : ' open') + '><summary style="color:var(--green)">✅ OK — handa nang i-bill (' + ok.length + ')</summary>' + ok.map(rowHtml).join('') + '</details>' : '';
+  document.getElementById('review-billed').innerHTML = billed.length
+    ? '<details class="rv-wrap"><summary style="color:var(--blue)">🔵 Naka-bill na — lalaktawan (' + billed.length + ')</summary>' + billed.map(rowHtml).join('') + '</details>' : '';
 
-  var list = document.getElementById('match-list');
-  if (!source.length) { list.innerHTML='<div class="empty-hint">No items to show</div>'; return; }
-
-  list.innerHTML = source.map(function(r) {
-    var statusBadge = r.status==='matched'  ? '<span class="badge green">✅ Matched</span>'
-                    : r.status==='typo'     ? '<span class="badge orange">⚠️ Typo</span>'
-                    :                         '<span class="badge red">❌ Unmatched</span>';
-    var typoInfo = '';
-    if (r.typoFlag && r.matchedTrip && !r.typoFlag.seqFlag) {
-      typoInfo = '<div class="typo-flag" style="margin-top:6px;display:flex;align-items:center;gap:8px">'
-        + '<div style="flex:1;font-size:11px">Trips: <strong>'+r.typoFlag.tripsNum+'</strong> → SOA: <strong>'+r.typoFlag.soaNum+'</strong></div>'
-        + '<button onclick="applyTypoFix('+r.matchedTrip.rowIndex+',\''+r.typoFlag.soaNum+'\')" '
-        + 'style="background:var(--orange);color:#fff;border:none;border-radius:6px;'
-        + 'padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Fix</button></div>';
-    }
-    var diagNote = '';
-    if (r.status==='unmatched' && r.diagnosis) {
-      diagNote = '<div style="font-size:10px;color:var(--orange);margin-top:4px;background:rgba(245,158,11,0.08);'
-        +'border-radius:6px;padding:4px 8px">ℹ️ '+r.diagnosis+'</div>';
-    }
-    return '<div class="match-item">'
-      + '<div style="display:flex;justify-content:space-between;align-items:flex-start">'
-      + '<div>'
-      + '<div class="match-ship">'+r.soaRow.truck+' · #'+r.soaRow.shipNum.slice(-6)+'</div>'
-      + '<div class="match-date">SOA: '+r.soaRow.date+(r.deliveryDate?' · Delivery: '+r.deliveryDate:'')+'</div>'
-      + '</div>'
-      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
-      + statusBadge
-      + (r.soaRow.rate ? '<span style="font-size:10px;color:var(--text3)">₱'+r.soaRow.rate.toLocaleString()+'</span>' : '')
-      + '</div></div>'
-      + '<div class="match-badges" style="margin-top:6px">'
-      + (r.soaRow.dest ? '<span class="badge">📍 '+r.soaRow.dest+'</span>' : '')
-      + (r.soaNum ? '<span class="badge purple">SOA '+r.soaNum+'</span>' : '')
-      + '</div>'
-      + typoInfo + diagNote
-      + '</div>';
-  }).join('');
+  // Commit
+  var ready = R.filter(function(r){ return r.status === 'matched'; }).length;
+  document.getElementById('commit-section').style.display = isAdmin && R.length ? '' : 'none';
+  var btn = document.getElementById('commit-btn');
+  btn.disabled = !ready;
+  btn.style.opacity = ready ? '' : '0.5';
+  btn.textContent = ready ? '✅ I-save ang ' + ready + ' trip sa Google Sheets' : 'Walang handang i-save';
+  document.getElementById('commit-note').textContent =
+    (attn.length ? attn.length + ' hindi isasama hangga\'t hindi naaayos · ' : '') + (billed.length ? billed.length + ' naka-bill na (lalaktawan) · ' : '')
+    + 'Isusulat ang final na shipment # sa Trips at ibi-bill ito.';
 }
 
 // ═══ COMMIT TO SHEETS ════════════════════════════════
 function commitToSheets() {
   if (!isAdmin) { showToast('❌ Admin only'); return; }
+  var toCommit = matchResults.filter(function(r){ return r.status === 'matched'; });
+  if (!toCommit.length) { showToast('⚠️ Walang handang i-save'); return; }
+  var blocked = matchResults.filter(function(r){ return ATTN_STATUS[r.status]; });
+  var replace = toCommit.filter(function(r){ var o = (r.matchedTrip.shipmentNumber || '').trim(); return o && o !== r.finalNum; }).length;
+  var fill    = toCommit.filter(function(r){ return !(r.matchedTrip.shipmentNumber || '').trim(); }).length;
 
-  var toCommit = matchResults.filter(function(r){ return r.status === 'matched' || r.status === 'typo'; });
-  if (!toCommit.length) { showToast('⚠️ No matched shipments to commit'); return; }
-
-  document.getElementById('confirm-title').textContent  = 'Save to Google Sheets?';
+  document.getElementById('confirm-title').textContent = 'I-save sa Google Sheets?';
   document.getElementById('confirm-msg').innerHTML =
-    'This will:<br>'
-    + '• Add <strong>' + toCommit.length + ' rows</strong> to Billing Statement<br>'
-    + '• Mark matched trips as <strong>Billed = Yes</strong><br>'
-    + '• Save SOA data to SOA Masters';
+    '• <strong>' + toCommit.length + ' row</strong> sa Billing Statement<br>'
+    + '• I-mark na <strong>Billed = Yes</strong> ang ' + toCommit.length + ' trip<br>'
+    + (fill    ? '• Lalagyan ng shipment # ang ' + fill + ' trip na blangko<br>' : '')
+    + (replace ? '• <strong style="color:var(--orange)">Papalitan</strong> ang shipment # ng ' + replace + ' trip<br>' : '')
+    + (blocked.length ? '<br><span style="color:var(--red)">' + blocked.length + ' row ang HINDI isasama (kailangan pang ayusin).</span>' : '');
   document.getElementById('confirm-ok').className = 'cb cb-green';
   document.getElementById('confirm-ok').textContent = 'Proceed';
   document.getElementById('confirm-ok').onclick = doCommit;
@@ -1440,113 +1326,56 @@ function doCommit() {
   closeConfirm();
   showSaving('Saving to Google Sheets...');
 
-  var toCommit    = matchResults.filter(function(r){ return r.status==='matched' || r.status==='typo'; });
-  var billingRows = [];
-  var tripUpdates = [];
-  var soaMap      = {};
+  var toCommit    = matchResults.filter(function(r){ return r.status === 'matched'; });
+  var billingRows = [], tripUpdates = [], soaMap = {};
+  var stamp = Date.now();
 
   toCommit.forEach(function(r, i) {
     billingRows.push([
-      'BILL-' + Date.now() + '-' + i,
+      'BILL-' + stamp + '-' + i,
       r.deliveryDate || r.soaRow.date,
-      r.soaRow.shipNum,
+      r.finalNum,
       r.soaNum,
       r.soaRow.truck,
-      r.soaRow.rate || (r.matchedTrip ? r.matchedTrip.rate : ''),
+      r.soaRow.rate || tripPeso(r.matchedTrip.rate) || '',
       'Yes'
     ]);
-    if (r.matchedTrip) {
-      tripUpdates.push({ rowIndex: r.matchedTrip.rowIndex, tripData: r.matchedTrip, shipmentNum: r.soaRow.shipNum });
-    }
+    tripUpdates.push({ rowIndex: r.matchedTrip.rowIndex, trip: r.matchedTrip, shipmentNum: r.finalNum });
     if (!soaMap[r.soaNum]) {
       var pf = parsedFiles.find(function(p){ return p.soaNum === r.soaNum; });
-      if (pf) soaMap[r.soaNum] = pf;
+      if (pf && !billCtx.existingSoaNums[pf.soaNum]) soaMap[r.soaNum] = pf;
     }
   });
 
-  var soaRows = Object.values(soaMap).map(function(pf) {
-    return [pf.soaNum, pf.period, pf.totalTripsCount, pf.grandTotal, pf.vatAmt,
-            pf.grandTotal - pf.vatAmt, '', '', '', 'Pending', '', '', ''];
+  var soaRows = Object.keys(soaMap).map(function(k) {
+    var pf = soaMap[k];
+    return [pf.soaNum, pf.period, pf.totalTripsCount, pf.grandTotal, pf.vatAmt, pf.grandTotal - pf.vatAmt, '', '', '', 'Pending', '', '', ''];
   });
 
-  // ── Update local state immediately ──
-  tripUpdates.forEach(function(u) {
-    var t = u.tripData;
-    t.billed = 'Yes';
-    if (!t.shipmentNumber || !t.shipmentNumber.trim()) t.shipmentNumber = u.shipmentNum;
-  });
-
-  // ── Step 1: Append to Billing Statement (single call) ──
-  var step1 = billingRows.length
-    ? apiAppend(TAB_BILLING_STMT+'!A:G', billingRows)
-    : Promise.resolve();
-
-  // ── Step 2: Batch update all Trips rows in ONE call using batchUpdate ──
-  // Instead of N individual PUT calls, send one batchUpdate with N valueRanges
-  // Google Sheets batchUpdate allows up to 1000 ranges per call — well within limits
-  function batchUpdateTrips(updates) {
-    if (!updates.length) return Promise.resolve();
-
-    var valueRanges = updates.map(function(u) {
-      var t = u.tripData;
-      var newShipNum = (t.shipmentNumber && t.shipmentNumber.trim()) ? t.shipmentNumber : u.shipmentNum;
-      return {
-        range:  TAB_TRIPS + '!A' + u.rowIndex + ':I' + u.rowIndex,
-        values: [[t.id, t.deliveryDate, t.truck, t.shipmentDate,
-                  t.type, newShipNum, 'Yes', t.route, t.rate]]
-      };
+  function batchUpdateTrips() {
+    if (!tripUpdates.length) return Promise.resolve();
+    var valueRanges = tripUpdates.map(function(u) {
+      var t = u.trip;
+      return { range: TAB_TRIPS + '!A' + u.rowIndex + ':I' + u.rowIndex,
+               values: [[t.id, t.deliveryDate, t.truck, t.shipmentDate, t.type, u.shipmentNum, 'Yes', t.route, t.rate]] };
     });
-
-    // Sheets batchUpdate endpoint — single API call for all rows
-    return fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID +
-      '/values:batchUpdate',
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ valueInputOption: 'USER_ENTERED', data: valueRanges })
-      }
-    ).then(function(r) {
-      if (!r.ok) return r.json().then(function(e) {
-        throw new Error((e.error && e.error.message) || 'batchUpdate failed');
-      });
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + '/values:batchUpdate', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valueInputOption: 'USER_ENTERED', data: valueRanges })
+    }).then(function(r) {
+      if (!r.ok) return r.json().then(function(e) { throw new Error((e.error && e.error.message) || 'batchUpdate failed'); });
       return r.json();
     });
   }
 
-  // ── Step 3: Append SOA Masters rows — auto-create sheet if missing ──
-  function appendSOAMaster() {
-    if (!soaRows.length) return Promise.resolve();
-
-    // Try append; if 400 (sheet doesn't exist) → create it, then retry once
-    return apiAppend(TAB_SOA+'!A:M', soaRows)
-      .catch(function(err) {
-        console.log('SOA append error (will try to create sheet):', err.message);
-        document.getElementById('saving-text').textContent = 'Creating SOA Masters sheet...';
-        return createSOAMastersSheet().then(function() {
-          document.getElementById('saving-text').textContent = 'Step 3/3: Saving SOA records (retry)...';
-          return apiAppend(TAB_SOA+'!A:M', soaRows);
-        });
-      });
-  }
-
-  // Create the SOA Masters tab via Sheets batchUpdate addSheet request
   function createSOAMastersSheet() {
-    return fetch(
-      'https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + ':batchUpdate',
-      {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          requests: [{ addSheet: { properties: {
-            title: TAB_SOA,
-            gridProperties: { rowCount: 1000, columnCount: 13 }
-          }}}]
-        })
-      }
-    ).then(function(r) {
+    return fetch('https://sheets.googleapis.com/v4/spreadsheets/' + SHEET_ID + ':batchUpdate', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requests: [{ addSheet: { properties: { title: TAB_SOA, gridProperties: { rowCount: 1000, columnCount: 13 } } } }] })
+    }).then(function(r) {
       return r.json().then(function(data) {
-        // "already exists" is fine — just continue
         if (!r.ok) {
           var msg = (data.error && data.error.message) || '';
           if (msg.toLowerCase().indexOf('already exists') > -1) return {};
@@ -1555,8 +1384,7 @@ function doCommit() {
         return data;
       });
     }).then(function() {
-      // Write header row
-      return apiUpdate(TAB_SOA+'!A1:M1', [[
+      return apiUpdate(TAB_SOA + '!A1:M1', [[
         'SOA#','Period','Total Trips','Grand Total','VAT','Net Amount',
         'Date Sent','Amount Received','Date Received','Status',
         'Deductions','OR Number','Notes'
@@ -1564,31 +1392,42 @@ function doCommit() {
     });
   }
 
-  // ── Execute steps sequentially to avoid quota issues ──
+  function appendSOAMaster() {
+    if (!soaRows.length) return Promise.resolve();
+    return apiAppend(TAB_SOA + '!A:M', soaRows).catch(function() {
+      document.getElementById('saving-text').textContent = 'Creating SOA Masters sheet...';
+      return createSOAMastersSheet().then(function() { return apiAppend(TAB_SOA + '!A:M', soaRows); });
+    });
+  }
+
+  var stage = 1;
   document.getElementById('saving-text').textContent = 'Step 1/3: Saving billing rows...';
-  step1
+  apiAppend(TAB_BILLING_STMT + '!A:G', billingRows)
     .then(function() {
-      document.getElementById('saving-text').textContent =
-        'Step 2/3: Updating ' + tripUpdates.length + ' trips (1 batch call)...';
-      return batchUpdateTrips(tripUpdates);
+      stage = 2;
+      document.getElementById('saving-text').textContent = 'Step 2/3: Updating ' + tripUpdates.length + ' trips...';
+      return batchUpdateTrips();
     })
     .then(function() {
+      stage = 3;
       document.getElementById('saving-text').textContent = 'Step 3/3: Saving SOA records...';
       return appendSOAMaster();
     })
     .then(function() {
       hideSaving();
       showToast('✅ Saved! ' + billingRows.length + ' billing rows · ' + tripUpdates.length + ' trips updated');
-      parsedFiles = []; matchResults = []; queuedFiles = [];
+      parsedFiles = []; matchResults = []; queuedFiles = []; decisions = {}; parseErrors = [];
       renderFileQueue();
-      document.getElementById('soa-preview-section').style.display = 'none';
       document.getElementById('match-results-section').style.display = 'none';
       document.getElementById('commit-section').style.display = 'none';
-      loadTrips();
+      loadTrips().catch(function(e){ console.error('Reload trips error:', e); });
     })
     .catch(function(err) {
       hideSaving();
-      showToast('❌ Save failed: ' + err.message);
+      var done = stage === 1 ? 'Wala pang naisusulat.'
+               : stage === 2 ? 'Naisulat na ang Billing Statement pero HINDI pa ang Trips — huwag mag-upload ulit; ipaayos muna.'
+               : 'Naisulat na ang Billing Statement at Trips; ang SOA Masters ang bigo.';
+      showToast('❌ Save failed (step ' + stage + '/3): ' + err.message + ' · ' + done);
       console.error('doCommit error:', err);
     });
 }
